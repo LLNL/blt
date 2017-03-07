@@ -1,0 +1,113 @@
+###############################################################################
+# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+#
+# Produced at the Lawrence Livermore National Laboratory
+#
+# LLNL-CODE-725085
+#
+# All rights reserved.
+#
+# This file is part of BLT.
+#
+# For additional details, please also read BLT/LICENSE.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the disclaimer below.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the disclaimer (as noted below) in the
+#   documentation and/or other materials provided with the distribution.
+#
+# * Neither the name of the LLNS/LLNL nor the names of its contributors may
+#   be used to endorse or promote products derived from this software without
+#   specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL LAWRENCE LIVERMORE NATIONAL SECURITY,
+# LLC, THE U.S. DEPARTMENT OF ENERGY OR CONTRIBUTORS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+###############################################################################
+
+sudo: false
+
+language: cpp
+compiler:
+  - gcc
+env:
+  global:
+    # std env vars CC + CXX get overridden
+    - BLT_CC=gcc-4.8
+    - BLTT_CXX=g++-4.8
+    - BLT_FC=gfortran-4.8
+    # we need to know the root dir for our 3rd party lib installs
+    - TRAVIS_HOME=`pwd`
+  matrix:
+    # cmake 3.3.1
+    - CMAKE_MAJOR=3.3
+      CMAKE_MINOR=1
+    # cmake 3.8.0-rc2
+    - CMAKE_MAJOR=3.8
+      CMAKE_MINOR=0-rc2
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+       - gcc-4.8
+       - g++-4.8
+       - gfortran-4.8
+       # todo: add mpi -- mpich2 or openmpi?
+before_install:
+  # download the ver of cmake we want to test
+  - wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_MAJOR}/cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh
+install:
+  # install cmake
+  - mkdir ${TRAVIS_HOME}/cmake/
+  - sh cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh --skip-license --prefix=${TRAVIS_HOME}/cmake/
+  - export PATH=${TRAVIS_HOME}/cmake/bin:$PATH
+script:
+  - cmake --version
+  - cd $TRAVIS_BUILD_DIR
+  # copy our internal testing project
+  - cp -r blt/cmake/blt-test .
+  # symlink blt into this project
+  - ln -s ${TRAVIS_BUILD_DIR}/blt blt-test/blt
+  # create an out-of-source build dir and an install dir
+  - mkdir travis-debug-build
+  - mkdir travis-debug-install
+  # change into build dir
+  - cd    travis-debug-build
+  # build type and install loc
+  - CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_INSTALL_PREFIX=../travis-debug-install"
+  # c & c++ compilers
+  - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_CXX_COMPILER=${BLT_CXX}"
+  # enable fortran support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_Fortran_COMPILER=${BLT_FC}"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_FORTRAN=ON"
+  # configure with cmake
+  - cmake  ${CMAKE_OPTS} ../blt-test
+  # build, link, and triumph 
+  - make
+  - env CTEST_OUTPUT_ON_FAILURE=1 make test
+  - make install
+
+notifications:
+  email:
+    recipients:
+      - cyrush@llnl.gov
+    on_success: always
+    on_failure: always
