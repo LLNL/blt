@@ -326,7 +326,21 @@ macro(blt_add_library)
         set(arg_CLEAR_PREFIX TRUE)
     endif()
 
-    if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+
+    #
+    #  cuda support
+    #
+    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+    if ( ${check_for_cuda} GREATER -1)
+
+        blt_setup_cuda_source_properties(${arg_SOURCES})
+
+        if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+            cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
+        else()
+            cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
+        endif()
+    elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
         add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
     else()
         add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
@@ -428,7 +442,17 @@ macro(blt_add_executable)
         message(FATAL_ERROR "Must specify executable name with argument NAME <name>")
     endif()
 
-    add_executable( ${arg_NAME} ${arg_SOURCES} )
+
+    #
+    #  cuda support
+    #
+    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+    if ( ${check_for_cuda} GREATER -1)
+        blt_setup_cuda_source_properties(${arg_SOURCES})
+        cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
+    else()
+        add_executable( ${arg_NAME} ${arg_SOURCES} )
+    endif()
 
     # CMake wants to load with C++ if any of the libraries are C++.
     # Force to load with Fortran if the first file is Fortran.
@@ -437,6 +461,7 @@ macro(blt_add_executable)
     if(_lang STREQUAL Fortran)
         set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
     endif()
+        
 
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )

@@ -53,6 +53,14 @@ if (ENABLE_MPI)
 endif()
 
 ################################
+# CUDA
+################################
+message(STATUS "CUDA Support is ${ENABLE_CUDA}")
+if (ENABLE_CUDA)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake)
+endif()
+
+################################
 # Documentation Packages
 ################################
 if (DOXYGEN_EXECUTABLE)
