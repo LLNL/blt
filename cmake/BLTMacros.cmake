@@ -128,6 +128,65 @@ endmacro(blt_add_target_definitions)
 
 
 ##------------------------------------------------------------------------------
+## blt_add_target_compile_flags (TO <target> FLAGS [FOO [BAR ...]])
+##
+## Adds compiler flags to a target by appending to the target's existing flags.
+##------------------------------------------------------------------------------
+macro(blt_add_target_compile_flags)
+
+    set(options)
+    set(singleValuedArgs TO FLAGS)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(args
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
+
+    if(NOT "${args_FLAGS}" STREQUAL "")
+        # get prev flags
+        get_target_property(_COMP_FLAGS ${arg_TO} COMPILE_FLAGS)
+        if(NOT _COMP_FLAGS)
+            set(_COMP_FLAGS "")
+        endif()
+        # append new flags
+        set(_COMP_FLAGS "${args_FLAGS} ${_COMP_FLAGS}")
+        set_target_properties(${arg_TO}
+                              PROPERTIES COMPILE_FLAGS "${_COMP_FLAGS}" )
+    endif()
+
+endmacro(blt_add_target_compile_flags)
+
+
+##------------------------------------------------------------------------------
+## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
+##
+## Adds linker flags to a target by appending to the target's existing flags.
+##------------------------------------------------------------------------------
+macro(blt_add_target_link_flags)
+
+    set(options)
+    set(singleValuedArgs TO FLAGS)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(args
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
+
+    if(NOT "${args_FLAGS}" STREQUAL "")
+        # get prev flags
+        get_target_property(_LINK_FLAGS ${args_TO} LINK_FLAGS)
+        if(NOT _LINK_FLAGS)
+            set(_LINK_FLAGS "")
+        endif()
+        # append new flag
+        set(_LINK_FLAGS "${args_FLAGS} ${_LINK_FLAGS}")
+        set_target_properties(${args_TO}
+                              PROPERTIES LINK_FLAGS "${_LINK_FLAGS}" )
+    endif()
+
+endmacro(blt_add_target_link_flags)
+
+##------------------------------------------------------------------------------
 ## blt_register_library( NAME <libname>
 ##                       INCLUDES [include1 [include2 ...]] 
 ##                       FORTRAN_MODULES [ path1 [ path2 ..]]
@@ -312,8 +371,6 @@ macro(blt_add_library)
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON} )
 
-    blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
-
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
@@ -383,8 +440,6 @@ macro(blt_add_executable)
 
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
-
-    blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
 
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES

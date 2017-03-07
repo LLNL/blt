@@ -169,6 +169,8 @@ macro(blt_setup_target)
 
     endforeach()
 
+    blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
+
 endmacro(blt_setup_target)
 
 
@@ -203,18 +205,18 @@ macro(blt_setup_mpi_target)
                                     PUBLIC ${MPI_Fortran_INCLUDE_PATH} )
 
         if ( NOT "${MPI_C_COMPILE_FLAGS}" STREQUAL "")
-            set_target_properties( ${arg_BUILD_TARGET} 
-                PROPERTIES COMPILE_FLAGS ${MPI_C_COMPILE_FLAGS} )
+            blt_add_target_compile_flags( TO ${arg_BUILD_TARGET} 
+                                          FLAGS ${MPI_C_COMPILE_FLAGS} )
         endif()
 
         if ( NOT "${MPI_C_LINK_FLAGS}" STREQUAL "")
-            set_target_properties( ${arg_BUILD_TARGET} 
-                PROPERTIES LINK_FLAGS ${MPI_C_LINK_FLAGS} )
+            blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
+                                       FLAGS ${MPI_C_LINK_FLAGS} )
         endif()
 
         if ( NOT "${MPI_Fortran_LINK_FLAGS}" STREQUAL "" )
-            set_target_properties( ${arg_BUILD_TARGET} 
-                PROPERTIES LINK_FLAGS ${MPI_Fortran_LINK_FLAGS} )
+            blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
+                                       FLAGS ${MPI_Fortran_LINK_FLAGS} )
         endif()
 
         target_link_libraries( ${arg_BUILD_TARGET} ${MPI_C_LIBRARIES} )
@@ -251,11 +253,11 @@ macro(blt_setup_openmp_target)
     blt_add_target_definitions( TO ${arg_BUILD_TARGET}
                                 TARGET_DEFINITIONS USE_OPENMP )
 
-    set_target_properties( ${arg_BUILD_TARGET}
-                           PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS} )
+    blt_add_target_compile_flags( TO ${arg_BUILD_TARGET}
+                                  FLAGS ${OpenMP_CXX_FLAGS} )
 
-    set_target_properties( ${arg_BUILD_TARGET}
-                           PROPERTIES LINK_FLAGS ${OpenMP_CXX_FLAGS} )
+    blt_add_target_link_flags( TO ${arg_BUILD_TARGET}
+                               FLAGS ${OpenMP_CXX_FLAGS} )
 
 
 endmacro(blt_setup_openmp_target)
