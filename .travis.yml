@@ -84,10 +84,13 @@ script:
   # copy our internal testing project
   - cp -r blt/cmake/blt-test .
   # symlink blt into this project
-  - ln -s ${TRAVIS_BUILD_DIR}/blt blt-test/blt
+  - ln -s ${TRAVIS_BUILD_DIR} blt-test/blt
   # create an out-of-source build dir and an install dir
   - mkdir travis-debug-build
   - mkdir travis-debug-install
+  # sanity check
+  - ls
+  - ls blt-test
   # change into build dir
   - cd travis-debug-build
   # build type and install loc
