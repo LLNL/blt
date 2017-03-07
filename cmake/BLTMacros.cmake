@@ -190,7 +190,6 @@ endmacro(blt_register_library)
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
-##                  USE_OPENMP <TRUE or FALSE (default)>
 ##                  PYTHON_MODULE
 ##                  LUA_MODULE
 ##                  SHARED
@@ -223,9 +222,9 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
-## Optionally, "USE_OPENMP" can be supplied as a boolean argument. When this 
-## argument is supplied, the openmp compiler flag will be added to the compiler 
-## command and the -DUSE_OPENMP, will be included to the compiler definition.
+## If DEPENDS_ON includes "openmp", the openmp compiler flags will be added 
+## to the target and -DUSE_OPENMP will be added to the target's compiler 
+## definitions.
 ##
 ## The PYTHON_MODULE option customizes arguments for a Python module.
 ## The target created will be NAME-python-module and the library will be NAME.so.
@@ -238,18 +237,14 @@ macro(blt_add_library)
 
     set(arg_CLEAR_PREFIX FALSE)
     set(options SHARED PYTHON_MODULE LUA_MODULE)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR USE_OPENMP)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
-    ## parse the arguments
+    # parse the arguments
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Check for the variable-based options for OpenMP and sanity check
-    if( NOT DEFINED arg_USE_OPENMP )
-        set(arg_USE_OPENMP FALSE)
-    endif()
-
+    # Check for the variable-based options and sanity checks
     if(arg_PYTHON_MODULE)
         set(arg_SHARED TRUE)
         if( NOT arg_OUTPUT_DIR )
@@ -319,9 +314,6 @@ macro(blt_add_library)
 
     blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
 
-    blt_setup_openmp_target( BUILD_TARGET ${arg_NAME}
-                              USE_OPENMP ${arg_USE_OPENMP} )
-
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
@@ -345,8 +337,7 @@ endmacro(blt_add_library)
 ## blt_add_executable( NAME <name>
 ##                     SOURCES [source1 [source2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
-##                     OUTPUT_DIR [dir]
-##                     USE_OPENMP < TRUE or FALSE (default)>)
+##                     OUTPUT_DIR [dir])
 ##
 ## Adds an executable target, called <name>.
 ##
@@ -354,9 +345,9 @@ endmacro(blt_add_library)
 ## libraries if they are already registered with blt_register_library.  If
 ## not it will add them as a cmake target dependency.
 ##
-## Optionally, "USE_OPENMP" can be supplied as a boolean argument. When this 
-## argument is supplied, the openmp compiler flag will be added to the compiler 
-## command and the -DUSE_OPENMP, will be included to the compiler definition.
+## If DEPENDS_ON includes "openmp", the openmp compiler flags will be added 
+## to the target and -DUSE_OPENMP will be added to the target's compiler 
+## definitions.
 ##
 ## The OUTPUT_DIR is used to control the build output directory of this 
 ## executable. This is used to overwrite the default bin directory.
@@ -368,18 +359,14 @@ endmacro(blt_add_library)
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR USE_OPENMP)
+    set(singleValueArgs NAME OUTPUT_DIR)
     set(multiValueArgs SOURCES DEPENDS_ON)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # Check for the variable-based options for OpenMP and sanity check
-    if ( NOT DEFINED arg_USE_OPENMP )
-        set(arg_USE_OPENMP FALSE)
-    endif()
-
+    # sanity check
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "Must specify executable name with argument NAME <name>")
     endif()
@@ -398,9 +385,6 @@ macro(blt_add_executable)
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
     blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
-
-    blt_setup_openmp_target( BUILD_TARGET ${arg_NAME}
-                             USE_OPENMP ${arg_USE_OPENMP} )
 
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES

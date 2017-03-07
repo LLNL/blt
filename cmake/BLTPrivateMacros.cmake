@@ -95,6 +95,10 @@ endmacro(blt_copy_headers_target)
 
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
+##
+## This macro handles setting up target dependencies, including calls
+## to enable special support for openmp.
+##
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
 
@@ -115,6 +119,20 @@ macro(blt_setup_target)
     if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${arg_NAME}")
         add_dependencies( ${arg_NAME} "blt_copy_headers_${arg_NAME}")
     endif()
+
+
+    #
+    # support for special built-in dependencies:
+    #  openmp
+    #
+    list(FIND arg_DEPENDS_ON "openmp" check_for_openmp)
+    
+    if ( ${check_for_openmp} GREATER -1)
+        list(REMOVE_AT arg_DEPENDS_ON ${check_for_openmp})
+        # setup openmp
+        blt_setup_openmp_target( BUILD_TARGET ${arg_NAME} )
+    endif ( )
+
 
     # Add dependency's information
     foreach( dependency ${arg_DEPENDS_ON} )
@@ -213,7 +231,7 @@ endmacro(blt_setup_mpi_target)
 macro(blt_setup_openmp_target)
 
     set(options)
-    set(singleValueArgs BUILD_TARGET USE_OPENMP)
+    set(singleValueArgs BUILD_TARGET)
     set(multiValueArgs)
 
     # Parse the arguments
@@ -225,22 +243,20 @@ macro(blt_setup_openmp_target)
         message ( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro")
     endif()
 
-    if ( NOT DEFINED arg_USE_OPENMP )
-        message( FATAL_ERROR "Must provide an OpenMP boolean flag")
+
+    if ( NOT ${ENABLE_OPENMP} )
+        message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires OpenMP, but OpenMP is disabled!")
     endif()
 
-    if ( ${arg_USE_OPENMP} AND NOT ${ENABLE_OPENMP} )
-        message( FATAL_ERROR "Building an OpenMP library, but OpenMP is disabled!")
-    endif()
-
-    if ( ${arg_USE_OPENMP} )
-        blt_add_target_definitions( TO ${arg_BUILD_TARGET}
+    blt_add_target_definitions( TO ${arg_BUILD_TARGET}
                                 TARGET_DEFINITIONS USE_OPENMP )
-        set_target_properties( ${arg_BUILD_TARGET}
-                               PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS} )
-        set_target_properties( ${arg_BUILD_TARGET}
-                               PROPERTIES LINK_FLAGS ${OpenMP_CXX_FLAGS} )
-    endif()
+
+    set_target_properties( ${arg_BUILD_TARGET}
+                           PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS} )
+
+    set_target_properties( ${arg_BUILD_TARGET}
+                           PROPERTIES LINK_FLAGS ${OpenMP_CXX_FLAGS} )
+
 
 endmacro(blt_setup_openmp_target)
 

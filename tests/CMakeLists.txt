@@ -102,7 +102,7 @@ if (ENABLE_OPENMP)
     blt_add_executable(NAME blt_openmp_smoke 
                        SOURCES blt_openmp_smoke.cpp 
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       USE_OPENMP TRUE )
+                       DEPENDS_ON openmp)
 
     blt_add_test(NAME blt_openmp_smoke
                  COMMAND blt_openmp_smoke)
