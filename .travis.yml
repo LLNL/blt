@@ -53,6 +53,7 @@ env:
     - BLT_FC=gfortran-4.8
     # we need to know the root dir for our 3rd party lib installs
     - TRAVIS_HOME=`pwd`
+    - TRAVIS_TPLS_DIR=`pwd`/tpls
   matrix:
     # cmake 3.3.1
     - CMAKE_MAJOR=3.3
@@ -74,9 +75,9 @@ before_install:
   - wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_MAJOR}/cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh
 install:
   # install cmake
-  - mkdir ${TRAVIS_HOME}/cmake/
-  - sh cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh --skip-license --prefix=${TRAVIS_HOME}/cmake/
-  - export PATH=${TRAVIS_HOME}/cmake/bin:$PATH
+  - mkdir -p ${TRAVIS_TPLS_DIR}/cmake/
+  - sh cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh --skip-license --prefix=${TRAVIS_TPLS_DIR}/cmake/
+  - export PATH=${TRAVIS_TPLS_DIR}/cmake/bin:$PATH
 script:
   - cmake --version
   - cd $TRAVIS_BUILD_DIR
