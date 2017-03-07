@@ -50,7 +50,6 @@
 //-----------------------------------------------------------------------------
 
 #include <iostream>
-#include "gtest/gtest.h"
 #include <stdio.h>
 
 __device__ const char *STR = "HELLO WORLD!";
@@ -61,8 +60,7 @@ __global__ void hello()
     printf("%c\n", STR[threadIdx.x % STR_LENGTH]);
 }
 
-//-----------------------------------------------------------------------------
-TEST(blt_cuda_smoke, basic_test)
+int main()
 {
     int num_threads = STR_LENGTH;
     int num_blocks = 1;

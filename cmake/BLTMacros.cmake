@@ -333,7 +333,7 @@ macro(blt_add_library)
     list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
     if ( ${check_for_cuda} GREATER -1)
 
-        blt_setup_cuda_source_properties(${arg_SOURCES})
+        blt_setup_cuda_source_properties(TARGET_SOURCES ${arg_SOURCES})
 
         if ( arg_SHARED OR ENABLE_SHARED_LIBS )
             cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
@@ -448,7 +448,7 @@ macro(blt_add_executable)
     #
     list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
     if ( ${check_for_cuda} GREATER -1)
-        blt_setup_cuda_source_properties(${arg_SOURCES})
+        blt_setup_cuda_source_properties(TARGET_SOURCES ${arg_SOURCES})
         cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
     else()
         add_executable( ${arg_NAME} ${arg_SOURCES} )
