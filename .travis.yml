@@ -48,9 +48,9 @@ compiler:
 env:
   global:
     # std env vars CC + CXX get overridden
-    - BLT_CC=gcc-4.8
-    - BLTT_CXX=g++-4.8
-    - BLT_FC=gfortran-4.8
+    - BLT_CC=gcc-4.9
+    - BLTT_CXX=g++-4.9
+    - BLT_FC=gfortran-4.9
     # we need to know the root dir for our 3rd party lib installs
     - TRAVIS_HOME=`pwd`/..
     - TRAVIS_TPLS_DIR=${TRAVIS_HOME}/tpls
@@ -66,9 +66,9 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-       - gcc-4.8
-       - g++-4.8
-       - gfortran-4.8
+       - gcc-4.9
+       - g++-4.9
+       - gfortran-4.9
        # todo: add mpi -- mpich2 or openmpi?
 before_install:
   # download the ver of cmake we want to test
