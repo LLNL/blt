@@ -203,37 +203,41 @@ macro(blt_setup_mpi_target)
         message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro" )
     endif()
 
-    if ( ${ENABLE_MPI} )
-        blt_add_target_definitions( TO ${arg_BUILD_TARGET} TARGET_DEFINITIONS USE_MPI )
 
-        target_include_directories( ${arg_BUILD_TARGET} 
-                                    PUBLIC ${MPI_C_INCLUDE_PATH} )
-
-        target_include_directories( ${arg_BUILD_TARGET} 
-                                    PUBLIC ${MPI_CXX_INCLUDE_PATH} )
-
-        target_include_directories( ${arg_BUILD_TARGET} 
-                                    PUBLIC ${MPI_Fortran_INCLUDE_PATH} )
-
-        if ( NOT "${MPI_C_COMPILE_FLAGS}" STREQUAL "")
-            blt_add_target_compile_flags( TO ${arg_BUILD_TARGET} 
-                                          FLAGS ${MPI_C_COMPILE_FLAGS} )
-        endif()
-
-        if ( NOT "${MPI_C_LINK_FLAGS}" STREQUAL "")
-            blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
-                                       FLAGS ${MPI_C_LINK_FLAGS} )
-        endif()
-
-        if ( NOT "${MPI_Fortran_LINK_FLAGS}" STREQUAL "" )
-            blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
-                                       FLAGS ${MPI_Fortran_LINK_FLAGS} )
-        endif()
-
-        target_link_libraries( ${arg_BUILD_TARGET} ${MPI_C_LIBRARIES} )
-        target_link_libraries( ${arg_BUILD_TARGET} ${MPI_CXX_LIBRARIES} )
-        target_link_libraries( ${arg_BUILD_TARGET} ${MPI_Fortran_LIBRARIES} )
+    if ( NOT ${ENABLE_MPI} )
+        message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires MPI, but MPI is disabled!")
     endif()
+
+
+    blt_add_target_definitions( TO ${arg_BUILD_TARGET} TARGET_DEFINITIONS USE_MPI )
+
+    target_include_directories( ${arg_BUILD_TARGET} 
+                                PUBLIC ${MPI_C_INCLUDE_PATH} )
+
+    target_include_directories( ${arg_BUILD_TARGET} 
+                                PUBLIC ${MPI_CXX_INCLUDE_PATH} )
+
+    target_include_directories( ${arg_BUILD_TARGET} 
+                                PUBLIC ${MPI_Fortran_INCLUDE_PATH} )
+
+    if ( NOT "${MPI_C_COMPILE_FLAGS}" STREQUAL "")
+        blt_add_target_compile_flags( TO ${arg_BUILD_TARGET} 
+                                      FLAGS ${MPI_C_COMPILE_FLAGS} )
+    endif()
+
+    if ( NOT "${MPI_C_LINK_FLAGS}" STREQUAL "")
+        blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
+                                   FLAGS ${MPI_C_LINK_FLAGS} )
+    endif()
+
+    if ( NOT "${MPI_Fortran_LINK_FLAGS}" STREQUAL "" )
+        blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
+                                   FLAGS ${MPI_Fortran_LINK_FLAGS} )
+    endif()
+
+    target_link_libraries( ${arg_BUILD_TARGET} ${MPI_C_LIBRARIES} )
+    target_link_libraries( ${arg_BUILD_TARGET} ${MPI_CXX_LIBRARIES} )
+    target_link_libraries( ${arg_BUILD_TARGET} ${MPI_Fortran_LIBRARIES} )
 
 endmacro(blt_setup_mpi_target)
 
