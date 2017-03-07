@@ -75,7 +75,7 @@ addons:
        - gcc-4.9
        - g++-4.9
        - gfortran-4.9
-       # todo: add mpi -- mpich2 or openmpi?
+       - mpich2
 before_install:
   # download the ver of cmake we want to test
   - wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_MAJOR}/cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh
@@ -110,6 +110,11 @@ script:
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_Fortran_COMPILER=${BLT_FC}"
   # openmp support
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_OPENMP=${BLT_OPENMP}"
+  # mpi support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_MPI=ON"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_C_COMPILER=mpicc"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_CXX_COMPILER=mpicc"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_Fortran_COMPILER=mpif90"  
   # configure with cmake
   - cmake  ${CMAKE_OPTS} ../blt-test
   # build, link, and triumph 
