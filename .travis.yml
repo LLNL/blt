@@ -76,6 +76,7 @@ addons:
        - g++-4.9
        - gfortran-4.9
        - mpich2
+       - libmpich2-dev
 before_install:
   # download the ver of cmake we want to test
   - wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_MAJOR}/cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh
