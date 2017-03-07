@@ -105,8 +105,7 @@ if (ENABLE_OPENMP)
                        USE_OPENMP TRUE )
 
     blt_add_test(NAME blt_openmp_smoke
-                 COMMAND blt_openmp_smoke
-                 NUM_PROCS 2)
+                 COMMAND blt_openmp_smoke)
 endif()
 
 
