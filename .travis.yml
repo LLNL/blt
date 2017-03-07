@@ -52,8 +52,8 @@ env:
     - BLTT_CXX=g++-4.8
     - BLT_FC=gfortran-4.8
     # we need to know the root dir for our 3rd party lib installs
-    - TRAVIS_HOME=`pwd`
-    - TRAVIS_TPLS_DIR=`pwd`/tpls
+    - TRAVIS_HOME=`pwd`/..
+    - TRAVIS_TPLS_DIR=${TRAVIS_HOME}/tpls
   matrix:
     # cmake 3.3.1
     - CMAKE_MAJOR=3.3
@@ -80,7 +80,7 @@ install:
   - export PATH=${TRAVIS_TPLS_DIR}/cmake/bin:$PATH
 script:
   - cmake --version
-  - cd $TRAVIS_BUILD_DIR
+  - cd $TRAVIS_BUILD_DIR/..
   # copy our internal testing project
   - cp -r blt/cmake/blt-test .
   # symlink blt into this project
@@ -89,7 +89,7 @@ script:
   - mkdir travis-debug-build
   - mkdir travis-debug-install
   # change into build dir
-  - cd    travis-debug-build
+  - cd travis-debug-build
   # build type and install loc
   - CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_INSTALL_PREFIX=../travis-debug-install"
