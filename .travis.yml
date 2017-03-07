@@ -49,7 +49,7 @@ env:
   global:
     # std env vars CC + CXX get overridden
     - BLT_CC=gcc-4.9
-    - BLTT_CXX=g++-4.9
+    - BLT_CXX=g++-4.9
     - BLT_FC=gfortran-4.9
     # we need to know the root dir for our 3rd party lib installs
     - TRAVIS_HOME=`pwd`/..
