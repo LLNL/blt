@@ -115,7 +115,8 @@ endif()
 if (ENABLE_MPI)
     blt_add_executable(NAME blt_mpi_smoke
                        SOURCES blt_mpi_smoke.cpp
-                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} )
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
+                       DEPENDS_ON mpi)
 
     blt_add_test(NAME blt_mpi_smoke
                  COMMAND blt_mpi_smoke

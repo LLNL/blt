@@ -123,6 +123,7 @@ macro(blt_setup_target)
 
     #
     # support for special built-in dependencies:
+    #
     #  openmp
     #
     list(FIND arg_DEPENDS_ON "openmp" check_for_openmp)
@@ -132,6 +133,18 @@ macro(blt_setup_target)
         # setup openmp
         blt_setup_openmp_target( BUILD_TARGET ${arg_NAME} )
     endif ( )
+
+    #
+    #  mpi
+    #
+    list(FIND arg_DEPENDS_ON "mpi" check_for_mpi)
+    
+    if ( ${check_for_mpi} GREATER -1)
+        list(REMOVE_AT arg_DEPENDS_ON ${check_for_mpi})
+        # setup mpi
+        blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
+    endif ( )
+
 
 
     # Add dependency's information
@@ -168,8 +181,6 @@ macro(blt_setup_target)
         endif()
 
     endforeach()
-
-    blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
 
 endmacro(blt_setup_target)
 
