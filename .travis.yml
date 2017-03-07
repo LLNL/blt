@@ -47,20 +47,26 @@ compiler:
   - gcc
 env:
   global:
-    # std env vars CC + CXX get overridden
-    - BLT_CC=gcc-4.9
-    - BLT_CXX=g++-4.9
-    - BLT_FC=gfortran-4.9
     # we need to know the root dir for our 3rd party lib installs
     - TRAVIS_HOME=`pwd`/..
     - TRAVIS_TPLS_DIR=${TRAVIS_HOME}/tpls
   matrix:
-    # cmake 3.3.1
+    # gcc w/ cmake 3.3.1
     - CMAKE_MAJOR=3.3
       CMAKE_MINOR=1
-    # cmake 3.8.0-rc2
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_OPENMP=ON
+    # gcc w/ cmake 3.8.0-rc2
     - CMAKE_MAJOR=3.8
       CMAKE_MINOR=0-rc2
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_OPENMP=ON
 addons:
   apt:
     sources:
@@ -100,8 +106,10 @@ script:
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_CXX_COMPILER=${BLT_CXX}"
   # enable fortran support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_FORTRAN=${BLT_FORTRAN}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_Fortran_COMPILER=${BLT_FC}"
-  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_FORTRAN=ON"
+  # openmp support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_OPENMP=${BLT_OPENMP}"
   # configure with cmake
   - cmake  ${CMAKE_OPTS} ../blt-test
   # build, link, and triumph 
