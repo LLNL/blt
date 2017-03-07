@@ -122,3 +122,18 @@ if (ENABLE_MPI)
                  COMMAND blt_mpi_smoke
                  NUM_PROCS 2)
 endif()
+
+################
+#  CUDA test
+################
+if (ENABLE_CUDA)
+    blt_add_executable(NAME blt_cuda_smoke
+                       SOURCES blt_cuda_smoke.cu
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
+                       DEPENDS_ON cuda)
+
+    blt_add_test(NAME blt_cuda_smoke
+                 COMMAND blt_cuda_smoke)
+
+endif()
+
