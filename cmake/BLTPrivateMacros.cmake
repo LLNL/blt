@@ -311,11 +311,11 @@ macro(blt_setup_cuda_target)
                             "${multiValueArgs}" ${ARGN} )
 
     if ( NOT DEFINED arg_BUILD_TARGET )
-    message ( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro")
+        message ( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro")
     endif()
 
     if ( NOT ${ENABLE_CUDA} )
-      message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires CUDA, but CUDA is disabled!")
+        message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires CUDA, but CUDA is disabled!")
     endif()
  
     blt_add_target_definitions( TO ${arg_BUILD_TARGET}
