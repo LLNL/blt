@@ -144,13 +144,13 @@ macro(blt_add_target_compile_flags)
 
     if(NOT "${args_FLAGS}" STREQUAL "")
         # get prev flags
-        get_target_property(_COMP_FLAGS ${arg_TO} COMPILE_FLAGS)
+        get_target_property(_COMP_FLAGS ${args_TO} COMPILE_FLAGS)
         if(NOT _COMP_FLAGS)
             set(_COMP_FLAGS "")
         endif()
         # append new flags
         set(_COMP_FLAGS "${args_FLAGS} ${_COMP_FLAGS}")
-        set_target_properties(${arg_TO}
+        set_target_properties(${args_TO}
                               PROPERTIES COMPILE_FLAGS "${_COMP_FLAGS}" )
     endif()
 

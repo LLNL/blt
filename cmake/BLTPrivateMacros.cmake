@@ -179,18 +179,16 @@ macro(blt_setup_target)
 
         if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
             if(NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}"
-                    STREQUAL "BLT_NO_COMPILE_FLAGS" AND 
-               NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}" STREQUAL "" )
+                    STREQUAL "BLT_NO_COMPILE_FLAGS" )
                 blt_add_target_compile_flags(TO ${arg_NAME} 
-                                             FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )   
+                                             FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
             endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
             if(NOT "${BLT_${uppercase_dependency}_LINK_FLAGS}"
-                    STREQUAL "BLT_NO_LINK_FLAGS" AND 
-               NOT "${BLT_${uppercase_dependency}_LINK_FLAGS}" STREQUAL "" )
-                blt_add_target_link_flags(TO ${arg_NAME} 
+                    STREQUAL "BLT_NO_LINK_FLAGS" )
+                blt_add_target_link_flags(TO ${arg_NAME}
                                           FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
             endif()
         endif()
