@@ -191,6 +191,8 @@ endmacro(blt_add_target_link_flags)
 ##                       INCLUDES [include1 [include2 ...]] 
 ##                       FORTRAN_MODULES [ path1 [ path2 ..]]
 ##                       LIBRARIES [lib1 [lib2 ...]]
+##                       COMPILE_FLAGS [ flag1 [ flag2 ..]]
+##                       LINK_FLAGS [ flag1 [ flag2 ..]]
 ##                       DEFINES [def1 [def2 ...]] )
 ##
 ## Registers a library to the project to ease use in other blt macro calls.
@@ -207,12 +209,19 @@ endmacro(blt_add_target_link_flags)
 ##  BLT_FOO_INCLUDES
 ##  BLT_FOO_FORTRAN_MODULES
 ##  BLT_FOO_LIBRARIES
+##  BLT_FOO_COMPILE_FLAGS
+##  BLT_FOO_LINK_FLAGS
 ##  BLT_FOO_DEFINES
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
     set(singleValueArgs NAME )
-    set(multiValueArgs INCLUDES FORTRAN_MODULES LIBRARIES DEFINES )
+    set(multiValueArgs INCLUDES 
+                       FORTRAN_MODULES
+                       LIBRARIES
+                       COMPILE_FLAGS
+                       LINK_FLAGS
+                       DEFINES )
 
     ## parse the arguments
     cmake_parse_arguments(arg
@@ -232,6 +241,18 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE PATH "" FORCE)
     else()
         set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE PATH "" FORCE)
+    endif()
+
+    if( arg_COMPILE_FLAGS )
+        set(BLT_${uppercase_name}_COMPILE_FLAGS ${arg_COMPILE_FLAGS} CACHE PATH "" FORCE)
+    else()
+        set(BLT_${uppercase_name}_COMPILE_FLAGS "BLT_NO_COMPILE_FLAGS" CACHE PATH "" FORCE)
+    endif()
+
+    if( arg_LINK_FLAGS )
+        set(BLT_${uppercase_name}_LINK_FLAGS ${arg_LINK_FLAGS} CACHE PATH "" FORCE)
+    else()
+        set(BLT_${uppercase_name}_LINK_FLAGS "BLT_NO_LINK_FLAGS" CACHE PATH "" FORCE)
     endif()
 
     if( arg_DEFINES )
@@ -280,10 +301,6 @@ endmacro(blt_register_library)
 ## OUTPUT_NAME is the name of the output file.  It defaults to NAME.
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
-##
-## If DEPENDS_ON includes "openmp", the openmp compiler flags will be added 
-## to the target and -DUSE_OPENMP will be added to the target's compiler 
-## definitions.
 ##
 ## The PYTHON_MODULE option customizes arguments for a Python module.
 ## The target created will be NAME-python-module and the library will be NAME.so.
@@ -415,10 +432,6 @@ endmacro(blt_add_library)
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If
 ## not it will add them as a cmake target dependency.
-##
-## If DEPENDS_ON includes "openmp", the openmp compiler flags will be added 
-## to the target and -DUSE_OPENMP will be added to the target's compiler 
-## definitions.
 ##
 ## The OUTPUT_DIR is used to control the build output directory of this 
 ## executable. This is used to overwrite the default bin directory.

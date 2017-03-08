@@ -97,7 +97,7 @@ endmacro(blt_copy_headers_target)
 ## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
 ##
 ## This macro handles setting up target dependencies, including calls
-## to enable special support for openmp.
+## to enable special support for cuda.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
@@ -112,7 +112,7 @@ macro(blt_setup_target)
                         
     # Check arguments
     if ( NOT DEFINED arg_NAME )
-        message( FATAL_ERROR "Must provide a NAME argument to the macro" )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
     # Add it's own copy headers target
@@ -124,26 +124,6 @@ macro(blt_setup_target)
     #
     # support for special built-in dependencies:
     #
-    #  openmp
-    #
-    list(FIND arg_DEPENDS_ON "openmp" check_for_openmp)
-    
-    if ( ${check_for_openmp} GREATER -1)
-        list(REMOVE_AT arg_DEPENDS_ON ${check_for_openmp})
-        # setup openmp
-        blt_setup_openmp_target( BUILD_TARGET ${arg_NAME} )
-    endif ( )
-
-    #
-    #  mpi
-    #
-    list(FIND arg_DEPENDS_ON "mpi" check_for_mpi)
-    
-    if ( ${check_for_mpi} GREATER -1)
-        list(REMOVE_AT arg_DEPENDS_ON ${check_for_mpi})
-        # setup mpi
-        blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
-    endif ( )
 
     #
     #  cuda
@@ -197,6 +177,25 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_DEFINES} )
         endif()
 
+        if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
+            if(NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}"
+                    STREQUAL "BLT_NO_COMPILE_FLAGS" AND 
+               NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}" STREQUAL "" )
+                blt_add_target_compile_flags(TO ${arg_NAME} 
+                                             FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )   
+            endif()
+        endif()
+
+        if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+            if(NOT "${BLT_${uppercase_dependency}_LINK_FLAGS}"
+                    STREQUAL "BLT_NO_LINK_FLAGS" AND 
+               NOT "${BLT_${uppercase_dependency}_LINK_FLAGS}" STREQUAL "" )
+                blt_add_target_link_flags(TO ${arg_NAME} 
+                                          FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
+            endif()
+        endif()
+
+
         if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${dependency}")
             add_dependencies( ${arg_NAME} "blt_copy_headers_${dependency}")
         endif()
@@ -204,98 +203,6 @@ macro(blt_setup_target)
     endforeach()
 
 endmacro(blt_setup_target)
-
-
-##------------------------------------------------------------------------------
-## blt_setup_mpi_target( BUILD_TARGET <target> )
-##------------------------------------------------------------------------------
-macro(blt_setup_mpi_target)
-
-    set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
-                            "${multiValueArgs}" ${ARGN} )
-                            
-    # Check arguments
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro" )
-    endif()
-
-
-    if ( NOT ${ENABLE_MPI} )
-        message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires MPI, but MPI is disabled!")
-    endif()
-
-    blt_add_target_definitions( TO ${arg_BUILD_TARGET} TARGET_DEFINITIONS USE_MPI )
-
-    target_include_directories( ${arg_BUILD_TARGET} 
-                                PUBLIC ${MPI_C_INCLUDE_PATH} )
-
-    target_include_directories( ${arg_BUILD_TARGET} 
-                                PUBLIC ${MPI_CXX_INCLUDE_PATH} )
-
-    target_include_directories( ${arg_BUILD_TARGET} 
-                                PUBLIC ${MPI_Fortran_INCLUDE_PATH} )
-
-    if ( NOT "${MPI_C_COMPILE_FLAGS}" STREQUAL "")
-        blt_add_target_compile_flags( TO ${arg_BUILD_TARGET} 
-                                      FLAGS ${MPI_C_COMPILE_FLAGS} )
-    endif()
-
-    if ( NOT "${MPI_C_LINK_FLAGS}" STREQUAL "")
-        blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
-                                   FLAGS ${MPI_C_LINK_FLAGS} )
-    endif()
-
-    if ( NOT "${MPI_Fortran_LINK_FLAGS}" STREQUAL "" )
-        blt_add_target_link_flags( TO ${arg_BUILD_TARGET} 
-                                   FLAGS ${MPI_Fortran_LINK_FLAGS} )
-    endif()
-
-    target_link_libraries( ${arg_BUILD_TARGET} ${MPI_C_LIBRARIES} )
-    target_link_libraries( ${arg_BUILD_TARGET} ${MPI_CXX_LIBRARIES} )
-    target_link_libraries( ${arg_BUILD_TARGET} ${MPI_Fortran_LIBRARIES} )
-
-endmacro(blt_setup_mpi_target)
-
-
-##------------------------------------------------------------------------------
-## blt_setup_openmp_target( BUILD_TARGET <target> )
-##------------------------------------------------------------------------------
-macro(blt_setup_openmp_target)
-
-    set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
-                            "${multiValueArgs}" ${ARGN} )
-
-    # Check arguments
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message ( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro")
-    endif()
-
-
-    if ( NOT ${ENABLE_OPENMP} )
-        message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires OpenMP, but OpenMP is disabled!")
-    endif()
-
-    blt_add_target_definitions( TO ${arg_BUILD_TARGET}
-                                TARGET_DEFINITIONS USE_OPENMP )
-
-    blt_add_target_compile_flags( TO ${arg_BUILD_TARGET}
-                                  FLAGS ${OpenMP_CXX_FLAGS} )
-
-    blt_add_target_link_flags( TO ${arg_BUILD_TARGET}
-                               FLAGS ${OpenMP_CXX_FLAGS} )
-
-
-endmacro(blt_setup_openmp_target)
 
 ##------------------------------------------------------------------------------
 ## blt_setup_cuda_target( BUILD_TARGET <target> )
