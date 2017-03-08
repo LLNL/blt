@@ -128,12 +128,21 @@ endif()
 ################
 if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_smoke
-                       SOURCES blt_cuda_smoke.cu
+                       SOURCES blt_cuda_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                       DEPENDS_ON cuda)
+                       DEPENDS_ON cuda gtest)
 
     blt_add_test(NAME blt_cuda_smoke
                  COMMAND blt_cuda_smoke)
+
+    blt_add_executable(NAME blt_cuda_runtime_smoke
+                       SOURCES blt_cuda_runtime_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
+                       DEPENDS_ON cuda_runtime gtest)
+
+    blt_add_test(NAME blt_cuda_runtime_smoke
+                 COMMAND blt_cuda_runtime_smoke)
+
 
 endif()
 

@@ -39,33 +39,41 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Note: This is a CUDA Hello world example from NVIDIA:
-// Obtained from here: https://developer.nvidia.com/cuda-education
+// Note: This is a CUDA example from NVIDIA:
+// Obtained from here: 
+// https://devblogs.nvidia.com/parallelforall/how-query-device-properties-and-handle-errors-cuda-cc/
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 //-----------------------------------------------------------------------------
 ///
-/// file: blt_cuda_smoke.cu
+/// file: blt_cuda_runtime_smoke.cpp
 ///
 //-----------------------------------------------------------------------------
 
 #include <iostream>
+#include "gtest/gtest.h"
+#include "cuda_runtime_api.h"
 #include <stdio.h>
 
-__device__ const char *STR = "HELLO WORLD!";
-const char STR_LENGTH = 12;
-
-__global__ void hello()
+TEST(blt_cuda_runtime_smoke, basic_cuda_runtime_example)
 {
-    printf("%c\n", STR[threadIdx.x % STR_LENGTH]);
-}
+    int nDevices;
 
-int main()
-{
-    int num_threads = STR_LENGTH;
-    int num_blocks = 1;
-    hello<<<num_blocks,num_threads>>>();
-    cudaDeviceSynchronize();
-}
+    cudaGetDeviceCount(&nDevices);
+    for (int i = 0; i < nDevices; i++)
+    {
+        cudaDeviceProp prop;
+        cudaGetDeviceProperties(&prop, i);
+        printf("Device Number: %d\n", i);
+        printf("  Device name: %s\n", prop.name);
+        printf("  Memory Clock Rate (KHz): %d\n",
+               prop.memoryClockRate);
+        printf("  Memory Bus Width (bits): %d\n",
+               prop.memoryBusWidth);
+        printf("  Peak Memory Bandwidth (GB/s): %f\n\n",
+               2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
+    }
 
+    EXPECT_TRUE( true );
+}
 

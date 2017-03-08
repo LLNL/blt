@@ -92,13 +92,8 @@ macro(blt_copy_headers_target)
 
 endmacro(blt_copy_headers_target)
 
-
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
-##
-## This macro handles setting up target dependencies, including calls
-## to enable special support for cuda.
-##
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
 
@@ -119,33 +114,6 @@ macro(blt_setup_target)
     if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${arg_NAME}")
         add_dependencies( ${arg_NAME} "blt_copy_headers_${arg_NAME}")
     endif()
-
-
-    #
-    # support for special built-in dependencies:
-    #
-
-    #
-    #  cuda
-    #
-    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-    
-    if ( ${check_for_cuda} GREATER -1)
-        list(REMOVE_AT arg_DEPENDS_ON ${check_for_cuda})
-        # setup cuda
-        blt_setup_cuda_target( BUILD_TARGET ${arg_NAME} )
-    endif ( )
-
-    #
-    #  cuda_runtime
-    #
-    list(FIND arg_DEPENDS_ON "cuda_runtime" check_for_cuda_rt)
-    
-    if ( ${check_for_cuda_rt} GREATER -1)
-        list(REMOVE_AT arg_DEPENDS_ON ${check_for_cuda_rt})
-        # setup cuda
-        blt_setup_cuda_target( BUILD_TARGET ${arg_NAME} )
-    endif ( )
 
 
     # Add dependency's information
@@ -203,44 +171,12 @@ macro(blt_setup_target)
 endmacro(blt_setup_target)
 
 ##------------------------------------------------------------------------------
-## blt_setup_cuda_target( BUILD_TARGET <target> )
-##------------------------------------------------------------------------------
-macro(blt_setup_cuda_target)
-
-    set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs)
-
-    ## parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
-                            "${multiValueArgs}" ${ARGN} )
-
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message ( FATAL_ERROR "Must provide a BUILD_TARGET argument to the macro")
-    endif()
-
-    if ( NOT ${ENABLE_CUDA} )
-        message( FATAL_ERROR "Building target '${arg_BUILD_TARGET}' requires CUDA, but CUDA is disabled!")
-    endif()
- 
-    blt_add_target_definitions( TO ${arg_BUILD_TARGET}
-                                TARGET_DEFINITIONS USE_CUDA )
-
-    target_include_directories( ${arg_BUILD_TARGET}
-                                PUBLIC ${CUDA_INCLUDE_DIRS} )
-
-    target_link_libraries( ${arg_BUILD_TARGET}
-                           ${CUDA_LIBRARIES} )
-
-endmacro(blt_setup_cuda_target)
-
-##------------------------------------------------------------------------------
-## blt_setup_cuda_source_properties( TARGET_SOURCES <sources>)
+## blt_setup_cuda_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
 ##------------------------------------------------------------------------------
 macro(blt_setup_cuda_source_properties)
 
     set(options)
-    set(singleValueArgs )
+    set(singleValueArgs BUILD_TARGET)
     set(multiValueArgs TARGET_SOURCES)
 
     # Parse the arguments
@@ -248,26 +184,38 @@ macro(blt_setup_cuda_source_properties)
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
-    
-    if ( NOT DEFINED arg_TARGET_SOURCES )
-        message( FATAL_ERROR "Must provide target sources" )
+
+    if ( NOT DEFINED arg_BUILD_TARGET )
+        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_cuda_source_properties' macro")
     endif()
 
-    foreach (_file arg_TARGET_SOURCES)
-        if (${_file} MATCHES "\\.f")
-            set(arg_Fortran_SOURCES ${arg_Fortran_SOURCES} ${_file})
+    
+    if ( NOT DEFINED arg_TARGET_SOURCES )
+        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
+    endif()
+
+
+    foreach (_file ${arg_TARGET_SOURCES})
+        if (${_file} MATCHES "\\.(f|F)\\*")
+            set(_non_cuda_sources ${_non_cuda_sources} ${_file})
         else()
-            set(arg_C_SOURCES ${arg_C_SOURCES} ${_file})
+            set(_cuda_sources ${_cuda_sources} ${_file})
         endif()
     endforeach()
 
-    set_source_files_properties( ${arg_C_SOURCES}
+    set_source_files_properties( ${_cuda_sources}
                                  PROPERTIES
                                  CUDA_SOURCE_PROPERTY_FORMAT OBJ)
 
-    set_source_files_properties( ${arg_Fortran_SOURCES}
+    set_source_files_properties( ${_non_cuda_sources}
                                  PROPERTIES
                                  CUDA_SOURCE_PROPERTY_FORMAT False)
+
+    #
+    # for debugging, or if we add verbose BLT output
+    #
+    ##message(STATUS "target '${arg_BUILD_TARGET}' CUDA Sources: ${_cuda_sources}")
+    ##message(STATUS "target '${arg_BUILD_TARGET}' non-CUDA Sources: ${_non_cuda_sources}")
 
 endmacro(blt_setup_cuda_source_properties)
 
