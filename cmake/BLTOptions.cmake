@@ -59,6 +59,7 @@ option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
+option(ENABLE_CUDA         "Enable CUDA support" OFF)
 
 
 ################################
