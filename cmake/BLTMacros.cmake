@@ -344,25 +344,31 @@ macro(blt_add_library)
     endif()
 
 
-    #
-    #  cuda support
-    #
-    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-    if ( ${check_for_cuda} GREATER -1)
+    if ( arg_SOURCES )
+      #
+      #  cuda support
+      #
+      list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+      if ( ${check_for_cuda} GREATER -1)
 
-        blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
-                                         TARGET_SOURCES ${arg_SOURCES})
+          blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
+                                           TARGET_SOURCES ${arg_SOURCES})
 
-        if ( arg_SHARED OR ENABLE_SHARED_LIBS )
-            cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
-        else()
-            cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
-        endif()
-    elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
-        add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
+          if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+              cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
+          else()
+              cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
+          endif()
+      elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
+          add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
+      else()
+          add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
+      endif()
     else()
-        add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
+      add_library( ${arg_NAME} INTERFACE)
+      target_sources( ${arg_NAME} INTERFACE ${arg_HEADERS} )
     endif()
+
 
     # Handle copying and installing headers
     if ( arg_HEADERS )
