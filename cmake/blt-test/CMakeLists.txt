@@ -46,7 +46,7 @@ blt_add_test(NAME t_example_smoke
 ####################
 
 blt_add_library(NAME blt_header_only
-                HEADERS HeaderOnly.hpp)
+                HEADERS "src/HeaderOnly.hpp")
 
 # This executable depends on the header-only library
 
