@@ -128,10 +128,71 @@ endmacro(blt_add_target_definitions)
 
 
 ##------------------------------------------------------------------------------
+## blt_add_target_compile_flags (TO <target> FLAGS [FOO [BAR ...]])
+##
+## Adds compiler flags to a target by appending to the target's existing flags.
+##------------------------------------------------------------------------------
+macro(blt_add_target_compile_flags)
+
+    set(options)
+    set(singleValuedArgs TO FLAGS)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(args
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
+
+    if(NOT "${args_FLAGS}" STREQUAL "")
+        # get prev flags
+        get_target_property(_COMP_FLAGS ${args_TO} COMPILE_FLAGS)
+        if(NOT _COMP_FLAGS)
+            set(_COMP_FLAGS "")
+        endif()
+        # append new flags
+        set(_COMP_FLAGS "${args_FLAGS} ${_COMP_FLAGS}")
+        set_target_properties(${args_TO}
+                              PROPERTIES COMPILE_FLAGS "${_COMP_FLAGS}" )
+    endif()
+
+endmacro(blt_add_target_compile_flags)
+
+
+##------------------------------------------------------------------------------
+## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
+##
+## Adds linker flags to a target by appending to the target's existing flags.
+##------------------------------------------------------------------------------
+macro(blt_add_target_link_flags)
+
+    set(options)
+    set(singleValuedArgs TO FLAGS)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(args
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
+
+    if(NOT "${args_FLAGS}" STREQUAL "")
+        # get prev flags
+        get_target_property(_LINK_FLAGS ${args_TO} LINK_FLAGS)
+        if(NOT _LINK_FLAGS)
+            set(_LINK_FLAGS "")
+        endif()
+        # append new flag
+        set(_LINK_FLAGS "${args_FLAGS} ${_LINK_FLAGS}")
+        set_target_properties(${args_TO}
+                              PROPERTIES LINK_FLAGS "${_LINK_FLAGS}" )
+    endif()
+
+endmacro(blt_add_target_link_flags)
+
+##------------------------------------------------------------------------------
 ## blt_register_library( NAME <libname>
 ##                       INCLUDES [include1 [include2 ...]] 
 ##                       FORTRAN_MODULES [ path1 [ path2 ..]]
 ##                       LIBRARIES [lib1 [lib2 ...]]
+##                       COMPILE_FLAGS [ flag1 [ flag2 ..]]
+##                       LINK_FLAGS [ flag1 [ flag2 ..]]
 ##                       DEFINES [def1 [def2 ...]] )
 ##
 ## Registers a library to the project to ease use in other blt macro calls.
@@ -148,12 +209,19 @@ endmacro(blt_add_target_definitions)
 ##  BLT_FOO_INCLUDES
 ##  BLT_FOO_FORTRAN_MODULES
 ##  BLT_FOO_LIBRARIES
+##  BLT_FOO_COMPILE_FLAGS
+##  BLT_FOO_LINK_FLAGS
 ##  BLT_FOO_DEFINES
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
     set(singleValueArgs NAME )
-    set(multiValueArgs INCLUDES FORTRAN_MODULES LIBRARIES DEFINES )
+    set(multiValueArgs INCLUDES 
+                       FORTRAN_MODULES
+                       LIBRARIES
+                       COMPILE_FLAGS
+                       LINK_FLAGS
+                       DEFINES )
 
     ## parse the arguments
     cmake_parse_arguments(arg
@@ -175,6 +243,18 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE PATH "" FORCE)
     endif()
 
+    if( arg_COMPILE_FLAGS )
+        set(BLT_${uppercase_name}_COMPILE_FLAGS ${arg_COMPILE_FLAGS} CACHE PATH "" FORCE)
+    else()
+        set(BLT_${uppercase_name}_COMPILE_FLAGS "BLT_NO_COMPILE_FLAGS" CACHE PATH "" FORCE)
+    endif()
+
+    if( arg_LINK_FLAGS )
+        set(BLT_${uppercase_name}_LINK_FLAGS ${arg_LINK_FLAGS} CACHE PATH "" FORCE)
+    else()
+        set(BLT_${uppercase_name}_LINK_FLAGS "BLT_NO_LINK_FLAGS" CACHE PATH "" FORCE)
+    endif()
+
     if( arg_DEFINES )
         set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE PATH "" FORCE)
     endif()
@@ -190,7 +270,6 @@ endmacro(blt_register_library)
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
-##                  USE_OPENMP <TRUE or FALSE (default)>
 ##                  PYTHON_MODULE
 ##                  LUA_MODULE
 ##                  SHARED
@@ -223,10 +302,6 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
-## Optionally, "USE_OPENMP" can be supplied as a boolean argument. When this 
-## argument is supplied, the openmp compiler flag will be added to the compiler 
-## command and the -DUSE_OPENMP, will be included to the compiler definition.
-##
 ## The PYTHON_MODULE option customizes arguments for a Python module.
 ## The target created will be NAME-python-module and the library will be NAME.so.
 ## In addition, python is added to DEPENDS_ON and OUTPUT_DIR is defaulted to
@@ -238,18 +313,14 @@ macro(blt_add_library)
 
     set(arg_CLEAR_PREFIX FALSE)
     set(options SHARED PYTHON_MODULE LUA_MODULE)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR USE_OPENMP)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
-    ## parse the arguments
+    # parse the arguments
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Check for the variable-based options for OpenMP and sanity check
-    if( NOT DEFINED arg_USE_OPENMP )
-        set(arg_USE_OPENMP FALSE)
-    endif()
-
+    # Check for the variable-based options and sanity checks
     if(arg_PYTHON_MODULE)
         set(arg_SHARED TRUE)
         if( NOT arg_OUTPUT_DIR )
@@ -272,7 +343,22 @@ macro(blt_add_library)
         set(arg_CLEAR_PREFIX TRUE)
     endif()
 
-    if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+
+    #
+    #  cuda support
+    #
+    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+    if ( ${check_for_cuda} GREATER -1)
+
+        blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
+                                         TARGET_SOURCES ${arg_SOURCES})
+
+        if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+            cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
+        else()
+            cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
+        endif()
+    elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
         add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
     else()
         add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
@@ -317,11 +403,6 @@ macro(blt_add_library)
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON} )
 
-    blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
-
-    blt_setup_openmp_target( BUILD_TARGET ${arg_NAME}
-                              USE_OPENMP ${arg_USE_OPENMP} )
-
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
@@ -345,18 +426,13 @@ endmacro(blt_add_library)
 ## blt_add_executable( NAME <name>
 ##                     SOURCES [source1 [source2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
-##                     OUTPUT_DIR [dir]
-##                     USE_OPENMP < TRUE or FALSE (default)>)
+##                     OUTPUT_DIR [dir])
 ##
 ## Adds an executable target, called <name>.
 ##
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If
 ## not it will add them as a cmake target dependency.
-##
-## Optionally, "USE_OPENMP" can be supplied as a boolean argument. When this 
-## argument is supplied, the openmp compiler flag will be added to the compiler 
-## command and the -DUSE_OPENMP, will be included to the compiler definition.
 ##
 ## The OUTPUT_DIR is used to control the build output directory of this 
 ## executable. This is used to overwrite the default bin directory.
@@ -368,23 +444,30 @@ endmacro(blt_add_library)
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR USE_OPENMP)
+    set(singleValueArgs NAME OUTPUT_DIR)
     set(multiValueArgs SOURCES DEPENDS_ON)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # Check for the variable-based options for OpenMP and sanity check
-    if ( NOT DEFINED arg_USE_OPENMP )
-        set(arg_USE_OPENMP FALSE)
-    endif()
-
+    # sanity check
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "Must specify executable name with argument NAME <name>")
     endif()
 
-    add_executable( ${arg_NAME} ${arg_SOURCES} )
+
+    #
+    #  cuda support
+    #
+    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+    if ( ${check_for_cuda} GREATER -1)
+        blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
+                                         TARGET_SOURCES ${arg_SOURCES})
+        cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
+    else()
+        add_executable( ${arg_NAME} ${arg_SOURCES} )
+    endif()
 
     # CMake wants to load with C++ if any of the libraries are C++.
     # Force to load with Fortran if the first file is Fortran.
@@ -393,14 +476,10 @@ macro(blt_add_executable)
     if(_lang STREQUAL Fortran)
         set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
     endif()
+        
 
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
-
-    blt_setup_mpi_target( BUILD_TARGET ${arg_NAME} )
-
-    blt_setup_openmp_target( BUILD_TARGET ${arg_NAME}
-                             USE_OPENMP ${arg_USE_OPENMP} )
 
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES
