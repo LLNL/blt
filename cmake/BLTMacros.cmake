@@ -365,10 +365,14 @@ macro(blt_add_library)
           add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
       endif()
     else()
-      add_library( ${arg_NAME} INTERFACE)
-      target_sources( ${arg_NAME} INTERFACE ${arg_HEADERS} )
-    endif()
+      foreach (_file ${arg_HEADERS})
+        get_filename_component(_absolute ${_file} ABSOLUTE)
+        set(_absolute_headers ${_absolute_headers} ${_absolute})
+      endforeach()
 
+      add_library( ${arg_NAME} INTERFACE)
+      target_sources( ${arg_NAME} INTERFACE ${_absolute_headers} )
+    endif()
 
     # Handle copying and installing headers
     if ( arg_HEADERS )
