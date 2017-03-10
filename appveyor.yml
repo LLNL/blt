@@ -11,19 +11,20 @@ before_build:
   # remove some noisy warnings from Xamarin
   - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
   # copy blt into blt-test and setup to build there
-  - ps: Copy-Item .* .\cmake\blt-test
-  - ps: cd cmake\blt-test
+  - ps: Copy-Item  .\cmake\blt-test ..\blt-test
+  - ps: Copy-Item ..\blt ..\blt-test\blt
+  - ps: cd ..
   # configure
   - echo Running cmake ...
-  - cmake -H. -Bbuild -G "%CMAKE_GENERATOR%"
+  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%"
 
 build_script:
   #build
-  - ps: cd cmake\blt-test\build
+  - ps: cd ..\build
   - echo Building ...
   - cmake --build build --config %CONFIG%
 
 after_build:
   # run our tests
-  - ps: cd cmake\blt-test\build
+  - ps: cd ..\build
   - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --config %CONFIG% --target RUN_TESTS
