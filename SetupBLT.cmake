@@ -45,7 +45,12 @@ set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
 ################################
 # Prevent in-source builds
 ################################
-include(${BLT_ROOT_DIR}/cmake/PreventInSourceBuilds.cmake)
+# Fail if someone tries to config an in-source build.
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+   message(FATAL_ERROR "In-source builds are not supported. Please remove "
+                       "CMakeCache.txt from the 'src' dir and configure an "
+                       "out-of-source build in another directory.")
+endif()
 
 ################################
 # Setup build options and their default values
