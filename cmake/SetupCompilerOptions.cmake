@@ -66,7 +66,14 @@ endif()
 #   https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html
 ####################################################3
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+# use CMAKE_BUILD_TOOL to identify visual studio
+# and CMAKE_CXX_COMPILER_ID for all other cases
+
+if("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)")
+    set(COMPILER_FAMILY_IS_MSVC 1)
+    message(STATUS "Compiler family is MSVC")
+
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(COMPILER_FAMILY_IS_GNU 1)
     message(STATUS "Compiler family is GNU")
 
@@ -81,10 +88,6 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "XL")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
     set(COMPILER_FAMILY_IS_INTEL 1)
     message(STATUS "Compiler family is Intel")
-
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    set(COMPILER_FAMILY_IS_MSVC 1)
-    message(STATUS "Compiler family is MSVC")
 
 endif()
 
