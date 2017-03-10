@@ -20,11 +20,9 @@ before_build:
 
 build_script:
   #build
-  - ps: cd ..
   - echo Building ...
   - cmake --build build --config %CONFIG%
 
 after_build:
   # run our tests
-  - ps: cd ..
   - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config %CONFIG% --target RUN_TESTS
