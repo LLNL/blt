@@ -198,7 +198,9 @@ blt_append_custom_compiler_flag(
      CLANG   "-Wall -Wextra" 
                     # Additional  possibilities for clang include: 
                     #       "-Wdocumentation -Wdeprecated -Weverything"
-     MSVC    "/W4 /Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
+     MSVC    "/W4"
+                    # Additional  possibilities for visual studio include:
+                    # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
      XL      ""     # qinfo=<grp> produces additional messages on XL
                     # qflag=<x>:<x> defines min severity level to produce messages on XL
                     #     where x is i info, w warning, e error, s severe; default is: 
