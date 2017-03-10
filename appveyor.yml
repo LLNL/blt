@@ -1,0 +1,29 @@
+environment:
+  matrix:
+  - CMAKE_GENERATOR: "Visual Studio 14 2015"
+  - CONFIG: Release
+
+init:
+  # line endings magic
+  - git config --global core.autocrlf input
+
+before_build:
+  # remove some noisy warnings from Xamarin
+  - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
+  # copy blt into blt-test and setup to build there
+  - ps: Copy-Item -Path . -Destination cmake\blt-test
+  - ps: cd cmake
+  # configure
+  - echo Running cmake ...
+  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%"
+
+build_script:
+  #build
+  - ps: cd cmake\build
+  - echo Building ...
+  - cmake --build build --config %CONFIG%
+
+after_build:
+  # run our tests
+  - ps: cd cmake\build
+  - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --config %CONFIG% --target RUN_TESTS
