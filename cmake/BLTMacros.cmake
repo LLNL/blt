@@ -481,8 +481,10 @@ macro(blt_add_executable)
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
-    if ( arg_OUTPUT_DIR )
-        set_target_properties(${arg_NAME} PROPERTIES
+     # when using shared libs on windows, all runtime targets
+     # dlls and exe must live in the same dir
+     if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
+            set_target_properties(${arg_NAME} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
     endif()
 
