@@ -482,7 +482,8 @@ macro(blt_add_executable)
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
      # when using shared libs on windows, all runtime targets
-     # dlls and exe must live in the same dir
+     # (dlls and exes) must live in the same dir
+     # so we do not set runtime_output_dir in this case
      if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
             set_target_properties(${arg_NAME} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
