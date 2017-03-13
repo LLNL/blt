@@ -108,8 +108,9 @@ TEST(blt_gtest_smoke,basic_mock_test)
 //------------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
-    // The following line must be executed to initialize Google Mock
-    // (and Google Test) before running the tests.
+    // The following lines must be executed to initialize Google Test
+    // and Google Mock before running the tests.
+    ::testing::InitGoogleTest(&argc, argv);
     ::testing::InitGoogleMock(&argc, argv);
     return RUN_ALL_TESTS();
 }

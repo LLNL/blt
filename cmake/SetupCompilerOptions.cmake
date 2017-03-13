@@ -66,7 +66,14 @@ endif()
 #   https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html
 ####################################################3
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+# use CMAKE_BUILD_TOOL to identify visual studio
+# and CMAKE_CXX_COMPILER_ID for all other cases
+
+if("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)")
+    set(COMPILER_FAMILY_IS_MSVC 1)
+    message(STATUS "Compiler family is MSVC")
+
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(COMPILER_FAMILY_IS_GNU 1)
     message(STATUS "Compiler family is GNU")
 
@@ -81,10 +88,6 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "XL")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
     set(COMPILER_FAMILY_IS_INTEL 1)
     message(STATUS "Compiler family is Intel")
-
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    set(COMPILER_FAMILY_IS_MSVC 1)
-    message(STATUS "Compiler family is MSVC")
 
 endif()
 
@@ -195,7 +198,9 @@ blt_append_custom_compiler_flag(
      CLANG   "-Wall -Wextra" 
                     # Additional  possibilities for clang include: 
                     #       "-Wdocumentation -Wdeprecated -Weverything"
-     MSVC    "/W4 /Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
+     MSVC    "/W4"
+                    # Additional  possibilities for visual studio include:
+                    # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
      XL      ""     # qinfo=<grp> produces additional messages on XL
                     # qflag=<x>:<x> defines min severity level to produce messages on XL
                     #     where x is i info, w warning, e error, s severe; default is: 
@@ -208,6 +213,21 @@ blt_append_custom_compiler_flag(
      MSVC     "/WX"
      XL       "qhalt=w"       # i info, w warning, e error, s severe (default)
      )
+
+#
+# Modify flags to avoid static linking runtime issues on windows.
+# (adapted from RAJA)
+#
+
+if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
+    foreach(flag_var
+            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        if(${flag_var} MATCHES "/MD")
+            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        endif(${flag_var} MATCHES "/MD")
+    endforeach(flag_var)
+endif()
 
 set(langFlags "CMAKE_C_FLAGS" "CMAKE_CXX_FLAGS")
 

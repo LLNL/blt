@@ -59,6 +59,14 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+    # gcc w/ cmake 3.4.1
+    - CMAKE_MAJOR=3.4
+      CMAKE_MINOR=1
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_OPENMP=ON
     # gcc w/ cmake 3.8.0-rc2
     - CMAKE_MAJOR=3.8
       CMAKE_MINOR=0-rc2

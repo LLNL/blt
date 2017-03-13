@@ -43,21 +43,23 @@
 if(ENABLE_TESTS)
     include(CTest)
 
-    # Enable built in google test 
-    add_subdirectory(googletest-release-1.8.0)
+    if(WIN32 AND BUILD_SHARED_LIBS)
+        add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
+        set(gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
+    endif()
 
-    message(STATUS "gtestsrc = ${gtest_SOURCE_DIR}")
+    # Enable builtin google test 
+    add_subdirectory(googletest-release-1.8.0)
 
     blt_register_library(NAME gtest
                          INCLUDES ${gtest_SOURCE_DIR}/include
                          LIBRARIES gtest_main gtest
-                         )
+                         DEFINES  ${gtest_defines})
 
     blt_register_library(NAME gmock
                          INCLUDES ${gmock_SOURCE_DIR}/include
                          LIBRARIES gmock_main gmock
-                         )
-
+                         DEFINES  ${gtest_defines})
 
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
