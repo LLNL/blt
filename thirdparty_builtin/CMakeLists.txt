@@ -63,7 +63,7 @@ if(ENABLE_TESTS)
 
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
-        add_subdirectory(fruit-3.3.9)
+        add_subdirectory(fruit-3.4.1)
     endif()
 
     if(ENABLE_BENCHMARKS)

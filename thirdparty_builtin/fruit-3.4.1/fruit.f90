@@ -251,6 +251,10 @@ module fruit
   character (len = *), parameter :: XML_FN_WORK_DEF = "result_tmp.xml"
   character (len = 50) :: xml_filename_work = XML_FN_WORK_DEF
 
+  integer, parameter :: MAX_NUM_FAILURES_IN_XML = 10
+  integer, parameter :: XML_LINE_LENGTH = 2670  
+    !! xml_line_length >= max_num_failures_in_xml * (msg_length + 1) + 50
+
   integer, parameter :: STRLEN_T = 12
 
   integer, parameter :: NUMBER_LENGTH = 10
@@ -660,15 +664,19 @@ contains
       write (stdout,*) "   . : successful assert,   F : failed assert "
       write (stdout,*)
     endif
+!$omp critical     (FRUIT_OMP_ALLOCATE_MESSAGE_ARRAY)
     if ( .not. allocated(message_array) ) then
       allocate(message_array(MSG_ARRAY_INCREMENT))
     end if
+!$omp end critical (FRUIT_OMP_ALLOCATE_MESSAGE_ARRAY)
   end subroutine init_fruit
 
   subroutine fruit_finalize_
+!$omp critical     (FRUIT_OMP_DEALLOCATE_MESSAGE_ARRAY)
     if (allocated(message_array)) then
       deallocate(message_array)
     endif
+!$omp end critical (FRUIT_OMP_DEALLOCATE_MESSAGE_ARRAY)
   end subroutine fruit_finalize_
 
   subroutine init_fruit_xml_(rank)
@@ -745,10 +753,11 @@ contains
     close(xml_work)
   end subroutine case_passed_xml_
 
+
   subroutine case_failed_xml_(tc_name, classname)
     character(*), intent(in) :: tc_name
     character(*), intent(in) :: classname
-    integer :: i
+    integer :: i, j
     character(len = STRLEN_T) :: case_time
 
     case_time = case_delta_t()
@@ -759,8 +768,16 @@ contains
    &  trim(tc_name), trim(prefix), trim(classname), trim(case_time)
 
     write(xml_work, '("      <failure type=""failure"" message=""")', advance = "no")
+
     do i = message_index_from, message_index - 1
+      j = i - message_index_from + 1
+      if (j > MAX_NUM_FAILURES_IN_XML) then
+        write(xml_work, '("(omit the rest)")', advance="no")
+        exit
+      endif
+
       write(xml_work, '(a)', advance = "no") trim(strip(message_array(i)))
+
       if (i == message_index - 1) then
         continue
       else
@@ -775,7 +792,7 @@ contains
   end subroutine case_failed_xml_
 
   subroutine fruit_summary_xml_
-    character(len = 1000) :: whole_line
+    character(len = XML_LINE_LENGTH) :: whole_line
     character(len = 100) :: full_count
     character(len = 100) :: fail_count
 
@@ -871,9 +888,13 @@ contains
     message_index_from = message_index
     call system_clock(case_time_from)
 
+    !$OMP BARRIER
+
     !!! "case_passed" is true here.
     !!! "case_passed" becomes .false. at the first fail of assertion
     call tc()
+
+    !$OMP BARRIER
 
     if ( initial_failed_assert_count .eq. failed_assert_count ) then
        ! If no additional assertions failed during the run of this test case
@@ -904,6 +925,7 @@ contains
 
   subroutine fruit_summary_
     integer :: i
+
 
     write (stdout,*)
     write (stdout,*)
@@ -993,6 +1015,7 @@ contains
   !!  Definition of linechar_count is moved to module,
   !!  so that it can be stashed and restored.
 
+    !$omp critical      (FRUIT_OMP_ADD_OUTPUT_MARK)
     linechar_count = linechar_count + 1
     if ( linechar_count .lt. MAX_MARKS_PER_LINE ) then
        write(stdout,"(A1)",ADVANCE='NO') chr
@@ -1000,7 +1023,7 @@ contains
        write(stdout,"(A1)",ADVANCE='YES') chr
        linechar_count = 0
     endif
-
+    !$omp end critical  (FRUIT_OMP_ADD_OUTPUT_MARK)
   end subroutine output_mark_
 
   subroutine success_mark_
@@ -1015,10 +1038,7 @@ contains
     character(len=MSG_LENGTH) :: msg_swap_holder(current_max)
 
     if (message_index > MAX_MSG_STACK_SIZE) then
-       write(stdout,*) "Stop because there are too many error messages to put into stack."
-       write(stdout,*) "Try to increase MAX_MSG_STACK_SIZE if you really need so."
-       call getTestSummary ()
-       stop 1
+      return
     end if
 
     if (message_index > current_max) then
@@ -1031,7 +1051,16 @@ contains
     end if
 
     message_array (message_index) = msg
+    if (message_index == MAX_MSG_STACK_SIZE) then
+      message_array(message_index) = "Max number of messages reached. Further messages suppressed."
+    endif
+
     message_index = message_index + 1
+
+    if (message_index > MAX_MSG_STACK_SIZE) then
+       write(stdout,*) "Stop because there are too many error messages to put into stack."
+       write(stdout,*) "Try to increase MAX_MSG_STACK_SIZE if you really need so."
+    end if
   end subroutine increase_message_stack_
 
 
@@ -1125,8 +1154,10 @@ contains
   end subroutine obsolete_
 
   subroutine add_success
-    successful_assert_count = successful_assert_count + 1
-    last_passed = .true.
+    !$omp critical     (FRUIT_OMP_ADD_SUCCESS)
+      successful_assert_count = successful_assert_count + 1
+      last_passed = .true.
+    !$omp end critical (FRUIT_OMP_ADD_SUCCESS)
 
     if (if_show_dots) then
       call success_mark_
@@ -1138,6 +1169,7 @@ contains
     character(*), intent(in), optional :: message
     logical, intent(in), optional :: if_is
 
+    !$omp critical     (FRUIT_OMP_ADD_FAIL)
     if (present(if_is)) then
       call make_error_msg_ (expected, got, if_is,  message)
     else
@@ -1147,6 +1179,7 @@ contains
     failed_assert_count = failed_assert_count + 1
     last_passed = .false.
     case_passed = .false.
+    !$omp end critical (FRUIT_OMP_ADD_FAIL)
     call failed_mark_
   end subroutine failed_assert_action
 
