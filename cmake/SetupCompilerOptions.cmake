@@ -97,49 +97,124 @@ endif()
 #############################################
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
+
+##########################################
+# If set, BLT_<LANG>_FLAGS are added to 
+# all targets that use <LANG>-Compiler
+##########################################
+
+##########################################
+# Support Extra Flags for the C compiler.
+##########################################
+if(BLT_C_FLAGS)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_C_FLAGS}")
+endif()
+
+#############################################
+# Support Extra Flags for the C++ compiler.
+#############################################
+if(BLT_CXX_FLAGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
+endif()
+
+################################################
+# Support Extra Flags for the Fortran compiler.
+################################################
+if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
+endif()
+
+
+###############################################################
+# Support Extra Flags based on CMake Config Type
+###############################################################
 #
-# We don't try to use this approach for CMake generators that support
-# multiple configurations. See: CZ JIRA: ATK-45
+# We guard this approach to avoid issues with CMake generators
+# that support multiple configurations, like Visual Studio.
 #
+###############################################################
 if(NOT CMAKE_CONFIGURATION_TYPES)
-    ##########################################
-    # Support Extra Flags for the C compiler.
-    ##########################################
-    if(EXTRA_C_FLAGS)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_C_FLAGS}")
+
+    # Extra Flags for debug builds 
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        # debug flags for the C compiler
+        if(BLT_C_FLAGS_DEBUG)
+            set(CMAKE_C_FLAGS_DEBUG
+                "${CMAKE_C_FLAGS_DEBUG} ${BLT_C_FLAGS_DEBUG}")
+        endif()
+
+        # debug flags for the C++ compiler
+        if(BLT_CXX_FLAGS_DEBUG)
+            set(CMAKE_CXX_FLAGS_DEBUG
+                "${CMAKE_CXX_FLAGS_DEBUG} ${BLT_CXX_FLAGS_DEBUG}")
+        endif()
+
+        # debug flags for the Fortran compiler
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_DEBUG)
+            set(CMAKE_Fortran_FLAGS_DEBUG
+                "${CMAKE_Fortran_FLAGS_DEBUG} ${BLT_FORTRAN_FLAGS_DEBUG}")
+        endif()
+
     endif()
 
-    # Extra Flags for the debug builds with the C compiler.
-    if(EXTRA_C_FLAGS_DEBUG AND
-      ( (CMAKE_BUILD_TYPE MATCHES Debug)
-        OR (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo) )
-      )
-        add_compile_options("${EXTRA_C_FLAGS_DEBUG}")
-    endif()
+    # Extra Flags for release builds
+    if(CMAKE_BUILD_TYPE MATCHES RELEASE)
 
-    # Extra Flags for the release builds with the C compiler.
-    if(EXTRA_C_FLAGS_RELEASE AND CMAKE_BUILD_TYPE MATCHES RELEASE)
-        add_compile_options("${EXTRA_C_FLAGS_RELEASE}")
-    endif()
+        # release flags for the C compiler
+        if(BLT_C_FLAGS_RELEASE)
+            set(CMAKE_C_FLAGS_RELEASE
+                "${CMAKE_C_FLAGS_RELEASE} ${BLT_C_FLAGS_RELEASE}")
+        endif()
 
-    #############################################
-    # Support Extra Flags for the C++ compiler.
-    #############################################
-    if(EXTRA_CXX_FLAGS)
-        add_compile_options("${EXTRA_CXX_FLAGS}")
-    endif()
+        # release flags for the C++ compiler
+        if(BLT_CXX_FLAGS_RELEASE)
+            set(CMAKE_CXX_FLAGS_RELEASE
+                "${CMAKE_CXX_FLAGS_RELEASE} ${BLT_CXX_FLAGS_RELEASE}")
+        endif()
 
-    # Extra Flags for the debug builds with the C++ compiler.
-    if(EXTRA_CXX_FLAGS_DEBUG AND
-      ( (CMAKE_BUILD_TYPE MATCHES Debug)
-        OR (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo) )
-      )
-        add_compile_options("${EXTRA_CXX_FLAGS_DEBUG}")
+        # release flags for the Fortran compiler.
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_RELEASE)
+            set(CMAKE_Fortran_FLAGS_RELEASE
+                "${CMAKE_Fortran_FLAGS_RELEASE} ${BLT_FORTRAN_FLAGS_RELEASE}")
+        endif()
+        
     endif()
+    
+    # Extra Flags for release w/ debug info builds
+    if(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
 
-    # Extra Flags for the release builds with the C++ compiler.
-    if(EXTRA_CXX_FLAGS_RELEASE AND CMAKE_BUILD_TYPE MATCHES RELEASE)
-        add_compile_options("${EXTRA_CXX_FLAGS_RELEASE}")
+        # include debug and release flags for the C compiler
+        if(BLT_C_FLAGS_DEBUG)
+            set(CMAKE_C_FLAGS_RELWITHDEBINFO
+                "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${BLT_C_FLAGS_DEBUG}")
+        endif()
+
+        if(BLT_C_FLAGS_RELEASE)
+            set(CMAKE_C_FLAGS_RELWITHDEBINFO
+                "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${BLT_C_FLAGS_RELEASE}")
+        endif()
+
+        # include debug and release flags for the C++ compiler
+        if(BLT_CXX_FLAGS_DEBUG)
+            set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${BLT_CXX_FLAGS_DEBUG}")
+        endif()
+
+        if(BLT_CXX_FLAGS_RELEASE)
+            set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${BLT_CXX_FLAGS_RELEASE}")
+        endif()
+
+        # include debug and release flags for the Fortran compiler
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_DEBUG)
+            set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO
+                "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} ${BLT_FORTRAN_FLAGS_DEBUG}")
+        endif()
+
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_RELEASE)
+            set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO
+                "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} ${BLT_FORTRAN_FLAGS_RELEASE}")
+        endif()
     endif()
 
 endif()
