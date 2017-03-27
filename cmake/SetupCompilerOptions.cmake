@@ -97,6 +97,12 @@ endif()
 #############################################
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
+##############################################
+# Support Extra Definitions for all targets
+##############################################
+if(BLT_DEFINES)
+    add_defintions(${BLT_DEFINES})
+endif()
 
 ##########################################
 # If set, BLT_<LANG>_FLAGS are added to 
