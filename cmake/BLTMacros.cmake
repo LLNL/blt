@@ -139,18 +139,18 @@ macro(blt_add_target_compile_flags)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
-    cmake_parse_arguments(args
+    cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
-    if(NOT "${args_FLAGS}" STREQUAL "")
+    if(NOT "${arg_FLAGS}" STREQUAL "")
         # get prev flags
-        get_target_property(_COMP_FLAGS ${args_TO} COMPILE_FLAGS)
+        get_target_property(_COMP_FLAGS ${arg_TO} COMPILE_FLAGS)
         if(NOT _COMP_FLAGS)
             set(_COMP_FLAGS "")
         endif()
         # append new flags
-        set(_COMP_FLAGS "${args_FLAGS} ${_COMP_FLAGS}")
-        set_target_properties(${args_TO}
+        set(_COMP_FLAGS "${arg_FLAGS} ${_COMP_FLAGS}")
+        set_target_properties(${arg_TO}
                               PROPERTIES COMPILE_FLAGS "${_COMP_FLAGS}" )
     endif()
 
@@ -169,18 +169,18 @@ macro(blt_add_target_link_flags)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
-    cmake_parse_arguments(args
+    cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
-    if(NOT "${args_FLAGS}" STREQUAL "")
+    if(NOT "${arg_FLAGS}" STREQUAL "")
         # get prev flags
-        get_target_property(_LINK_FLAGS ${args_TO} LINK_FLAGS)
+        get_target_property(_LINK_FLAGS ${arg_TO} LINK_FLAGS)
         if(NOT _LINK_FLAGS)
             set(_LINK_FLAGS "")
         endif()
         # append new flag
-        set(_LINK_FLAGS "${args_FLAGS} ${_LINK_FLAGS}")
-        set_target_properties(${args_TO}
+        set(_LINK_FLAGS "${arg_FLAGS} ${_LINK_FLAGS}")
+        set_target_properties(${arg_TO}
                               PROPERTIES LINK_FLAGS "${_LINK_FLAGS}" )
     endif()
 
