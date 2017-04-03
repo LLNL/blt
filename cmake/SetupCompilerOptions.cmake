@@ -92,9 +92,13 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
 endif()
 
 
-#############################################
-# Support extra compiler flags and defines
-#############################################
+################################################
+# Support for extra compiler flags and defines
+################################################
+
+####################################################
+# create relocatable static libs by default
+####################################################
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 ##############################################
@@ -164,7 +168,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
     endif()
 
     # Extra Flags for release builds
-    if(CMAKE_BUILD_TYPE MATCHES RELEASE)
+    if(CMAKE_BUILD_TYPE MATCHES Release)
 
         # release flags for the C compiler
         if(BLT_C_FLAGS_RELEASE)
@@ -189,37 +193,44 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
     # Extra Flags for release w/ debug info builds
     if(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
 
-        # include debug and release flags for the C compiler
-        if(BLT_C_FLAGS_DEBUG)
+        # include release with debug info flags for the C compiler
+        if(BLT_C_FLAGS_RELWITHDEBINFO)
             set(CMAKE_C_FLAGS_RELWITHDEBINFO
-                "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${BLT_C_FLAGS_DEBUG}")
+                "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${BLT_C_FLAGS_RELWITHDEBINFO}")
         endif()
 
-        if(BLT_C_FLAGS_RELEASE)
-            set(CMAKE_C_FLAGS_RELWITHDEBINFO
-                "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${BLT_C_FLAGS_RELEASE}")
-        endif()
-
-        # include debug and release flags for the C++ compiler
-        if(BLT_CXX_FLAGS_DEBUG)
+        # include release with debug info flags for the C++ compiler
+        if(BLT_CXX_FLAGS_RELWITHDEBINFO)
             set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-                "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${BLT_CXX_FLAGS_DEBUG}")
-        endif()
-
-        if(BLT_CXX_FLAGS_RELEASE)
-            set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-                "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${BLT_CXX_FLAGS_RELEASE}")
+                "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${BLT_CXX_FLAGS_RELWITHDEBINFO}")
         endif()
 
         # include debug and release flags for the Fortran compiler
-        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_DEBUG)
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_RELWITHDEBINFO)
             set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-                "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} ${BLT_FORTRAN_FLAGS_DEBUG}")
+                "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} ${BLT_FORTRAN_FLAGS_RELWITHDEBINFO}")
+        endif()
+    endif()
+    
+    # Extra Flags for min size release builds
+    if(CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+
+        # include min size release flags for the C compiler
+        if(BLT_C_FLAGS_MINSIZEREL)
+            set(CMAKE_C_FLAGS_MINSIZEREL
+                "${CMAKE_C_FLAGS_MINSIZEREL} ${BLT_C_FLAGS_MINSIZEREL}")
         endif()
 
-        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_RELEASE)
-            set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-                "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} ${BLT_FORTRAN_FLAGS_RELEASE}")
+        # include min size release flags for the C++ compiler
+        if(BLT_CXX_FLAGS_MINSIZEREL)
+            set(CMAKE_CXX_FLAGS_MINSIZEREL
+                "${CMAKE_CXX_FLAGS_MINSIZERELO} ${BLT_CXX_FLAGS_MINSIZEREL}")
+        endif()
+
+        # include min size release flags for the Fortran compiler
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_MINSIZEREL)
+            set(CMAKE_Fortran_FLAGS_MINSIZEREL
+                "${CMAKE_Fortran_FLAGS_MINSIZEREL} ${BLT_FORTRAN_FLAGS_MINSIZEREL}")
         endif()
     endif()
 
