@@ -134,6 +134,20 @@ if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
 endif()
 
+################################################
+# Support Extra Flags for the CUDA compiler.
+# N.B. must be ; delimited.
+################################################
+if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};${BLT_CUDA_FLAGS}")
+    # Replace spaces with semicolons in the CUDA flags
+    foreach(flag_var CUDA_NVCC_FLAGS)
+      if(${flag_var} MATCHES " ")
+        string(REGEX REPLACE " " ";" ${flag_var} "${${flag_var}}")
+      endif(${flag_var} MATCHES " ")
+    endforeach(flag_var)
+endif()
+
 
 ###############################################################
 # Support Extra Flags based on CMake Config Type
