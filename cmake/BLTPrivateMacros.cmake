@@ -115,18 +115,33 @@ macro(blt_setup_target)
         add_dependencies( ${arg_NAME} "blt_copy_headers_${arg_NAME}")
     endif()
 
+    # Expand dependency list
+    set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
+    foreach( i RANGE 50 )
+        foreach( dependency ${_expanded_DEPENDS_ON} )
+            string(TOUPPER ${dependency} uppercase_dependency )
+
+            if ( DEFINED BLT_${uppercase_dependency}_DEPENDS_ON )
+                foreach(new_dependency ${BLT_${uppercase_dependency}_DEPENDS_ON})
+                    if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
+                        list(APPEND _expanded_DEPENDS_ON ${new_dependency})
+                    endif()
+                endforeach()
+            endif()
+        endforeach()
+    endforeach()
 
     # Add dependency's information
-    foreach( dependency ${arg_DEPENDS_ON} )
+    foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            target_include_directories( ${arg_NAME} PRIVATE
+            target_include_directories( ${arg_NAME} PUBLIC
                 ${BLT_${uppercase_dependency}_INCLUDES} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
-            target_include_directories( ${arg_NAME} PRIVATE
+            target_include_directories( ${arg_NAME} PUBLIC
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
@@ -141,7 +156,7 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
-            target_compile_definitions( ${arg_NAME} PRIVATE
+            target_compile_definitions( ${arg_NAME} PUBLIC
                 ${BLT_${uppercase_dependency}_DEFINES} )
         endif()
 

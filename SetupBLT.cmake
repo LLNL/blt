@@ -94,12 +94,14 @@ include(${BLT_ROOT_DIR}/cmake/SetupCodeChecks.cmake)
 # bin directory for all executables and the location for fortran modules.
 
 # Set the path where all the headers will be stored
-set(HEADER_INCLUDES_DIRECTORY
-    ${PROJECT_BINARY_DIR}/include/
-    CACHE PATH
-    "Directory where all headers will go in the build tree"
-    )
-include_directories(${HEADER_INCLUDES_DIRECTORY})
+if ( ENABLE_COPY_HEADERS )
+    set(HEADER_INCLUDES_DIRECTORY
+        ${PROJECT_BINARY_DIR}/include/
+        CACHE PATH
+        "Directory where all headers will go in the build tree"
+        )
+    include_directories(${HEADER_INCLUDES_DIRECTORY})
+endif()
 
 # Set the path where all the libraries will be stored
 set(LIBRARY_OUTPUT_PATH
