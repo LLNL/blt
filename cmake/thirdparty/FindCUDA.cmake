@@ -1389,9 +1389,17 @@ macro(CUDA_WRAP_SRCS cuda_target format generated_files)
   foreach(file ${_argn_list})
     # Ignore any file marked as a HEADER_FILE_ONLY
     get_source_file_property(_is_header ${file} HEADER_FILE_ONLY)
+    get_source_file_property(_lang ${file} LANGUAGE)
+
+    if (_lang MATCHES Fortran)
+      set(_is_fortran True)
+    else ()
+      set(_is_fortran False)
+    endif()
+    
     # Allow per source file overrides of the format.  Also allows compiling non-.cu files.
     get_source_file_property(_cuda_source_format ${file} CUDA_SOURCE_PROPERTY_FORMAT)
-    if((${file} MATCHES "\\.cu$" OR _cuda_source_format) AND NOT _is_header)
+    if((${file} MATCHES "\\.cu$" OR _cuda_source_format) AND NOT _is_header AND NOT _is_fortran)
 
       if(NOT _cuda_source_format)
         set(_cuda_source_format ${format})
