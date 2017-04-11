@@ -12,5 +12,6 @@ blt_add_library(
 )
 blt_register_library( NAME fruit
                       FORTRAN_MODULES ${CMAKE_Fortran_MODULE_DIRECTORY}
+                      INCLUDES ${CMAKE_Fortran_MODULE_DIRECTORY}
                       LIBRARIES fruit 
 )
