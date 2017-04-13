@@ -96,6 +96,8 @@ endif()
 # Support for extra compiler flags and defines
 ################################################
 
+message(STATUS "Adding optional BLT definitions and compiler flags")
+
 ####################################################
 # create relocatable static libs by default
 ####################################################
@@ -105,7 +107,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 # Support Extra Definitions for all targets
 ##############################################
 if(BLT_DEFINES)
-    add_defintions(${BLT_DEFINES})
+    add_definitions(${BLT_DEFINES})
+    message(STATUS "Added \"${BLT_DEFINES}\" to definitions")
 endif()
 
 ##########################################
@@ -118,6 +121,7 @@ endif()
 ##########################################
 if(BLT_C_FLAGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_C_FLAGS}")
+    message(STATUS "Updated CMAKE_C_FLAGS to \"${CMAKE_C_FLAGS}\"")
 endif()
 
 #############################################
@@ -125,6 +129,7 @@ endif()
 #############################################
 if(BLT_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
+     message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
 endif()
 
 ################################################
@@ -132,6 +137,7 @@ endif()
 ################################################
 if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
+     message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
 endif()
 
 ################################################
@@ -159,95 +165,35 @@ endif()
 ###############################################################
 if(NOT CMAKE_CONFIGURATION_TYPES)
 
-    ####################################
-    # Extra Flags for debug builds 
-    ####################################
-    
-    # debug flags for the C compiler
-    if(BLT_C_FLAGS_DEBUG)
-        set(CMAKE_C_FLAGS_DEBUG
-            "${CMAKE_C_FLAGS_DEBUG} ${BLT_C_FLAGS_DEBUG}")
-    endif()
+    set(cfg_types DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
 
-    # debug flags for the C++ compiler
-    if(BLT_CXX_FLAGS_DEBUG)
-        set(CMAKE_CXX_FLAGS_DEBUG
-            "${CMAKE_CXX_FLAGS_DEBUG} ${BLT_CXX_FLAGS_DEBUG}")
-    endif()
+    foreach(cfg_type in ${cfg_types})
+        # flags for the C compiler
+        if(BLT_C_FLAGS_${cfg_type})
+            set(CMAKE_C_FLAGS_${cfg_type}
+                "${CMAKE_C_FLAGS_${cfg_type}} ${BLT_C_FLAGS_${cfg_type}}")
+            message(STATUS "Updated CMAKE_C_FLAGS_${cfg_type} to \"${CMAKE_C_FLAGS_${cfg_type}}\"")
+        endif()
 
-    # debug flags for the Fortran compiler
-    if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_DEBUG)
-        set(CMAKE_Fortran_FLAGS_DEBUG
-            "${CMAKE_Fortran_FLAGS_DEBUG} ${BLT_FORTRAN_FLAGS_DEBUG}")
-    endif()
+        # flags for the C++ compiler
+        if(BLT_CXX_FLAGS_${cfg_type})
+            set(CMAKE_CXX_FLAGS_${cfg_type}
+                "${CMAKE_CXX_FLAGS_${cfg_type}} ${BLT_CXX_FLAGS_${cfg_type}}")
+            message(STATUS "Updated CMAKE_CXX_FLAGS_${cfg_type} to \"${CMAKE_CXX_FLAGS_${cfg_type}}\"")
+        endif()
 
-    ####################################
-    # Extra Flags for release builds
-    ####################################
-    
-    # release flags for the C compiler
-    if(BLT_C_FLAGS_RELEASE)
-        set(CMAKE_C_FLAGS_RELEASE
-            "${CMAKE_C_FLAGS_RELEASE} ${BLT_C_FLAGS_RELEASE}")
-    endif()
+        # flags for the Fortran compiler
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_${cfg_type})
+            set(CMAKE_Fortran_FLAGS_${cfg_type}
+                "${CMAKE_Fortran_FLAGS_${cfg_type}} ${BLT_FORTRAN_FLAGS_${cfg_type}}")
+            message(STATUS "Updated CMAKE_Fortran_FLAGS_${cfg_type} to \"${CMAKE_Fortran_FLAGS_${cfg_type}}\"")
+        endif()
 
-    # release flags for the C++ compiler
-    if(BLT_CXX_FLAGS_RELEASE)
-        set(CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE} ${BLT_CXX_FLAGS_RELEASE}")
-    endif()
-
-    # release flags for the Fortran compiler.
-    if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_RELEASE)
-        set(CMAKE_Fortran_FLAGS_RELEASE
-            "${CMAKE_Fortran_FLAGS_RELEASE} ${BLT_FORTRAN_FLAGS_RELEASE}")
-    endif()
-        
-    ###############################################
-    # Extra Flags for release w/ debug info builds
-    ###############################################
-
-    # include release with debug info flags for the C compiler
-    if(BLT_C_FLAGS_RELWITHDEBINFO)
-        set(CMAKE_C_FLAGS_RELWITHDEBINFO
-            "${CMAKE_C_FLAGS_RELWITHDEBINFO} ${BLT_C_FLAGS_RELWITHDEBINFO}")
-    endif()
-
-    # include release with debug info flags for the C++ compiler
-    if(BLT_CXX_FLAGS_RELWITHDEBINFO)
-        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-            "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${BLT_CXX_FLAGS_RELWITHDEBINFO}")
-    endif()
-
-    # include debug and release flags for the Fortran compiler
-    if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_RELWITHDEBINFO)
-        set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO
-            "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} ${BLT_FORTRAN_FLAGS_RELWITHDEBINFO}")
-    endif()
-
-    ##########################################
-    # Extra Flags for min size release builds
-    ##########################################
-    
-    # include min size release flags for the C compiler
-    if(BLT_C_FLAGS_MINSIZEREL)
-        set(CMAKE_C_FLAGS_MINSIZEREL
-            "${CMAKE_C_FLAGS_MINSIZEREL} ${BLT_C_FLAGS_MINSIZEREL}")
-    endif()
-
-    # include min size release flags for the C++ compiler
-    if(BLT_CXX_FLAGS_MINSIZEREL)
-        set(CMAKE_CXX_FLAGS_MINSIZEREL
-            "${CMAKE_CXX_FLAGS_MINSIZERELO} ${BLT_CXX_FLAGS_MINSIZEREL}")
-    endif()
-
-    # include min size release flags for the Fortran compiler
-    if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_MINSIZEREL)
-        set(CMAKE_Fortran_FLAGS_MINSIZEREL
-            "${CMAKE_Fortran_FLAGS_MINSIZEREL} ${BLT_FORTRAN_FLAGS_MINSIZEREL}")
-    endif()
+    endforeach()
 
 endif()
+
+
 
 ################################
 # RPath Settings
