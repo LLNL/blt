@@ -92,57 +92,108 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
 endif()
 
 
-#############################################
-# Support extra compiler flags and defines
-#############################################
+################################################
+# Support for extra compiler flags and defines
+################################################
+
+message(STATUS "Adding optional BLT definitions and compiler flags")
+
+####################################################
+# create relocatable static libs by default
+####################################################
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
+##############################################
+# Support Extra Definitions for all targets
+##############################################
+if(BLT_DEFINES)
+    add_definitions(${BLT_DEFINES})
+    message(STATUS "Added \"${BLT_DEFINES}\" to definitions")
+endif()
+
+##########################################
+# If set, BLT_<LANG>_FLAGS are added to 
+# all targets that use <LANG>-Compiler
+##########################################
+
+##########################################
+# Support Extra Flags for the C compiler.
+##########################################
+if(BLT_C_FLAGS)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_C_FLAGS}")
+    message(STATUS "Updated CMAKE_C_FLAGS to \"${CMAKE_C_FLAGS}\"")
+endif()
+
+#############################################
+# Support Extra Flags for the C++ compiler.
+#############################################
+if(BLT_CXX_FLAGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
+     message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
+endif()
+
+################################################
+# Support Extra Flags for the Fortran compiler.
+################################################
+if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
+     message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
+endif()
+
+################################################
+# Support Extra Flags for the CUDA compiler.
+# N.B. must be ; delimited.
+################################################
+if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
+    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};${BLT_CUDA_FLAGS}")
+    # Replace spaces with semicolons in the CUDA flags
+    foreach(flag_var CUDA_NVCC_FLAGS)
+      if(${flag_var} MATCHES " ")
+        string(REGEX REPLACE " " ";" ${flag_var} "${${flag_var}}")
+      endif(${flag_var} MATCHES " ")
+    endforeach(flag_var)
+endif()
+
+
+###############################################################
+# Support Extra Flags based on CMake Config Type
+###############################################################
 #
-# We don't try to use this approach for CMake generators that support
-# multiple configurations. See: CZ JIRA: ATK-45
+# We guard this approach to avoid issues with CMake generators
+# that support multiple configurations, like Visual Studio.
 #
+###############################################################
 if(NOT CMAKE_CONFIGURATION_TYPES)
-    ##########################################
-    # Support Extra Flags for the C compiler.
-    ##########################################
-    if(EXTRA_C_FLAGS)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_C_FLAGS}")
-    endif()
 
-    # Extra Flags for the debug builds with the C compiler.
-    if(EXTRA_C_FLAGS_DEBUG AND
-      ( (CMAKE_BUILD_TYPE MATCHES Debug)
-        OR (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo) )
-      )
-        add_compile_options("${EXTRA_C_FLAGS_DEBUG}")
-    endif()
+    set(cfg_types DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
 
-    # Extra Flags for the release builds with the C compiler.
-    if(EXTRA_C_FLAGS_RELEASE AND CMAKE_BUILD_TYPE MATCHES RELEASE)
-        add_compile_options("${EXTRA_C_FLAGS_RELEASE}")
-    endif()
+    foreach(cfg_type in ${cfg_types})
+        # flags for the C compiler
+        if(BLT_C_FLAGS_${cfg_type})
+            set(CMAKE_C_FLAGS_${cfg_type}
+                "${CMAKE_C_FLAGS_${cfg_type}} ${BLT_C_FLAGS_${cfg_type}}")
+            message(STATUS "Updated CMAKE_C_FLAGS_${cfg_type} to \"${CMAKE_C_FLAGS_${cfg_type}}\"")
+        endif()
 
-    #############################################
-    # Support Extra Flags for the C++ compiler.
-    #############################################
-    if(EXTRA_CXX_FLAGS)
-        add_compile_options("${EXTRA_CXX_FLAGS}")
-    endif()
+        # flags for the C++ compiler
+        if(BLT_CXX_FLAGS_${cfg_type})
+            set(CMAKE_CXX_FLAGS_${cfg_type}
+                "${CMAKE_CXX_FLAGS_${cfg_type}} ${BLT_CXX_FLAGS_${cfg_type}}")
+            message(STATUS "Updated CMAKE_CXX_FLAGS_${cfg_type} to \"${CMAKE_CXX_FLAGS_${cfg_type}}\"")
+        endif()
 
-    # Extra Flags for the debug builds with the C++ compiler.
-    if(EXTRA_CXX_FLAGS_DEBUG AND
-      ( (CMAKE_BUILD_TYPE MATCHES Debug)
-        OR (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo) )
-      )
-        add_compile_options("${EXTRA_CXX_FLAGS_DEBUG}")
-    endif()
+        # flags for the Fortran compiler
+        if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS_${cfg_type})
+            set(CMAKE_Fortran_FLAGS_${cfg_type}
+                "${CMAKE_Fortran_FLAGS_${cfg_type}} ${BLT_FORTRAN_FLAGS_${cfg_type}}")
+            message(STATUS "Updated CMAKE_Fortran_FLAGS_${cfg_type} to \"${CMAKE_Fortran_FLAGS_${cfg_type}}\"")
+        endif()
 
-    # Extra Flags for the release builds with the C++ compiler.
-    if(EXTRA_CXX_FLAGS_RELEASE AND CMAKE_BUILD_TYPE MATCHES RELEASE)
-        add_compile_options("${EXTRA_CXX_FLAGS_RELEASE}")
-    endif()
+    endforeach()
 
 endif()
+
+
 
 ################################
 # RPath Settings

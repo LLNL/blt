@@ -49,10 +49,6 @@ cmake_minimum_required(VERSION 3.1)
 
 project(blt-example LANGUAGES CXX)
 
-if (ENABLE_FORTRAN)
-   enable_language(Fortran)
-endif()
-
 ################################
 # Include BLT
 ################################

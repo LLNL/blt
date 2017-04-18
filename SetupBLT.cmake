@@ -58,6 +58,14 @@ endif()
 include(${BLT_ROOT_DIR}/cmake/BLTOptions.cmake)
 
 ################################
+# Invoke CMake Fortran setup
+# if ENABLE_FORTRAN == ON
+################################
+if(ENABLE_FORTRAN)
+    enable_language(Fortran)
+endif()
+
+################################
 # Enable ctest support 
 ################################
 if(ENABLE_TESTS)
