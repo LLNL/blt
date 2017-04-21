@@ -21,7 +21,7 @@ before_build:
   - cp -r blt blt-test
   # configure
   - echo Running cmake ...
-  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_OPENMP=ON
+  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_OPENMP=ON -DENABLE_BENCHMARKS=ON
 
 build_script:
   #build
