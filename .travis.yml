@@ -114,6 +114,8 @@ script:
   # c & c++ compilers
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_CXX_COMPILER=${BLT_CXX}"
+  # benchmarking
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_BENCHMARKS=ON"
   # enable fortran support
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_FORTRAN=${BLT_FORTRAN}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_Fortran_COMPILER=${BLT_FC}"
