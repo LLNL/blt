@@ -68,7 +68,7 @@ if(ENABLE_TESTS)
 
     if(ENABLE_BENCHMARKS)
         ## google benchmark support
-        add_subdirectory(gbenchmark)
+        add_subdirectory(gbenchmark-release-1.1.0)
 
         blt_register_library(NAME gbenchmark
                              INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
