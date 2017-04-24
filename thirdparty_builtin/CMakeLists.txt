@@ -70,9 +70,14 @@ if(ENABLE_TESTS)
         ## google benchmark support
         add_subdirectory(gbenchmark-release-1.1.0)
 
+        if (NOT WIN32)
+          find_library(RT_LIBRARIES rt)
+          set(rt_libraries rt)
+        endif()
+
         blt_register_library(NAME gbenchmark
                              INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
-                             LIBRARIES benchmark
+                             LIBRARIES benchmark ${rt_libraries}
                              )
 
         # This sets up a target to run the benchmarks
