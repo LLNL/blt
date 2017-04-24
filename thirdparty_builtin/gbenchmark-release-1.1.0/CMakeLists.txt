@@ -10,7 +10,7 @@ foreach(p
   endif()
 endforeach()
 
-option(BENCHMARK_ENABLE_TESTING "Enable testing of the benchmark library." ON)
+option(BENCHMARK_ENABLE_TESTING "Enable testing of the benchmark library." Off)
 option(BENCHMARK_ENABLE_LTO "Enable link time optimisation of the benchmark library." OFF)
 option(BENCHMARK_USE_LIBCXX "Build and test using libc++ as the standard library." OFF)
 # Make sure we can import out CMake functions
