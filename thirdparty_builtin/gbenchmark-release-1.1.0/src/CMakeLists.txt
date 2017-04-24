@@ -35,7 +35,8 @@ install(
   TARGETS benchmark
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  # [BLT] Try installing DLL to lib
+  RUNTIME DESTINATION lib
   COMPONENT library)
 
 install(
