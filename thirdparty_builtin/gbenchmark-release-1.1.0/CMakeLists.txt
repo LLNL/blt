@@ -10,6 +10,7 @@ foreach(p
   endif()
 endforeach()
 
+# [BLT] Don't build tests
 option(BENCHMARK_ENABLE_TESTING "Enable testing of the benchmark library." Off)
 option(BENCHMARK_ENABLE_LTO "Enable link time optimisation of the benchmark library." OFF)
 option(BENCHMARK_USE_LIBCXX "Build and test using libc++ as the standard library." OFF)
@@ -169,6 +170,17 @@ find_package(Threads REQUIRED)
 
 # Set up directories
 include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# [BLT] Match BLT build mode
+if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
+    foreach(flag_var
+            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        if(${flag_var} MATCHES "/MD")
+            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        endif(${flag_var} MATCHES "/MD")
+    endforeach(flag_var)
+endif()
 
 # Build the targets
 add_subdirectory(src)
