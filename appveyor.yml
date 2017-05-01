@@ -3,9 +3,11 @@ environment:
   - CMAKE_GENERATOR: "Visual Studio 14 2015"
     CONFIG: Release
     BUILD_SHARED_LIBS: ON
+    ENABLE_BENCHMARKS: OFF
   - CMAKE_GENERATOR: "Visual Studio 14 2015"
     CONFIG: Release
     BUILD_SHARED_LIBS: OFF
+    ENABLE_BENCHMARKS: ON
 
 
 init:
@@ -21,7 +23,7 @@ before_build:
   - cp -r blt blt-test
   # configure
   - echo Running cmake ...
-  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_OPENMP=ON -DENABLE_BENCHMARKS=ON
+  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% -DENABLE_OPENMP=ON
 
 build_script:
   #build

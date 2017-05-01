@@ -67,6 +67,10 @@ if(ENABLE_TESTS)
     endif()
 
     if(ENABLE_BENCHMARKS)
+        if(WIN32 AND BUILD_SHARED_LIBS)
+          message(FATAL_ERROR "Benchmarks cannot be built when BUILD_SHARED_LIBS=On")
+        endif()
+
         ## google benchmark support
         add_subdirectory(gbenchmark-release-1.1.0)
 
