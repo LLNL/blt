@@ -67,12 +67,20 @@ if(ENABLE_TESTS)
     endif()
 
     if(ENABLE_BENCHMARKS)
+        if(WIN32 AND BUILD_SHARED_LIBS)
+          message(FATAL_ERROR "Benchmarks cannot be built when BUILD_SHARED_LIBS=On")
+        endif()
+
         ## google benchmark support
-        add_subdirectory(gbenchmark)
+        add_subdirectory(gbenchmark-master-2017-05-19)
+
+        if (UNIX AND NOT APPLE)
+          find_library(RT_LIBRARIES rt)
+        endif()
 
         blt_register_library(NAME gbenchmark
                              INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
-                             LIBRARIES benchmark
+                             LIBRARIES benchmark ${RT_LIBRARIES}
                              )
 
         # This sets up a target to run the benchmarks
