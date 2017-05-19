@@ -72,7 +72,7 @@ if(ENABLE_TESTS)
         endif()
 
         ## google benchmark support
-        add_subdirectory(gbenchmark-release-1.1.0)
+        add_subdirectory(gbenchmark-master-2017-05-19)
 
         if (UNIX AND NOT APPLE)
           find_library(RT_LIBRARIES rt)
