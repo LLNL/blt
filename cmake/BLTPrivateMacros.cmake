@@ -148,11 +148,11 @@ macro(blt_setup_target)
         if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
             if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME}
+                target_link_libraries( ${arg_NAME} PUBLIC
                     ${BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
         else()
-            target_link_libraries( ${arg_NAME} ${dependency} )
+            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )

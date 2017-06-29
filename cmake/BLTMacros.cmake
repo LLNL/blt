@@ -288,10 +288,10 @@ endmacro(blt_register_library)
 ## ON, in which case, it will create a shared library. By default, a static
 ## library is generated unless the SHARED option is added.
 ##
-## If given a HEADERS argument, it first copies the headers into the out-of-source
-## build directory under the include/<HEADERS_OUTPUT_SUBDIR> and installs
-## them to the CMAKE_INSTALL_PREFIX/include/<HEADERS_OUTPUT_SUBDIR>.
-## Because of this HEADERS_OUTPUT_SUBDIR must be a relative path.
+## If given a HEADERS argument and ENABLE_COPY_HEADERS is ON, it first copies
+## the headers into the out-of-source build directory under the
+## include/<HEADERS_OUTPUT_SUBDIR>.Because of this HEADERS_OUTPUT_SUBDIR must
+## be a relative path.
 ## 
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If 
@@ -326,7 +326,6 @@ macro(blt_add_library)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Check for the variable-based options and sanity checks
     if(arg_PYTHON_MODULE)
         set(arg_SHARED TRUE)
         if( NOT arg_OUTPUT_DIR )
@@ -349,60 +348,75 @@ macro(blt_add_library)
         set(arg_CLEAR_PREFIX TRUE)
     endif()
 
-
     if ( arg_SOURCES )
-      #
-      #  cuda support
-      #
-      list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-      if ( ${check_for_cuda} GREATER -1)
+        #
+        #  CUDA support
+        #
+        list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+        if ( ${check_for_cuda} GREATER -1)
 
-          blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
-                                           TARGET_SOURCES ${arg_SOURCES})
+            blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
+                                             TARGET_SOURCES ${arg_SOURCES})
 
-          if ( arg_SHARED OR ENABLE_SHARED_LIBS )
-              cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
-          else()
-              cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
-          endif()
-      elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
-          add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
-      else()
-          add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
-      endif()
+            if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+                cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
+            else()
+                cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
+            endif()
+        elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
+            add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
+        else()
+            add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
+        endif()
     else()
-      foreach (_file ${arg_HEADERS})
-        get_filename_component(_absolute ${_file} ABSOLUTE)
-        set(_absolute_headers ${_absolute_headers} ${_absolute})
-      endforeach()
+        #
+        #  Header-only library support
+        #
+        foreach (_file ${arg_HEADERS})
+            get_filename_component(_name ${_file} NAME)
+            get_filename_component(_absolute ${_file} ABSOLUTE)
 
-      add_library( ${arg_NAME} INTERFACE)
-      target_sources( ${arg_NAME} INTERFACE ${_absolute_headers} )
+            # Determine build location of headers
+            set(_build_headers ${_build_headers} ${_absolute})
+
+            # Determine install location of headers
+            set(_install_headers ${_install_headers} include/${arg_HEADERS_OUTPUT_SUBDIR}/${_name})
+        endforeach()
+
+        #Note: This only works if both libraries are handled in the same directory,
+        #  otherwise just don't include non-header files in your source list.
+        set_source_files_properties(${_build_headers} PROPERTIES HEADER_FILE_ONLY ON)
+
+        add_library( ${arg_NAME} INTERFACE )
+        if ( ENABLE_COPY_HEADERS )
+            target_sources( ${arg_NAME} INTERFACE
+                        $<BUILD_INTERFACE:${_build_headers}>
+                        $<INSTALL_INTERFACE:${_install_headers}>)
+
+            target_include_directories(${arg_NAME} INTERFACE
+                        $<BUILD_INTERFACE:${HEADER_INCLUDES_DIRECTORY}>
+                        $<INSTALL_INTERFACE:include/${arg_HEADERS_OUTPUT_SUBDIR}>)
+        else()
+            target_sources( ${arg_NAME} INTERFACE
+                        $<BUILD_INTERFACE:${_build_headers}>)
+        endif()
     endif()
 
-    # Handle copying and installing headers
-    if ( arg_HEADERS )
-        # Determine build and install location of headers
+    # Handle copying headers
+    if ( arg_HEADERS AND ENABLE_COPY_HEADERS )
+        # Determine build location of headers
         set(headers_build_dir ${HEADER_INCLUDES_DIRECTORY})
-        set(headers_install_dir ${CMAKE_INSTALL_PREFIX}/include)
         if (arg_HEADERS_OUTPUT_SUBDIR)
             if (IS_ABSOLUTE ${arg_HEADERS_OUTPUT_SUBDIR})
                 message(FATAL_ERROR "blt_add_library must be called with a relative path for HEADERS_OUTPUT_SUBDIR")
-            else()
-                set(headers_build_dir ${headers_build_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
-                set(headers_install_dir ${headers_install_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
             endif()
+            set(headers_build_dir ${headers_build_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
         endif()
 
-        if ( ENABLE_COPY_HEADERS )
-            blt_copy_headers_target( NAME        ${arg_NAME}
-                                     HEADERS     ${arg_HEADERS}
-                                     DESTINATION ${headers_build_dir})
-        endif()
-
-        install(FILES ${arg_HEADERS} DESTINATION ${headers_install_dir})
+        blt_copy_headers_target( NAME        ${arg_NAME}
+                                 HEADERS     ${arg_HEADERS}
+                                 DESTINATION ${headers_build_dir})
     endif()
-    install(TARGETS ${arg_NAME} DESTINATION lib EXPORT ${arg_NAME}-targets)
 
     # Must tell fortran where to look for modules
     # CMAKE_Fortran_MODULE_DIRECTORY is the location of generated modules
@@ -413,7 +427,7 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-        target_include_directories(${arg_NAME} PUBLIC ${CMAKE_Fortran_MODULE_DIRECTORY})
+        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
     blt_setup_target( NAME ${arg_NAME}
@@ -424,12 +438,12 @@ macro(blt_add_library)
             LIBRARY_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
     endif()
 
-    if (arg_OUTPUT_NAME)
+    if ( arg_OUTPUT_NAME )
         set_target_properties(${arg_NAME} PROPERTIES
             OUTPUT_NAME ${arg_OUTPUT_NAME} )
     endif()
 
-    if (arg_CLEAR_PREFIX)
+    if ( arg_CLEAR_PREFIX )
         set_target_properties(${arg_NAME} PROPERTIES
             PREFIX "" )
     endif()
@@ -497,12 +511,12 @@ macro(blt_add_executable)
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
-     # when using shared libs on windows, all runtime targets
-     # (dlls and exes) must live in the same dir
-     # so we do not set runtime_output_dir in this case
-     if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
-            set_target_properties(${arg_NAME} PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
+    # when using shared libs on windows, all runtime targets
+    # (dlls and exes) must live in the same dir
+    # so we do not set runtime_output_dir in this case
+    if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
+           set_target_properties(${arg_NAME} PROPERTIES
+           RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
