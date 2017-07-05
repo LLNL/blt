@@ -1,6 +1,8 @@
 BLT v0.1
 ========
 
+[![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
+
 A streamlined CMake build system foundation for developing HPC software
 
 Quick Start
