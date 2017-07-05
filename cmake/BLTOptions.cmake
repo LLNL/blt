@@ -77,3 +77,17 @@ if( NOT ( ( BLT_CXX_STD STREQUAL "c++98" )
     message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
 Valid Options are ( c++98, c++11, c++14 )")
 endif()
+
+
+################################
+# Advanced configuration options
+################################
+
+option(ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC
+       "Option to ensure that all tests are invoked through mpiexec. Required on some platforms, like IBM's BG/Q."
+       OFF
+       )
+
+# All advanced options should be marked as advanced
+mark_as_advanced( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
+       
