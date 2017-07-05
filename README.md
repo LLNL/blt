@@ -2,6 +2,7 @@ BLT v0.1
 ========
 
 [![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
+[![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j?svg=true)](https://ci.appveyor.com/project/cyrush/blt)
 
 A streamlined CMake build system foundation for developing HPC software
 
