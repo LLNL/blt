@@ -45,7 +45,7 @@
 #
 
 ################
-# gtest test
+# gtest tests
 ################
 blt_add_executable(NAME blt_gtest_smoke
                    SOURCES blt_gtest_smoke.cpp
@@ -54,6 +54,14 @@ blt_add_executable(NAME blt_gtest_smoke
 
 blt_add_test( NAME blt_gtest_smoke
               COMMAND blt_gtest_smoke)
+
+blt_add_executable(NAME blt_gtest_death_test_smoke
+                   SOURCES blt_gtest_death_test_smoke.cpp
+                   OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                   DEPENDS_ON gtest)
+
+blt_add_test( NAME blt_gtest_death_test_smoke
+              COMMAND blt_gtest_death_test_smoke)
 
 ################
 # gmock test
