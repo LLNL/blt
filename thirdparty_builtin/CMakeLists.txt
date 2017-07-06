@@ -45,7 +45,16 @@ if(ENABLE_TESTS)
 
     if(WIN32 AND BUILD_SHARED_LIBS)
         add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
-        set(gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
+        list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
+    endif()
+
+    # Explictly enable/disable death tests
+    if(ENABLE_GTEST_DEATH_TESTS)
+        add_definitions(-DGTEST_HAS_DEATH_TEST=1)
+        list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=1")
+    else()
+        add_definitions(-DGTEST_HAS_DEATH_TEST=0)
+        list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=0")
     endif()
 
     # Enable builtin google test 
