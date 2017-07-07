@@ -567,6 +567,12 @@ macro(blt_add_test)
     endif()
     set(test_command ${runtime_output_directory}/${arg_COMMAND} )
 
+    # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, 
+    # ensure NUM_PROCS is at least one. This invokes the test through MPIEXEC.
+    if ( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC AND NOT arg_NUM_PROCS )
+        set( arg_NUM_PROCS 1 )
+    endif()
+
     # Handle mpi
     if ( ${arg_NUM_PROCS} )
         set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_PROCS} ${test_command} )
