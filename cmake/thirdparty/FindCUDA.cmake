@@ -1791,7 +1791,7 @@ macro(CUDA_ADD_EXECUTABLE cuda_target)
   CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
 
   target_link_libraries(${cuda_target}
-    ${CUDA_LIBRARIES}
+    PUBLIC ${CUDA_LIBRARIES}
     )
 
   # We need to set the linker language based on what the expected generated file
