@@ -83,11 +83,18 @@ endif()
 # Advanced configuration options
 ################################
 
-option(ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC
-       "Option to ensure that all tests are invoked through mpiexec. Required on some platforms, like IBM's BG/Q."
-       OFF
-       )
+option(
+    ENABLE_GTEST_DEATH_TESTS
+    "Enables tests that assert application failure. Only valid when tests are enabled"
+    OFF )
+
+option(
+    ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC
+    "Option to ensure that all tests are invoked through mpiexec. Required on some platforms, like IBM's BG/Q."
+    OFF )
 
 # All advanced options should be marked as advanced
-mark_as_advanced( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
+mark_as_advanced( 
+    ENABLE_GTEST_DEATH_TESTS
+    ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
        
