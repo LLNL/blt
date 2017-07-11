@@ -44,48 +44,6 @@
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
 ##------------------------------------------------------------------------------
-## blt_add_component( COMPONENT_NAME <name> DEFAULT_STATE [ON/OFF] )
-##
-## Adds a project component to the build.
-##
-## Adds a component to the build given the component's name and default state
-## (ON/OFF). This macro also adds an "option" so that the user can control,
-## which components to build.
-##------------------------------------------------------------------------------
-macro(blt_add_component)
-
-    set(options)
-    set(singleValueArgs COMPONENT_NAME DEFAULT_STATE )
-    set(multiValueArgs)
-
-    # Parse the arguments to the macro
-    cmake_parse_arguments(arg
-         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    # Setup a cmake vars to capture sources added via our macros
-    set("${arg_COMPONENT_NAME}_ALL_SOURCES" CACHE PATH "" FORCE)
-
-    # Adds an option so that the user can control whether to build this
-    # component.
-    # convert the component name to capitals for the ENABLE option.
-    string(TOUPPER ${arg_COMPONENT_NAME} COMPONENT_NAME_CAPITALIZED)
-    string(TOLOWER ${arg_COMPONENT_NAME} COMPONENT_NAME_LOWERED)
-
-    option(ENABLE_${COMPONENT_NAME_CAPITALIZED}
-           "Enables ${arg_component_name}"
-           ${arg_DEFAULT_STATE})
-
-    if ( ENABLE_${COMPONENT_NAME_CAPITALIZED} )
-        add_subdirectory( ${arg_COMPONENT_NAME} )
-    endif()
-
-    unset(COMPONENT_NAME_CAPITALIZED)
-    unset(COMPONENT_NAME_LOWERED)
-
-endmacro(blt_add_component)
-
-
-##------------------------------------------------------------------------------
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
