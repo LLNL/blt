@@ -89,8 +89,15 @@ endmacro(add_doxygen_target)
 ##
 ## add_sphinx_target(sphinx_target_name)
 ##
-##  Expects to find a config.py.in in the directory the macro is called in. 
+##  Expects to find a config.py or config.py.in in the directory the macro is 
+##  called in. 
 ##  
+##
+##  If config.py is found, it is directly used as input to sphinx.
+##
+##  If config.py.in is found, this macro uses CMake's configure_file() command
+##  to generate a config.py, which is then used as input to sphinx.
+##
 ##  This macro sets up the sphinx paths so that the doc builds happen 
 ##  out of source. For a make install, this will place the resulting docs in 
 ##  docs/sphinx/`sphinx_target_name`
@@ -109,20 +116,37 @@ macro(add_sphinx_target sphinx_target_name )
     # HTML output directory
     set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
-                   "${SPHINX_BUILD_DIR}/conf.py"
-                   @ONLY)
+    # support both direct use of a config.py file and a cmake config-d 
+    # sphinx input file (config.py.in)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py")
+        add_custom_target(${sphinx_target_name}
+                          ${SPHINX_EXECUTABLE}
+                          -q -b html
+                          #-W disable warn on error for now, while our sphinx env is still in flux
+                          -d "${SPHINX_CACHE_DIR}"
+                          "${CMAKE_CURRENT_SOURCE_DIR}"
+                          "${SPHINX_HTML_DIR}"
+                          COMMENT "Building HTML documentation with Sphinx"
+                          DEPENDS ${deps})
+    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in")
+        
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
+                       "${SPHINX_BUILD_DIR}/conf.py"
+                       @ONLY)
 
-    add_custom_target(${sphinx_target_name}
-            ${SPHINX_EXECUTABLE}
-            -q -b html
-            #-W disable warn on error for now, while our sphinx env is still in flux
-            -c "${SPHINX_BUILD_DIR}"
-            -d "${SPHINX_CACHE_DIR}"
-            "${CMAKE_CURRENT_SOURCE_DIR}"
-            "${SPHINX_HTML_DIR}"
-            COMMENT "Building HTML documentation with Sphinx"
-            DEPENDS ${deps})
+        add_custom_target(${sphinx_target_name}
+                          ${SPHINX_EXECUTABLE}
+                          -q -b html
+                          #-W disable warn on error for now, while our sphinx env is still in flux
+                          -c "${SPHINX_BUILD_DIR}"
+                          -d "${SPHINX_CACHE_DIR}"
+                          "${CMAKE_CURRENT_SOURCE_DIR}"
+                          "${SPHINX_HTML_DIR}"
+                          COMMENT "Building HTML documentation with Sphinx"
+                          DEPENDS ${deps})
+    else()
+        message(FATAL_ERROR "Failed to find sphinx 'config.py' or 'config.py.in' in ${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
         
     # hook our new target into the docs dependency chain
     add_dependencies(sphinx_docs ${sphinx_target_name})
