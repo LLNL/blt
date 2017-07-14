@@ -73,19 +73,19 @@ if("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)")
     set(COMPILER_FAMILY_IS_MSVC 1)
     message(STATUS "Compiler family is MSVC")
 
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(COMPILER_FAMILY_IS_GNU 1)
     message(STATUS "Compiler family is GNU")
 
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang") # For Clang or AppleClang
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
     set(COMPILER_FAMILY_IS_CLANG 1)
     message(STATUS "Compiler family is Clang")
     
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "XL")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
     set(COMPILER_FAMILY_IS_XL 1)
     message(STATUS "Compiler family is XL")
 
-elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(COMPILER_FAMILY_IS_INTEL 1)
     message(STATUS "Compiler family is Intel")
 
