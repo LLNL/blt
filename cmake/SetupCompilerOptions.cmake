@@ -143,7 +143,7 @@ endif()
 #############################################
 if(BLT_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
-     message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
+    message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
 endif()
 
 ################################################
@@ -322,8 +322,7 @@ if (ENABLE_WARNINGS_AS_ERRORS)
     endforeach()
 endif()
 
-
-foreach(flagVar ${langFlags})   
+foreach(flagVar ${langFlags} "CMAKE_Fortran_FLAGS" "CMAKE_EXE_LINKER_FLAGS" )
     message(STATUS "${flagVar} flags are:  ${${flagVar}}")
 endforeach()
 
