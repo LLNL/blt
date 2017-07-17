@@ -1740,7 +1740,7 @@ macro(CUDA_ADD_LIBRARY cuda_target)
   # variable will have been defined.
   CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
 
-  target_link_libraries(${cuda_target}
+  target_link_libraries(${cuda_target} PUBLIC
     ${CUDA_LIBRARIES}
     )
 
@@ -1790,9 +1790,7 @@ macro(CUDA_ADD_EXECUTABLE cuda_target)
   # variable will have been defined.
   CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
 
-  target_link_libraries(${cuda_target}
-    PUBLIC ${CUDA_LIBRARIES}
-    )
+  target_link_libraries(${cuda_target} PUBLIC ${CUDA_LIBRARIES})
 
   # We need to set the linker language based on what the expected generated file
   # would be. CUDA_C_OR_CXX is computed based on CUDA_HOST_COMPILATION_CPP.
