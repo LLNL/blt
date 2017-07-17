@@ -61,6 +61,7 @@ option(ENABLE_MPI          "Enables MPI support" OFF)
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
 
+option(ENABLE_GMOCK        "Enable Google Mock testing support" OFF)
 
 ################################
 # Compiler Options

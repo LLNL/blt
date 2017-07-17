@@ -58,13 +58,15 @@ blt_add_test( NAME blt_gtest_smoke
 ################
 # gmock test
 ################
-blt_add_executable(NAME blt_gmock_smoke
-                 SOURCES blt_gmock_smoke.cpp
-                 OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                 DEPENDS_ON gtest gmock)
+if(ENABLE_GMOCK)
+    blt_add_executable(NAME blt_gmock_smoke
+                       SOURCES blt_gmock_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                       DEPENDS_ON gtest gmock)
 
-blt_add_test( NAME blt_gmock_smoke
-              COMMAND blt_gmock_smoke)
+    blt_add_test( NAME blt_gmock_smoke
+                  COMMAND blt_gmock_smoke)
+endif()
 
 
 ################

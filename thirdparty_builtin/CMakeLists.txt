@@ -64,11 +64,15 @@ if(ENABLE_TESTS)
                          INCLUDES ${gtest_SOURCE_DIR}/include
                          LIBRARIES gtest_main gtest
                          DEFINES  ${gtest_defines})
-
-    blt_register_library(NAME gmock
-                         INCLUDES ${gmock_SOURCE_DIR}/include
-                         LIBRARIES gmock_main gmock
-                         DEFINES  ${gtest_defines})
+    
+    message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
+    
+    if(ENABLE_GMOCK)
+        blt_register_library(NAME gmock
+                             INCLUDES ${gmock_SOURCE_DIR}/include
+                             LIBRARIES gmock_main gmock
+                             DEFINES  ${gtest_defines})
+    endif()
 
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
