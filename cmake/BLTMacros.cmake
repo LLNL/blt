@@ -191,14 +191,17 @@ macro(blt_register_library)
 
     if( arg_DEPENDS_ON )
         set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_DEPENDS_ON)
     endif()
 
     if( arg_INCLUDES )
         set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
     endif()
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
         set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_FORTRAN_MODULES)
     endif()
 
     if( arg_LIBRARIES )
@@ -207,11 +210,15 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE PATH "" FORCE)
     endif()
 
+    mark_as_advanced(BLT_${uppercase_name}_LIBRARIES)
+
     if( arg_COMPILE_FLAGS )
         set(BLT_${uppercase_name}_COMPILE_FLAGS ${arg_COMPILE_FLAGS} CACHE PATH "" FORCE)
     else()
         set(BLT_${uppercase_name}_COMPILE_FLAGS "BLT_NO_COMPILE_FLAGS" CACHE PATH "" FORCE)
     endif()
+
+    mark_as_advanced(BLT_${uppercase_name}_COMPILE_FLAGS)
 
     if( arg_LINK_FLAGS )
         set(BLT_${uppercase_name}_LINK_FLAGS ${arg_LINK_FLAGS} CACHE PATH "" FORCE)
@@ -219,8 +226,11 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_LINK_FLAGS "BLT_NO_LINK_FLAGS" CACHE PATH "" FORCE)
     endif()
 
+    mark_as_advanced(BLT_${uppercase_name}_LINK_FLAGS)
+
     if( arg_DEFINES )
         set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_DEFINES)
     endif()
 
 endmacro(blt_register_library)
