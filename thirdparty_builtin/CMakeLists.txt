@@ -48,7 +48,7 @@ if(ENABLE_TESTS)
         list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
     endif()
 
-    # Explictly enable/disable death tests
+    # Explicitly enable/disable death tests
     if(ENABLE_GTEST_DEATH_TESTS)
         add_definitions(-DGTEST_HAS_DEATH_TEST=1)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=1")
@@ -56,6 +56,20 @@ if(ENABLE_TESTS)
         add_definitions(-DGTEST_HAS_DEATH_TEST=0)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=0")
     endif()
+
+    #
+    # Use BLT's ENABLE_GMOCK option to set the build options for 
+    # gtest's cmake project
+    #
+    
+    if(ENABLE_GMOCK)
+        set(BUILD_GMOCK ON  CACHE BOOL "")
+        set(BUILD_GTEST OFF CACHE BOOL "")
+    else()
+        set(BUILD_GMOCK OFF CACHE BOOL "")
+        set(BUILD_GTEST ON  CACHE BOOL "")        
+    endif()
+
 
     # Enable builtin google test 
     add_subdirectory(googletest-release-1.8.0)

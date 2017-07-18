@@ -16,21 +16,13 @@ project( googletest-distribution )
 
 enable_testing()
 
-
-##########################################################
-# BLT: 
-# Use our option (ENABLE_GMOCK) to set gtest and gmock 
-# options. 
-##########################################################
+option(BUILD_GTEST "Builds the googletest subproject" OFF)
 
 #Note that googlemock target already builds googletest
+option(BUILD_GMOCK "Builds the googlemock subproject" ON)
 
-if(ENABLE_GMOCK)
-    set(BUILD_GMOCK ON)
-    set(BUILD_GTEST OFF)
-    add_subdirectory( googlemock )
-else()
-    set(BUILD_GMOCK OFF)
-    set(BUILD_GTEST ON)
-    add_subdirectory( googletest )
+if(BUILD_GMOCK)
+  add_subdirectory( googlemock )
+elseif(BUILD_GTEST)
+  add_subdirectory( googletest )
 endif()
