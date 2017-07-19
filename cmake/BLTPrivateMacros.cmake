@@ -265,5 +265,6 @@ macro(blt_update_project_sources)
 
     set( "${PROJECT_NAME}_ALL_SOURCES" "${${PROJECT_NAME}_ALL_SOURCES}"
         CACHE STRING "" FORCE )
+    mark_as_advanced("${PROJECT_NAME}_ALL_SOURCES")
 
 endmacro(blt_update_project_sources)
