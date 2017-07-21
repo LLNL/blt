@@ -70,13 +70,16 @@ if(ENABLE_TESTS)
         set(BUILD_GTEST ON  CACHE BOOL "")        
     endif()
 
-
+    if(NOT WIN32)
+      set(GTEST_EXTRA_LIBS pthread)
+    endif()
+      
     # Enable builtin google test 
     add_subdirectory(googletest-release-1.8.0)
-
+    
     blt_register_library(NAME gtest
                          INCLUDES ${gtest_SOURCE_DIR}/include
-                         LIBRARIES gtest_main gtest pthread
+                         LIBRARIES gtest_main gtest ${GTEST_EXTRA_LIBS} 
                          DEFINES  ${gtest_defines})
     
     message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
