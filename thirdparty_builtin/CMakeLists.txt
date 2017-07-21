@@ -76,7 +76,7 @@ if(ENABLE_TESTS)
 
     blt_register_library(NAME gtest
                          INCLUDES ${gtest_SOURCE_DIR}/include
-                         LIBRARIES gtest_main gtest
+                         LIBRARIES gtest_main gtest pthread
                          DEFINES  ${gtest_defines})
     
     message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
