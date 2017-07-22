@@ -112,8 +112,6 @@ if(BLT_DEFINES)
 endif()
 
 if(COMPILER_FAMILY_IS_MSVC)
-    add_definitions(-D_USE_MATH_DEFINES)
-
     # Mark 32 bit executables large address aware so they can use > 2GB address space
     if(CMAKE_SIZEOF_VOID_P MATCHES 4)
         SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
@@ -122,7 +120,6 @@ if(COMPILER_FAMILY_IS_MSVC)
     # Visual studio can give a warning that /bigobj is required due to the size of some object files
     set( BLT_CXX_FLAGS "${BLT_CXX_FLAGS} /bigobj" )
     set( BLT_C_FLAGS   "${BLT_C_FLAGS} /bigobj" )
-
 endif()
 
 ##########################################
