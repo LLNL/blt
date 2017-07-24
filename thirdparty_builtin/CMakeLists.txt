@@ -70,8 +70,9 @@ if(ENABLE_TESTS)
         set(BUILD_GTEST ON  CACHE BOOL "")        
     endif()
 
-    if(NOT WIN32)
-      set(GTEST_EXTRA_LIBS pthread)
+    if(UNIX AND NOT APPLE)
+      find_package( Threads )
+      set(gtest_extra_libs ${CMAKE_THREAD_LIBS_INIT})
     endif()
       
     # Enable builtin google test 
