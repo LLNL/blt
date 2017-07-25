@@ -95,6 +95,7 @@ set(BLT_CODE_COVERAGE_REPORTS ON)
 # Check for lcov
 if(NOT EXISTS ${LCOV_EXECUTABLE})
     message(STATUS "Code coverage: Unable to find lcov, disabling code coverage reports.")
+    set(BLT_CODE_COVERAGE_REPORTS OFF)
 endif()
 
 # Check for genthml
