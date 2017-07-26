@@ -53,11 +53,14 @@ if (ENABLE_COVERAGE)
     # Setup coverage compiler flags 
     ##########################################################################
     # Set the actual flags for coverage in the COVERAGE_FLAGS variable 
-    # Note: '--coverage' is equivalent to '-fprofile-arcs -ftest-coverage' for compiling and '-lgcov' for linking
+    # Note: For gcc '--coverage' is equivalent to 
+    # '-fprofile-arcs -ftest-coverage' for compiling and '-lgcov' for linking
     # Additional flags that might be useful: 
     #       " -fno-inline -fno-inline-small-functions -fno-default-inline"
     blt_append_custom_compiler_flag(FLAGS_VAR   COVERAGE_FLAGS 
-                                    DEFAULT     "--coverage")
+                                    DEFAULT " "
+                                    GNU     "--coverage"
+                                    CLANG   "--coverage")
         
     SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}" )
     SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}" )
