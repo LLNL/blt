@@ -60,6 +60,9 @@ option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
 option(ENABLE_MPI          "Enables MPI support" OFF)
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
+option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
+mark_as_advanced(ENABLE_CLANG_CUDA)
+set(BLT_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code")
 
 # Controls if Google Mock is built and available for use. 
 # If ENABLE_TESTS=OFF, no testing support is built and this option is ignored.
