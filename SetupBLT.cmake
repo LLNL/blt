@@ -87,6 +87,13 @@ if (NOT BLT_LOADED)
   include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake)
 
   ################################
+  # Git related Macros
+  ################################
+  if (Git_FOUND)
+    include(${BLT_ROOT_DIR}/cmake/BLTGitMacros.cmake)
+  endif()
+  
+  ################################
   # Setup docs targets
   ################################
   include(${BLT_ROOT_DIR}/cmake/SetupDocs.cmake)
