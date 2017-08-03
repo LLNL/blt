@@ -107,7 +107,7 @@ macro(blt_git)
     endif()
 
     ## check arguments
-    if (Git_FOUND)
+    if (GIT_FOUND)
 
       ## assemble the Git command
       set(git_cmd "${GIT_EXECUTABLE}" "${arg_GIT_COMMAND}" )

@@ -99,7 +99,7 @@ blt_add_test(NAME t_header_only_smoke
 ####################
 # Git Macros test
 ####################
-if ( Git_FOUND )
+if ( GIT_FOUND )
 
   blt_is_git_repo( OUTPUT_STATE is_git_repo
                    SOURCE_DIR ${PROJECT_SOURCE_DIR} )
