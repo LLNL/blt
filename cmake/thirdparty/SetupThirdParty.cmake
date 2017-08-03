@@ -47,7 +47,11 @@
 ################################
 # Git
 ################################
-include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupGit.cmake)
+find_package(Git)
+if (Git_FOUND)
+  message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
+  message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
+endif()
 
 ################################
 # MPI
