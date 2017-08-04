@@ -14,6 +14,9 @@ environment:
 init:
   # line endings magic
   - git config --global core.autocrlf input
+  # set git user info 
+  - git config --global user.email "bltdev@llnl.gov"
+  - git config --global user.name "BLT Robot"  
 
 before_build:
   # remove some noisy warnings from Xamarin
@@ -22,6 +25,14 @@ before_build:
   - ps: cd ..
   - cp -r blt\cmake\blt-test .
   - cp -r blt blt-test
+  # create a git repo for blt-test to test the git macros
+  - cd blt-test
+  - git init
+  - git add -A
+  - git commit -a -m "Initial Commit"
+  - git checkout -b test-branch
+  - git tag test-tag  
+  - cd ..  
   # configure
   - echo Running cmake ...
   - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_GMOCK=%ENABLE_GMOCK% -DENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% -DENABLE_OPENMP=ON
