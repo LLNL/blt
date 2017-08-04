@@ -106,12 +106,23 @@ install:
   - sh cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh --skip-license --prefix=${TRAVIS_TPLS_DIR}/cmake/
   - export PATH=${TRAVIS_TPLS_DIR}/cmake/bin:$PATH
 script:
+  # set git user info     
+  - git config --global user.email "blt-dev@llnl.gov" 
+  - git config --global user.name  "BLT Robot"    
   - cmake --version
   - cd $TRAVIS_BUILD_DIR/..
   # copy our internal testing project
   - cp -r blt/cmake/blt-test .
   # symlink blt into this project
   - ln -s ${TRAVIS_BUILD_DIR} blt-test/blt
+  # create a git repo for blt-test to test the git macros
+  - cd blt-test
+  - git init
+  - git add -A
+  - git commit -a -m "Initial Commit"
+  - git checkout -b test-branch
+  - git tag test-tag  
+  - cd ..  
   # create an out-of-source build dir and an install dir
   - mkdir travis-debug-build
   - mkdir travis-debug-install
