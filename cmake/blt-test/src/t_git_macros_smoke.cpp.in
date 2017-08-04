@@ -41,17 +41,20 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 #include "gtest/gtest.h"
 
-#include <iostream> // for cout
-
-#define BLT_TEST_TAG "@BLT_TEST_TAG@"
-#define BLT_TEST_SHA1 "@BLT_TEST_SHA1@"
-#define BLT_TEST_BRANCH "@BLT_TEST_BRANCH@"
+#include <string>   // for std::string
 
 TEST( blt_git_macros_smoke, basic_usage_test )
 {
-  std::cout << "TAG = " << BLT_TEST_TAG << std::endl;
-  std::cout << "SHA1 = " << BLT_TEST_SHA1 << std::endl;
-  std::cout << "BRANCH = " << BLT_TEST_BRANCH << std::endl;
+  const std::string EXPECTED_TAG = "test-tag";
+  const std::string ACTUAL_TAG   = "@BLT_TEST_TAG@";
+  EXPECT_EQ( EXPECTED_TAG, ACTUAL_TAG );
+
+  const std::string EXPECTED_BRANCH = "test-branch";
+  const std::string ACTUAL_BRANCH   = "@BLT_TEST_BRANCH@";
+  EXPECT_EQ( EXPECTED_BRANCH, ACTUAL_BRANCH );
+
+  const std::string ACTUAL_HASHCODE = "@BLT_TEST_SHA1@";
+  EXPECT_FALSE( ACTUAL_HASHCODE.empty() );
 }
 
 
