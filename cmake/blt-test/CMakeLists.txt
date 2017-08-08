@@ -64,8 +64,8 @@ blt_add_library( NAME example
                  )
 
 ################################
-# Add an executable 
-# (which happens to be a test) 
+# Add an executable
+# (which happens to be a test)
 ################################
 blt_add_executable(
          NAME t_example_smoke
@@ -95,3 +95,61 @@ blt_add_executable(
 
 blt_add_test(NAME t_header_only_smoke
              COMMAND t_header_only_smoke)
+
+####################
+# Git Macros test
+####################
+if ( GIT_FOUND )
+
+  blt_is_git_repo( OUTPUT_STATE is_git_repo
+                   SOURCE_DIR ${PROJECT_SOURCE_DIR} )
+
+  if ( ${is_git_repo} )
+
+    ## get the latest tag from the master branch
+    blt_git_tag( OUTPUT_TAG blt_tag
+                 RETURN_CODE rc
+                 ON_BRANCH master
+                 SOURCE_DIR ${PROJECT_SOURCE_DIR}
+                 )
+    if ( NOT ${rc} EQUAL 0 )
+      message(FATAL_ERROR "blt_git_tag failed!")
+    endif()
+
+    ## get the name of the current (i.e., checked out) branch
+    blt_git_branch( BRANCH_NAME blt_branch
+                    RETURN_CODE rc
+                    SOURCE_DIR ${PROJECT_SOURCE_DIR}
+                    )
+    if ( NOT ${rc} EQUAL 0 )
+      message(FATAL_ERROR "blt_git_branch failed!" )
+    endif()
+
+    ## get sha1 at the tip of the current branch
+    blt_git_hashcode ( HASHCODE blt_sha1
+                       RETURN_CODE rc
+                       SOURCE_DIR ${PROJECT_SOURCE_DIR}
+                       )
+    if ( NOT ${rc} EQUAL 0 )
+      message(FATAL_ERROR "blt_git_hashcode failed!")
+    endif()
+
+    set(BLT_TEST_TAG ${blt_tag})
+    set(BLT_TEST_SHA1 ${blt_sha1})
+    set(BLT_TEST_BRANCH ${blt_branch})
+
+    configure_file( src/t_git_macros_smoke.cpp.in
+                    ${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp )
+
+    blt_add_executable(
+      NAME t_git_macros_smoke
+      SOURCES "${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp"
+      DEPENDS_ON gtest
+      )
+
+    blt_add_test( NAME t_git_macros_smoke
+                  COMMAND t_git_macros_smoke )
+
+  endif() # endif is_git_repo
+
+endif() # endif Git_FOUND
