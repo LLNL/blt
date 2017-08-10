@@ -59,6 +59,8 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
       BLT_GMOCK=OFF
     # gcc w/ cmake 3.4.1
     - CMAKE_MAJOR=3.4
@@ -68,6 +70,8 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
       BLT_GMOCK=OFF
     # gcc w/ cmake 3.8.0
     - CMAKE_MAJOR=3.8
@@ -77,6 +81,8 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
       BLT_GMOCK=OFF
     # gcc w/ cmake 3.8.0, gmock on
     - CMAKE_MAJOR=3.8
@@ -86,6 +92,8 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
       BLT_GMOCK=ON
     # gcc w/ cmake 3.8.0, gtest and fruit off
     - CMAKE_MAJOR=3.8
