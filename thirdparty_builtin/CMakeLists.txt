@@ -63,11 +63,18 @@ if(ENABLE_TESTS)
     #
     
     if(ENABLE_GMOCK)
+        
+        # In BLT ENABLE_GMOCK implies ENABLE_GTEST,
+        # IF ENABLE_GTEST is OFF, force to ON
+        if(NOT ENABLE_GTEST)
+            set(ENABLE_GTEST ON CACHE BOOL "")
+        endif()
+        
         set(BUILD_GMOCK ON  CACHE BOOL "")
         set(BUILD_GTEST OFF CACHE BOOL "")
     else()
         set(BUILD_GMOCK OFF CACHE BOOL "")
-        set(BUILD_GTEST ON  CACHE BOOL "")        
+        set(BUILD_GTEST ON  CACHE BOOL "")
     endif()
 
     message(STATUS "Google Test Support is ${ENABLE_GTEST}")
