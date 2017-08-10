@@ -47,7 +47,7 @@
 ################################
 cmake_minimum_required(VERSION 3.1)
 
-project(blt-example LANGUAGES CXX)
+project(blt-example LANGUAGES C CXX)
 
 ################################
 # Include BLT

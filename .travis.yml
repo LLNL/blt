@@ -87,6 +87,15 @@ env:
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
       BLT_GMOCK=ON
+    # gcc w/ cmake 3.8.0, gtest and fruit off
+    - CMAKE_MAJOR=3.8
+      CMAKE_MINOR=0
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_GTEST=OFF
+      BLT_FRUIT=OFF
 addons:
   apt:
     sources:
