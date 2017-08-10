@@ -63,93 +63,96 @@ blt_add_library( NAME example
                  HEADERS "src/Example.hpp"
                  )
 
-################################
-# Add an executable
-# (which happens to be a test)
-################################
-blt_add_executable(
-         NAME t_example_smoke
-         SOURCES "src/t_example_smoke.cpp"
-         DEPENDS_ON example gtest)
+if(ENABLE_GTEST)
+    ################################
+    # Add an executable
+    # (which happens to be a test)
+    ################################
+    blt_add_executable(
+             NAME t_example_smoke
+             SOURCES "src/t_example_smoke.cpp"
+             DEPENDS_ON example gtest)
 
-################################
-# Register our test w/ ctest
-################################
-blt_add_test(NAME t_example_smoke
-             COMMAND t_example_smoke)
+    ################################
+    # Register our test w/ ctest
+    ################################
+    blt_add_test(NAME t_example_smoke
+                 COMMAND t_example_smoke)
 
 
-####################
-#  Header-only test
-####################
+    ####################
+    #  Header-only test
+    ####################
 
-blt_add_library(NAME blt_header_only
-                HEADERS "src/HeaderOnly.hpp")
+    blt_add_library(NAME blt_header_only
+                    HEADERS "src/HeaderOnly.hpp")
 
-# This executable depends on the header-only library
-
-blt_add_executable(
-  NAME t_header_only_smoke
-  SOURCES "src/t_header_only_smoke.cpp"
-  DEPENDS_ON blt_header_only gtest)
-
-blt_add_test(NAME t_header_only_smoke
-             COMMAND t_header_only_smoke)
-
-####################
-# Git Macros test
-####################
-if ( GIT_FOUND )
-
-  blt_is_git_repo( OUTPUT_STATE is_git_repo
-                   SOURCE_DIR ${PROJECT_SOURCE_DIR} )
-
-  if ( ${is_git_repo} )
-
-    ## get the latest tag from the master branch
-    blt_git_tag( OUTPUT_TAG blt_tag
-                 RETURN_CODE rc
-                 ON_BRANCH master
-                 SOURCE_DIR ${PROJECT_SOURCE_DIR}
-                 )
-    if ( NOT ${rc} EQUAL 0 )
-      message(FATAL_ERROR "blt_git_tag failed!")
-    endif()
-
-    ## get the name of the current (i.e., checked out) branch
-    blt_git_branch( BRANCH_NAME blt_branch
-                    RETURN_CODE rc
-                    SOURCE_DIR ${PROJECT_SOURCE_DIR}
-                    )
-    if ( NOT ${rc} EQUAL 0 )
-      message(FATAL_ERROR "blt_git_branch failed!" )
-    endif()
-
-    ## get sha1 at the tip of the current branch
-    blt_git_hashcode ( HASHCODE blt_sha1
-                       RETURN_CODE rc
-                       SOURCE_DIR ${PROJECT_SOURCE_DIR}
-                       )
-    if ( NOT ${rc} EQUAL 0 )
-      message(FATAL_ERROR "blt_git_hashcode failed!")
-    endif()
-
-    set(BLT_TEST_TAG ${blt_tag})
-    set(BLT_TEST_SHA1 ${blt_sha1})
-    set(BLT_TEST_BRANCH ${blt_branch})
-
-    configure_file( src/t_git_macros_smoke.cpp.in
-                    ${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp )
+    # This executable depends on the header-only library
 
     blt_add_executable(
-      NAME t_git_macros_smoke
-      SOURCES "${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp"
-      DEPENDS_ON gtest
-      )
+      NAME t_header_only_smoke
+      SOURCES "src/t_header_only_smoke.cpp"
+      DEPENDS_ON blt_header_only gtest)
 
-    blt_add_test( NAME t_git_macros_smoke
-                  COMMAND t_git_macros_smoke )
+    blt_add_test(NAME t_header_only_smoke
+                 COMMAND t_header_only_smoke)
 
-  endif() # endif is_git_repo
+    ####################
+    # Git Macros test
+    ####################
+    if ( GIT_FOUND )
 
-endif() # endif Git_FOUND
+      blt_is_git_repo( OUTPUT_STATE is_git_repo
+                       SOURCE_DIR ${PROJECT_SOURCE_DIR} )
+
+      if ( ${is_git_repo} )
+
+        ## get the latest tag from the master branch
+        blt_git_tag( OUTPUT_TAG blt_tag
+                     RETURN_CODE rc
+                     ON_BRANCH master
+                     SOURCE_DIR ${PROJECT_SOURCE_DIR}
+                     )
+        if ( NOT ${rc} EQUAL 0 )
+          message(FATAL_ERROR "blt_git_tag failed!")
+        endif()
+
+        ## get the name of the current (i.e., checked out) branch
+        blt_git_branch( BRANCH_NAME blt_branch
+                        RETURN_CODE rc
+                        SOURCE_DIR ${PROJECT_SOURCE_DIR}
+                        )
+        if ( NOT ${rc} EQUAL 0 )
+          message(FATAL_ERROR "blt_git_branch failed!" )
+        endif()
+
+        ## get sha1 at the tip of the current branch
+        blt_git_hashcode ( HASHCODE blt_sha1
+                           RETURN_CODE rc
+                           SOURCE_DIR ${PROJECT_SOURCE_DIR}
+                           )
+        if ( NOT ${rc} EQUAL 0 )
+          message(FATAL_ERROR "blt_git_hashcode failed!")
+        endif()
+
+        set(BLT_TEST_TAG ${blt_tag})
+        set(BLT_TEST_SHA1 ${blt_sha1})
+        set(BLT_TEST_BRANCH ${blt_branch})
+
+        configure_file( src/t_git_macros_smoke.cpp.in
+                        ${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp )
+
+        blt_add_executable(
+          NAME t_git_macros_smoke
+          SOURCES "${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp"
+          DEPENDS_ON gtest
+          )
+
+        blt_add_test( NAME t_git_macros_smoke
+                      COMMAND t_git_macros_smoke )
+
+      endif() # endif is_git_repo
+
+    endif() # endif Git_FOUND
+
+endif() # endif ENABLE_GTEST
