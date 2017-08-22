@@ -314,11 +314,6 @@ if (ENABLE_WARNINGS_AS_ERRORS)
     endforeach()
 endif()
 
-foreach(flagVar ${langFlags} "CMAKE_Fortran_FLAGS" "CMAKE_EXE_LINKER_FLAGS" )
-    message(STATUS "${flagVar} flags are:  ${${flagVar}}")
-endforeach()
-
-
 ################################
 # Enable Fortran
 ################################
@@ -332,6 +327,15 @@ if(ENABLE_FORTRAN)
 
     # default property to free form
     set(CMAKE_Fortran_FORMAT FREE)
+
+    list(APPEND langFlags "CMAKE_Fortran_FLAGS")
 else()
     message(STATUS  "Fortran support disabled.")
 endif()
+
+###################################
+# Output compiler and linker flags 
+###################################
+foreach(flagVar ${langFlags}  "CMAKE_EXE_LINKER_FLAGS" )
+    message(STATUS "${flagVar} flags are:  ${${flagVar}}")
+endforeach()
