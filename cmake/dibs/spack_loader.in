@@ -1,0 +1,2 @@
+. @SPACK_ROOT@/setup-env.sh
+. @SPACK_BINARY@ load $@

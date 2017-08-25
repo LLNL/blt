@@ -1,0 +1,2 @@
+. @SPACK_SHARE@/setup-env.sh
+@SPACK_BINARY@ env $1 | grep SPACK_$2= | sed "s,SPACK_$2=,," | tr -d '\n' 
