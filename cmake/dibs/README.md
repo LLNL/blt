@@ -3,7 +3,7 @@ Installation
 
 To install, 
 
-  cmake -DSPACK\_ROOT=... -DCMAKE\_INSTALL\_PREFIX=...
+    cmake -DSPACK\_ROOT=... -DCMAKE\_INSTALL\_PREFIX=...
 
 CMake 
 -----------
@@ -12,10 +12,10 @@ Dibs allows users to integrate Spack into their CMake builds. For a sample CMake
 
 The Dibs interface allows a user to do things in their CMakeLists like
 
-  require\_spack\_package(raja caliper openmpi+cuda)
-  find\_package(raja)
-  set(CMAKE\_CXX\_FLAGS ${CMAKE\_CXX\_FLAGS} ${RAJA\_COMPILE\_FLAGS})
-  target\_link\_libraries(my\_executable caliper caliper-common)
+    require\_spack\_package(raja caliper openmpi+cuda)
+    find\_package(raja)
+    set(CMAKE\_CXX\_FLAGS ${CMAKE\_CXX\_FLAGS} ${RAJA\_COMPILE\_FLAGS})
+    target\_link\_libraries(my\_executable caliper caliper-common)
 
 And have the packages they requested installed by Spack if they aren't already, used if they are, and available in the build for things like find\_package
 
@@ -29,11 +29,11 @@ There are two main ways to use Dibs
 
 To invoke dibs directly, try
 
-  dibs spack\_compiler\_spec typical\_cmake\_args
+    dibs spack\_compiler\_spec typical\_cmake\_args
 
 For example
 
-  dibs gcc@4.9.3 -DCMAKE\_INSTALL\_PREFIX=$HOME -DCMAKE\_CXX\_FLAGS=...
+    dibs gcc@4.9.3 -DCMAKE\_INSTALL\_PREFIX=$HOME -DCMAKE\_CXX\_FLAGS=...
 
 Release
 -------
