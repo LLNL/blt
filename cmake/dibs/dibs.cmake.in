@@ -1,0 +1,68 @@
+#####################Configure time options############################
+
+set(SPACK_ROOT @SPACK_ROOT@)
+set(SPACK_SHARE @SPACK_SHARE@)
+set(SPACK_BINARY @SPACK_BINARY@)
+set(MODULE_CMD @MODULE_CMD@)
+
+#######################################################################
+
+
+#####################Global Vars in DIBS###############################
+
+set(DIBS_SPACK_COMPILER_SPEC "" CACHE INTERNAL "")
+set(DIBS_SPACK_ADOPT_SPACK_COMPILER Off CACHE INTERNAL "")
+
+#######################################################################
+
+cmake_minimum_required(VERSION 2.8)
+
+function(adopt_spack_compiler)
+  set(DIBS_SPACK_ADOPT_SPACK_COMPILER On CACHE INTERNAL "")
+endfunction()
+
+function(export_module_hack export_me)
+  execute_process(COMMAND @MODULE_CMD@ bash load ${export_me} OUTPUT_VARIABLE module_text)
+  execute_process(COMMAND python @CMAKE_INSTALL_PREFIX@/bin/parse_environment_names.py "${module_text}" OUTPUT_VARIABLE module_name_list)
+  execute_process(COMMAND python @CMAKE_INSTALL_PREFIX@/bin/parse_environment_values.py "${module_text}" OUTPUT_VARIABLE module_value_list)
+    list(LENGTH module_name_list num_modules_string)
+    math(EXPR num_modules "${num_modules_string} - 1")
+    foreach(module_num RANGE ${num_modules})
+      list(GET module_name_list ${module_num} this_module_name)
+      string(REGEX REPLACE "[\n\r]" "" this_module_name "${this_module_name}")
+      list(GET module_value_list ${module_num} this_module_value)
+      set(ENV{${this_module_name}} ${this_module_value})
+      file(APPEND ${CMAKE_BINARY_DIR}/@MODULE_FILE_NAME@ "export ${this_module_name}=${this_module_value}\n")
+    endforeach() 
+endfunction()
+
+function(cleanup_module_file)
+  execute_process(COMMAND @CMAKE_INSTALL_PREFIX@/bin/clean_modules WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  execute_process(COMMAND @CMAKE_INSTALL_PREFIX@/bin/clean_modules WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endfunction()
+
+
+function(require_spack_package)
+  if(TARGET spack_environment)
+  else()
+    add_custom_target(spack_environment)
+    add_custom_target(spack_integration
+       COMMAND echo ""
+       VERBATIM)
+  endif()
+
+  set(retval "")
+  foreach(arg IN LISTS ARGN)
+    MESSAGE(STATUS "DIBS: Installing if necessary : ${arg}")
+    if(DIBS_COMPILER_SPEC)
+      execute_process(COMMAND @CMAKE_INSTALL_PREFIX@/bin/spack_to_raw ${arg}%${DIBS_COMPILER_SPEC} OUTPUT_VARIABLE full_module_name)
+    else()
+      execute_process(COMMAND @CMAKE_INSTALL_PREFIX@/bin/spack_to_raw ${arg} OUTPUT_VARIABLE full_module_name)
+    endif()
+    MESSAGE(STATUS "DIBS: Full Module Name : ${full_module_name}")
+    export_module_hack(${full_module_name})
+    MESSAGE(STATUS "DIBS: Done with : ${arg}")
+    cleanup_module_file()
+  endforeach()
+  cleanup_module_file()
+endfunction()

@@ -1,0 +1,8 @@
+#-- darwin-yosemite-x86_64 / gcc@7.1.0 ---------------------------
+#r3mrytk openmpi@2.1.1
+. @SPACK_SHARE@/setup-env.sh
+spack install $@ 2>&1 >/dev/null
+dumb_ans=$(spack find $@ | tail -n 1 | sed "s,@,-,g")
+smarter_ans=$(module avail $dumb_ans 2>& 1 | grep $dumb_ans | sed "s,@,-,g" | sed "s,.* ,,")
+#| sed "s,@,-,g" | sed "s,.* ,,")
+printf "$smarter_ans"

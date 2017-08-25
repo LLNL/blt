@@ -1,0 +1,6 @@
+sed -i "s,[\\ \s]*$,," @MODULE_FILE_NAME@
+sed -i "s,[\\ \s]:$,," @MODULE_FILE_NAME@
+sed -i "s,export _LMFILES_=.*,," @MODULE_FILE_NAME@
+sed -i "s,export LOADEDMODULES=.*,," @MODULE_FILE_NAME@
+sed -i "s,export =,," @MODULE_FILE_NAME@
+sed -i '/^\s*$/d' @MODULE_FILE_NAME@

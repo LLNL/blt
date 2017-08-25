@@ -1,0 +1,2 @@
+foo=$(dirname $0)
+python $foo/module_parser.py
