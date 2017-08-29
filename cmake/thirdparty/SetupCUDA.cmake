@@ -17,7 +17,7 @@ else ()
 endif ()
 
 if (ENABLE_CLANG_CUDA)
-  set (clang_cuda_flags "-x cuda --cuda-gpu-arch=${BLT_CUDA_ARCH} --cuda-path=${CUDA_TOOLKIT_ROOT_DIR}")
+  set (clang_cuda_flags "-x cuda --cuda-gpu-arch=${BLT_CLANG_CUDA_ARCH} --cuda-path=${CUDA_TOOLKIT_ROOT_DIR}")
 
   blt_register_library(NAME cuda
                        COMPILE_FLAGS ${clang_cuda_flags}

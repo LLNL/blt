@@ -62,7 +62,8 @@ option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
 option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
 mark_as_advanced(ENABLE_CLANG_CUDA)
-set(BLT_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code")
+set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
+mark_as_advanced(BLT_CLANG_CUDA_ARCH)
 
 # Options that control if Google Test, Google Mock, and Fruit are built 
 # and available for use. 
