@@ -63,34 +63,50 @@ if(ENABLE_TESTS)
     #
     
     if(ENABLE_GMOCK)
+        
+        # In BLT ENABLE_GMOCK implies ENABLE_GTEST,
+        # IF ENABLE_GTEST is OFF, force to ON
+        if(NOT ENABLE_GTEST)
+            set(ENABLE_GTEST ON CACHE BOOL "")
+        endif()
+        
         set(BUILD_GMOCK ON  CACHE BOOL "")
         set(BUILD_GTEST OFF CACHE BOOL "")
     else()
         set(BUILD_GMOCK OFF CACHE BOOL "")
-        set(BUILD_GTEST ON  CACHE BOOL "")        
+        set(BUILD_GTEST ON  CACHE BOOL "")
     endif()
 
-
-    # Enable builtin google test 
-    add_subdirectory(googletest-release-1.8.0)
-
-    blt_register_library(NAME gtest
-                         INCLUDES ${gtest_SOURCE_DIR}/include
-                         LIBRARIES gtest_main gtest
-                         DEFINES  ${gtest_defines})
-    
+    message(STATUS "Google Test Support is ${ENABLE_GTEST}")
     message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
     
-    if(ENABLE_GMOCK)
-        blt_register_library(NAME gmock
-                             INCLUDES ${gmock_SOURCE_DIR}/include
-                             LIBRARIES gmock_main gmock
+    #
+    # Guard of googletest w/ ENABLE_GTEST
+    # In BTL ENABLE_GTEST is also required when using ENABLE_GMOCK
+    #
+    
+    if(ENABLE_GTEST)
+        # Enable builtin google test 
+        add_subdirectory(googletest-release-1.8.0)
+
+        blt_register_library(NAME gtest
+                             INCLUDES ${gtest_SOURCE_DIR}/include
+                             LIBRARIES gtest_main gtest
                              DEFINES  ${gtest_defines})
+         if(ENABLE_GMOCK)
+             blt_register_library(NAME gmock
+                                  INCLUDES ${gmock_SOURCE_DIR}/include
+                                  LIBRARIES gmock_main gmock
+                                  DEFINES  ${gtest_defines})
+         endif()
     endif()
 
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
-        add_subdirectory(fruit-3.4.1)
+        message(STATUS "Fruit Support is ${ENABLE_FRUIT}")
+        if(ENABLE_FRUIT)
+            add_subdirectory(fruit-3.4.1)
+        endif()
     endif()
 
     if(ENABLE_BENCHMARKS)
