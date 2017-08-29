@@ -5,11 +5,19 @@ environment:
     BUILD_SHARED_LIBS: ON
     ENABLE_GMOCK: OFF
     ENABLE_BENCHMARKS: OFF
+    ENABLE_MPI: OFF
   - CMAKE_GENERATOR: "Visual Studio 14 2015"
     CONFIG: Release
     BUILD_SHARED_LIBS: OFF
     ENABLE_GMOCK: ON
     ENABLE_BENCHMARKS: ON
+    ENABLE_MPI: OFF
+  - CMAKE_GENERATOR: "Visual Studio 14 2015"
+    CONFIG: Release
+    BUILD_SHARED_LIBS: OFF
+    ENABLE_GMOCK: OFF
+    ENABLE_BENCHMARKS: OFF
+    ENABLE_MPI: ON
 
 init:
   # line endings magic
@@ -18,6 +26,16 @@ init:
   - git config --global user.email "bltdev@llnl.gov"
   - git config --global user.name "BLT Robot"  
 
+install:
+  # Install MS-MPI
+  - ps: Start-FileDownload 'https://download.microsoft.com/download/B/2/E/B2EB83FE-98C2-4156-834A-E1711E6884FB/MSMpiSetup.exe'
+  - MSMpiSetup.exe -unattend
+  - set PATH="C:/Program\ Files/Microsoft MPI/Bin";%PATH%
+
+  # Install MS-MPI SDK
+  - ps: Start-FileDownload 'https://download.microsoft.com/download/B/2/E/B2EB83FE-98C2-4156-834A-E1711E6884FB/msmpisdk.msi'
+  - msmpisdk.msi /passive
+  
 before_build:
   # remove some noisy warnings from Xamarin
   - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
@@ -35,7 +53,8 @@ before_build:
   - cd ..  
   # configure
   - echo Running cmake ...
-  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_GMOCK=%ENABLE_GMOCK% -DENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% -DENABLE_OPENMP=ON
+  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_GMOCK=%ENABLE_GMOCK% -DENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% -DENABLE_OPENMP=ON -DENABLE_MPI=%ENABLE_MPI% -DMPI_HOME="C:/Program\ Files\ (x86)/Microsoft\ SDKs/MPI" -DMPI_CXX_LIBRARIES="C:/Program\ Files\ (x86)/Microsoft\ SDKs/MPI/Lib/x86/msmpi.lib" -DMPI_CXX_INCLUDE_PATH="C:/Program\ Files\ (x86)/Microsoft\ SDKs/MPI/Include"
+
 
 build_script:
   #build
