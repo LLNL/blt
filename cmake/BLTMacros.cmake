@@ -147,7 +147,8 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 ## blt_register_library( NAME <libname>
 ##                       DEPENDS_ON [dep1 [dep2 ...]]
-##                       INCLUDES [include1 [include2 ...]] 
+##                       INCLUDES [include1 [include2 ...]]
+##                       USE_SYSTEM_INCLUDES [ON] 
 ##                       FORTRAN_MODULES [ path1 [ path2 ..]]
 ##                       LIBRARIES [lib1 [lib2 ...]]
 ##                       COMPILE_FLAGS [ flag1 [ flag2 ..]]
@@ -161,12 +162,17 @@ endmacro(blt_add_target_link_flags)
 ## the DEPENDS_ON in your blt_add_executable call and it will add the INCLUDES
 ## and LIBRARIES to that executable.
 ##
+## USE_SYSTEM_INCLUDES marks the utilizes the compiler's system include path 
+## setting for this libraries include directories.  This is useful if the headers
+## generate warnings you want to not have them reported in your build.
+##
 ## This does not actually build the library.  This is strictly to ease use after
 ## discovering it on your system or building it yourself inside your project.
 ##
 ## Output variables (name = "foo"):
 ##  BLT_FOO_DEPENDS_ON
 ##  BLT_FOO_INCLUDES
+##  BLT_FOO_USE_SYSTEM_INCLUDES
 ##  BLT_FOO_FORTRAN_MODULES
 ##  BLT_FOO_LIBRARIES
 ##  BLT_FOO_COMPILE_FLAGS
@@ -175,7 +181,7 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
-    set(singleValueArgs NAME )
+    set(singleValueArgs NAME USE_SYSTEM_INCLUDES)
     set(multiValueArgs INCLUDES 
                        FORTRAN_MODULES
                        LIBRARIES
@@ -197,6 +203,11 @@ macro(blt_register_library)
     if( arg_INCLUDES )
         set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE PATH "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
+    endif()
+
+    if( arg_USE_SYSTEM_INCLUDES )
+        set(BLT_${uppercase_name}_USE_SYSTEM_INCLUDES ON CACHE BOOL "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_USE_SYSTEM_INCLUDES)
     endif()
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
