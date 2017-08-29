@@ -321,7 +321,7 @@ macro(blt_add_library)
         #  CUDA support
         #
         list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-        if ( ${check_for_cuda} GREATER -1)
+        if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
 
             blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                              TARGET_SOURCES ${arg_SOURCES})
@@ -459,7 +459,7 @@ macro(blt_add_executable)
     #  cuda support
     #
     list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-    if ( ${check_for_cuda} GREATER -1)
+    if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                          TARGET_SOURCES ${arg_SOURCES})
         cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
