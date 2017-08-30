@@ -27,9 +27,6 @@ Developers include:
  * Kenneth Weiss (kweiss@llnl.gov)
  * Lee Taylor (taylor16@llnl.gov)
  * Aaron Black (black27@llnl.gov)
-
-Contributors include:
-
  * David A. Beckingsale (beckingsale1@llnl.gov)
  * Richard Hornung (hornung1@llnl.gov)
  * Randolph Settgast (settgast1@llnl.gov)

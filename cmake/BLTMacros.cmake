@@ -147,7 +147,8 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 ## blt_register_library( NAME <libname>
 ##                       DEPENDS_ON [dep1 [dep2 ...]]
-##                       INCLUDES [include1 [include2 ...]] 
+##                       INCLUDES [include1 [include2 ...]]
+##                       TREAT_INCLUDES_AS_SYSTEM [ON] 
 ##                       FORTRAN_MODULES [ path1 [ path2 ..]]
 ##                       LIBRARIES [lib1 [lib2 ...]]
 ##                       COMPILE_FLAGS [ flag1 [ flag2 ..]]
@@ -161,12 +162,17 @@ endmacro(blt_add_target_link_flags)
 ## the DEPENDS_ON in your blt_add_executable call and it will add the INCLUDES
 ## and LIBRARIES to that executable.
 ##
+## TREAT_INCLUDES_AS_SYSTEM marks the utilizes the compiler's system include path 
+## setting for this libraries include directories.  This is useful if the headers
+## generate warnings you want to not have them reported in your build.
+##
 ## This does not actually build the library.  This is strictly to ease use after
 ## discovering it on your system or building it yourself inside your project.
 ##
 ## Output variables (name = "foo"):
 ##  BLT_FOO_DEPENDS_ON
 ##  BLT_FOO_INCLUDES
+##  BLT_FOO_TREAT_INCLUDES_AS_SYSTEM
 ##  BLT_FOO_FORTRAN_MODULES
 ##  BLT_FOO_LIBRARIES
 ##  BLT_FOO_COMPILE_FLAGS
@@ -175,7 +181,7 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
-    set(singleValueArgs NAME )
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
                        FORTRAN_MODULES
                        LIBRARIES
@@ -197,6 +203,11 @@ macro(blt_register_library)
     if( arg_INCLUDES )
         set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE PATH "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
+    endif()
+
+    if( arg_TREAT_INCLUDES_AS_SYSTEM )
+        set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM ON CACHE BOOL "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
     endif()
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
