@@ -3,25 +3,70 @@ environment:
   - CMAKE_GENERATOR: "Visual Studio 14 2015"
     CONFIG: Release
     BUILD_SHARED_LIBS: ON
+    ENABLE_GMOCK: OFF
+    ENABLE_BENCHMARKS: OFF
+    ENABLE_MPI: OFF
   - CMAKE_GENERATOR: "Visual Studio 14 2015"
     CONFIG: Release
     BUILD_SHARED_LIBS: OFF
-
+    ENABLE_GMOCK: ON
+    ENABLE_BENCHMARKS: ON
+    ENABLE_MPI: OFF
+  - CMAKE_GENERATOR: "Visual Studio 14 2015"
+    CONFIG: Release
+    BUILD_SHARED_LIBS: OFF
+    ENABLE_GMOCK: OFF
+    ENABLE_BENCHMARKS: OFF
+    ENABLE_MPI: ON
 
 init:
   # line endings magic
   - git config --global core.autocrlf input
+  # set git user info 
+  - git config --global user.email "bltdev@llnl.gov"
+  - git config --global user.name "BLT Robot"  
 
+install:
+  # Install MS-MPI
+  - ps: Start-FileDownload 'https://download.microsoft.com/download/B/2/E/B2EB83FE-98C2-4156-834A-E1711E6884FB/MSMpiSetup.exe'
+  - MSMpiSetup.exe -unattend
+  - set PATH=C:\Program Files\Microsoft MPI\Bin;%PATH%
+
+  # Install MS-MPI SDK
+  - ps: Start-FileDownload 'https://download.microsoft.com/download/B/2/E/B2EB83FE-98C2-4156-834A-E1711E6884FB/msmpisdk.msi'
+  - msmpisdk.msi /passive
+  
 before_build:
   # remove some noisy warnings from Xamarin
   - del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
   # copy blt into blt-test and setup to build there
   - ps: cd ..
+  - mkdir build
   - cp -r blt\cmake\blt-test .
   - cp -r blt blt-test
+  # create a git repo for blt-test to test the git macros
+  - cd blt-test
+  - git init
+  - git add -A
+  - git commit -a -m "Initial Commit"
+  - git checkout -b test-branch
+  - git tag test-tag  
+  - cd ..\build
   # configure
   - echo Running cmake ...
-  - cmake -Hblt-test -Bbuild -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DENABLE_OPENMP=ON
+  - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
+      -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
+      -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
+      -D ENABLE_OPENMP=ON ^
+      -D ENABLE_MPI=%ENABLE_MPI% ^
+      -D MPI_HOME:PATH="C:/Program Files (x86)/Microsoft SDKs/MPI" ^
+      -D MPI_C_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
+      -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
+      -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
+      -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
+      ..\blt-test
+  - cd ..
 
 build_script:
   #build
@@ -31,3 +76,11 @@ build_script:
 after_build:
   # run our tests
   - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config %CONFIG% --target RUN_TESTS
+  
+on_failure:
+  - ps: |
+      Write-Output "CMakeOutput.log"
+      cat c:\projects\build\CMakeFiles\CMakeOutput.log
+      Write-Output "CMakeError.log"
+      cat c:\projects\build\CMakeFiles\CMakeError.log
+

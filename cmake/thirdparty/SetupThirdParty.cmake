@@ -45,6 +45,16 @@
 ####################################
 
 ################################
+# Git
+################################
+find_package(Git)
+if (Git_FOUND)
+  set(GIT_FOUND TRUE)
+  message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
+  message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
+endif()
+
+################################
 # MPI
 ################################
 message(STATUS "MPI Support is ${ENABLE_MPI}")

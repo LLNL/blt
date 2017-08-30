@@ -44,48 +44,6 @@
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
 ##------------------------------------------------------------------------------
-## blt_add_component( COMPONENT_NAME <name> DEFAULT_STATE [ON/OFF] )
-##
-## Adds a project component to the build.
-##
-## Adds a component to the build given the component's name and default state
-## (ON/OFF). This macro also adds an "option" so that the user can control,
-## which components to build.
-##------------------------------------------------------------------------------
-macro(blt_add_component)
-
-    set(options)
-    set(singleValueArgs COMPONENT_NAME DEFAULT_STATE )
-    set(multiValueArgs)
-
-    # Parse the arguments to the macro
-    cmake_parse_arguments(arg
-         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    # Setup a cmake vars to capture sources added via our macros
-    set("${arg_COMPONENT_NAME}_ALL_SOURCES" CACHE PATH "" FORCE)
-
-    # Adds an option so that the user can control whether to build this
-    # component.
-    # convert the component name to capitals for the ENABLE option.
-    string(TOUPPER ${arg_COMPONENT_NAME} COMPONENT_NAME_CAPITALIZED)
-    string(TOLOWER ${arg_COMPONENT_NAME} COMPONENT_NAME_LOWERED)
-
-    option(ENABLE_${COMPONENT_NAME_CAPITALIZED}
-           "Enables ${arg_component_name}"
-           ${arg_DEFAULT_STATE})
-
-    if ( ENABLE_${COMPONENT_NAME_CAPITALIZED} )
-        add_subdirectory( ${arg_COMPONENT_NAME} )
-    endif()
-
-    unset(COMPONENT_NAME_CAPITALIZED)
-    unset(COMPONENT_NAME_LOWERED)
-
-endmacro(blt_add_component)
-
-
-##------------------------------------------------------------------------------
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
@@ -233,14 +191,17 @@ macro(blt_register_library)
 
     if( arg_DEPENDS_ON )
         set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_DEPENDS_ON)
     endif()
 
     if( arg_INCLUDES )
         set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
     endif()
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
         set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_FORTRAN_MODULES)
     endif()
 
     if( arg_LIBRARIES )
@@ -249,11 +210,15 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE PATH "" FORCE)
     endif()
 
+    mark_as_advanced(BLT_${uppercase_name}_LIBRARIES)
+
     if( arg_COMPILE_FLAGS )
         set(BLT_${uppercase_name}_COMPILE_FLAGS ${arg_COMPILE_FLAGS} CACHE PATH "" FORCE)
     else()
         set(BLT_${uppercase_name}_COMPILE_FLAGS "BLT_NO_COMPILE_FLAGS" CACHE PATH "" FORCE)
     endif()
+
+    mark_as_advanced(BLT_${uppercase_name}_COMPILE_FLAGS)
 
     if( arg_LINK_FLAGS )
         set(BLT_${uppercase_name}_LINK_FLAGS ${arg_LINK_FLAGS} CACHE PATH "" FORCE)
@@ -261,8 +226,11 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_LINK_FLAGS "BLT_NO_LINK_FLAGS" CACHE PATH "" FORCE)
     endif()
 
+    mark_as_advanced(BLT_${uppercase_name}_LINK_FLAGS)
+
     if( arg_DEFINES )
         set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE PATH "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_DEFINES)
     endif()
 
 endmacro(blt_register_library)
@@ -288,10 +256,10 @@ endmacro(blt_register_library)
 ## ON, in which case, it will create a shared library. By default, a static
 ## library is generated unless the SHARED option is added.
 ##
-## If given a HEADERS argument, it first copies the headers into the out-of-source
-## build directory under the include/<HEADERS_OUTPUT_SUBDIR> and installs
-## them to the CMAKE_INSTALL_PREFIX/include/<HEADERS_OUTPUT_SUBDIR>.
-## Because of this HEADERS_OUTPUT_SUBDIR must be a relative path.
+## If given a HEADERS argument and ENABLE_COPY_HEADERS is ON, it first copies
+## the headers into the out-of-source build directory under the
+## include/<HEADERS_OUTPUT_SUBDIR>.Because of this HEADERS_OUTPUT_SUBDIR must
+## be a relative path.
 ## 
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If 
@@ -326,7 +294,6 @@ macro(blt_add_library)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Check for the variable-based options and sanity checks
     if(arg_PYTHON_MODULE)
         set(arg_SHARED TRUE)
         if( NOT arg_OUTPUT_DIR )
@@ -349,60 +316,75 @@ macro(blt_add_library)
         set(arg_CLEAR_PREFIX TRUE)
     endif()
 
-
     if ( arg_SOURCES )
-      #
-      #  cuda support
-      #
-      list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-      if ( ${check_for_cuda} GREATER -1)
+        #
+        #  CUDA support
+        #
+        list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+        if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
 
-          blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
-                                           TARGET_SOURCES ${arg_SOURCES})
+            blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
+                                             TARGET_SOURCES ${arg_SOURCES})
 
-          if ( arg_SHARED OR ENABLE_SHARED_LIBS )
-              cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
-          else()
-              cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
-          endif()
-      elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
-          add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
-      else()
-          add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
-      endif()
+            if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+                cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
+            else()
+                cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
+            endif()
+        elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
+            add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
+        else()
+            add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
+        endif()
     else()
-      foreach (_file ${arg_HEADERS})
-        get_filename_component(_absolute ${_file} ABSOLUTE)
-        set(_absolute_headers ${_absolute_headers} ${_absolute})
-      endforeach()
+        #
+        #  Header-only library support
+        #
+        foreach (_file ${arg_HEADERS})
+            get_filename_component(_name ${_file} NAME)
+            get_filename_component(_absolute ${_file} ABSOLUTE)
 
-      add_library( ${arg_NAME} INTERFACE)
-      target_sources( ${arg_NAME} INTERFACE ${_absolute_headers} )
+            # Determine build location of headers
+            set(_build_headers ${_build_headers} ${_absolute})
+
+            # Determine install location of headers
+            set(_install_headers ${_install_headers} include/${arg_HEADERS_OUTPUT_SUBDIR}/${_name})
+        endforeach()
+
+        #Note: This only works if both libraries are handled in the same directory,
+        #  otherwise just don't include non-header files in your source list.
+        set_source_files_properties(${_build_headers} PROPERTIES HEADER_FILE_ONLY ON)
+
+        add_library( ${arg_NAME} INTERFACE )
+        if ( ENABLE_COPY_HEADERS )
+            target_sources( ${arg_NAME} INTERFACE
+                        $<BUILD_INTERFACE:${_build_headers}>
+                        $<INSTALL_INTERFACE:${_install_headers}>)
+
+            target_include_directories(${arg_NAME} INTERFACE
+                        $<BUILD_INTERFACE:${HEADER_INCLUDES_DIRECTORY}>
+                        $<INSTALL_INTERFACE:include/${arg_HEADERS_OUTPUT_SUBDIR}>)
+        else()
+            target_sources( ${arg_NAME} INTERFACE
+                        $<BUILD_INTERFACE:${_build_headers}>)
+        endif()
     endif()
 
-    # Handle copying and installing headers
-    if ( arg_HEADERS )
-        # Determine build and install location of headers
+    # Handle copying headers
+    if ( arg_HEADERS AND ENABLE_COPY_HEADERS )
+        # Determine build location of headers
         set(headers_build_dir ${HEADER_INCLUDES_DIRECTORY})
-        set(headers_install_dir ${CMAKE_INSTALL_PREFIX}/include)
         if (arg_HEADERS_OUTPUT_SUBDIR)
             if (IS_ABSOLUTE ${arg_HEADERS_OUTPUT_SUBDIR})
                 message(FATAL_ERROR "blt_add_library must be called with a relative path for HEADERS_OUTPUT_SUBDIR")
-            else()
-                set(headers_build_dir ${headers_build_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
-                set(headers_install_dir ${headers_install_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
             endif()
+            set(headers_build_dir ${headers_build_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
         endif()
 
-        if ( ENABLE_COPY_HEADERS )
-            blt_copy_headers_target( NAME        ${arg_NAME}
-                                     HEADERS     ${arg_HEADERS}
-                                     DESTINATION ${headers_build_dir})
-        endif()
-
-        install(FILES ${arg_HEADERS} DESTINATION ${headers_install_dir})
+        blt_copy_headers_target( NAME        ${arg_NAME}
+                                 HEADERS     ${arg_HEADERS}
+                                 DESTINATION ${headers_build_dir})
     endif()
-    install(TARGETS ${arg_NAME} DESTINATION lib EXPORT ${arg_NAME}-targets)
 
     # Must tell fortran where to look for modules
     # CMAKE_Fortran_MODULE_DIRECTORY is the location of generated modules
@@ -413,7 +395,7 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-        target_include_directories(${arg_NAME} PUBLIC ${CMAKE_Fortran_MODULE_DIRECTORY})
+        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
     blt_setup_target( NAME ${arg_NAME}
@@ -424,12 +406,12 @@ macro(blt_add_library)
             LIBRARY_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
     endif()
 
-    if (arg_OUTPUT_NAME)
+    if ( arg_OUTPUT_NAME )
         set_target_properties(${arg_NAME} PROPERTIES
             OUTPUT_NAME ${arg_OUTPUT_NAME} )
     endif()
 
-    if (arg_CLEAR_PREFIX)
+    if ( arg_CLEAR_PREFIX )
         set_target_properties(${arg_NAME} PROPERTIES
             PREFIX "" )
     endif()
@@ -477,7 +459,7 @@ macro(blt_add_executable)
     #  cuda support
     #
     list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-    if ( ${check_for_cuda} GREATER -1)
+    if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                          TARGET_SOURCES ${arg_SOURCES})
         cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
@@ -497,12 +479,12 @@ macro(blt_add_executable)
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
-     # when using shared libs on windows, all runtime targets
-     # (dlls and exes) must live in the same dir
-     # so we do not set runtime_output_dir in this case
-     if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
-            set_target_properties(${arg_NAME} PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
+    # when using shared libs on windows, all runtime targets
+    # (dlls and exes) must live in the same dir
+    # so we do not set runtime_output_dir in this case
+    if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
+           set_target_properties(${arg_NAME} PROPERTIES
+           RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
@@ -542,16 +524,31 @@ macro(blt_add_test)
         message(FATAL_ERROR "COMMAND is a required parameter to blt_add_test")
     endif()
 
-    # Generate command
+    # Extract test directory and executable from arg_NAME and arg_COMMAND
     if ( NOT TARGET ${arg_NAME} )
-        # Handle case of running multiple tests against one executable, 
+        # Handle cases where multiple tests are run against one executable
         # the NAME will not be the target
-        list(GET arg_COMMAND 0 executable)
-        get_target_property(runtime_output_directory ${executable} RUNTIME_OUTPUT_DIRECTORY )
+        list(GET arg_COMMAND 0 test_executable)
+        get_target_property(test_directory ${test_executable} RUNTIME_OUTPUT_DIRECTORY )
     else()
-        get_target_property(runtime_output_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
+        set(test_executable ${arg_NAME})
+        get_target_property(test_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
     endif()
-    set(test_command ${runtime_output_directory}/${arg_COMMAND} )
+    
+    # Append the test_directory to the test argument, accounting for multi-config generators
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        set(test_command ${test_directory}/${arg_COMMAND} )
+    else()
+        list(INSERT arg_COMMAND 0 "$<TARGET_FILE:${test_executable}>")
+        list(REMOVE_AT arg_COMMAND 1)
+        set(test_command ${arg_COMMAND})
+    endif()
+
+    # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, 
+    # ensure NUM_PROCS is at least one. This invokes the test through MPIEXEC.
+    if ( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC AND NOT arg_NUM_PROCS )
+        set( arg_NUM_PROCS 1 )
+    endif()
 
     # Handle mpi
     if ( ${arg_NUM_PROCS} )

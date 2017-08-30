@@ -45,34 +45,85 @@ if(ENABLE_TESTS)
 
     if(WIN32 AND BUILD_SHARED_LIBS)
         add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
-        set(gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
+        list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
     endif()
 
-    # Enable builtin google test 
-    add_subdirectory(googletest-release-1.8.0)
+    # Explicitly enable/disable death tests
+    if(ENABLE_GTEST_DEATH_TESTS)
+        add_definitions(-DGTEST_HAS_DEATH_TEST=1)
+        list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=1")
+    else()
+        add_definitions(-DGTEST_HAS_DEATH_TEST=0)
+        list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=0")
+    endif()
 
-    blt_register_library(NAME gtest
-                         INCLUDES ${gtest_SOURCE_DIR}/include
-                         LIBRARIES gtest_main gtest
-                         DEFINES  ${gtest_defines})
+    #
+    # Use BLT's ENABLE_GMOCK option to set the build options for 
+    # gtest's cmake project
+    #
+    
+    if(ENABLE_GMOCK)
+        
+        # In BLT ENABLE_GMOCK implies ENABLE_GTEST,
+        # IF ENABLE_GTEST is OFF, force to ON
+        if(NOT ENABLE_GTEST)
+            set(ENABLE_GTEST ON CACHE BOOL "")
+        endif()
+        
+        set(BUILD_GMOCK ON  CACHE BOOL "")
+        set(BUILD_GTEST OFF CACHE BOOL "")
+    else()
+        set(BUILD_GMOCK OFF CACHE BOOL "")
+        set(BUILD_GTEST ON  CACHE BOOL "")
+    endif()
 
-    blt_register_library(NAME gmock
-                         INCLUDES ${gmock_SOURCE_DIR}/include
-                         LIBRARIES gmock_main gmock
-                         DEFINES  ${gtest_defines})
+    message(STATUS "Google Test Support is ${ENABLE_GTEST}")
+    message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
+    
+    #
+    # Guard of googletest w/ ENABLE_GTEST
+    # In BTL ENABLE_GTEST is also required when using ENABLE_GMOCK
+    #
+    
+    if(ENABLE_GTEST)
+        # Enable builtin google test 
+        add_subdirectory(googletest-release-1.8.0)
+
+        blt_register_library(NAME gtest
+                             INCLUDES ${gtest_SOURCE_DIR}/include
+                             LIBRARIES gtest_main gtest
+                             DEFINES  ${gtest_defines})
+         if(ENABLE_GMOCK)
+             blt_register_library(NAME gmock
+                                  INCLUDES ${gmock_SOURCE_DIR}/include
+                                  LIBRARIES gmock_main gmock
+                                  DEFINES  ${gtest_defines})
+         endif()
+    endif()
 
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
-        add_subdirectory(fruit-3.4.1)
+        message(STATUS "Fruit Support is ${ENABLE_FRUIT}")
+        if(ENABLE_FRUIT)
+            add_subdirectory(fruit-3.4.1)
+        endif()
     endif()
 
     if(ENABLE_BENCHMARKS)
+        if(WIN32 AND BUILD_SHARED_LIBS)
+          message(FATAL_ERROR "Benchmarks cannot be built when BUILD_SHARED_LIBS=On")
+        endif()
+
         ## google benchmark support
-        add_subdirectory(gbenchmark)
+        add_subdirectory(gbenchmark-master-2017-05-19)
+
+        if (UNIX AND NOT APPLE)
+          find_library(RT_LIBRARIES rt)
+        endif()
 
         blt_register_library(NAME gbenchmark
                              INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
-                             LIBRARIES benchmark
+                             LIBRARIES benchmark ${RT_LIBRARIES}
                              )
 
         # This sets up a target to run the benchmarks
