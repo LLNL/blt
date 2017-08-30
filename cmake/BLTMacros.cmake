@@ -181,7 +181,7 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
-    set(singleValueArgs NAME USE_SYSTEM_INCLUDES)
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
                        FORTRAN_MODULES
                        LIBRARIES
@@ -205,9 +205,9 @@ macro(blt_register_library)
         mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
     endif()
 
-    if( arg_USE_SYSTEM_INCLUDES )
-        set(BLT_${uppercase_name}_USE_SYSTEM_INCLUDES ON CACHE BOOL "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_USE_SYSTEM_INCLUDES)
+    if( arg_TREAT_INCLUDES_AS_SYSTEM )
+        set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM ON CACHE BOOL "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
     endif()
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
