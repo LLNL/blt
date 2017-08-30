@@ -56,7 +56,7 @@ TEST(blt_gtest_smoke,basic_assert_example)
 //------------------------------------------------------------------------------
 // Tests the gtest death test feature, which are disabled by default.
 //
-// The call 'assert(false)' should exit the program, passing the test. 
+// Exits program with non-zero exit code, passing the test. 
 // Note: To enable death tests, configure BLT with ENABLE_GTEST_DEATH_TESTS.
 //------------------------------------------------------------------------------
 TEST(blt_gtest_smoke,death_test)
@@ -67,6 +67,6 @@ TEST(blt_gtest_smoke,death_test)
 
   // Invoke death test function whether death tests enabled or disabled.
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-  EXPECT_DEATH_IF_SUPPORTED( assert(false), "");
+  EXPECT_DEATH_IF_SUPPORTED( exit(1), "");
 }
 
