@@ -535,16 +535,25 @@ macro(blt_add_test)
         message(FATAL_ERROR "COMMAND is a required parameter to blt_add_test")
     endif()
 
-    # Generate command
+    # Extract test directory and executable from arg_NAME and arg_COMMAND
     if ( NOT TARGET ${arg_NAME} )
-        # Handle case of running multiple tests against one executable, 
+        # Handle cases where multiple tests are run against one executable
         # the NAME will not be the target
-        list(GET arg_COMMAND 0 executable)
-        get_target_property(runtime_output_directory ${executable} RUNTIME_OUTPUT_DIRECTORY )
+        list(GET arg_COMMAND 0 test_executable)
+        get_target_property(test_directory ${test_executable} RUNTIME_OUTPUT_DIRECTORY )
     else()
-        get_target_property(runtime_output_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
+        set(test_executable ${arg_NAME})
+        get_target_property(test_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
     endif()
-    set(test_command ${runtime_output_directory}/${arg_COMMAND} )
+    
+    # Append the test_directory to the test argument, accounting for multi-config generators
+    if(NOT CMAKE_CONFIGURATION_TYPES)
+        set(test_command ${test_directory}/${arg_COMMAND} )
+    else()
+        list(INSERT arg_COMMAND 0 "$<TARGET_FILE:${test_executable}>")
+        list(REMOVE_AT arg_COMMAND 1)
+        set(test_command ${arg_COMMAND})
+    endif()
 
     # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, 
     # ensure NUM_PROCS is at least one. This invokes the test through MPIEXEC.
