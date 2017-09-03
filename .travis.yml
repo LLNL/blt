@@ -59,6 +59,9 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
+      BLT_GMOCK=OFF
     # gcc w/ cmake 3.4.1
     - CMAKE_MAJOR=3.4
       CMAKE_MINOR=1
@@ -67,14 +70,40 @@ env:
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
-    # gcc w/ cmake 3.8.0-rc2
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
+      BLT_GMOCK=OFF
+    # gcc w/ cmake 3.8.0
     - CMAKE_MAJOR=3.8
-      CMAKE_MINOR=0-rc2
+      CMAKE_MINOR=0
       BLT_CC=gcc-4.9
       BLT_CXX=g++-4.9
       BLT_FC=gfortran-4.9
       BLT_FORTRAN=ON
       BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
+      BLT_GMOCK=OFF
+    # gcc w/ cmake 3.8.0, gmock on
+    - CMAKE_MAJOR=3.8
+      CMAKE_MINOR=0
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
+      BLT_GMOCK=ON
+    # gcc w/ cmake 3.8.0, gtest and fruit off
+    - CMAKE_MAJOR=3.8
+      CMAKE_MINOR=0
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_GTEST=OFF
+      BLT_FRUIT=OFF
 addons:
   apt:
     sources:
@@ -94,12 +123,23 @@ install:
   - sh cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh --skip-license --prefix=${TRAVIS_TPLS_DIR}/cmake/
   - export PATH=${TRAVIS_TPLS_DIR}/cmake/bin:$PATH
 script:
+  # set git user info     
+  - git config --global user.email "blt-dev@llnl.gov" 
+  - git config --global user.name  "BLT Robot"    
   - cmake --version
   - cd $TRAVIS_BUILD_DIR/..
   # copy our internal testing project
   - cp -r blt/cmake/blt-test .
   # symlink blt into this project
   - ln -s ${TRAVIS_BUILD_DIR} blt-test/blt
+  # create a git repo for blt-test to test the git macros
+  - cd blt-test
+  - git init
+  - git add -A
+  - git commit -a -m "Initial Commit"
+  - git checkout -b test-branch
+  - git tag test-tag  
+  - cd ..  
   # create an out-of-source build dir and an install dir
   - mkdir travis-debug-build
   - mkdir travis-debug-install
@@ -114,6 +154,14 @@ script:
   # c & c++ compilers
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_CXX_COMPILER=${BLT_CXX}"
+  # gtest support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GTEST=${BLT_GTEST}"
+  # gmock support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GMOCK=${BLT_GMOCK}"
+  # fruit support
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_FRUIT=${BLT_FRUIT}"
+  # benchmarking
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_BENCHMARKS=ON"
   # enable fortran support
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_FORTRAN=${BLT_FORTRAN}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_Fortran_COMPILER=${BLT_FC}"
@@ -123,7 +171,7 @@ script:
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_MPI=ON"
   - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_C_COMPILER=mpicc"
   - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_CXX_COMPILER=mpicc"
-  - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_Fortran_COMPILER=mpif90"  
+  - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_Fortran_COMPILER=mpif90"
   # configure with cmake
   - cmake  ${CMAKE_OPTS} ../blt-test
   # build, link, and triumph 

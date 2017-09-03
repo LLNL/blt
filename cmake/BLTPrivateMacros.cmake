@@ -136,8 +136,13 @@ macro(blt_setup_target)
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            target_include_directories( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_INCLUDES} )
+            if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
+                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                    ${BLT_${uppercase_dependency}_INCLUDES} )
+            else()
+                target_include_directories( ${arg_NAME} PUBLIC
+                    ${BLT_${uppercase_dependency}_INCLUDES} )
+            endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
@@ -148,11 +153,11 @@ macro(blt_setup_target)
         if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
             if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME}
+                target_link_libraries( ${arg_NAME} PUBLIC
                     ${BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
         else()
-            target_link_libraries( ${arg_NAME} ${dependency} )
+            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
@@ -267,5 +272,6 @@ macro(blt_update_project_sources)
 
     set( "${PROJECT_NAME}_ALL_SOURCES" "${${PROJECT_NAME}_ALL_SOURCES}"
         CACHE STRING "" FORCE )
+    mark_as_advanced("${PROJECT_NAME}_ALL_SOURCES")
 
 endmacro(blt_update_project_sources)
