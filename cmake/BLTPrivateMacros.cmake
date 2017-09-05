@@ -214,12 +214,14 @@ macro(blt_setup_cuda_source_properties)
         message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
     endif()
 
-
+    set ( _non_cuda_extensions .f .F .f90 .F90 .c .h )
     foreach (_file ${arg_TARGET_SOURCES})
-        if (${_file} MATCHES "\\.(f|F)\\*")
-            set(_non_cuda_sources ${_non_cuda_sources} ${_file})
+        get_filename_component( _file_ext "${_file}" EXT)
+        list (FIND _non_cuda_extensions "${_file_ext}" _ext_index)
+        if (${_ext_index} GREATER -1 )
+            list (APPEND _non_cuda_sources  ${_file})
         else()
-            set(_cuda_sources ${_cuda_sources} ${_file})
+            list (APPEND _cuda_sources ${_file})
         endif()
     endforeach()
 
