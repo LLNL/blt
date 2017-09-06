@@ -87,7 +87,7 @@ if(ENABLE_TESTS)
     
     if(ENABLE_GTEST)
         # Enable builtin google test 
-        add_subdirectory(googletest-release-1.8.0)
+        add_subdirectory(googletest-release-1.8.0 ${PROJECT_BINARY_DIR}/blt/thirdparty_builtin/googletest-release-1.8.0)
 
         blt_register_library(NAME gtest
                              INCLUDES ${gtest_SOURCE_DIR}/include
@@ -105,7 +105,7 @@ if(ENABLE_TESTS)
     if (ENABLE_FORTRAN)
         message(STATUS "Fruit Support is ${ENABLE_FRUIT}")
         if(ENABLE_FRUIT)
-            add_subdirectory(fruit-3.4.1)
+            add_subdirectory(fruit-3.4.1 ${PROJECT_BINARY_DIR}/blt/thirdparty_builtin/fruit-3.4.1)
         endif()
     endif()
 
@@ -115,7 +115,7 @@ if(ENABLE_TESTS)
         endif()
 
         ## google benchmark support
-        add_subdirectory(gbenchmark-master-2017-05-19)
+        add_subdirectory(gbenchmark-master-2017-05-19 ${PROJECT_BINARY_DIR}/blt/thirdparty_builtin/gbenchmark-master-2017-05-19)
 
         if (UNIX AND NOT APPLE)
           find_library(RT_LIBRARIES rt)

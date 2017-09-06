@@ -180,13 +180,13 @@ if (NOT BLT_LOADED)
   ################################
   # builtin third party libs used by BLT
   ################################
-  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin)
+  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin ${PROJECT_BINARY_DIR}/blt/thirdparty_builtin)
 
   ################################
   # BLT smoke tests
   ################################
   if(ENABLE_TESTS)
-      add_subdirectory(${BLT_ROOT_DIR}/tests)
+      add_subdirectory(${BLT_ROOT_DIR}/tests ${PROJECT_BINARY_DIR}/blt/tests)
   endif()
 
 endif() # only load BLT once!
