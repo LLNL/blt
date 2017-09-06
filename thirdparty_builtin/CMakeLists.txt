@@ -87,19 +87,18 @@ if(ENABLE_TESTS)
     
     if(ENABLE_GTEST)
         
-        set(gtest_extra_flags "")
+        #
+        # gtest 1.8 emits many warnings related to dll-interface 
+        # issues on windows, so we add flags to work around these
+        # warnings, so they don't mask warnings we care about
+        #
+        # For more info see: https://github.com/LLNL/blt/issues/79
+        # 
         
-        if(COMPILER_FAMILY_IS_MSVC)
-            #
-            # gtest 1.8 emits many warnings related to dll-interface 
-            # issues on windows, so we add flags to work around these
-            # warnings, so they don't mask warnings we care about
-            #
-            # For more info see: https://github.com/LLNL/blt/issues/79
-            # 
-            set(gtest_extra_flags "/wd4251 /wd4251")
-        endif()
-        
+        blt_append_custom_compiler_flag( FLAGS_VAR gtest_extra_flags
+                                         DEFAULT " " 
+                                         MSVC  "/wd4251 /wd4251" )
+                
         # Enable builtin google test 
         add_subdirectory(googletest-release-1.8.0)
 
