@@ -250,7 +250,7 @@ you are modifying or adding code and need to understand how unit test details
 are working, for example.
 
 .. note:: TODO: Describe option to select tests with regular expressions (``-R xx``)
-.. note:: TODO: Describe option to run in paralle
+.. note:: TODO: Describe option to run in parallel
 .. note:: TODO: Describe option to show output (``-VV``)
 
 
