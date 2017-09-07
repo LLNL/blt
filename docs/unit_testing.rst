@@ -45,6 +45,10 @@
      TODO: The writeup in this file has generic descriptions of gtest/fruit.  
      Make it specific once we have a specific example.
 
+.. danger::
+    calc_pi test 1 and test 2
+
+
 Unit Testing
 ============
 

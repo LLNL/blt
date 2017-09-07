@@ -136,3 +136,8 @@ First we set the paths to the compilers we want to use:
    :language: cmake
    :lines: 10-24
    :linenos:
+
+
+.. danger:: add example of blank project, talk about using cmake to configure, make and test
+
+

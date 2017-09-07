@@ -44,3 +44,10 @@ Creating Libraries and Executables
 ==================================
 
 More coming soon!
+
+
+calc_pi example 1 and example 2
+
+
+
+
