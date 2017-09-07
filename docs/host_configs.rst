@@ -62,10 +62,10 @@ These files use standard CMake commands. CMake *set* commands need to specify ``
 
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
-For this section of the tutorial, we create a host-config file that specifies CMake details for compilers, MPI, and CUDA support.
+For this section of the tutorial, we create a host-config file that specifies CMake details for a set of compilers and MPI, and CUDA support on LLNL's surface cluster. 
 
 
-First we set the paths the compilers we want to use:
+First we set the paths to the compilers we want to use:
 
 .. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
@@ -88,7 +88,7 @@ Finally, we provide paths for CUDA:
    :linenos:
 
 
-:download:`Here is the complete surface host-config file: <tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3>`.
+:download:`Here is the complete surface host-config file: <../tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3>`.
 
 Now, we use the host-config file to configure a build:
 
