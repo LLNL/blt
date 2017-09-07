@@ -43,4 +43,64 @@
 Setup BLT CMake Project
 =======================
 
-More coming soon!
+BLT is easy to include into your project whether it is an existing CMake project or
+you are starting from scratch.  This example assumes you have a git repository and 
+access to github.
+
+You have two choices to include BLT in your repository:
+
+1. Add BLT as a git submodule
+2. Copy BLT into your repository
+
+BLT as a git submodule
+----------------------
+
+This code example will add BLT as a submodule then commit and push the changes
+to your repository.
+
+.. code:: bash
+
+    cd <your repository>
+    git submodule add git@github.com:LLNL/blt.git blt
+    git commit -m "Adding BLT"
+    git push
+
+At this point enabling BLT in your CMake project is trivial.  Just include the
+following CMake lines in your base CMakeLists.txt after your project() call.
+This example will give a meaningful error if the user doesn't recursively clone
+or needs to init submodules.
+
+.. code:: cmake
+
+    if (NOT EXISTS ${PROJECT_SOURCE_DIR}/blt/SetupBLT.cmake)
+        message(FATAL_ERROR "\
+    The BLT submodule is not present. \
+    If in git repository run the following two commands:\n \
+    git submodule init\n \
+    git submodule update")
+
+    endif()
+
+    include(blt/SetupBLT.cmake)
+
+Copy BLT into your repository
+-----------------------------
+
+This code example will clone BLT into your repository then remove the unneeded 
+git files from the clone.  Finally it will commit and push the changes to your
+repository.
+
+.. code:: bash
+
+    cd <your repository>
+    git clone git@github.com:LLNL/blt.git
+    rm -rf blt/.git
+    git commit -m "Adding BLT"
+    git push
+
+At this point enabling BLT in your CMake project is trivial.  Just include the
+following CMake line in your base CMakeLists.txt after your project() call.
+
+.. code:: cmake
+
+    include(blt/SetupBLT.cmake)
