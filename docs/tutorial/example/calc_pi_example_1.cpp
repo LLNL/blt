@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// file: calc_pi_exe.cpp
+// file: calc_pi_example_1.cpp
 // 
 // Simple example that calculates pi via a monte carlo method.
 //
