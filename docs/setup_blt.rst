@@ -104,3 +104,35 @@ following CMake line in your base CMakeLists.txt after your project() call.
 .. code:: cmake
 
     include(blt/SetupBLT.cmake)
+
+
+Host-configs
+--------------
+
+
+To capture (and revision control) build options, third party library paths, etc we recommend using CMake's initial-cache file mechanism. This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
+
+You can pass initial-cache files to cmake via the ``-C`` command line option.
+
+.. code:: bash
+    
+    cmake -C config_file.cmake
+
+
+We call these initial-cache files ``host-config`` files, since we typically create a file for each platform or specific hosts if necessary. 
+
+
+These files use standard CMake commands. CMake *set* commands need to specify ``CACHE`` as follows:
+
+.. code:: cmake
+
+    set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
+
+For this section of the tutorial, we create a host-config file that specifies CMake details for a set of compilers on LLNL's surface cluster. 
+
+First we set the paths to the compilers we want to use:
+
+.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :language: cmake
+   :lines: 10-24
+   :linenos:

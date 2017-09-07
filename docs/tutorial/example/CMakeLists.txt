@@ -31,12 +31,12 @@ blt_add_executable( NAME example_2
 #
 # Example 3: Creating an executable using gtest, using the executable via ctest.
 #
-blt_add_executable( NAME example_3_gtest
-                    SOURCES example_3_gtest.cpp 
+blt_add_executable( NAME test_1
+                    SOURCES test_1.cpp 
                     DEPENDS_ON calc_pi gtest)
 
-blt_add_test( NAME example_3_gtest 
-              COMMAND example_3_gtest)
+blt_add_test( NAME test_1 
+              COMMAND test_1)
 
 
 if(MPI_FOUND)
@@ -51,11 +51,11 @@ if(MPI_FOUND)
                      DEPENDS_ON mpi)
 
 
-    blt_add_executable( NAME example_4_gtest
-                        SOURCES example_4_gtest.cpp 
+    blt_add_executable( NAME test_2
+                        SOURCES test_2.cpp 
                         DEPENDS_ON calc_pi calc_pi_mpi gtest)
 
-    blt_add_test( NAME example_4_gtest 
-                  COMMAND example_4_gtest
+    blt_add_test( NAME test_2 
+                  COMMAND test_2
                   NUM_PROCS 2) # number of mpi tasks to use
 endif()

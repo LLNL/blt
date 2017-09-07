@@ -44,3 +44,32 @@ External Dependencies
 =====================
 
 More coming soon!
+
+.. danger:: talk about expanding host config for mpi and cuda here.
+
+
+Next, we provide paths for MPI:
+
+.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :language: cmake
+   :lines:: 26-36
+   :linenos:
+
+
+Finally, we provide paths for CUDA:
+
+.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :language: cmake
+   :lines: 37-43
+   :linenos:
+
+
+:download:`Here is the complete surface host-config file: <../tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3>`.
+
+Now, we use the host-config file to configure a build:
+
+.. code:: bash
+    
+    mkdir build-debug
+    cd build-debug
+    cmake -C llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake ../example/

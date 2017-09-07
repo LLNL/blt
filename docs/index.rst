@@ -61,9 +61,8 @@ It provides instructions for:
 
     setup_blt
     add_target
-    external_dependencies
     unit_testing
+    external_dependencies
     creating_documentation
-    host_configs
     other_features
     
