@@ -43,4 +43,64 @@
 Host-configs
 ============
 
-More coming soon!
+
+To capture (and revision control) build options, third party library paths, etc we recommend using CMake's initial-cache file mechanism. This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
+
+You can pass initial-cache files to cmake via the ``-C`` command line option.
+
+.. code:: bash
+    
+    cmake -C config_file.cmake
+
+
+We call these initial-cache files *host-config* files, since we typically create a file for each platform or specific hosts if necessary. 
+
+
+These files use standard CMake commands. CMake *set* commands need to specify ``CACHE`` as follows:
+
+.. code:: cmake
+
+    set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
+
+For this section of the tutorial, we create a host-config file that specifies CMake details for compilers, MPI, and CUDA support.
+
+
+First we set the paths the compilers we want to use:
+
+.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :language: cmake
+   :lines: 10-24
+   :linenos:
+
+Next, we provide paths for MPI:
+
+.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :language: cmake
+   :lines:: 26-36
+   :linenos:
+
+
+Finally, we provide paths for CUDA:
+
+.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :language: cmake
+   :lines: 37-43
+   :linenos:
+
+
+:download:`Here is the complete surface host-config file: <tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3>`.
+
+Now, we use the host-config file to configure a build:
+
+.. code:: bash
+    
+    mkdir build-debug
+    cd build-debug
+    cmake -C llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake ../example/
+    
+
+
+ 
+
+
+
