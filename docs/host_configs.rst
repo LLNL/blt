@@ -43,4 +43,25 @@
 Host-configs
 ============
 
-More coming soon!
+
+To capture (and revision control) build options, third party library paths, etc we recommend using CMake's initial-cache file mechanism. This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
+
+Initial-cache files are passed to cmake using the ``-C`` command line.
+
+.. code:: bash
+    
+    cmake -C config_file.cmake
+
+
+We call these initial-cache files *host-config* files, since we typically create a file for each platform or specific hosts if necessary. 
+
+
+These files use standard CMake commands. CMake *set* commands need to specify ``CACHE`` as follows:
+
+.. code:: cmake
+
+    set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
+
+For this tutorial, we will ``extend our prior work`` by creating a host-config file that specifies the compiler, MPI, and ``phantom tpl`` options we want to use. 
+
+
