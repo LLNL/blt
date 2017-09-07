@@ -97,7 +97,7 @@ if(ENABLE_TESTS)
         
         blt_append_custom_compiler_flag( FLAGS_VAR gtest_extra_flags
                                          DEFAULT " " 
-                                         MSVC  "/wd4251 /wd4251" )
+                                         MSVC  "/wd4251 /wd4275" )
                 
         # Enable builtin google test 
         add_subdirectory(googletest-release-1.8.0)
