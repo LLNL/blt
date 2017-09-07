@@ -43,20 +43,20 @@
 if (SPHINX_FOUND)
     # Unify the Sphinx HTML theme across BLT
     set(BLT_SPHINX_HTML_THEME "
-    try:
-        import sphinx_rtd_theme
-    except:
-        html_theme = 'classic'
-        html_theme_options = {
-            'codebgcolor': 'lightgrey',
-            'stickysidebar': 'true'
-        }
-        html_theme_path = []
-    else:
-        html_theme = 'sphinx_rtd_theme'
-        html_theme_options = {}
-        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    ")
+try:
+    import sphinx_rtd_theme
+except:
+    html_theme = 'classic'
+    html_theme_options = {
+        'codebgcolor': 'lightgrey',
+        'stickysidebar': 'true'
+    }
+    html_theme_path = []
+else:
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_options = {}
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+")
 
     add_sphinx_target(blt_sphinx_tutorial_docs)
 endif()
