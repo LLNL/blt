@@ -40,7 +40,219 @@
 .. #
 .. ###############################################################################
 
+
+.. note:: 
+     TODO: The writeup in this file has generic descriptions of gtest/fruit.  
+     Make it specific once we have a specific example.
+
 Unit Testing
 ============
 
-More coming soon!
+BLT has a built-in copy of the 
+`Google Test framework (gtest) <https://github.com/google/googletest>`_ for C and C++ unit tests and the 
+`Fortran Unit Test Framework (FRUIT) <https://sourceforge.net/projects/fortranxunit/>`_ for Fortran unit tests. 
+
+
+Each gtest or FRUIT file is compiled into its own executable that can be run directly or 
+as a ``make`` target. Each executable may contain multiple tests. 
+
+Google Test (C++/C Tests)
+--------------------------
+
+The contents of a typical Google Test file look like this::
+
+  #include "gtest/gtest.h"
+
+  #include ...    // include headers needed to compile tests in file
+
+  // ...
+
+  TEST(<test_case_name>, <test_name_1>) 
+  {
+     // Test 1 code here...
+     // ASSERT_EQ(...);
+  }
+
+  TEST(<test_case_name>, <test_name_2>) 
+  {
+     // Test 2 code here...
+     // EXPECT_TRUE(...);
+  }
+
+  // Etc.
+
+Each unit test is defined by the Google Test ``TEST()`` macro which accepts a 
+*test case name* identifier, such as the name of the C++ class being tested, 
+and a *test name*, which indicates the functionality being verified by the 
+test.  Within a test, failure of logical assertions (macros prefixed by ``ASSERT_``)
+will cause the test to fail immediately, while failures of expected values 
+(macros prefixed by ``EXPECT_``) will cause the test to fail, but will 
+continue running code within the test.
+
+Note that the Google Test framework will generate a ``main()`` routine for 
+each test file if it is not explicitly provided. However, sometimes it is 
+necessary to provide a ``main()`` routine that contains operation to run 
+before or after the unit tests in a file; e.g., initialization code or 
+pre-/post-processing operations. A ``main()`` routine provided in a test 
+file should be placed at the end of the file in which it resides.
+
+Here is an example ``main()`` from a test that uses MPI.  The ``main()`` 
+routine will initialize and finalize MPI before and after tests are run,
+respectively::
+
+  int main(int argc, char * argv[])
+  {
+    int result = 0;
+
+    ::testing::InitGoogleTest(&argc, argv);
+
+    MPI_Init(&argc, &argv);
+
+    result = RUN_ALL_TESTS();
+
+    MPI_Finalize();
+
+    return result;
+  }
+
+Note that Google test is initialized before ``MPI_Init()`` is called. 
+
+Other Google Test features, such as *fixtures* and mock objects (gmock) may be used as well. 
+
+See the `Google Test Primer <https://github.com/google/googletest/blob/master/googletest/docs/Primer.md>`_ 
+for a discussion of Google Test concepts, how to use them, and a listing of 
+available assertion macros, etc.
+
+
+FRUIT (Fortran Tests)
+--------------------------
+
+Fortran unit tests using the FRUIT framework are similar in structure to 
+the Google Test tests for C and C++ described above.
+
+The contents of a typical FRUIT test file look like this::
+
+  module <test_case_name>
+    use iso_c_binding
+    use fruit
+    use <your_code_module_name>
+    implicit none
+
+  contains
+
+  subroutine test_name_1
+  !  Test 1 code here...
+  !  call assert_equals(...)
+  end subroutine test_name_1
+
+  subroutine test_name_2
+  !  Test 2 code here...
+  !  call assert_true(...)
+  end subroutine test_name_2
+
+  ! Etc.
+
+The tests in a FRUIT test file are placed in a Fortran *module* named for
+the *test case name*, such as the name of the C++ class whose Fortran interface
+is being tested. Each unit test is in its own Fortran subroutine named
+for the *test name*, which indicates the functionality being verified by the
+unit test. Within each unit test, logical assertions are defined using
+FRUIT methods. Failure of expected values will cause the test
+to fail, but other tests will continue to run.
+
+Note that each FRUIT test file defines an executable Fortran program. The
+program is defined at the end of the test file and is organized as follows::
+
+  program fortran_test
+    use fruit
+    use <your_component_unit_name>
+    implicit none
+    logical ok
+
+    ! initialize fruit
+    call init_fruit
+
+    ! run tests
+    call test_name_1
+    call test_name_2
+
+    ! compile summary and finalize fruit
+    call fruit_summary
+    call fruit_finalize
+
+    call is_all_successful(ok)
+    if (.not. ok) then
+      call exit(1)
+    endif
+  end program fortran_test
+
+Please refer to the `FRUIT documentation <https://sourceforge.net/projects/fortranxunit/>`_ for more information.
+
+Configuring tests within BLT
+----------------------------
+
+Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is enabled by default. 
+
+For additional configuration granularity, BLT provides configuration options 
+for the individual built-in unit testing libraries.  The following additional options are available
+when ``ENABLE_TESTS`` is on:
+
+``ENABLE_GTEST``
+  Option to enable gtest (default: ``ON``).
+``ENABLE_GMOCK``
+  Option to control gmock (default: ``OFF``).
+  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
+  regardless of the value of ``ENABLE_GTEST``. 
+``ENABLE_FRUIT``
+  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
+
+
+Adding a BLT unit test 
+----------------------
+
+Tests are added to the build system through the ``blt_add_test()`` macro,
+whose parameters include the name of the test, and the command to run the test::
+
+       blt_add_test(NAME <example executable name>
+                    COMMAND <example executable name>)
+
+.. note:: TODO: Add specific non-mpi and mpi-based tests here.
+
+To create an executable for a unit test, use the ``blt_add_executable()`` macro
+and list ``gtest``, ``gmock`` or ``fruit`` as a dependency, as appropriate.
+
+.. note:: TODO: Add link to ``blt_add_executable``
+
+.. note:: TODO: Add example test based on gtest
+
+Generic example::
+
+  blt_add_executable(
+    NAME  <example executable name>
+    SOURCES <example source>
+    OUTPUT_DIR ${EXAMPLE_OUTPUT_DIRECTORY}
+    DEPENDS_ON <example dependencies>)
+
+
+Running Tests and Examples
+--------------------------
+
+To run the tests, type the following command in the build directory::
+
+  $ make test 
+
+This will run all tests and examples and report a summary of passes and 
+failures. Detailed output on individual tests is suppressed.
+
+If a test fails, you can invoke its executable directly to see the detailed
+output of which checks passed or failed. This is especially useful when 
+you are modifying or adding code and need to understand how unit test details
+are working, for example.
+
+.. note:: TODO: Describe option to select tests with regular expressions (``-R xx``)
+.. note:: TODO: Describe option to run in parallel
+.. note:: TODO: Describe option to show output (``-VV``)
+
+
+
+

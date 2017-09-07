@@ -65,3 +65,5 @@ It provides instructions for:
     unit_testing
     creating_documentation
     host_configs
+    other_features
+    
