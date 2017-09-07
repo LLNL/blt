@@ -11,32 +11,32 @@ include(blt/SetupBLT.cmake)
 #
 # Example 1: Creating a simple executable.
 #
-blt_add_executable( NAME calc_pi_example_1
-                    SOURCES calc_pi_example_1.cpp )
+blt_add_executable( NAME example_1
+                    SOURCES example_1.cpp )
 
 
 
 #
 # Example 2: Creating a library and an executable using our library.
 #
-blt_add_library( NAME calc_pi_serial_lib
-                 HEADERS calc_pi_serial_lib.hpp
-                 SOURCES calc_pi_serial_lib.cpp )
+blt_add_library( NAME    calc_pi
+                 HEADERS calc_pi.hpp
+                 SOURCES calc_pi.cpp )
 
 
-blt_add_executable( NAME calc_pi_example_2
-                    SOURCES calc_pi_example_2.cpp 
-                    DEPENDS_ON calc_pi_serial_lib)
+blt_add_executable( NAME example_2
+                    SOURCES example_2.cpp 
+                    DEPENDS_ON calc_pi)
 
 #
 # Example 3: Creating an executable using gtest, using the executable via ctest.
 #
-blt_add_executable( NAME calc_pi_example_3_gtest
-                    SOURCES calc_pi_example_3_gtest.cpp 
-                    DEPENDS_ON calc_pi_serial_lib gtest)
+blt_add_executable( NAME example_3_gtest
+                    SOURCES example_3_gtest.cpp 
+                    DEPENDS_ON calc_pi gtest)
 
-blt_add_test( NAME calc_pi_example_3_gtest 
-              COMMAND calc_pi_example_3_gtest)
+blt_add_test( NAME example_3_gtest 
+              COMMAND example_3_gtest)
 
 
 if(MPI_FOUND)
@@ -45,17 +45,17 @@ if(MPI_FOUND)
     # the mpi version.
     #
 
-    blt_add_library( NAME calc_pi_mpi_lib
-                     HEADERS calc_pi_mpi_lib.hpp
-                     SOURCES calc_pi_mpi_lib.cpp 
+    blt_add_library( NAME calc_pi_mpi
+                     HEADERS calc_pi_mpi.hpp
+                     SOURCES calc_pi_mpi.cpp 
                      DEPENDS_ON mpi)
 
 
-    blt_add_executable( NAME calc_pi_example_4_gtest
-                        SOURCES calc_pi_example_4_gtest.cpp 
-                        DEPENDS_ON calc_pi_serial_lib calc_pi_mpi_lib gtest)
+    blt_add_executable( NAME example_4_gtest
+                        SOURCES example_4_gtest.cpp 
+                        DEPENDS_ON calc_pi calc_pi_mpi gtest)
 
-    blt_add_test( NAME calc_pi_example_4_gtest 
-                  COMMAND calc_pi_example_4_gtest
+    blt_add_test( NAME example_4_gtest 
+                  COMMAND example_4_gtest
                   NUM_PROCS 2) # number of mpi tasks to use
 endif()

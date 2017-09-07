@@ -2,7 +2,7 @@
 //
 // file: calc_pi_example_2.cpp
 // 
-// Simple example that calculates pi via a monte carlo method.
+// Simple example that calculates pi via simple integration.
 //
 // Adapted from:
 // https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
@@ -12,26 +12,25 @@
 #include <cstdlib>
 #include <math.h>
 
-#include "calc_pi_serial_lib.hpp"
+#include "calc_pi.hpp"
 
-// -- main driver -- //
 // -- main driver -- //
 int main(int argc, char * argv[] )
 {
     double PI_REF = 3.141592653589793238462643;
 
-    int num_itrs = 100;
+    int num_intervals = 100;
     if(argc >1)
     {
-        num_itrs = std::atoi(argv[1]);
+        num_intervals = std::atoi(argv[1]);
     }
     
     std::cout << "calculating pi using " 
-              << num_itrs 
-              << " monte carlo iterations."
+              << num_intervals
+              << " intervals."
               << std::endl;
 
-    double pi = calc_pi_serial(num_itrs);
+    double pi = calc_pi(num_intervals);
 
     std::cout.precision(16);
 
