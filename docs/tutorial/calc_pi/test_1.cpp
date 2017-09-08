@@ -8,14 +8,9 @@
 // https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
-#include <cstdlib>
-#include <math.h>
-
 #include <gtest/gtest.h>
 
 #include "calc_pi.hpp"
-
 
 TEST(calc_pi_tests, serial_example)
 {

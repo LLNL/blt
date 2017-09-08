@@ -46,6 +46,7 @@ External Dependencies
 More coming soon!
 
 .. danger:: talk about expanding host config for mpi and cuda here.
+.. danger:: talk about test_2 here, since it involves MPI.
 
 
 Next, we provide paths for MPI:

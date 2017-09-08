@@ -29,7 +29,7 @@ blt_add_executable( NAME example_2
                     DEPENDS_ON calc_pi)
 
 #
-# Example 3: Creating an executable using gtest, using the executable via ctest.
+# Test 1: Creating an executable using gtest, using the executable via ctest.
 #
 blt_add_executable( NAME test_1
                     SOURCES test_1.cpp 
@@ -41,7 +41,7 @@ blt_add_test( NAME test_1
 
 if(MPI_FOUND)
     #
-    # Example 4: Add mpi version of calc_pi, and expand example 3 to also test 
+    # Test 2: Add mpi version of calc_pi, and expand test 1 to also test 
     # the mpi version.
     #
 

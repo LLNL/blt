@@ -41,14 +41,6 @@
 .. ###############################################################################
 
 
-.. note:: 
-     TODO: The writeup in this file has generic descriptions of gtest/fruit.  
-     Make it specific once we have a specific example.
-
-.. danger::
-    calc_pi test 1 and test 2
-
-
 Unit Testing
 ============
 
@@ -57,8 +49,8 @@ BLT has a built-in copy of the
 `Fortran Unit Test Framework (FRUIT) <https://sourceforge.net/projects/fortranxunit/>`_ for Fortran unit tests. 
 
 
-Each gtest or FRUIT file is compiled into its own executable that can be run directly or 
-as a ``make`` target. Each executable may contain multiple tests. 
+Each gtest or FRUIT file may contain multiple tests and is compiled into its own executable 
+that can be run directly or as a ``make`` target. 
 
 Google Test (C++/C Tests)
 --------------------------
@@ -121,7 +113,7 @@ respectively::
 
 Note that Google test is initialized before ``MPI_Init()`` is called. 
 
-Other Google Test features, such as *fixtures* and mock objects (gmock) may be used as well. 
+Other Google Test features, such as *fixtures* and *mock* objects (gmock) may be used as well. 
 
 See the `Google Test Primer <https://github.com/google/googletest/blob/master/googletest/docs/Primer.md>`_ 
 for a discussion of Google Test concepts, how to use them, and a listing of 
@@ -214,28 +206,51 @@ when ``ENABLE_TESTS`` is on:
 Adding a BLT unit test 
 ----------------------
 
-Tests are added to the build system through the ``blt_add_test()`` macro,
-whose parameters include the name of the test, and the command to run the test::
+After writing a unit test, we add it to the project's build system 
+by first generating an executable for the test (using the ``blt_add_executable()`` macro) 
+and then registering the test (using the ``blt_add_test()`` macro).
 
-       blt_add_test(NAME <example executable name>
-                    COMMAND <example executable name>)
+Returning to our running example (see  :ref:`AddTarget`), 
+let's add a simple test for the ``calc_pi`` library, 
+which has a single function with signature:
 
-.. note:: TODO: Add specific non-mpi and mpi-based tests here.
+  .. code:: cpp
 
-To create an executable for a unit test, use the ``blt_add_executable()`` macro
-and list ``gtest``, ``gmock`` or ``fruit`` as a dependency, as appropriate.
+   double calc_pi(int num_intervals);
 
-.. note:: TODO: Add link to ``blt_add_executable``
+We can add a simple unit test that invokes ``calc_pi()`` 
+and compares the result to pi, within a given tolerance (``1e-1``). 
+Here is the test code:
 
-.. note:: TODO: Add example test based on gtest
+.. literalinclude:: tutorial/calc_pi/test_1.cpp
+   :language: cpp
+   :lines: 11-19
+   :linenos:
 
-Generic example::
+To add this test to the build system, we first generate a test executable:
 
-  blt_add_executable(
-    NAME  <example executable name>
-    SOURCES <example source>
-    OUTPUT_DIR ${EXAMPLE_OUTPUT_DIRECTORY}
-    DEPENDS_ON <example dependencies>)
+.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :language: cmake
+   :lines: 34-36
+   :linenos:
+
+Note that this test executable depends on two targets: ``calc_pi`` and ``gtest``.
+
+We then register this executable as a test:
+
+.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :language: cmake
+   :lines: 38-39
+   :linenos:
+
+.. note::
+   The ``COMMAND`` parameter can be used to pass arguments into a test executable.
+   This feature is not exercised in this example.
+
+.. note::
+   The ``NAME`` of the test can be different from the test executable, 
+   which is passed in through the ``COMMAND`` parameter.
+   This feature is not exercised in this example.
 
 
 Running Tests and Examples
@@ -245,17 +260,26 @@ To run the tests, type the following command in the build directory::
 
   $ make test 
 
-This will run all tests and examples and report a summary of passes and 
-failures. Detailed output on individual tests is suppressed.
+This will run all tests through cmake's ``ctest`` tool 
+and report a summary of passes and failures. 
+Detailed output on individual tests is suppressed.
 
 If a test fails, you can invoke its executable directly to see the detailed
 output of which checks passed or failed. This is especially useful when 
 you are modifying or adding code and need to understand how unit test details
 are working, for example.
 
-.. note:: TODO: Describe option to select tests with regular expressions (``-R xx``)
-.. note:: TODO: Describe option to run in parallel
-.. note:: TODO: Describe option to show output (``-VV``)
+.. note:: 
+    You can pass arguments to ctest via the ``TEST_ARGS`` parameter, e.g. ``make test TEST_ARGS="..."``
+    Useful arguments include:
+    
+    -R
+      Regular expression filtering of tests.  
+      E.g. ``-R foo`` will only run tests whose names contain ``foo``.
+    -j
+      Run tests in parallel, E.g. ``-j 16`` will run tests using 16 processors.
+    -VV
+      (Very verbose) Dump test output to stdout
 
 
 
