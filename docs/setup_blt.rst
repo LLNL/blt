@@ -107,7 +107,7 @@ following CMake line in your base CMakeLists.txt after your project() call.
 
 
 Host-configs
---------------
+------------
 
 
 To capture (and revision control) build options, third party library paths, etc we recommend using CMake's initial-cache file mechanism. This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
@@ -138,6 +138,13 @@ First we set the paths to the compilers we want to use:
    :linenos:
 
 
-.. danger:: add example of blank project, talk about using cmake to configure, make and test
+.. danger:: Add example of blank project, talk about using cmake to configure, make and test.
+
+.. danger:: 
+    Make sure that we discuss a simple way to invoke cmake with the correct paths to blt (without recursively including blt within blt).
+    The example above does not directly work when trying to build the blank-project from a child of the blt root directory.
+    (...and adding a symbolic link was problematic).
+
+.. danger:: If using the host-config, ``ENABLE_CUDA`` should only be enabled on a machine with CUDA (otherwise, we get config errors).
 
 

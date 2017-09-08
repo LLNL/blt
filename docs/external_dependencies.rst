@@ -52,7 +52,7 @@ Next, we provide paths for MPI:
 
 .. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines:: 26-36
+   :lines: 26-36
    :linenos:
 
 
