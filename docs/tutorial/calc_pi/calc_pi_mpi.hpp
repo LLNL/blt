@@ -13,6 +13,6 @@
 #define CALC_PI_MPI_HPP
 
 // -- calculate pi using mpi  -- //
-double calc_pi_mpi(int num_itrs);
+double calc_pi_mpi(int num_intervals);
 
 #endif

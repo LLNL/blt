@@ -59,3 +59,25 @@ if(MPI_FOUND)
                   COMMAND test_2
                   NUM_PROCS 2) # number of mpi tasks to use
 endif()
+
+
+if(CUDA_FOUND)
+    #
+    # Test 3: Add cuda version of calc_pi, and expand test 1 to also test 
+    # the cuda version.
+    #
+
+    blt_add_library( NAME calc_pi_cuda
+                     HEADERS calc_pi_cuda.hpp
+                     SOURCES calc_pi_cuda.cpp 
+                     DEPENDS_ON cuda cuda_runtime)
+
+
+    blt_add_executable( NAME test_3
+                        SOURCES test_3.cpp 
+                        DEPENDS_ON calc_pi calc_pi_cuda gtest)
+
+    blt_add_test( NAME test_3
+                  COMMAND test_3)
+endif()
+
