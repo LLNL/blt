@@ -15,10 +15,11 @@
 #include "calc_pi.hpp"
 #include "calc_pi_mpi.hpp"
 
+const double PI_REF = 3.141592653589793238462643;
+
 // test serial lib
 TEST(calc_pi_tests, serial_example)
 {
-    double PI_REF = 3.141592653589793238462643;
     ASSERT_NEAR(calc_pi(1000),PI_REF,1e-1);
 }
 
@@ -26,20 +27,7 @@ TEST(calc_pi_tests, serial_example)
 // test mpi lib
 TEST(calc_pi_tests, mpi_example)
 {
-    int num_tasks = 0;
-    int task_id   = 0;
-    
-    MPI_Comm_size(MPI_COMM_WORLD, &num_tasks);
-    MPI_Comm_rank(MPI_COMM_WORLD, &task_id);
-
-    double PI_REF = 3.141592653589793238462643;
-    
-    double res = calc_pi_mpi(10000);
-
-    if(task_id == 0)
-    {
-      ASSERT_NEAR(res,PI_REF,1e-2);
-    }
+    ASSERT_NEAR(calc_pi_mpi(1000),PI_REF,1e-1);
 }
 
 // main driver

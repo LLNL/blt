@@ -32,13 +32,12 @@ double calc_pi_mpi(int num_intervals)
     double pi_local = h * sum;
     double pi = 0;
     
-    MPI_Reduce(&pi_local,
-               &pi,
-               1,
-               MPI_DOUBLE,
-               MPI_SUM,
-               0,
-               MPI_COMM_WORLD);
+    MPI_Allreduce(&pi_local,
+                  &pi,
+                  1,
+                  MPI_DOUBLE,
+                  MPI_SUM,
+                  MPI_COMM_WORLD);
 
     
     return pi;
