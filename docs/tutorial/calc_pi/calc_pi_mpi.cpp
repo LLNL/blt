@@ -22,7 +22,6 @@ double calc_pi_mpi(int num_intervals)
     double h   = 1.0 / (double) num_intervals;
     double sum = 0.0;
     
-    // TODO: Fix to distribute num_intervals across num_tasks 
     for(int i = task_id + 1; i <= num_intervals; i+= num_tasks) 
     {
         double x = h * ((double)i - 0.5);

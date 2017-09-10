@@ -66,16 +66,20 @@ if(CUDA_FOUND)
     # Test 3: Add cuda version of calc_pi, and expand test 1 to also test 
     # the cuda version.
     #
-
+ 
+    # atomicAdd for doubles requires compute_60 or greater
+    # we may need to take another path ...
+	set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode=arch=compute_60,code=sm_60)
+	
     blt_add_library( NAME calc_pi_cuda
                      HEADERS calc_pi_cuda.hpp
                      SOURCES calc_pi_cuda.cpp 
-                     DEPENDS_ON cuda cuda_runtime)
+                     DEPENDS_ON cuda)
 
 
     blt_add_executable( NAME test_3
                         SOURCES test_3.cpp 
-                        DEPENDS_ON calc_pi calc_pi_cuda gtest)
+                        DEPENDS_ON calc_pi calc_pi_cuda gtest cuda_runtime)
 
     blt_add_test( NAME test_3
                   COMMAND test_3)

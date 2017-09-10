@@ -10,10 +10,8 @@
 
 #include <gtest/gtest.h>
 
-#include "mpi.h"
-
 #include "calc_pi.hpp"
-#include "calc_pi_mpi.hpp"
+#include "calc_pi_cuda.hpp"
 
 const double PI_REF = 3.141592653589793238462643;
 
