@@ -16,7 +16,7 @@
 
 const int block_size = 512;
 
-// -- calculate pi via simple integration  -- //
+// -- cuda kernel to calculate pi via simple integration  -- //
 __global__ void calc_pi_kernel(int num_intervals,
                                double *pi)
 {
@@ -55,33 +55,35 @@ __global__ void calc_pi_kernel(int num_intervals,
     }
 }
 
+// -- helper for calcing number of blocks to launch -- //
+int iDivUp(int a, int b)
+{ 
+    return (a % b != 0) ? (a / b + 1) : (a / b); 
+}
+
+// -- calculate pi via simple integration  -- //
 double calc_pi_cuda(int num_intervals)
 {
     int num_threads = block_size;
-    // TODO proper number of blocks
-    int num_blocks  = 1;
+    int num_blocks  = iDivUp(num_intervals, block_size);
     
-    double pi = 0.0;
+    double  h_pi = 0.0;
     double *d_pi = NULL;
     
-    // tod 
-    cudaMalloc((void**)&d_pi, num_blocks * sizeof(double));
+    cudaMalloc((void**)&d_pi, sizeof(double));
     
-    calc_pi_kernel<<<num_blocks,num_threads>>>(num_intervals,d_pi);
+    calc_pi_kernel<<<num_blocks,num_threads>>>(num_intervals, d_pi);
     
-    cudaMemcpy(&pi, d_pi,
-               num_blocks * sizeof(double),
+    cudaMemcpy(&h_pi, d_pi,
+               sizeof(double),
                cudaMemcpyDeviceToHost);
+    
     cudaDeviceSynchronize(); 
+    
     cudaFree(d_pi);
     
-    pi = pi / (double) num_intervals;
-
-    // TODO: unstub when cuda algo is debugged.
-    //return pi;
-    
-    double PI_REF = 3.141592653589793238462643;
-    return PI_REF;
+    // final scaling
+    return h_pi / (double) num_intervals;    
 }
 
 
