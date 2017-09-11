@@ -5,9 +5,8 @@
 // Source file for calc_pi library example.
 //
 // Adapted from:
-// https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
+//  https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
 ///////////////////////////////////////////////////////////////////////////////
-
 
 // -- calculate pi via simple integration  -- //
 double calc_pi(int num_intervals)

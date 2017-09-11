@@ -6,7 +6,11 @@ cmake_minimum_required(VERSION 3.3)
 
 project( pi_playground )
 
-include(blt/SetupBLT.cmake)
+if(NOT BLT_SOURCE_DIR)
+    set(BLT_SOURCE_DIR "blt")
+endif()
+message(STATUS "BLT_SOURCE_DIR = ${BLT_SOURCE_DIR}")
+include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
 #
 # Example 1: Creating a simple executable.
@@ -84,4 +88,10 @@ if(CUDA_FOUND)
     blt_add_test( NAME test_3
                   COMMAND test_3)
 endif()
+
+
+# add calc_pi docs
+add_subdirectory(docs)
+
+
 

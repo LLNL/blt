@@ -5,17 +5,10 @@
 // Source file for calc_pi_cuda library example.
 //
 // Adapted from:
-// https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
+//  https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
 ///////////////////////////////////////////////////////////////////////////////
 
-//-----------------------------------------------------------------------------
-///
-/// file: calc_pi_cuda.cpp
-///
-//-----------------------------------------------------------------------------
-
 const int block_size = 512;
-
 
 // -- helper for calcing number of blocks to launch -- //
 int iDivUp(int a, int b)

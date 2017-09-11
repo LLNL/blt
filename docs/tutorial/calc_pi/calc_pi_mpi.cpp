@@ -5,7 +5,7 @@
 // Source file for calc_pi_mpi library example.
 //
 // Adapted from:
-// https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
+//  https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "mpi.h"
