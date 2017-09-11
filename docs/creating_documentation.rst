@@ -43,4 +43,110 @@
 Creating Documentation
 ======================
 
-More coming soon!
+BLT provides macros to build documentation using `Sphinx <http://www.sphinx-doc.org/>`_  and `Doxygen <http://www.doxygen.org/>`_.
+
+
+Sphinx is the documentation system used for the Python programming language (and many other projects). Doxygen is  a widely used system that generates documentation from annotated source code. Doxygen is heavily used for documenting  C++ software.
+
+Sphinx and Doxygen are not built into BLT, so the ``sphinx-build`` and ``doxygen`` executables must be available via a users ``PATH`` at configuration time, or explicitly specified using the CMake variables ``SPHINX_EXECUTABLE`` and ``DOXYGEN_EXECUTABLE`` .
+
+
+Here is an example of setting ``sphinx-build`` and ``doxygen`` paths in a host-config file:
+
+.. code:: cmake
+   
+   set(SPHINX_EXECUTABLE "/FIX/python-2.7.11-lzwg377xdfm3ckdumn5yir5kc323fmll/bin/sphinx-build" CACHE PATH "")
+
+   set(DOXYGEN_EXECUTABLE "/FIX/doxygen-1.8.11-6z6ubz7pga7oylaqsoofcaqfwtj4tk5o/bin/doxygen" CACHE PATH "")
+
+
+The *calc_pi* example provides examples of both Sphinx and Doxygen documentation. 
+
+
+Calc Pi Sphinx Example
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sphinx is a python package that depends on several other packages.  
+It can be installed via spack, pip, anaconda, etc. 
+
+``sphinx-build`` process a ``config.py`` file which includes a tree of reStructuredText files. The Sphinx ``sphinx-quickstart`` utility helps you generate a new sphinx project, including selecting common settings for the ``config.py``.
+
+
+BLT provides a ``add_sphinx_target()`` macro which, which will look for a ``config.py`` file in the current directory and add a command to build the Sphinx docs using this file to the ``docs`` CMake target.
+
+Here is an example of using ``add_sphinx_target()`` in a CMakeLists.txt file:
+
+.. literalinclude:: tutorial/calc_pi/docs/sphinx/CMakeLists.txt
+   :language: rst
+   :linenos:
+
+
+Here is the example reStructuredText file that contains documentation for the *calc_pi* example.
+
+.. literalinclude:: tutorial/calc_pi/docs/sphinx/index.rst
+   :language: rst
+   :linenos:
+   
+
+Calc Pi Doxygen Example
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Doxygen is a compiled executable that can be installed via spack, built-by-hand, etc. 
+
+``doxygen`` processes a ``Doxyfile`` which specifies options, including where to look for annotated source files.
+
+
+BLT provides a ``add_doxygen_target()`` macro which, which will look for a ``Doxyfile.in`` file in the current directory, configure this file to create a ``Doxyfile`` in the build directory, and add a command to build the Doxygen docs using this file to the ``docs`` CMake target.
+
+Here is an example of using ``add_doxygen_target()`` in a CMakeLists.txt file:
+
+.. literalinclude:: tutorial/calc_pi/docs/doxygen/CMakeLists.txt
+   :language: rst
+   :linenos:
+
+
+Here is the example ``Doxyfile.in`` file that is configured by CMake and passed to ``doxygen``.
+
+.. literalinclude:: tutorial/calc_pi/docs/doxygen/Doxyfile.in
+   :language: rst
+   :linenos:
+
+
+
+Building the Calc Pi Example Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Here is an example of building both the calc_pi Sphinx and Doxygen docs using the ``docs`` CMake target:
+
+.. code:: console
+
+   cd build-calc-pi
+   make docs
+   ...
+   [ 50%] Building HTML documentation with Sphinx
+   [ 50%] Built target calc_pi_sphinx
+   [ 50%] Built target sphinx_docs
+   [100%] Generating API documentation with Doxygen
+   Searching for include files...
+   Searching for example files...
+   Searching for images...
+   Searching for dot files...
+   ...
+   lookup cache used 3/65536 hits=3 misses=3
+   finished...
+   [100%] Built target calc_pi_doxygen
+   [100%] Built target doxygen_docs
+   [100%] Built target docs
+
+
+
+
+After this, you can view the Sphinx docs at:
+
+* ``build-calc-pi/docs/sphinx/html/index.html``
+
+and the Doxygen docs at:
+
+* ``build-calc-pi/docs/doxygen/html/index.html``
+
