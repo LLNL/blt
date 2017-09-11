@@ -40,6 +40,20 @@
 #
 ###############################################################################
 
+cmake_minimum_required(VERSION 3.3)
+
+project( blt_docs )
+
+###############################################################################
+# Setup BLT
+###############################################################################
+# TODO: Sensible explanation of this.
+if(NOT BLT_SOURCE_DIR)
+    set(BLT_SOURCE_DIR "blt")
+endif()
+
+include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+
 if (SPHINX_FOUND)
     add_sphinx_target(blt_sphinx_tutorial_docs)
 endif()

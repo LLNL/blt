@@ -43,20 +43,25 @@
 Setup BLT CMake Project
 =======================
 
-BLT is easy to include into your project whether it is an existing CMake project or
-you are starting from scratch.  This example assumes you have a git repository and 
-access to github.
 
-You have two choices to include BLT in your repository:
+BLT is easy to include into your CMake project whether it is an existing project or
+you are starting from scratch. You simply pull it into your project using a CMake ``include()`` command.
+
+.. code:: cmake
+    include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+
+
+There are two standard choices for including the BLT source in your repository:
 
 1. Add BLT as a git submodule
-2. Copy BLT into your repository
+2. Copy BLT into a subdirectory in your repository
+
+
 
 BLT as a git submodule
 ----------------------
 
-This code example will add BLT as a submodule then commit and push the changes
-to your repository.
+This example adds BLT as a submodule then commits and pushes the changes to your repository.
 
 .. code:: bash
 
@@ -86,8 +91,8 @@ or needs to init submodules.
 Copy BLT into your repository
 -----------------------------
 
-This code example will clone BLT into your repository then remove the unneeded 
-git files from the clone.  Finally it will commit and push the changes to your
+This example will clones BLT into your repository then removes the unneeded 
+git files from the clone.  Finally it commits and pushes the changes to your
 repository.
 
 .. code:: bash
@@ -104,6 +109,37 @@ following CMake line in your base CMakeLists.txt after your project() call.
 .. code:: cmake
 
     include(blt/SetupBLT.cmake)
+
+
+.. danger:: add info about use `BLT_SOURCE_DIR`
+
+Include BLT via BLT_SOURCE_DIR
+--------------------------------
+
+This allows you to . 
+
+You can include BLT from a directory outside of your source tree using `BLT_SOURCE_DIR`.
+
+To support this, in your CMakeLists.txt file add:
+
+.. code:: cmake
+
+   if(NOT BLT_SOURCE_DIR)
+       set(BLT_SOURCE_DIR "blt")
+   endif()
+
+   include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+
+
+Now, when you configure a CMake build you can pass the location BLT as follows:
+
+.. code:: bash
+
+    cd <your repository>
+    mkdir build
+    cd build
+    cmake -DBLT_SOURCE_DIR="path/to/blt" ../
+
 
 
 Host-configs
@@ -128,13 +164,11 @@ These files use standard CMake commands. CMake *set* commands need to specify ``
 
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
-For this section of the tutorial, we create a host-config file that specifies CMake details for a set of compilers on LLNL's surface cluster. 
+Here is a snippet from a host-config file that specifies compiler details for using gcc 4.9.3 on LLNL's surface cluster. 
 
-First we set the paths to the compilers we want to use:
-
-.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 10-24
+   :lines: 9-24
    :linenos:
 
 

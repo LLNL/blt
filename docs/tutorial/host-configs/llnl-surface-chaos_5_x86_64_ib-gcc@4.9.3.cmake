@@ -2,9 +2,8 @@
 # Example host-config file for the surface cluster at LLNL
 ###########################################################
 #
-# This file provides CMake with paths to:
-#  C,C++, and Fortran compilers
-#  MPI, and CUDA.
+# This file provides CMake with paths / details for:
+#  C,C++, & Fortran compilers + MPI & CUDA
 ###########################################################
 
 ###########################################################

@@ -40,21 +40,53 @@
 .. #
 .. ###############################################################################
 
-BLT Tutorial
-============
+BLT
+===
 
+**Build, Link, and Triumph**
+
+
+BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. BLT is developed at Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
+
+BLT at a Glance
+~~~~~~~~~~~~~~~~~~
+
+* Simplifies Setup
+
+  * CMake macros for:
+
+    * Creating libraries and executables
+    * Managing compiler flags
+    * Managing external dependencies
+    * Multi-platform support (HPC Platforms, OSX, Windows)
+
+* Batteries Included
+
+  * Built-in support for HPC Basics: MPI, OpenMP, and CUDA
+  * Built-in Support for unit testing in C/C++ and Fortran
+  
+* Streamlines Development Processes
+
+  * Support for Documentation Generation
+  * Support for Code Health Tools:
+
+    * Runtime and Static Analysis, Benchmarking
+
+
+BLT User Tutorial
+~~~~~~~~~~~~~~~~~~~
 This tutorial is aimed at getting BLT users up and running as quickly as possible.
 
 It provides instructions for:
 
     * Adding BLT to a CMake project
-    * Building, linking, and installing libraries and executables
-    * Adding external project dependencies
-    * Setting up unit tests with GTest and GMock
-    * Creating documentation with Sphinx and Doxygen
     * Setting up host-configs to handle multiple platform configurations
+    * Building, linking, and installing libraries and executables
+    * Setting up unit tests with GTest
+    * Using external project dependencies
+    * Creating documentation with Sphinx and Doxygen
 
-**Contents:**
+**Tutorial Contents**
 
 .. toctree::
     :maxdepth: 3
@@ -65,4 +97,4 @@ It provides instructions for:
     external_dependencies
     creating_documentation
     other_features
-    
+

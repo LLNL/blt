@@ -51,7 +51,7 @@ More coming soon!
 
 Next, we provide paths for MPI:
 
-.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
    :lines: 26-36
    :linenos:
@@ -59,18 +59,23 @@ Next, we provide paths for MPI:
 
 Finally, we provide paths for CUDA:
 
-.. literalinclude:: tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
    :lines: 37-43
    :linenos:
 
 
-:download:`Here is the complete surface host-config file: <../tutorial/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3>`.
+Here are example host-config files that use gcc 4.9.3 for LLNL's Surface and Quartz Clusters.
 
-Now, we use the host-config file to configure a build:
+:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
+
+
+:download:`llnl-quartz-toss3-gcc@4.9.3.cmake <tutorial/host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
+
+Now, we use the host-config file to configure a build of the ``calc_pi`` example:
 
 .. code:: bash
     
-    mkdir build-debug
-    cd build-debug
-    cmake -C llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake ../example/
+    mkdir build-calc-pi-surface
+    cd build-calc-pi-surface
+    cmake -C llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR={path_to_blt} ../calc_pi/
