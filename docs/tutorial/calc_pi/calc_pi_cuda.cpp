@@ -16,6 +16,42 @@
 
 const int block_size = 512;
 
+
+// -- helper for calcing number of blocks to launch -- //
+int iDivUp(int a, int b)
+{ 
+    return (a % b != 0) ? (a / b + 1) : (a / b); 
+}
+
+// -- atomic add of doubles for older cuda archs -- //
+// from http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions
+#if __CUDA_ARCH__ < 600
+__device__ double atomicAdd(double *address,
+                            double val)
+{  
+    unsigned long long int* address_as_ull = (unsigned long long int*)address;
+    
+    // orig:
+    //    unsigned long long int old = *address_as_ull, assumed; 
+    
+    // less clever version:
+    unsigned long long int old = *address_as_ull; 
+    unsigned long long int assumed;
+    do
+    { 
+        assumed = old; 
+        old = atomicCAS(address_as_ull,
+                        assumed,
+                        __double_as_longlong(val + __longlong_as_double(assumed))); 
+     // Note: uses integer comparison to avoid hang in case of NaN (since NaN != NaN) 
+    }
+    while (assumed != old); 
+    
+    return __longlong_as_double(old);
+} 
+#endif
+
+
 // -- cuda kernel to calculate pi via simple integration  -- //
 __global__ void calc_pi_kernel(int num_intervals,
                                double *pi)
@@ -55,11 +91,6 @@ __global__ void calc_pi_kernel(int num_intervals,
     }
 }
 
-// -- helper for calcing number of blocks to launch -- //
-int iDivUp(int a, int b)
-{ 
-    return (a % b != 0) ? (a / b + 1) : (a / b); 
-}
 
 // -- calculate pi via simple integration  -- //
 double calc_pi_cuda(int num_intervals)
