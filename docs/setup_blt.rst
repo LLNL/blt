@@ -40,22 +40,23 @@
 .. #
 .. ###############################################################################
 
-Setup BLT CMake Project
-=======================
+Setup BLT in your CMake Project
+=================================
 
 
 BLT is easy to include into your CMake project whether it is an existing project or
 you are starting from scratch. You simply pull it into your project using a CMake ``include()`` command.
 
 .. code:: cmake
+
     include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
+You can include the BLT source in your repository or you can pass the location of BLT at CMake configure time. 
 
 There are two standard choices for including the BLT source in your repository:
 
 1. Add BLT as a git submodule
 2. Copy BLT into a subdirectory in your repository
-
 
 
 BLT as a git submodule
@@ -116,9 +117,7 @@ following CMake line in your base CMakeLists.txt after your project() call.
 Include BLT via BLT_SOURCE_DIR
 --------------------------------
 
-This allows you to . 
-
-You can include BLT from a directory outside of your source tree using `BLT_SOURCE_DIR`.
+You can also include BLT from a directory outside of your source tree using `BLT_SOURCE_DIR`.
 
 To support this, in your CMakeLists.txt file add:
 
@@ -140,6 +139,10 @@ Now, when you configure a CMake build you can pass the location BLT as follows:
     cd build
     cmake -DBLT_SOURCE_DIR="path/to/blt" ../
 
+
+.. danger:: Add example of blank project, talk about using cmake to configure, make + test & install.
+ 
+    Talk about built-in smoke tests
 
 
 Host-configs
@@ -171,8 +174,6 @@ Here is a snippet from a host-config file that specifies compiler details for us
    :lines: 9-24
    :linenos:
 
-
-.. danger:: Add example of blank project, talk about using cmake to configure, make and test.
 
 .. danger:: 
     Make sure that we discuss a simple way to invoke cmake with the correct paths to blt (without recursively including blt within blt).
