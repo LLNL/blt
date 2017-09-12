@@ -178,15 +178,20 @@ if (NOT BLT_LOADED)
   include(${BLT_ROOT_DIR}/cmake/SetupCodeMetrics.cmake)
 
   ################################
+  # path where BLT thirdparty_builtin and tests will be built
+  ################################
+  set (BLT_BUILD_DIR ${PROJECT_BINARY_DIR}/blt CACHE PATH "")
+  
+  ################################
   # builtin third party libs used by BLT
   ################################
-  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin)
+  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin ${BLT_BUILD_DIR}/thirdparty_builtin)
 
   ################################
   # BLT smoke tests
   ################################
   if(ENABLE_TESTS)
-      add_subdirectory(${BLT_ROOT_DIR}/tests)
+      add_subdirectory(${BLT_ROOT_DIR}/tests ${BLT_BUILD_DIR}/tests)
   endif()
 
 endif() # only load BLT once!
