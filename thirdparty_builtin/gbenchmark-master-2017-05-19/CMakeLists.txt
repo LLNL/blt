@@ -194,9 +194,9 @@ find_package(Threads REQUIRED)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Build the targets
-add_subdirectory(src ${PROJECT_BINARY_DIR}/blt/thirdparty_builtin/gbenchmark-master-2017-05-19/src)
+add_subdirectory(src ${BLT_BUILD_DIR}/thirdparty_builtin/gbenchmark-master-2017-05-19/src)
 
 if (BENCHMARK_ENABLE_TESTING)
   enable_testing()
-  add_subdirectory(test ${PROJECT_BINARY_DIR}/blt/thirdparty_builtin/gbenchmark-master-2017-05-19/test)
+  add_subdirectory(test ${BLT_BUILD_DIR}/thirdparty_builtin/gbenchmark-master-2017-05-19/test)
 endif()
