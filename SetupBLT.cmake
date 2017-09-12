@@ -180,7 +180,7 @@ if (NOT BLT_LOADED)
   ################################
   # path where BLT thirdparty_builtin and tests will be built
   ################################
-  set (BLT_BUILD_DIR ${PROJECT_BINARY_DIR}/blt)
+  set (BLT_BUILD_DIR ${PROJECT_BINARY_DIR}/blt CACHE PATH "")
   
   ################################
   # builtin third party libs used by BLT
