@@ -132,7 +132,6 @@ To support this, in your CMakeLists.txt file add:
 .. literalinclude:: blank_project/CMakeLists.txt
    :language: cmake
    :lines: 55
-   :linenos:
 
 We do it in our blank_project example because we also want this project to be automatically tested
 by just a single check-out of our repository.
@@ -218,7 +217,7 @@ Next run all tests (only blt_gtest_smoke) is in this project with the following:
 
 If everything went correctly you should have the following output:
 
-.. code::bash
+.. code:: bash
 
     Running tests...
     Test project /usr/workspace/wsrzd/white238/blt/docs/blank_project/build
