@@ -257,12 +257,6 @@ Here is a snippet from a host-config file that specifies compiler details for us
    :lines: 9-24
    :linenos:
 
-
-.. danger:: 
-    Make sure that we discuss a simple way to invoke cmake with the correct paths to blt (without recursively including blt within blt).
-    The example above does not directly work when trying to build the blank-project from a child of the blt root directory.
-    (...and adding a symbolic link was problematic).
-
 .. danger:: If using the host-config, ``ENABLE_CUDA`` should only be enabled on a machine with CUDA (otherwise, we get config errors).
 
 
