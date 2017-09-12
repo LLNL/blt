@@ -47,7 +47,7 @@ project( blt_docs )
 ###############################################################################
 # Setup BLT
 ###############################################################################
-# TODO: Sensible explanation of this.
+
 if(NOT BLT_SOURCE_DIR)
     set(BLT_SOURCE_DIR "blt")
 endif()

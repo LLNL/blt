@@ -89,6 +89,7 @@ or needs to init submodules.
 
     include(blt/SetupBLT.cmake)
 
+
 Copy BLT into your repository
 -----------------------------
 
@@ -104,50 +105,133 @@ repository.
     git commit -m "Adding BLT"
     git push
 
-At this point enabling BLT in your CMake project is trivial.  Just include the
-following CMake line in your base CMakeLists.txt after your project() call.
+
+Include BLT in your project
+---------------------------
+
+In most projects, including BLT is as simple as including the following CMake
+line in your base CMakeLists.txt after your project() call.
 
 .. code:: cmake
 
     include(blt/SetupBLT.cmake)
 
+This enables all of BLT's features in your project. 
 
-.. danger:: add info about use `BLT_SOURCE_DIR`
 
 Include BLT via BLT_SOURCE_DIR
 --------------------------------
+
+Some projects want BLT to live outside of their project.  This is usually to share
+one instance of BLT between many dependent projects.
 
 You can also include BLT from a directory outside of your source tree using `BLT_SOURCE_DIR`.
 
 To support this, in your CMakeLists.txt file add:
 
-.. code:: cmake
+.. literalinclude:: blank_project/CMakeLists.txt
+   :language: cmake
+   :lines: 55
+   :linenos:
 
-   if(NOT BLT_SOURCE_DIR)
-       set(BLT_SOURCE_DIR "blt")
-   endif()
-
-   include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+We do it in our blank_project example because we also want this project to be automatically tested
+by just a single check-out of our repository.
 
 
-Now, when you configure a CMake build you can pass the location BLT as follows:
+Running CMake
+-------------
+
+To configure a project with CMake, first create a build directory and cd into it.  Then run cmake with pointing
+it at your project.  Here is an example on how to do this with our blank project example.
 
 .. code:: bash
 
-    cd <your repository>
+    cd <your project>
+    mkdir build
+    cd build
+    cmake ../
+
+If you are using BLT outside of your project pass the location of BLT as follows:
+
+.. code:: bash
+
+    cd <your project>
     mkdir build
     cd build
     cmake -DBLT_SOURCE_DIR="path/to/blt" ../
 
+Blank Project Example
+---------------------
 
-.. danger:: Add example of blank project, talk about using cmake to configure, make + test & install.
- 
-    Talk about built-in smoke tests
+The blank project example is provided to show you some of the built-in features BLT provides and show
+the bare minimum required for testing purposes.
+
+BLT also enforces some build best practices such as not allowing in-source builds.  This means
+that if you try to run cmake directly in your project. For example if you run the following commands:
+
+.. code:: bash
+
+    cd <BLT repository>/docs/blank_project
+    cmake . -DBLT_SOURCE_DIR=`pwd`/../.. 
+
+you will get the following error:
+
+.. code:: bash
+
+    CMake Error at /usr/workspace/wsrzd/white238/blt/SetupBLT.cmake:59 (message):
+      In-source builds are not supported.  Please remove CMakeCache.txt from the
+      'src' dir and configure an out-of-source build in another directory.
+    Call Stack (most recent call first):
+      CMakeLists.txt:55 (include)
+
+
+    -- Configuring incomplete, errors occurred!
+
+On the otherhand, to correctly run cmake create a build directory and run cmake from there as follows:
+
+.. code:: bash
+
+    cd <BLT repository>/docs/blank_project
+    mkdir build
+    cd build
+    cmake .. -DBLT_SOURCE_DIR=`pwd`/../../..
+
+This will generate among many things a configured Makefile in your build directory to build the blank
+project.  This includes gtest, gmock, and several base built-in BLT tests depending on how many features
+you have turned on in your build.  Blank project only has gtest.  To build use the following command:
+
+.. code:: bash
+
+    make
+
+Just like any other make project you can utilize job tasks to speed up the build with the following:
+
+.. code:: bash
+
+    make -j8
+
+Next run all tests (only blt_gtest_smoke) is in this project with the following:
+
+.. code:: bash
+
+    make test
+
+If everything went correctly you should have the following output:
+
+.. code::bash
+
+    Running tests...
+    Test project /usr/workspace/wsrzd/white238/blt/docs/blank_project/build
+        Start 1: blt_gtest_smoke
+    1/1 Test #1: blt_gtest_smoke ..................   Passed    0.01 sec
+
+    100% tests passed, 0 tests failed out of 1
+
+    Total Test time (real) =   0.10 sec
 
 
 Host-configs
 ------------
-
 
 To capture (and revision control) build options, third party library paths, etc we recommend using CMake's initial-cache file mechanism. This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
 
