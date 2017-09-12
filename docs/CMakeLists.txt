@@ -53,3 +53,7 @@ if(NOT BLT_SOURCE_DIR)
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+
+if (SPHINX_FOUND)
+    add_sphinx_target(blt_sphinx_tutorial_docs)
+endif()
