@@ -30,7 +30,7 @@ TEST(calc_pi_tests, mpi_example)
     ASSERT_NEAR(calc_pi_mpi(1000),PI_REF,1e-1);
 }
 
-// main driver
+// main driver that allows using mpi w/ google test
 int main(int argc, char * argv[])
 {
     int result = 0;

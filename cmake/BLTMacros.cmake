@@ -507,23 +507,25 @@ endmacro(blt_add_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_test( NAME [name] COMMAND [command] NUM_PROCS [n] )
+## blt_add_test( NAME [name] COMMAND [command] NUM_MPI_TASKS [n] )
 ##
 ## Adds a cmake test to the project.
 ##
 ## NAME is used for the name that CTest reports with.
 ##
-## COMMAND is the command line that will be used to run the test.  This will have
-## the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
+## COMMAND is the command line that will be used to run the test. This will
+## have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
 ##
-## NUM_PROCS indicates this is an MPI test and how many processors to use. The
-## command line will use MPIEXEC and MPIXEC_NUMPROC_FLAG to create the mpi run line.
+## NUM_MPI_TASKS indicates this is an MPI test and how many tasks to use. The
+## command line will use MPIEXEC and MPIXEC_NUMPROC_FLAG to create the mpi run
+## line.
+###
 ## These should be defined in your host-config specific to your platform.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
     set(options )
-    set(singleValueArgs NAME NUM_PROCS)
+    set(singleValueArgs NAME NUM_MPI_TASKS)
     set(multiValueArgs COMMAND)
 
     # Parse the arguments to the macro
@@ -559,14 +561,15 @@ macro(blt_add_test)
     endif()
 
     # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, 
-    # ensure NUM_PROCS is at least one. This invokes the test through MPIEXEC.
-    if ( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC AND NOT arg_NUM_PROCS )
-        set( arg_NUM_PROCS 1 )
+    # ensure NUM_MPI_TASKS is at least one. This invokes the test 
+    # through MPIEXEC.
+    if ( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC AND NOT arg_NUM_MPI_TASKS )
+        set( arg_NUM_MPI_TASKS 1 )
     endif()
 
     # Handle mpi
-    if ( ${arg_NUM_PROCS} )
-        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_PROCS} ${test_command} )
+    if ( ${arg_NUM_MPI_TASKS} )
+        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${test_command} )
     endif()
 
     add_test(NAME ${arg_NAME}

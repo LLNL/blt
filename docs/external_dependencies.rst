@@ -82,7 +82,7 @@ registered dependency in ``test_1`` :  ``gtest``
 Even though google test is built-in and uses CMake, ``blt_register_library`` allows us to easily set defines needed by all dependent targets.
 
 
-MPI and CUDA Examples
+MPI Example
 ~~~~~~~~~~~~~~~~~~~~~
 
 Our next example, ``test_2`` , builds and tests the ``calc_pi_mpi`` library,
@@ -106,6 +106,30 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
    :linenos:
 
 
+For MPI unit tests, you also need to specify the number of MPI Tasks
+to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test`` macro.
+
+.. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+   :language: cmake
+   :emphasize-lines: 71
+   :lines: 69-71
+   :linenos:
+
+
+
+As mentioned in :ref:`UnitTesting`, google test provides a default ``main()`` driver
+that will execute all unit tests defined in the source. To test MPI code we need to create a main that initializes and finalizes MPI in addition to google test. ``test_2.cpp`` provides an example driver for MPI with google test.
+
+
+.. literalinclude:: tutorial/calc_pi/test_2.cpp
+   :language: cpp
+   :lines: 33-48
+   :linenos:
+
+ 
+
+CUDA Example
+~~~~~~~~~~~~~~~~~~~~~
 
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation of the integration intervals.
