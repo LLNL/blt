@@ -43,14 +43,15 @@
 Setup BLT in your CMake Project
 =================================
 
-BLT is easy to include into your CMake project whether it is an existing project or
+BLT is easy to include in your CMake project whether it is an existing project or
 you are starting from scratch. You simply pull it into your project using a CMake ``include()`` command.
 
 .. code:: cmake
 
-    include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+    include(<path/to/blt>/SetupBLT.cmake)
 
-You can include the BLT source in your repository or you can pass the location of BLT at CMake configure time. 
+You can include the BLT source in your repository or you can pass the location 
+of BLT at CMake configure time through the optional ``BLT_SOURCE_DIR`` CMake variable. 
 
 There are two standard choices for including the BLT source in your repository:
 
@@ -58,10 +59,10 @@ There are two standard choices for including the BLT source in your repository:
 2. Copy BLT into a subdirectory in your repository
 
 
-BLT as a git submodule
-----------------------
+Add BLT as a git submodule
+--------------------------
 
-This example adds BLT as a submodule then commits and pushes the changes to your repository.
+This example adds BLT as a submodule. It then commits and pushes the changes to your repository.
 
 .. code:: bash
 
@@ -70,20 +71,19 @@ This example adds BLT as a submodule then commits and pushes the changes to your
     git commit -m "Adding BLT"
     git push
 
-At this point enabling BLT in your CMake project is trivial.  Just include the
-following CMake lines in your base CMakeLists.txt after your project() call.
-This example will give a meaningful error if the user doesn't recursively clone
-or needs to init submodules.
+At this point, enabling BLT in your CMake project is trivial.  Just include the
+following code in your base ``CMakeLists.txt`` after your ``project()`` call.
+
+The following gives a meaningful error if CMake can't find BLT and then brings in BLT.
 
 .. code:: cmake
 
     if (NOT EXISTS ${PROJECT_SOURCE_DIR}/blt/SetupBLT.cmake)
-        message(FATAL_ERROR "\
-    The BLT submodule is not present. \
-    If in git repository run the following two commands:\n \
-    git submodule init\n \
-    git submodule update")
-
+        message(FATAL_ERROR 
+            "The BLT submodule is not present. "
+            "Run the following two commands in your git repository: \n"
+            "    git submodule init \n "
+            "    git submodule update" )
     endif()
 
     include(blt/SetupBLT.cmake)
@@ -92,8 +92,8 @@ or needs to init submodules.
 Copy BLT into your repository
 -----------------------------
 
-This example will clones BLT into your repository then removes the unneeded 
-git files from the clone.  Finally it commits and pushes the changes to your
+This example will clone BLT into your repository and remove the unneeded 
+git files from the clone. It then commits and pushes the changes to your
 repository.
 
 .. code:: bash
@@ -109,7 +109,7 @@ Include BLT in your project
 ---------------------------
 
 In most projects, including BLT is as simple as including the following CMake
-line in your base CMakeLists.txt after your project() call.
+line in your base ``CMakeLists.txt`` after your ``project()`` call.
 
 .. code:: cmake
 
@@ -124,31 +124,31 @@ Include BLT via BLT_SOURCE_DIR
 Some projects want BLT to live outside of their project.  This is usually to share
 one instance of BLT between many dependent projects.
 
-You can also include BLT from a directory outside of your source tree using `BLT_SOURCE_DIR`.
+You can also include BLT from a directory outside of your source tree using ``BLT_SOURCE_DIR``.
 
-To support this, in your CMakeLists.txt file add:
+To support this, in your ``CMakeLists.txt`` file, add:
 
 .. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
    :lines: 19
    :linenos:
 
-We do it in our blank_project example because we also want this project to be automatically tested
-by just a single check-out of our repository.
+We do it in our ``blank_project`` example (see below) because we also want 
+this project to be automatically tested by just a single check-out of our repository.
 
 
 Running CMake
 -------------
 
-To configure a project with CMake, first create a build directory and cd into it.  Then run cmake with pointing
-it at your project.  Here is an example on how to do this with our blank project example.
+To configure a project with CMake, first create a build directory and cd into it.  
+Then run cmake with the path to your project.  
 
 .. code:: bash
 
     cd <your project>
     mkdir build
     cd build
-    cmake ../
+    cmake ..
 
 If you are using BLT outside of your project pass the location of BLT as follows:
 
@@ -157,21 +157,22 @@ If you are using BLT outside of your project pass the location of BLT as follows
     cd <your project>
     mkdir build
     cd build
-    cmake -DBLT_SOURCE_DIR="path/to/blt" ../
+    cmake -DBLT_SOURCE_DIR="path/to/blt" ..
 
 Blank Project Example
 ---------------------
 
-The blank project example is provided to show you some of the built-in features BLT provides and show
-the bare minimum required for testing purposes.
+The ``blank_project`` example is provided to show you some of the built-in features provided by BLT.
+It demonstrates the bare minimum required for testing purposes.
 
-BLT also enforces some build best practices such as not allowing in-source builds.  This means
-that if you try to run cmake directly in your project. For example if you run the following commands:
+BLT also enforces some best practices for building, such as not allowing in-source builds.  
+This means that BLT prevents you from generating a project configuration directly in your project. 
+For example if you run the following commands:
 
 .. code:: bash
 
     cd <BLT repository>/docs/tutorial/blank_project
-    cmake . -DBLT_SOURCE_DIR=`pwd`/../.. 
+    cmake -DBLT_SOURCE_DIR=../..
 
 you will get the following error:
 
@@ -186,36 +187,39 @@ you will get the following error:
 
     -- Configuring incomplete, errors occurred!
 
-On the otherhand, to correctly run cmake create a build directory and run cmake from there as follows:
+To correctly run cmake, create a build directory and run cmake from there:
 
 .. code:: bash
 
     cd <BLT repository>/docs/blank_project
     mkdir build
     cd build
-    cmake .. -DBLT_SOURCE_DIR=`pwd`/../../..
+    cmake -DBLT_SOURCE_DIR=../../.. ..
 
-This will generate among many things a configured Makefile in your build directory to build the blank
-project.  This includes gtest, gmock, and several base built-in BLT tests depending on how many features
-you have turned on in your build.  Blank project only has gtest.  To build use the following command:
+This will generate a configured ``Makefile`` in your build directory to build ``blank_project``.  
+The generated makefile includes gtest and several built-in BLT *smoke* tests,
+depending on the features that you have enabled in your build.  
+
+To build the project, use the following command:
 
 .. code:: bash
 
     make
 
-Just like any other make project you can utilize job tasks to speed up the build with the following:
+As with any other ``make``-based project, you can utilize parallel job tasks 
+to speed up the build with the following command:
 
 .. code:: bash
 
     make -j8
 
-Next run all tests (only blt_gtest_smoke) is in this project with the following:
+Next run all tests in this project with the following command:
 
 .. code:: bash
 
     make test
 
-If everything went correctly you should have the following output:
+If everything went correctly, you should have the following output:
 
 .. code:: bash
 
@@ -228,23 +232,29 @@ If everything went correctly you should have the following output:
 
     Total Test time (real) =   0.10 sec
 
+Note that the default options for ``blank_project`` only include a single test ``blt_gtest_smoke``.
+As we will see later on, BLT includes additional tests when configured with other options, 
+like Fortran, MPI, OpenMP and Cuda. 
 
 Host-configs
 ------------
 
-To capture (and revision control) build options, third party library paths, etc we recommend using CMake's initial-cache file mechanism. This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
+To capture (and revision control) build options, third party library paths, etc.,
+we recommend using CMake's initial-cache file mechanism. 
+This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
 
 You can pass initial-cache files to cmake via the ``-C`` command line option.
 
 .. code:: bash
-    
+
     cmake -C config_file.cmake
 
 
-We call these initial-cache files ``host-config`` files, since we typically create a file for each platform or specific hosts if necessary. 
+We call these initial-cache files ``host-config`` files since we typically create a file for each platform
+or specific hosts, if necessary. 
 
 
-These files use standard CMake commands. CMake *set* commands need to specify ``CACHE`` as follows:
+These files use standard CMake commands. CMake ``set()`` commands need to specify ``CACHE`` as follows:
 
 .. code:: cmake
 
@@ -254,9 +264,9 @@ Here is a snippet from a host-config file that specifies compiler details for us
 
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 9-22
+   :lines: 9-23
    :linenos:
 
-.. danger:: If using the host-config, ``ENABLE_CUDA`` should only be enabled on a machine with CUDA (otherwise, we get config errors).
+.. danger:: If using the host-config, ``ENABLE_CUDA`` should only be enabled on a machine with CUDA (otherwise, we get configuration errors).
 
 

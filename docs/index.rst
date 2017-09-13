@@ -61,17 +61,17 @@ BLT at a Glance
 
   * Multi-platform support (HPC Platforms, OSX, Windows)
 
-* Batteries Included
+* Batteries included
 
   * Built-in support for HPC Basics: MPI, OpenMP, and CUDA
-  * Built-in Support for unit testing in C/C++ and Fortran
+  * Built-in support for unit testing in C/C++ and Fortran
   
-* Streamlines Development Processes
+* Streamlines development processes
 
-  * Support for Documentation Generation
-  * Support for Code Health Tools:
+  * Support for documentation generation
+  * Support for code health tools:
 
-    * Runtime and Static Analysis, Benchmarking
+    * Runtime and static analysis, benchmarking
 
 
 BLT User Tutorial
@@ -81,7 +81,7 @@ This tutorial is aimed at getting BLT users up and running as quickly as possibl
 It provides instructions for:
 
     * Adding BLT to a CMake project
-    * Setting up host-configs to handle multiple platform configurations
+    * Setting up *host-config* files to handle multiple platform configurations
     * Building, linking, and installing libraries and executables
     * Setting up unit tests with GTest
     * Using external project dependencies
