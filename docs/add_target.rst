@@ -61,10 +61,10 @@ This example is as basic as it gets. After setting up a BLT CMake project, like 
 project in the previous section, BLT macros are already enabled and ready to use.  So creating
 an executable is as simple as calling the following macro:
 
-  ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
-    :language: cmake
-    :lines: 24-25
-    :linenos:
+..literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :language: cmake
+   :lines: 24-25
+   :linenos:
 
 This tells CMake that there is an executable named ``example_1`` with one source file.
 
@@ -72,7 +72,7 @@ You can create this project yourself or you can run the already provided ``tutor
 For ease of use, we have combined many examples into this one CMake project.  After running
 the following commands, you will create the executable ``<build dir>/bin/example_1``:
 
-  ..code:: bash
+..code:: bash
 
     cd <blt repository/docs/tutorial/calc_pi
     mkdir build
@@ -100,20 +100,29 @@ pi then linking that library into our executable.
 
 First we create the library with the following BLT code:
 
-  ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
-    :language: cmake
-    :lines: 32-34
-    :linenos:
+..literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :language: cmake
+   :lines: 32-34
+   :linenos:
 
 Just like before, this creates a CMake library target that will get built to ``<build dir>/lib/libcalc_pi.a``.
 
 Then we will create an executable named ``example_2`` and link in the previously created library target:
 
-  ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
-    :language: cmake
-    :lines: 37-39
-    :linenos:
+..literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :language: cmake
+   :lines: 37-39
+   :linenos:
 
 The ``DEPENDS_ON`` parameter properly links the previously made library into this executable without any
 more work or CMake function calls.
 
+
+blt_add_library
+---------------
+
+This is another core macro of BLT.  It creates a CMake library target and associates the
+given sources and headers along with handling dependencies the same way as ``blt_add_executable``
+does.  It also provides a few commonly used build options, such as overriding the output name of the
+library and the output directory.  It defaults to building a static library unless you override it with
+``SHARED`` or with the global option ``ENABLE_SHARED_LIBS``.
