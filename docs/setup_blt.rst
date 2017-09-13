@@ -50,7 +50,7 @@ you are starting from scratch. You simply pull it into your project using a CMak
 
     include(<path/to/blt>/SetupBLT.cmake)
 
-You can include the BLT source in your repository or you can pass the location 
+You can include the BLT source in your repository or pass the location 
 of BLT at CMake configure time through the optional ``BLT_SOURCE_DIR`` CMake variable. 
 
 There are two standard choices for including the BLT source in your repository:
@@ -126,15 +126,17 @@ one instance of BLT between many dependent projects.
 
 You can also include BLT from a directory outside of your source tree using ``BLT_SOURCE_DIR``.
 
-To support this, in your ``CMakeLists.txt`` file, add:
+To support this in your ``CMakeLists.txt`` file, add:
 
 .. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
    :lines: 19
    :linenos:
 
-We do it in our ``blank_project`` example (see below) because we also want 
-this project to be automatically tested by just a single check-out of our repository.
+.. note::
+  Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
+  our tutorial is part of the blt repository and we want this project to be 
+  automatically tested by just a single check-out of our repository.
 
 
 Running CMake
@@ -241,7 +243,7 @@ Host-configs
 
 To capture (and revision control) build options, third party library paths, etc.,
 we recommend using CMake's initial-cache file mechanism. 
-This feature allows you to pass a file to CMake that provides variables to bootstrap the configure process. 
+This feature allows you to pass a file to CMake that provides variables to bootstrap the configuration process. 
 
 You can pass initial-cache files to cmake via the ``-C`` command line option.
 

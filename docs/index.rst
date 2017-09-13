@@ -45,11 +45,10 @@ BLT
 
 **Build, Link, and Triumph**
 
-BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
+BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. 
 
-BLT is developed on github under LLNL's github organization:
-
-https://github.com/llnl/blt
+BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
+It is developed on github under LLNL's github organization: https://github.com/llnl/blt
 
 
 BLT at a Glance
@@ -105,9 +104,9 @@ It provides instructions for:
     * Using external project dependencies
     * Creating documentation with Sphinx and Doxygen
 
-The tutorial provides several examples that calculate :math:`\pi` by estimating
-the integral of :math:`f(x) = 4/(1+x^2)` between 0 and 1 using numerical
-integration. The method is adapted from:
+The tutorial provides several examples that calculate the value of :math:`\pi` 
+by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
+integration. The code is adapted from:
 https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
 
 The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.

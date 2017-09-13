@@ -74,19 +74,19 @@ registered dependency in ``test_1`` :  ``gtest``
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
    :emphasize-lines: 46
-   :lines: 41-48
+   :lines: 41-47
    :linenos:
 
 
-``gtest`` is a google test dependency added via ``blt_register_library``.
+``gtest`` is the name for the google test dependency in BLT registered via ``blt_register_library``.
 Even though google test is built-in and uses CMake, ``blt_register_library`` allows us to easily set defines needed by all dependent targets.
 
 
 MPI Example
 ~~~~~~~~~~~~~~~~~~~~~
 
-Our next example, ``test_2`` , builds and tests the ``calc_pi_mpi`` library,
-which uses MPI to parallelize the calculation of the integration intervals.
+Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
+which uses MPI to parallelize the calculation over the integration intervals.
 
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
@@ -132,7 +132,7 @@ CUDA Example
 ~~~~~~~~~~~~~~~~~~~~~
 
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
-which uses CUDA to parallelize the calculation of the integration intervals.
+which uses CUDA to parallelize the calculation over the integration intervals.
 
 
 To enable CUDA, we set ``ENABLE_CUDA``, ``CUDA_BIN_DIR``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Here is a snippet with these settings for LLNL's Surface Cluster:
@@ -155,14 +155,19 @@ The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, in that
 it also tells BLT that this target includes CUDA code that needs to be compiled via ``nvcc`` or ``cuda-clang``. The ``cuda_runtime`` dependency handles the
 linking of the CUDA runtime.  
 
-Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface and Quartz Clusters.
+Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
 :download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
 
+:download:`llnl-ray-blue_os-gcc@4.9.3.cmake <tutorial/host-configs/llnl-ray-blue_os-gcc@4.9.3.cmake>`
 
 :download:`llnl-quartz-toss3-gcc@4.9.3.cmake <tutorial/host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
+
+
+Building and testing on Surface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Surface:
 
@@ -174,13 +179,13 @@ Here is how you can use the host-config file to configure a build of the ``calc_
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=`pwd`/../../../../blt ../
+    cmake -C ../../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=../../../../blt ..
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) to run the unit tests that are using MPI and CUDA:
 
 .. code:: console
 
-  salloc -A <valid bank>
+  bash-4.1$ salloc -A <valid bank>
   bash-4.1$ make test
   Running tests...
   Test project blt/docs/tutorial/calc_pi/build
@@ -204,4 +209,50 @@ After building (``make``), you can run ``make test`` on a batch node (where the 
   100% tests passed, 0 tests failed out of 8
 
   Total Test time (real) =   6.80 sec
+
+
+Building and testing on Ray
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
+enabled on the blue_os Ray cluster:
+
+.. code:: bash
+    
+    # load new cmake b/c default on ray is too old
+    ml cmake
+    # create build dir
+    mkdir build
+    cd build
+    # configure using host-config
+    cmake -C ../../host-configs/llnl-ray-blue_os-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=../../../../blt ..
+
+And here is how to build and test the code on Ray:
+
+.. code:: console
+
+  bash-4.2$ bsub -Is -n20 -G <valid group> bash
+  bash-4.2$ make
+  bash-4.2$ make test
+  Running tests...
+  Test project /g/g15/weiss27/projects/blt/docs/tutorial/calc_pi/build
+      Start 1: test_1
+  1/7 Test #1: test_1 ...........................   Passed    0.01 sec
+      Start 2: test_2
+  2/7 Test #2: test_2 ...........................   Passed    1.24 sec
+      Start 3: test_3
+  3/7 Test #3: test_3 ...........................   Passed    0.17 sec
+      Start 4: blt_gtest_smoke
+  4/7 Test #4: blt_gtest_smoke ..................   Passed    0.01 sec
+      Start 5: blt_mpi_smoke
+  5/7 Test #5: blt_mpi_smoke ....................   Passed    0.82 sec
+      Start 6: blt_cuda_smoke
+  6/7 Test #6: blt_cuda_smoke ...................   Passed    0.15 sec
+      Start 7: blt_cuda_runtime_smoke
+  7/7 Test #7: blt_cuda_runtime_smoke ...........   Passed    0.04 sec
+  
+  100% tests passed, 0 tests failed out of 7
+  
+  Total Test time (real) =   2.47 sec  
+
 

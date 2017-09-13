@@ -53,6 +53,8 @@ BLT has a built-in copy of the
 Each gtest or FRUIT file may contain multiple tests and is compiled into its own executable 
 that can be run directly or as a ``make`` target. 
 
+In this section, we give a brief overview of GTest and discuss how to add unit tests using the ``blt_add_test`` macro.
+
 Google Test (C++/C Tests)
 --------------------------
 
@@ -120,97 +122,12 @@ See the `Google Test Primer <https://github.com/google/googletest/blob/master/go
 for a discussion of Google Test concepts, how to use them, and a listing of 
 available assertion macros, etc.
 
-
-FRUIT (Fortran Tests)
---------------------------
-
-Fortran unit tests using the FRUIT framework are similar in structure to 
-the Google Test tests for C and C++ described above.
-
-The contents of a typical FRUIT test file look like this::
-
-  module <test_case_name>
-    use iso_c_binding
-    use fruit
-    use <your_code_module_name>
-    implicit none
-
-  contains
-
-  subroutine test_name_1
-  !  Test 1 code here...
-  !  call assert_equals(...)
-  end subroutine test_name_1
-
-  subroutine test_name_2
-  !  Test 2 code here...
-  !  call assert_true(...)
-  end subroutine test_name_2
-
-  ! Etc.
-
-The tests in a FRUIT test file are placed in a Fortran *module* named for
-the *test case name*, such as the name of the C++ class whose Fortran interface
-is being tested. Each unit test is in its own Fortran subroutine named
-for the *test name*, which indicates the functionality being verified by the
-unit test. Within each unit test, logical assertions are defined using
-FRUIT methods. Failure of expected values will cause the test
-to fail, but other tests will continue to run.
-
-Note that each FRUIT test file defines an executable Fortran program. The
-program is defined at the end of the test file and is organized as follows::
-
-    program fortran_test
-      use fruit
-      use <your_component_unit_name>
-      implicit none
-      logical ok
-      
-      ! initialize fruit
-      call init_fruit
-      
-      ! run tests
-      call test_name_1
-      call test_name_2
-      
-      ! compile summary and finalize fruit
-      call fruit_summary
-      call fruit_finalize
-      
-      call is_all_successful(ok)
-      if (.not. ok) then
-        call exit(1)
-      endif
-    end program fortran_test
-
-
-Please refer to the `FRUIT documentation <https://sourceforge.net/projects/fortranxunit/>`_ for more information.
-
-Configuring tests within BLT
-----------------------------
-
-Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is enabled by default. 
-
-For additional configuration granularity, BLT provides configuration options 
-for the individual built-in unit testing libraries.  The following additional options are available
-when ``ENABLE_TESTS`` is on:
-
-``ENABLE_GTEST``
-  Option to enable gtest (default: ``ON``).
-``ENABLE_GMOCK``
-  Option to control gmock (default: ``OFF``).
-  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
-  regardless of the value of ``ENABLE_GTEST``. 
-``ENABLE_FRUIT``
-  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
-
-
 Adding a BLT unit test 
 ----------------------
 
 After writing a unit test, we add it to the project's build system 
-by first generating an executable for the test (using the ``blt_add_executable()`` macro) 
-and then registering the test (using the ``blt_add_test()`` macro).
+by first generating an executable for the test using the ``blt_add_executable()`` macro.
+We then register the test using the ``blt_add_test()`` macro.
 
 Returning to our running example (see  :ref:`AddTarget`), 
 let's add a simple test for the ``calc_pi`` library, 
@@ -220,8 +137,8 @@ which has a single function with signature:
 
    double calc_pi(int num_intervals);
 
-We can add a simple unit test that invokes ``calc_pi()`` 
-and compares the result to pi, within a given tolerance (``1e-1``). 
+We add a simple unit test that invokes ``calc_pi()`` 
+and compares the result to :math:`\pi`, within a given tolerance (``1e-1``). 
 Here is the test code:
 
 .. literalinclude:: tutorial/calc_pi/test_1.cpp
@@ -245,17 +162,17 @@ We then register this executable as a test:
    :lines: 48-49
    :linenos:
 
-.. danger::
+.. note::
    The ``COMMAND`` parameter can be used to pass arguments into a test executable.
    This feature is not exercised in this example.
 
-.. danger::
+.. note::
    The ``NAME`` of the test can be different from the test executable, 
    which is passed in through the ``COMMAND`` parameter.
    This feature is not exercised in this example.
 
 
-Running Tests and Examples
+Running tests and examples
 --------------------------
 
 To run the tests, type the following command in the build directory::
@@ -283,6 +200,24 @@ are working, for example.
     -VV
       (Very verbose) Dump test output to stdout
 
+
+Configuring tests within BLT
+----------------------------
+
+Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on by default. 
+
+For additional configuration granularity, BLT provides configuration options 
+for the individual built-in unit testing libraries.  The following additional options are available
+when ``ENABLE_TESTS`` is on:
+
+``ENABLE_GTEST``
+  Option to enable gtest (default: ``ON``).
+``ENABLE_GMOCK``
+  Option to control gmock (default: ``OFF``).
+  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
+  regardless of the value of ``ENABLE_GTEST``. 
+``ENABLE_FRUIT``
+  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
 
 
 
