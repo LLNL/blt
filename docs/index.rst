@@ -106,7 +106,7 @@ It provides instructions for:
     * Creating documentation with Sphinx and Doxygen
 
 The tutorial provides several examples that calculate :math:`\pi` by estimating
-the integral of :math:`f(x) = 4/(1+x^2)` between 0 and 1 using the numerical
+the integral of :math:`f(x) = 4/(1+x^2)` between 0 and 1 using numerical
 integration. The method is adapted from:
 https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
 
