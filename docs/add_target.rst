@@ -50,10 +50,23 @@ the project, and building and testing the built-in third party libraries provide
 by BLT.  We can now move onto more useful tasks, creating libraries and executables
 with two of BLT's core macros, ``blt_add_library`` and ``blt_add_executable``.
 
+We will start with a basic executable that calculates pi.  Then extract that code into
+a library which we then link into a new executable.
 
 
+Example 1: Basic executable
+---------------------------
 
-calc_pi example 1 and example 2
+This example is as basic as it gets. After setting up a BLT CMake project, like the blank
+project in the Setup BLT section, BLT macros are already enabled and ready to use.  So creating
+an executable is as simple as calling the following macro:
+
+  ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
+    :language: cmake
+    :lines: 24-25
+
+This tells CMake that there is an executable named ``example_1`` with one source file.  After running
+the following commands you will have the executable ``<build dir>/bin/example_1``.
 
 
 

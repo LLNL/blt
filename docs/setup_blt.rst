@@ -128,7 +128,7 @@ You can also include BLT from a directory outside of your source tree using `BLT
 
 To support this, in your CMakeLists.txt file add:
 
-.. literalinclude:: blank_project/CMakeLists.txt
+.. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
    :lines: 55
 
