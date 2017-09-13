@@ -18,7 +18,9 @@ int iDivUp(int a, int b)
 
 // -- atomic add of doubles for older cuda archs -- //
 // from http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions
-#if __CUDA_ARCH__ < 600
+#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600 
+// cuda 8 provides atomicAdd for doubles for all arches
+#else
 __device__ double atomicAdd(double *address,
                             double val)
 {  

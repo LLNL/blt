@@ -38,4 +38,5 @@ set(MPI_Fortran_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpif90" CACHE PA
 ###########################################################
 set(ENABLE_CUDA ON CACHE BOOL "")
 
+set(CUDA_TOOLKIT_ROOT_DIR "/opt/cudatoolkit-8.0" CACHE PATH "")
 set(CUDA_BIN_DIR "/opt/cudatoolkit-8.0/bin" CACHE PATH "")

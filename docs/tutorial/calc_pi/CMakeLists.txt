@@ -79,9 +79,8 @@ endif()
 ###############################################################################
 if(CUDA_FOUND)
 
-    # atomicAdd for doubles requires compute_60 or greater
-    # we may need to take another path ...
-	set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode=arch=compute_60,code=sm_60)
+    # avoid warnings about sm_20 deprecated
+    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30)
 	
     blt_add_library( NAME calc_pi_cuda
                      HEADERS calc_pi_cuda.hpp
