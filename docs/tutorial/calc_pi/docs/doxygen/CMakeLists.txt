@@ -3,6 +3,6 @@
 #######################################################
 
 if(DOXYGEN_FOUND)
-    add_doxygen_target( calc_pi_doxygen )
+    blt_add_doxygen_target( calc_pi_doxygen )
 endif()
 
