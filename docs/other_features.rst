@@ -64,7 +64,7 @@ This macro currently supports the following compilers:
 * INTEL (Intel compiler)
 * MSVC (Microsoft Visual Studio)
 
-Here is an example for setting the appropriate flag to treat warnings as errors::
+Here is an example for setting the appropriate flag to treat warnings as errors:
 
 .. code:: cmake
 
@@ -87,7 +87,7 @@ flag to an already defined executable, such as ``example_1`` with the following 
     blt_add_target_compile_flags(TO example_1
                                  FLAGS BLT_WARNINGS_AS_ERRORS_FLAG )
 
-Here is another example to disable warnings about unknown OpenMP pragmas in the code::
+Here is another example to disable warnings about unknown OpenMP pragmas in the code:
 
 .. code:: cmake
 
