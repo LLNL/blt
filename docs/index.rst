@@ -58,7 +58,8 @@ BLT at a Glance
     * Creating libraries and executables
     * Managing compiler flags
     * Managing external dependencies
-    * Multi-platform support (HPC Platforms, OSX, Windows)
+
+  * Multi-platform support (HPC Platforms, OSX, Windows)
 
 * Batteries Included
 

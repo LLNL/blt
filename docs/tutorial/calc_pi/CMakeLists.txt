@@ -68,7 +68,7 @@ if(MPI_FOUND)
 
     blt_add_test( NAME test_2 
                   COMMAND test_2
-                  NUM_PROCS 2) # number of mpi tasks to use
+                  NUM_MPI_TASKS 2) # number of mpi tasks to use
 endif()
 
 ###############################################################################
