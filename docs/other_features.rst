@@ -66,30 +66,40 @@ This macro currently supports the following compilers:
 
 Here is an example for setting the appropriate flag to treat warnings as errors::
 
-  blt_append_custom_compiler_flag(
-    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_FLAG
-    DEFAULT  "-Werror"
-    MSVC     "/WX"
-    XL       "qhalt=w"
-    )
+.. code:: cmake
+
+    blt_append_custom_compiler_flag(
+      FLAGS_VAR BLT_WARNINGS_AS_ERRORS_FLAG
+      DEFAULT  "-Werror"
+      MSVC     "/WX"
+      XL       "qhalt=w"
+      )
 
 Since values for ``GNU``, ``CLANG`` and ``INTEL`` are not supplied, 
 they will get the default value (``-Werrror``)
 which is supplied by the macro's ``DEFAULT`` argument.
 
+BLT provides a simple macro to append compiler flags.  You would append the previous compiler
+flag to an already defined executable, such as ``example_1`` with the following line:
+
+.. code:: cmake
+
+    blt_add_target_compile_flags(TO example_1
+                                 FLAGS BLT_WARNINGS_AS_ERRORS_FLAG )
+
 Here is another example to disable warnings about unknown OpenMP pragmas in the code::
 
-  # Flag for disabling warnings about omp pragmas in the code
-  blt_append_custom_compiler_flag(
-      FLAGS_VAR DISABLE_OMP_PRAGMA_WARNINGS_FLAG
-      DEFAULT "-Wno-unknown-pragmas"
-      XL      "-qignprag=omp"
-      INTEL   "-diag-disable 3180"
-      MSVC    "/wd4068"
-      )
+.. code:: cmake
+
+    # Flag for disabling warnings about omp pragmas in the code
+    blt_append_custom_compiler_flag(
+        FLAGS_VAR DISABLE_OMP_PRAGMA_WARNINGS_FLAG
+        DEFAULT "-Wno-unknown-pragmas"
+        XL      "-qignprag=omp"
+        INTEL   "-diag-disable 3180"
+        MSVC    "/wd4068"
+        )
 
 Note that GNU does not have a way to only disable warnings about openmp pragmas, 
 so one must disable warnings about all pragmas on this compiler.
-
-.. note:: Add an example about how to apply these flags to a target.
 
