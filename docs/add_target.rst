@@ -45,28 +45,29 @@
 Creating Libraries and Executables
 ==================================
 
-Now that we have the basics down of how to create a CMake project with BLT, configure
-the project, and build and test the built-in third party libraries provided
-by BLT.  We can now move onto more useful tasks, creating libraries and executables
-with two of BLT's core macros, ``blt_add_library`` and ``blt_add_executable``.
+In the previous section, we learned the basics about how to create a CMake project with BLT, 
+how to configure the project and how to build and test BLT's built-in third party libraries.  
 
-We will start with a basic executable that calculates pi.  Then extract that code into
-a library which we then link into a new executable.
+We now move on to creating libraries and executables
+using two of BLT's core macros: ``blt_add_library`` and ``blt_add_executable``.
+
+We begin with a simple executable that calculates pi by numerical integration (``example_1``).  
+We will then extract that code into a library, which we link into a new executable (``example_2``).
 
 
 Example 1: Basic executable
 ---------------------------
 
-This example is as basic as it gets. After setting up a BLT CMake project, like the blank
-project in the previous section, BLT macros are already enabled and ready to use.  So creating
-an executable is as simple as calling the following macro:
+This example is as basic as it gets. After setting up a BLT CMake project, 
+like ``blank_project`` in the previous section, we can start using BLT's macros.  
+Creating an executable is as simple as calling the following macro:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
    :lines: 24-25
    :linenos:
 
-This tells CMake that there is an executable named ``example_1`` with one source file.
+This tells CMake to create an executable named ``example_1`` with one source file (``example_1.cpp``).
 
 You can create this project yourself or you can run the already provided ``tutorial/calc_pi`` project.
 For ease of use, we have combined many examples into this one CMake project.  After running
@@ -84,11 +85,11 @@ the following commands, you will create the executable ``<build dir>/bin/example
 blt_add_executable
 ------------------
 
-This macro is one of the core macros that enables BLT to simplify many tasks that
-every CMake developer does to get a basic project working.  It unifies many CMake
-calls into one easy to use macro.  It creates a CMake executable target with the 
-given sources, sets the output directory to ``bin`` unless overwritten with the
-parameter ``OUTPUT_DIR``, and handles internal and external dependencies in a greatly
+This is one of the core macros that enables BLT to simplify our CMake-based project.
+It unifies many CMake calls into one easy to use macro.  
+``blt_add_executable`` creates a CMake executable target with the 
+given sources, sets the output directory to ``<build dir>/bin`` (unless overwridden with the
+macro parameter ``OUTPUT_DIR``) and handles internal and external dependencies in a greatly
 simplified manner.  There will be more on that in the following section.
 
 
@@ -96,9 +97,9 @@ Example 2: One library, one executable
 --------------------------------------
 
 This example is a bit more exciting.  This time we are creating a library that calculates
-pi then linking that library into our executable.
+pi and then linking that library into an executable.
 
-First we create the library with the following BLT code:
+First, we create the library with the following BLT code:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
@@ -107,7 +108,7 @@ First we create the library with the following BLT code:
 
 Just like before, this creates a CMake library target that will get built to ``<build dir>/lib/libcalc_pi.a``.
 
-Then we will create an executable named ``example_2`` and link in the previously created library target:
+Next, we create an executable named ``example_2`` and link in the previously created library target:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
@@ -121,8 +122,9 @@ more work or CMake function calls.
 blt_add_library
 ---------------
 
-This is another core macro of BLT.  It creates a CMake library target and associates the
+This is another core BLT macro.  It creates a CMake library target and associates the
 given sources and headers along with handling dependencies the same way as ``blt_add_executable``
 does.  It also provides a few commonly used build options, such as overriding the output name of the
-library and the output directory.  It also defaults to building a static library unless you override it with
-``SHARED`` or with the global option ``ENABLE_SHARED_LIBS``.
+library and the output directory.  It defaults to building a static library unless you override it with
+``SHARED`` or with the global BLT option ``ENABLE_SHARED_LIBS``.
+
