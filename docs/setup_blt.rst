@@ -131,7 +131,6 @@ To support this in your ``CMakeLists.txt`` file, add:
 .. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
    :lines: 19
-   :linenos:
 
 .. note::
   Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
@@ -267,8 +266,5 @@ Here is a snippet from a host-config file that specifies compiler details for us
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
    :lines: 9-23
-   :linenos:
-
-.. danger:: If using the host-config, ``ENABLE_CUDA`` should only be enabled on a machine with CUDA (otherwise, we get configuration errors).
 
 

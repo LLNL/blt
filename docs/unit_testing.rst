@@ -58,7 +58,9 @@ In this section, we give a brief overview of GTest and discuss how to add unit t
 Google Test (C++/C Tests)
 --------------------------
 
-The contents of a typical Google Test file look like this::
+The contents of a typical Google Test file look like this:
+
+.. code:: cpp
 
   #include "gtest/gtest.h"
 
@@ -95,24 +97,6 @@ before or after the unit tests in a file; e.g., initialization code or
 pre-/post-processing operations. A ``main()`` routine provided in a test 
 file should be placed at the end of the file in which it resides.
 
-Here is an example ``main()`` from a test that uses MPI.  The ``main()`` 
-routine will initialize and finalize MPI before and after tests are run,
-respectively::
-
-  int main(int argc, char * argv[])
-  {
-    int result = 0;
-
-    ::testing::InitGoogleTest(&argc, argv);
-
-    MPI_Init(&argc, &argv);
-
-    result = RUN_ALL_TESTS();
-
-    MPI_Finalize();
-
-    return result;
-  }
 
 Note that Google test is initialized before ``MPI_Init()`` is called. 
 
@@ -144,14 +128,12 @@ Here is the test code:
 .. literalinclude:: tutorial/calc_pi/test_1.cpp
    :language: cpp
    :lines: 11-19
-   :linenos:
 
 To add this test to the build system, we first generate a test executable:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
    :lines: 41-46
-   :linenos:
 
 Note that this test executable depends on two targets: ``calc_pi`` and ``gtest``.
 
@@ -160,22 +142,24 @@ We then register this executable as a test:
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
    :lines: 48-49
-   :linenos:
 
-.. note::
-   The ``COMMAND`` parameter can be used to pass arguments into a test executable.
-   This feature is not exercised in this example.
-
-.. note::
-   The ``NAME`` of the test can be different from the test executable, 
-   which is passed in through the ``COMMAND`` parameter.
-   This feature is not exercised in this example.
+.. Hide these for now until we bring into an example
+.. .. note::
+..    The ``COMMAND`` parameter can be used to pass arguments into a test executable.
+..    This feature is not exercised in this example.
+..
+.. .. note::
+..    The ``NAME`` of the test can be different from the test executable,
+..    which is passed in through the ``COMMAND`` parameter.
+..    This feature is not exercised in this example.
 
 
 Running tests and examples
 --------------------------
 
-To run the tests, type the following command in the build directory::
+To run the tests, type the following command in the build directory:
+
+.. code:: bash
 
   $ make test 
 

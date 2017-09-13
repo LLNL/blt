@@ -41,14 +41,8 @@
 .. ###############################################################################
 
 
-
-Other useful BLT features
-=========================
-
-This file lists some additional useful BLT features.
-
 Portable compiler flags
------------------------
+=========================
 
 To ease with the development of code that is portable across different architectures
 and compilers, BLT provides the ``blt_append_custom_compiler_flag()`` macro.

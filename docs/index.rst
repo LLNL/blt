@@ -118,9 +118,10 @@ The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 o
     :maxdepth: 3
 
     setup_blt
-    add_target
+    creating_execs_and_libs
+    using_flags
     unit_testing
     external_dependencies
     creating_documentation
-    other_features
+
 

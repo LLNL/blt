@@ -87,14 +87,12 @@ Here is an example of using ``blt_add_sphinx_target()`` in a CMakeLists.txt file
 
 .. literalinclude:: tutorial/calc_pi/docs/sphinx/CMakeLists.txt
    :language: rst
-   :linenos:
 
 
 Here is the example reStructuredText file that contains documentation for the *calc_pi* example.
 
 .. literalinclude:: tutorial/calc_pi/docs/sphinx/index.rst
    :language: rst
-   :linenos:
    
 
 Calc Pi Doxygen Example
@@ -113,14 +111,12 @@ Here is an example of using ``blt_add_doxygen_target()`` in a CMakeLists.txt fil
 
 .. literalinclude:: tutorial/calc_pi/docs/doxygen/CMakeLists.txt
    :language: rst
-   :linenos:
 
 
 Here is the example ``Doxyfile.in`` file that is configured by CMake and passed to ``doxygen``.
 
 .. literalinclude:: tutorial/calc_pi/docs/doxygen/Doxyfile.in
    :language: rst
-   :linenos:
 
 
 

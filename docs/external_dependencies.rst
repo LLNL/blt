@@ -75,7 +75,6 @@ registered dependency in ``test_1`` :  ``gtest``
    :language: cmake
    :emphasize-lines: 46
    :lines: 41-47
-   :linenos:
 
 
 ``gtest`` is the name for the google test dependency in BLT registered via ``blt_register_library``.
@@ -94,7 +93,6 @@ To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
    :lines: 25-33
-   :linenos:
 
 
 Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
@@ -103,7 +101,6 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
    :language: cmake
    :emphasize-lines: 62,67
    :lines: 51-68
-   :linenos:
 
 
 For MPI unit tests, you also need to specify the number of MPI Tasks
@@ -113,7 +110,6 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test`` macro.
    :language: cmake
    :emphasize-lines: 71
    :lines: 69-71
-   :linenos:
 
 
 
@@ -124,9 +120,7 @@ that will execute all unit tests defined in the source. To test MPI code we need
 .. literalinclude:: tutorial/calc_pi/test_2.cpp
    :language: cpp
    :lines: 33-48
-   :linenos:
 
- 
 
 CUDA Example
 ~~~~~~~~~~~~~~~~~~~~~
@@ -140,7 +134,6 @@ To enable CUDA, we set ``ENABLE_CUDA``, ``CUDA_BIN_DIR``, and ``CUDA_TOOLKIT_ROO
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
    :lines: 36-41
-   :linenos:
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
@@ -148,7 +141,6 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
    :language: cmake
    :emphasize-lines: 89,94
    :lines: 74-94
-   :linenos:
 
 
 The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, in that 
