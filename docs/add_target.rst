@@ -46,7 +46,7 @@ Creating Libraries and Executables
 ==================================
 
 Now that we have the basics down of how to create a CMake project with BLT, configure
-the project, and building and testing the built-in third party libraries provided
+the project, and build and test the built-in third party libraries provided
 by BLT.  We can now move onto more useful tasks, creating libraries and executables
 with two of BLT's core macros, ``blt_add_library`` and ``blt_add_executable``.
 
@@ -114,7 +114,7 @@ Then we will create an executable named ``example_2`` and link in the previously
    :lines: 37-39
    :linenos:
 
-The ``DEPENDS_ON`` parameter properly links the previously made library into this executable without any
+The ``DEPENDS_ON`` parameter properly links the previously defined library into this executable without any
 more work or CMake function calls.
 
 
@@ -124,5 +124,5 @@ blt_add_library
 This is another core macro of BLT.  It creates a CMake library target and associates the
 given sources and headers along with handling dependencies the same way as ``blt_add_executable``
 does.  It also provides a few commonly used build options, such as overriding the output name of the
-library and the output directory.  It defaults to building a static library unless you override it with
+library and the output directory.  It also defaults to building a static library unless you override it with
 ``SHARED`` or with the global option ``ENABLE_SHARED_LIBS``.
