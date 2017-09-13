@@ -130,7 +130,8 @@ To support this, in your CMakeLists.txt file add:
 
 .. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
-   :lines: 55
+   :lines: 19
+   :linenos:
 
 We do it in our blank_project example because we also want this project to be automatically tested
 by just a single check-out of our repository.

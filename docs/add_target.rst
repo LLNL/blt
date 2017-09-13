@@ -58,16 +58,62 @@ Example 1: Basic executable
 ---------------------------
 
 This example is as basic as it gets. After setting up a BLT CMake project, like the blank
-project in the Setup BLT section, BLT macros are already enabled and ready to use.  So creating
+project in the previous section, BLT macros are already enabled and ready to use.  So creating
 an executable is as simple as calling the following macro:
 
   ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
     :language: cmake
     :lines: 24-25
+    :linenos:
 
-This tells CMake that there is an executable named ``example_1`` with one source file.  After running
-the following commands you will have the executable ``<build dir>/bin/example_1``.
+This tells CMake that there is an executable named ``example_1`` with one source file.
+
+You can create this project yourself or you can run the already provided ``tutorial/calc_pi`` project.
+For ease of use, we have combined many examples into this one CMake project.  After running
+the following commands, you will create the executable ``<build dir>/bin/example_1``:
+
+  ..code:: bash
+
+    cd <blt repository/docs/tutorial/calc_pi
+    mkdir build
+    cd build
+    cmake -DBLT_SOURCE_DIR=`pwd`/../../.. ..
+    make
 
 
+blt_add_executable
+------------------
 
+This macro is one of the core macros that enables BLT to simplify many tasks that
+every CMake developer does to get a basic project working.  It unifies many CMake
+calls into one easy to use macro.  It creates a CMake executable target with the 
+given sources, sets the output directory to ``bin`` unless overwritten with the
+parameter ``OUTPUT_DIR``, and handles internal and external dependencies in a greatly
+simplified manner.  There will be more on that in the following section.
+
+
+Example 2: One library, one executable
+--------------------------------------
+
+This example is a bit more exciting.  This time we are creating a library that calculates
+pi then linking that library into our executable.
+
+First we create the library with the following BLT code:
+
+  ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
+    :language: cmake
+    :lines: 32-34
+    :linenos:
+
+Just like before, this creates a CMake library target that will get built to ``<build dir>/lib/libcalc_pi.a``.
+
+Then we will create an executable named ``example_2`` and link in the previously created library target:
+
+  ..literalinclude:: tutorial/calc_pi/CMakeLists.txt
+    :language: cmake
+    :lines: 37-39
+    :linenos:
+
+The ``DEPENDS_ON`` parameter properly links the previously made library into this executable without any
+more work or CMake function calls.
 
