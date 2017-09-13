@@ -45,8 +45,12 @@
 Creating Libraries and Executables
 ==================================
 
+Now that we have the basics down of how to create a CMake project with BLT, configure
+the project, and building and testing the built-in third party libraries provided
+by BLT.  We can now move onto more useful tasks, creating libraries and executables
+with two of BLT's core macros, ``blt_add_library`` and ``blt_add_executable``.
 
-More coming soon!
+
 
 
 calc_pi example 1 and example 2

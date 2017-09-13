@@ -43,7 +43,6 @@
 Setup BLT in your CMake Project
 =================================
 
-
 BLT is easy to include into your CMake project whether it is an existing project or
 you are starting from scratch. You simply pull it into your project using a CMake ``include()`` command.
 
@@ -170,14 +169,14 @@ that if you try to run cmake directly in your project. For example if you run th
 
 .. code:: bash
 
-    cd <BLT repository>/docs/blank_project
+    cd <BLT repository>/docs/tutorial/blank_project
     cmake . -DBLT_SOURCE_DIR=`pwd`/../.. 
 
 you will get the following error:
 
 .. code:: bash
 
-    CMake Error at /usr/workspace/wsrzd/white238/blt/SetupBLT.cmake:59 (message):
+    CMake Error at blt/SetupBLT.cmake:59 (message):
       In-source builds are not supported.  Please remove CMakeCache.txt from the
       'src' dir and configure an out-of-source build in another directory.
     Call Stack (most recent call first):
@@ -220,7 +219,7 @@ If everything went correctly you should have the following output:
 .. code:: bash
 
     Running tests...
-    Test project /usr/workspace/wsrzd/white238/blt/docs/blank_project/build
+    Test project blt/docs/tutorial/blank_project/build
         Start 1: blt_gtest_smoke
     1/1 Test #1: blt_gtest_smoke ..................   Passed    0.01 sec
 
@@ -254,7 +253,7 @@ Here is a snippet from a host-config file that specifies compiler details for us
 
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 9-24
+   :lines: 9-22
    :linenos:
 
 .. danger:: If using the host-config, ``ENABLE_CUDA`` should only be enabled on a machine with CUDA (otherwise, we get config errors).

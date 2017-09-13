@@ -74,7 +74,7 @@ registered dependency in ``test_1`` :  ``gtest``
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
    :emphasize-lines: 46
-   :lines: 41-50
+   :lines: 41-48
    :linenos:
 
 
@@ -93,7 +93,7 @@ To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER
 
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 25-35
+   :lines: 25-33
    :linenos:
 
 
@@ -102,7 +102,7 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
    :emphasize-lines: 62,67
-   :lines: 51-73
+   :lines: 51-68
    :linenos:
 
 
@@ -115,7 +115,7 @@ To enable CUDA, we set ``ENABLE_CUDA``, ``CUDA_BIN_DIR``, and ``CUDA_TOOLKIT_ROO
 
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 36-43
+   :lines: 36-41
    :linenos:
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
@@ -123,7 +123,7 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
    :emphasize-lines: 89,94
-   :lines: 74-99
+   :lines: 74-94
    :linenos:
 
 
@@ -150,7 +150,7 @@ Here is how you can use the host-config file to configure a build of the ``calc_
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=../../../../blt ../
+    cmake -C ../../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=`pwd`/../../../../blt ../
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) to run the unit tests that are using MPI and CUDA:
 
@@ -159,7 +159,7 @@ After building (``make``), you can run ``make test`` on a batch node (where the 
   salloc -A <valid bank>
   bash-4.1$ make test
   Running tests...
-  Test project /usr/workspace/wsa/cyrush/blt/docs/tutorial/calc_pi/build
+  Test project blt/docs/tutorial/calc_pi/build
       Start 1: test_1
   1/8 Test #1: test_1 ...........................   Passed    0.01 sec
       Start 2: test_2
