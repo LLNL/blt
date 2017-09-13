@@ -56,7 +56,7 @@ endif()
 ##------------------------------------------------------------------------------
 ## - Macro for invoking doxygen to generate docs
 ##
-## add_doxygen_target(doxygen_target_name)
+##  blt_add_doxygen_target(doxygen_target_name)
 ##
 ##  Expects to find a Doxyfile.in in the directory the macro is called in. 
 ##  
@@ -65,7 +65,7 @@ endif()
 ##  docs/doxygen/`doxygen_target_name`
 ##
 ##------------------------------------------------------------------------------
-macro(add_doxygen_target doxygen_target_name)
+macro(blt_add_doxygen_target doxygen_target_name)
 
     # add a target to generate API documentation with Doxygen
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
@@ -81,13 +81,13 @@ macro(add_doxygen_target doxygen_target_name)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" 
             DESTINATION docs/doxygen/${doxygen_target_name} OPTIONAL)
 
-endmacro(add_doxygen_target)
+endmacro(blt_add_doxygen_target)
 
 
 ##------------------------------------------------------------------------------
 ## - Macro for invoking sphinx to generate docs
 ##
-## add_sphinx_target(sphinx_target_name)
+##  blt_add_sphinx_target(sphinx_target_name)
 ##
 ##  Expects to find a conf.py or conf.py.in in the directory the macro is 
 ##  called in. 
@@ -103,7 +103,7 @@ endmacro(add_doxygen_target)
 ##  docs/sphinx/`sphinx_target_name`
 ##
 ##------------------------------------------------------------------------------
-macro(add_sphinx_target sphinx_target_name )
+macro(blt_add_sphinx_target sphinx_target_name )
 
     MESSAGE(STATUS "Creating sphinx docs target ${sphinx_target_name}")
     
@@ -161,4 +161,4 @@ macro(add_sphinx_target sphinx_target_name )
     install(DIRECTORY "${SPHINX_HTML_DIR}" 
             DESTINATION "docs/sphinx/${sphinx_target_name}" OPTIONAL)
 
-endmacro(add_sphinx_target)
+endmacro(blt_add_sphinx_target)
