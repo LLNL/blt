@@ -45,8 +45,12 @@ BLT
 
 **Build, Link, and Triumph**
 
+BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
 
-BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. BLT is developed at Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
+BLT is developed on github under LLNL's github organization:
+
+https://github.com/llnl/blt
+
 
 BLT at a Glance
 ~~~~~~~~~~~~~~~~~~
@@ -73,6 +77,20 @@ BLT at a Glance
 
     * Runtime and Static Analysis, Benchmarking
 
+BLT Developers
+~~~~~~~~~~~~~~~~~~~
+Developers include:
+
+ * Chris White (white238@llnl.gov)
+ * Cyrus Harrison (harrison37@llnl.gov)
+ * George Zagaris (zagaris2@llnl.gov)
+ * Kenneth Weiss (kweiss@llnl.gov)
+ * Lee Taylor (taylor16@llnl.gov)
+ * Aaron Black (black27@llnl.gov)
+ * David A. Beckingsale (beckingsale1@llnl.gov)
+ * Richard Hornung (hornung1@llnl.gov)
+ * Randolph Settgast (settgast1@llnl.gov)
+ * Peter Robinson  (robinson96@llnl.gov)
 
 BLT User Tutorial
 ~~~~~~~~~~~~~~~~~~~
@@ -86,6 +104,14 @@ It provides instructions for:
     * Setting up unit tests with GTest
     * Using external project dependencies
     * Creating documentation with Sphinx and Doxygen
+
+The tutorial provides several examples that calculate :math:`\pi` by estimating
+the integral of :math:`f(x) = 4/(1+x^2)` between 0 and 1 using the numerical
+integration. The method is adapted from:
+https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
+
+The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
+
 
 **Tutorial Contents**
 

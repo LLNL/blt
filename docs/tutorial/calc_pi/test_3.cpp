@@ -27,3 +27,4 @@ TEST(calc_pi_tests, cuda_example)
 {
     ASSERT_NEAR(calc_pi_cuda(1000),PI_REF,1e-1);
 }
+

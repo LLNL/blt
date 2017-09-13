@@ -12,11 +12,11 @@ C++ libraries that calculate :math:`\pi` serially and in parallel using MPI
 and CUDA.
 
 These libraries calculate :math:`\pi` by estimating the integral of 
-:math:`f(x) = 4/(1+x^2)` between 0 and 1, using the trapezoidal rule with a
-given the number of intervals.  In the MPI implementation, the intervals are
-distributed across MPI tasks and a MPI_AllReduce calculates the final result.
-In the CUDA implementation, the intervals are distributed across CUDA blocks
-and threads and a tree reduction calculates the final result.
+:math:`f(x) = 4/(1+x^2)` between 0 and 1 using the numerical integration. 
+In the MPI implementation, the intervals are distributed across MPI tasks and 
+a MPI_AllReduce calculates the final result. In the CUDA implementation, the
+intervals are distributed across CUDA blocks and threads and a tree reduction
+calculates the final result.
 
 
 The method is adapted from:

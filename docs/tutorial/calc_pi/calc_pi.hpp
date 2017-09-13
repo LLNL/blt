@@ -15,7 +15,7 @@
 /// \brief calculate pi 
 ///
 ///  Estimate pi by integrating f(x) = 4/(1+x^2) from 0 to 1 using 
-///  the trapezoidal rule with a given number of intervals.
+///  numerical integration over a given number of intervals.
 /// 
 double calc_pi(int num_intervals);
 
