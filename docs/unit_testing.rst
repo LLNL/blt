@@ -160,28 +160,29 @@ to fail, but other tests will continue to run.
 Note that each FRUIT test file defines an executable Fortran program. The
 program is defined at the end of the test file and is organized as follows::
 
-  program fortran_test
-    use fruit
-    use <your_component_unit_name>
-    implicit none
-    logical ok
+    program fortran_test
+      use fruit
+      use <your_component_unit_name>
+      implicit none
+      logical ok
+      
+      ! initialize fruit
+      call init_fruit
+      
+      ! run tests
+      call test_name_1
+      call test_name_2
+      
+      ! compile summary and finalize fruit
+      call fruit_summary
+      call fruit_finalize
+      
+      call is_all_successful(ok)
+      if (.not. ok) then
+        call exit(1)
+      endif
+    end program fortran_test
 
-    ! initialize fruit
-    call init_fruit
-
-    ! run tests
-    call test_name_1
-    call test_name_2
-
-    ! compile summary and finalize fruit
-    call fruit_summary
-    call fruit_finalize
-
-    call is_all_successful(ok)
-    if (.not. ok) then
-      call exit(1)
-    endif
-  end program fortran_test
 
 Please refer to the `FRUIT documentation <https://sourceforge.net/projects/fortranxunit/>`_ for more information.
 
@@ -232,7 +233,7 @@ To add this test to the build system, we first generate a test executable:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 34-36
+   :lines: 41-46
    :linenos:
 
 Note that this test executable depends on two targets: ``calc_pi`` and ``gtest``.
@@ -241,14 +242,14 @@ We then register this executable as a test:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 38-39
+   :lines: 48-49
    :linenos:
 
-.. note::
+.. danger::
    The ``COMMAND`` parameter can be used to pass arguments into a test executable.
    This feature is not exercised in this example.
 
-.. note::
+.. danger::
    The ``NAME`` of the test can be different from the test executable, 
    which is passed in through the ``COMMAND`` parameter.
    This feature is not exercised in this example.
