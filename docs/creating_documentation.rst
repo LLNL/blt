@@ -61,9 +61,9 @@ Here is an example of setting ``sphinx-build`` and ``doxygen`` paths in a host-c
 
 .. code:: cmake
    
-   set(SPHINX_EXECUTABLE "/FIX/python-2.7.11-lzwg377xdfm3ckdumn5yir5kc323fmll/bin/sphinx-build" CACHE PATH "")
+   set(SPHINX_EXECUTABLE "/usr/bin/sphinx-build" CACHE PATH "")
 
-   set(DOXYGEN_EXECUTABLE "/FIX/doxygen-1.8.11-6z6ubz7pga7oylaqsoofcaqfwtj4tk5o/bin/doxygen" CACHE PATH "")
+   set(DOXYGEN_EXECUTABLE "/usr/bin/doxygen" CACHE PATH "")
 
 
 The ``calc_pi`` example provides examples of both Sphinx and Doxygen documentation. 
