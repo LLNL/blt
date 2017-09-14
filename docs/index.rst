@@ -43,7 +43,7 @@
 BLT
 ===
 
-**Build, Link, and Triumph**
+**Build, Link and Triumph**
 
 BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. 
 

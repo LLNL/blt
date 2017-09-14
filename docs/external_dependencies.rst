@@ -68,8 +68,15 @@ MPI, CUDA, and OpenMP are all registered via ``blt_register_library``. You can s
 
 BLT also supports using ``blt_register_library`` to provide additional options for existing CMake targets. The implementation doesn't modify the properties of the existing targets, it just exposes these options via BLT's support for  ``DEPENDS_ON``.
 
+.. admonition:: blt_register_library
+   :class: hint
+
+   A macro to register external libraries and dependencies with blt.
+   The named target can be added to the ``DEPENDS_ON`` argument of other blt macros, like ``blt_add_library`` and ``blt_add_executable``.  
+
+
 You have already seen one use of ``DEPENDS_ON`` of a blt
-registered dependency in ``test_1`` :  ``gtest``
+registered dependency in test_1:  ``gtest``
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
@@ -119,7 +126,7 @@ that will execute all unit tests defined in the source. To test MPI code we need
 
 .. literalinclude:: tutorial/calc_pi/test_2.cpp
    :language: cpp
-   :lines: 33-48
+   :lines: 40-54
 
 
 CUDA Example
@@ -133,7 +140,7 @@ To enable CUDA, we set ``ENABLE_CUDA``, ``CUDA_BIN_DIR``, and ``CUDA_TOOLKIT_ROO
 
 .. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 36-41
+   :lines: 36-42
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
@@ -178,7 +185,9 @@ After building (``make``), you can run ``make test`` on a batch node (where the 
 .. code:: console
 
   bash-4.1$ salloc -A <valid bank>
+  bash-4.1$ make   
   bash-4.1$ make test
+  
   Running tests...
   Test project blt/docs/tutorial/calc_pi/build
       Start 1: test_1
@@ -226,6 +235,7 @@ And here is how to build and test the code on Ray:
   bash-4.2$ bsub -Is -n20 -G <valid group> bash
   bash-4.2$ make
   bash-4.2$ make test
+  
   Running tests...
   Test project /g/g15/weiss27/projects/blt/docs/tutorial/calc_pi/build
       Start 1: test_1

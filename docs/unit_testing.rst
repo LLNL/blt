@@ -113,6 +113,13 @@ After writing a unit test, we add it to the project's build system
 by first generating an executable for the test using the ``blt_add_executable()`` macro.
 We then register the test using the ``blt_add_test()`` macro.
 
+.. admonition:: blt_add_test
+   :class: hint
+
+   This macro generates a named unit test from an existing executable
+   and allows users to pass in command line arguments.
+
+
 Returning to our running example (see  :ref:`AddTarget`), 
 let's add a simple test for the ``calc_pi`` library, 
 which has a single function with signature:
@@ -122,7 +129,7 @@ which has a single function with signature:
    double calc_pi(int num_intervals);
 
 We add a simple unit test that invokes ``calc_pi()`` 
-and compares the result to :math:`\pi`, within a given tolerance (``1e-1``). 
+and compares the result to :math:`\pi`, within a given tolerance (``1e-6``). 
 Here is the test code:
 
 .. literalinclude:: tutorial/calc_pi/test_1.cpp
@@ -178,9 +185,9 @@ are working, for example.
     
     -R
       Regular expression filtering of tests.  
-      E.g. ``-R foo`` will only run tests whose names contain ``foo``.
+      E.g. ``-R foo`` only runs tests whose names contain ``foo``
     -j
-      Run tests in parallel, E.g. ``-j 16`` will run tests using 16 processors.
+      Run tests in parallel, E.g. ``-j 16`` will run tests using 16 processors
     -VV
       (Very verbose) Dump test output to stdout
 

@@ -67,7 +67,7 @@ This example adds BLT as a submodule. It then commits and pushes the changes to 
 .. code:: bash
 
     cd <your repository>
-    git submodule add git@github.com:LLNL/blt.git blt
+    git submodule add https://github.com/LLNL/blt.git blt
     git commit -m "Adding BLT"
     git push
 
@@ -99,7 +99,7 @@ repository.
 .. code:: bash
 
     cd <your repository>
-    git clone git@github.com:LLNL/blt.git
+    git clone https://github.com/LLNL/blt.git
     rm -rf blt/.git
     git commit -m "Adding BLT"
     git push
@@ -160,11 +160,17 @@ If you are using BLT outside of your project pass the location of BLT as follows
     cd build
     cmake -DBLT_SOURCE_DIR="path/to/blt" ..
 
-Blank Project Example
----------------------
+Example: blank_project
+----------------------
 
-The ``blank_project`` example is provided to show you some of the built-in features provided by BLT.
+The ``blank_project`` example is provided to show you some of BLT's built-in features.
 It demonstrates the bare minimum required for testing purposes.
+
+Here is the entire CMakeLists.txt file for ``blank_project``:
+
+.. literalinclude:: tutorial/blank_project/CMakeLists.txt
+   :language: cmake
+
 
 BLT also enforces some best practices for building, such as not allowing in-source builds.  
 This means that BLT prevents you from generating a project configuration directly in your project. 
@@ -214,7 +220,7 @@ to speed up the build with the following command:
 
     make -j8
 
-Next run all tests in this project with the following command:
+Next, run all tests in this project with the following command:
 
 .. code:: bash
 
@@ -234,8 +240,8 @@ If everything went correctly, you should have the following output:
     Total Test time (real) =   0.10 sec
 
 Note that the default options for ``blank_project`` only include a single test ``blt_gtest_smoke``.
-As we will see later on, BLT includes additional tests when configured with other options, 
-like Fortran, MPI, OpenMP and Cuda. 
+As we will see later on, BLT includes additional smoke tests that are activated when BLT is configured 
+with other options enabled, like Fortran, MPI, OpenMP and Cuda. 
 
 Host-configs
 ------------

@@ -74,21 +74,21 @@ the following commands, you will create the executable ``<build dir>/bin/example
 
 .. code:: bash
 
-    cd <blt repository/docs/tutorial/calc_pi
+    cd <BLT repository/docs/tutorial/calc_pi
     mkdir build
     cd build
-    cmake -DBLT_SOURCE_DIR=`pwd`/../../.. ..
+    cmake -DBLT_SOURCE_DIR=../../.. ..
     make
 
-blt_add_executable
--------------------
-
-  This is one of the core macros that enables BLT to simplify our CMake-based project.
-  It unifies many CMake calls into one easy to use macro.  
-  ``blt_add_executable`` creates a CMake executable target with the 
-  given sources, sets the output directory to ``<build dir>/bin`` (unless overwridden with the
-  macro parameter ``OUTPUT_DIR``) and handles internal and external dependencies in a greatly
-  simplified manner.  There will be more on that in the following section.
+.. admonition:: blt_add_executable
+   :class: hint
+   
+   This is one of the core macros that enables BLT to simplify our CMake-based project.
+   It unifies many CMake calls into one easy to use macro.  
+   ``blt_add_executable`` creates a CMake executable target with the 
+   given sources, sets the output directory to ``<build dir>/bin`` (unless overridden with the
+   macro parameter ``OUTPUT_DIR``) and handles internal and external dependencies in a greatly
+   simplified manner.  There will be more on that in the following section.
 
 
 Example 2: One library, one executable
@@ -115,12 +115,12 @@ The ``DEPENDS_ON`` parameter properly links the previously defined library into 
 more work or CMake function calls.
 
 
-blt_add_library
----------------
+.. admonition:: blt_add_library
+   :class: hint
 
-This is another core BLT macro.  It creates a CMake library target and associates the
-given sources and headers along with handling dependencies the same way as ``blt_add_executable``
-does.  It also provides a few commonly used build options, such as overriding the output name of the
-library and the output directory.  It defaults to building a static library unless you override it with
-``SHARED`` or with the global BLT option ``ENABLE_SHARED_LIBS``.
+   This is another core BLT macro.  It creates a CMake library target and associates the
+   given sources and headers along with handling dependencies the same way as ``blt_add_executable``
+   does.  It also provides a few commonly used build options, such as overriding the output name of the
+   library and the output directory.  It defaults to building a static library unless you override it with
+   ``SHARED`` or with the global BLT option ``ENABLE_SHARED_LIBS``.
 

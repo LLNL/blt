@@ -11,7 +11,7 @@ project( blank )
 ###############################################################################
 # Setup BLT
 ###############################################################################
-# TODO: Sensible explanation of this.  
+# Set BLT_SOURCE_DIR to default location, if not set by user  
 if(NOT BLT_SOURCE_DIR)
     set(BLT_SOURCE_DIR "blt")
 endif()

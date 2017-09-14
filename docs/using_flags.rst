@@ -45,18 +45,22 @@ Portable compiler flags
 =========================
 
 To ease with the development of code that is portable across different architectures
-and compilers, BLT provides the ``blt_append_custom_compiler_flag()`` macro.
+and compilers, BLT provides the ``blt_append_custom_compiler_flag()`` macro,
+which allows users to easily place a compiler dependent flag into a CMake variable.
 
-To use this macro, supply a cmake variable in which to append a flag (``FLAGS_VAR``), 
-and the appropriate flag for each of our supported compilers. 
+.. admonition:: blt_append_custom_compiler_flag
+   :class: hint
 
-This macro currently supports the following compilers:
+   To use this macro, supply a cmake variable in which to append a flag (``FLAGS_VAR``), 
+   and the appropriate flag for each of our supported compilers. 
 
-* GNU
-* CLANG
-* XL (IBM compiler)
-* INTEL (Intel compiler)
-* MSVC (Microsoft Visual Studio)
+   This macro currently supports the following compilers:
+
+   * GNU
+   * CLANG
+   * XL (IBM compiler)
+   * INTEL (Intel compiler)
+   * MSVC (Microsoft Visual Studio)
 
 Here is an example for setting the appropriate flag to treat warnings as errors:
 
@@ -73,8 +77,9 @@ Since values for ``GNU``, ``CLANG`` and ``INTEL`` are not supplied,
 they will get the default value (``-Werrror``)
 which is supplied by the macro's ``DEFAULT`` argument.
 
-BLT provides a simple macro to append compiler flags.  You would append the previous compiler
-flag to an already defined executable, such as ``example_1`` with the following line:
+BLT also provides a simple macro to add compiler flags to a target.  
+You can append the above compiler flag to an already defined executable, 
+such as ``example_1`` with the following line:
 
 .. code:: cmake
 
@@ -95,5 +100,5 @@ Here is another example to disable warnings about unknown OpenMP pragmas in the 
         )
 
 Note that GNU does not have a way to only disable warnings about openmp pragmas, 
-so one must disable warnings about all pragmas on this compiler.
+so one must disable warnings about all unknown pragmas on this compiler.
 

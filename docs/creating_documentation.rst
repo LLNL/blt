@@ -48,6 +48,7 @@ and `Doxygen <http://www.doxygen.org/>`_.
 
 
 Sphinx is the documentation system used for the Python programming language (and many other projects).
+
 Doxygen is  a widely used system that generates documentation from annotated source code.
 Doxygen is heavily used for documenting  C++ software.
 
@@ -65,7 +66,7 @@ Here is an example of setting ``sphinx-build`` and ``doxygen`` paths in a host-c
    set(DOXYGEN_EXECUTABLE "/FIX/doxygen-1.8.11-6z6ubz7pga7oylaqsoofcaqfwtj4tk5o/bin/doxygen" CACHE PATH "")
 
 
-The *calc_pi* example provides examples of both Sphinx and Doxygen documentation. 
+The ``calc_pi`` example provides examples of both Sphinx and Doxygen documentation. 
 
 
 Calc Pi Sphinx Example
@@ -82,6 +83,14 @@ selecting common settings for the ``config.py``.
 BLT provides a ``blt_add_sphinx_target()`` macro which, which will look for a ``conf.py`` file
 in the current directory and add a command to build the Sphinx docs using this file to the ``docs``
 CMake target.
+
+.. admonition:: blt_add_sphinx_target
+   :class: hint
+
+   A macro to create a named sphinx target for user documentation.  
+   Assumes there is a ``conf.py`` sphinx configuration file in the current directory.  
+   This macro is active when BLT is configured with a valid ``SPHINX_EXECUTABLE`` path.
+
 
 Here is an example of using ``blt_add_sphinx_target()`` in a CMakeLists.txt file:
 
@@ -106,6 +115,14 @@ annotated source files.
 BLT provides a ``blt_add_doxygen_target()`` macro which, which will look for a ``Doxyfile.in``
 file in the current directory, configure this file to create a ``Doxyfile`` in the build directory,
 and add a command to build the Doxygen docs using this file to the ``docs`` CMake target.
+
+.. admonition:: blt_add_doxygen_target
+   :class: hint
+
+   A macro to create a named doxygen target for API documentation.  
+   Assumes there is a ``Doxyfile.in`` doxygen configuration file in the current directory.  
+   This macro is active when BLT is configured with a valid ``DOXYGEN_EXECUTABLE`` path.
+
 
 Here is an example of using ``blt_add_doxygen_target()`` in a CMakeLists.txt file:
 
