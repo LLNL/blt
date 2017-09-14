@@ -8,6 +8,8 @@
 //  https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <iostream>
+
 const int block_size = 512;
 
 // -- helper for calcing number of blocks to launch -- //
@@ -80,12 +82,24 @@ __global__ void calc_pi_kernel(int num_intervals,
     // Thread 0 adds the partial sum to the total sum
     if( tid == 0 )
     {
-        // TODO: atomicAdd w/ doubles requires compute_60 or greater,
-        //   we may need another path ...
         atomicAdd(pi, sum[tid]);
     }
 }
 
+// -- helper to check for cuda errors  -- //
+bool check_cuda_error(cudaError_t cuda_result)
+{
+    bool res = false;
+    if (cuda_result != cudaSuccess)
+    {
+        std::cerr << "CUDA ERROR:" 
+                  << cudaGetErrorString(cuda_result) 
+                  << std::endl;;
+        res = true;
+    }
+    
+    return res;
+}
 
 // -- calculate pi via simple integration  -- //
 double calc_pi_cuda(int num_intervals)
@@ -96,20 +110,24 @@ double calc_pi_cuda(int num_intervals)
     double  h_pi = 0.0;
     double *d_pi = NULL;
     
-    cudaMalloc((void**)&d_pi, sizeof(double));
+    check_cuda_error( cudaMalloc((void**)&d_pi, sizeof(double)) );
+    
+    check_cuda_error( cudaMemset(d_pi, 0, sizeof(double)) );
     
     calc_pi_kernel<<<num_blocks,num_threads>>>(num_intervals, d_pi);
+
+    check_cuda_error( cudaGetLastError() );
     
-    cudaMemcpy(&h_pi, d_pi,
-               sizeof(double),
-               cudaMemcpyDeviceToHost);
+    check_cuda_error( cudaMemcpy(&h_pi, d_pi,
+                                 sizeof(double),
+                                 cudaMemcpyDeviceToHost) );
     
-    cudaDeviceSynchronize(); 
+    check_cuda_error( cudaDeviceSynchronize() );
     
-    cudaFree(d_pi);
+    check_cuda_error( cudaFree(d_pi)) ;
     
     // final scaling
-    return h_pi / (double) num_intervals;    
+    return h_pi / (double) num_intervals;
 }
 
 
