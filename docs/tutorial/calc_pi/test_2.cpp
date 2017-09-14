@@ -18,17 +18,24 @@
 const double PI_REF = 3.141592653589793238462643;
 
 // test serial lib
-TEST(calc_pi_tests, serial_example)
+TEST(calc_pi_mpi, serial_example)
 {
-    ASSERT_NEAR(calc_pi(1000),PI_REF,1e-1);
+    ASSERT_NEAR(calc_pi(1000),PI_REF,1e-6);
 }
 
 
 // test mpi lib
-TEST(calc_pi_tests, mpi_example)
+TEST(calc_pi_mpi, mpi_example)
 {
-    ASSERT_NEAR(calc_pi_mpi(1000),PI_REF,1e-1);
+    ASSERT_NEAR(calc_pi_mpi(1000),PI_REF,1e-6);
 }
+
+// compare mpi and serial
+TEST(calc_pi_mpi, compare_mpi_serial)
+{
+    ASSERT_NEAR(calc_pi(1000),calc_pi_mpi(1000),1e-12);
+}
+
 
 // main driver that allows using mpi w/ google test
 int main(int argc, char * argv[])

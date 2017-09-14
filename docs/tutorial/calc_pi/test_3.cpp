@@ -16,15 +16,21 @@
 const double PI_REF = 3.141592653589793238462643;
 
 // test serial lib
-TEST(calc_pi_tests, serial_example)
+TEST(calc_pi_cuda, serial_example)
 {
-    ASSERT_NEAR(calc_pi(1000),PI_REF,1e-1);
+    ASSERT_NEAR(calc_pi(1000),PI_REF,1e-6);
 }
 
 
 // test cuda lib
-TEST(calc_pi_tests, cuda_example)
+TEST(calc_pi_cuda, cuda_example)
 {
-    ASSERT_NEAR(calc_pi_cuda(1000),PI_REF,1e-1);
+    ASSERT_NEAR(calc_pi_cuda(1000),PI_REF,1e-6);
+}
+
+// compare serial and cuda
+TEST(calc_pi_cuda, compare_serial_cuda)
+{
+    ASSERT_NEAR(calc_pi(1000),calc_pi_cuda(1000),1e-12);
 }
 

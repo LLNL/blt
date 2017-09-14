@@ -61,7 +61,7 @@ __global__ void calc_pi_kernel(int num_intervals,
     double h   = 1.0 / (double) num_intervals;
     
     // calc sum contrib in parallel 
-    double x = h * ((double)i - 0.5);
+    double x = h * ((double)i + 0.5);
     double thread_sum = 4.0 / (1.0 + x*x);
     
     // save to shared memory, last block may pad with 0’s

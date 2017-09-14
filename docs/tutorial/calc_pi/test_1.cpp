@@ -12,9 +12,9 @@
 
 #include "calc_pi.hpp"
 
-TEST(calc_pi_tests, serial_example)
+TEST(calc_pi, serial_example)
 {
     double PI_REF = 3.141592653589793238462643;
-    ASSERT_NEAR(calc_pi(1000),PI_REF,1e-1);
+    ASSERT_NEAR(calc_pi(1000),PI_REF,1e-6);
 }
 

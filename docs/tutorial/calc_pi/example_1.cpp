@@ -22,7 +22,7 @@ double calc_pi(int num_intervals)
     
     while(i != num_intervals)
     {
-        double x = h * ((double)i - 0.5);
+        double x = h * ((double)i + 0.5);
         sum += (4.0 / (1.0 + x*x));
         i++;
     }
