@@ -80,7 +80,6 @@ registered dependency in test_1:  ``gtest``
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :emphasize-lines: 46
    :lines: 41-47
 
 
@@ -106,7 +105,6 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :emphasize-lines: 62,67
    :lines: 51-68
 
 
@@ -115,7 +113,6 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test`` macro.
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :emphasize-lines: 71
    :lines: 69-71
 
 
@@ -146,7 +143,6 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :emphasize-lines: 89,94
    :lines: 74-94
 
 
@@ -163,6 +159,10 @@ Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surfac
 :download:`llnl-quartz-toss3-gcc@4.9.3.cmake <tutorial/host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
+
+Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
+
+:download:`llnl-naples-darwin-10.11-clang@7.3.0.cmake  <tutorial/host-configs/llnl-naples-darwin-10.11-clang@7.3.0.cmake>`
 
 
 Building and testing on Surface
