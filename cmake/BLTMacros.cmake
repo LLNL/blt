@@ -258,8 +258,6 @@ endmacro(blt_register_library)
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
-##                  PYTHON_MODULE
-##                  LUA_MODULE
 ##                  SHARED
 ##                 )
 ##
@@ -290,45 +288,16 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
-## The PYTHON_MODULE option customizes arguments for a Python module.
-## The target created will be NAME-python-module and the library will be NAME.so.
-## In addition, python is added to DEPENDS_ON and OUTPUT_DIR is defaulted to
-## BLT_Python_MODULE_DIRECTORY.
-## Likewise, LUA_MODULE helps create a module for Lua.
-
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
     set(arg_CLEAR_PREFIX FALSE)
-    set(options SHARED PYTHON_MODULE LUA_MODULE)
     set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
     # parse the arguments
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    if(arg_PYTHON_MODULE)
-        set(arg_SHARED TRUE)
-        if( NOT arg_OUTPUT_DIR )
-            set(arg_OUTPUT_DIR ${BLT_Python_MODULE_DIRECTORY})
-        endif()
-        set(arg_DEPENDS_ON "${arg_DEPENDS_ON};python")
-        set(arg_OUTPUT_NAME ${arg_NAME})
-        set(arg_NAME "${arg_NAME}-python-module")
-        set(arg_CLEAR_PREFIX TRUE)
-    endif()
-
-    if(arg_LUA_MODULE)
-        set(arg_SHARED TRUE)
-        if( NOT arg_OUTPUT_DIR )
-            set(arg_OUTPUT_DIR ${BLT_Lua_MODULE_DIRECTORY})
-        endif()
-        set(arg_DEPENDS_ON "${arg_DEPENDS_ON};lua")
-        set(arg_OUTPUT_NAME ${arg_NAME})
-        set(arg_NAME "${arg_NAME}-lua-module")
-        set(arg_CLEAR_PREFIX TRUE)
-    endif()
 
     if ( arg_SOURCES )
         #
