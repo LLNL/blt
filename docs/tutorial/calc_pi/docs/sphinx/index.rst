@@ -11,8 +11,8 @@ This is a tutorial example for BLT (https://github.com/llnl/blt) that creates
 C++ libraries that calculate :math:`\pi` serially and in parallel using MPI 
 and CUDA.
 
-These libraries calculate :math:`\pi` by estimating the integral of 
-:math:`f(x) = 4/(1+x^2)` between 0 and 1 using the numerical integration. 
+These libraries calculate :math:`\pi` by approximating the integral 
+:math:`f(x) = \int_0^14/(1+x^2)` using numerical integration.
 In the MPI implementation, the intervals are distributed across MPI tasks and 
 a MPI_AllReduce calculates the final result. In the CUDA implementation, the
 intervals are distributed across CUDA blocks and threads and a tree reduction
