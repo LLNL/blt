@@ -83,7 +83,7 @@ macro(blt_add_code_check_targets cfg_file)
         add_uncrustify_inplace(CFG_FILE ${cfg_file} SRC_FILES ${_filt_sources})
     endif()
     
-endmacro()
+endmacro(blt_add_code_check_targets)
     
 
 ##------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ macro(blt_add_uncrustify_check)
     # hook our new target into the check dependency chain
     add_dependencies(uncrustify_check "uncrustify_check_${PROJECT_NAME}")
 
-endmacro(add_uncrustify_check)
+endmacro(blt_add_uncrustify_check)
 
 ##------------------------------------------------------------------------------
 ## - Macro for invoking uncrustify to apply formatting inplace
@@ -140,4 +140,4 @@ macro(blt_add_uncrustify_inplace)
     # hook our new target into the uncrustify_inplace dependency chain
     add_dependencies(uncrustify_inplace "uncrustify_inplace_${PROJECT_NAME}")
 
-endmacro(add_uncrustify_inplace)
+endmacro(blt_add_uncrustify_inplace)
