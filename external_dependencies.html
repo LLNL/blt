@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>External Dependencies &mdash; BLT Tutorial Guide  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BLT Tutorial Guide  documentation" href="index.html"/>
+        <link rel="next" title="Creating Documentation" href="creating_documentation.html"/>
+        <link rel="prev" title="Unit Testing" href="unit_testing.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> BLT Tutorial Guide
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup_blt.html">Setup BLT in your CMake Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_execs_and_libs.html">Creating Libraries and Executables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_flags.html">Portable compiler flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">Unit Testing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">External Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mpi-example">MPI Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cuda-example">CUDA Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-and-testing-on-surface">Building and testing on Surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-and-testing-on-ray">Building and testing on Ray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documentation.html">Creating Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BLT Tutorial Guide</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>External Dependencies</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/external_dependencies.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="external-dependencies">
+<h1>External Dependencies<a class="headerlink" href="#external-dependencies" title="Permalink to this headline">¶</a></h1>
+<p>One key goal for BLT is to simplify the use of external dependencies when building your libraries and executables.</p>
+<p>To accomplish this BLT provides a <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code> option for the
+<code class="docutils literal"><span class="pre">blt_add_library</span></code> and <code class="docutils literal"><span class="pre">blt_add_executable</span></code> macros that supports both CMake targets and external dependencies registered using the <code class="docutils literal"><span class="pre">blt_register_library</span></code> macro.</p>
+<p>The <code class="docutils literal"><span class="pre">blt_register_library</span></code> macro allows you to expose any external dependency,
+including any additional includes, libraries, compile flags, link flags, defines, etc that are required to use the dependency via a single name.</p>
+<p>For example, instead adding the include directories and libraries necessary to use a dependency <em>zzz</em> directly to your CMake executable target, if  <em>zzz</em> was
+registered with <code class="docutils literal"><span class="pre">blt_register_library</span></code>, you can simply use</p>
+<div class="code cmake highlight-default"><div class="highlight"><pre><span></span><span class="n">DEPENDS_ON</span> <span class="n">zzz</span>
+</pre></div>
+</div>
+<p>In the <code class="docutils literal"><span class="pre">blt_add_executable</span></code> call for your executable.</p>
+<p>This is especially helpful for external libraries that are not built with CMake
+and don’t provide CMake friendly imported targets. Our ultimate goal is to use <code class="docutils literal"><span class="pre">blt_register_library</span></code> to import all external dependencies as first-class imported CMake targets to take full advanced of CMake’s dependency lattice.</p>
+<p>MPI, CUDA, and OpenMP are all registered via <code class="docutils literal"><span class="pre">blt_register_library</span></code>. You can see how these registered via <code class="docutils literal"><span class="pre">blt_register_library</span></code> in <code class="docutils literal"><span class="pre">blt/thirdparty_builtin/CMakelists.txt</span></code>.</p>
+<p>BLT also supports using <code class="docutils literal"><span class="pre">blt_register_library</span></code> to provide additional options for existing CMake targets. The implementation doesn’t modify the properties of the existing targets, it just exposes these options via BLT’s support for  <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code>.</p>
+<div class="hint admonition">
+<p class="first admonition-title">blt_register_library</p>
+<p class="last">A macro to register external libraries and dependencies with blt.
+The named target can be added to the <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code> argument of other blt macros, like <code class="docutils literal"><span class="pre">blt_add_library</span></code> and <code class="docutils literal"><span class="pre">blt_add_executable</span></code>.</p>
+</div>
+<p>You have already seen one use of <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code> of a blt
+registered dependency in test_1:  <code class="docutils literal"><span class="pre">gtest</span></code></p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="c">###############################################################################</span>
+<span class="c"># Test 1: Creating an executable using gtest, using the executable via ctest.</span>
+<span class="c">###############################################################################</span>
+<span class="nb">blt_add_executable</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">test_1</span>
+                    <span class="s">SOURCES</span> <span class="s">test_1.cpp</span> 
+                    <span class="s">DEPENDS_ON</span> <span class="s">calc_pi</span> <span class="s">gtest</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">gtest</span></code> is the name for the google test dependency in BLT registered via <code class="docutils literal"><span class="pre">blt_register_library</span></code>.
+Even though google test is built-in and uses CMake, <code class="docutils literal"><span class="pre">blt_register_library</span></code> allows us to easily set defines needed by all dependent targets.</p>
+<div class="section" id="mpi-example">
+<h2>MPI Example<a class="headerlink" href="#mpi-example" title="Permalink to this headline">¶</a></h2>
+<p>Our next example, <code class="docutils literal"><span class="pre">test_2</span></code>, builds and tests the <code class="docutils literal"><span class="pre">calc_pi_mpi</span></code> library,
+which uses MPI to parallelize the calculation over the integration intervals.</p>
+<p>To enable MPI, we set <code class="docutils literal"><span class="pre">ENABLE_MPI</span></code>, <code class="docutils literal"><span class="pre">MPI_C_COMPILER</span></code>, and <code class="docutils literal"><span class="pre">MPI_CXX_COMPILER</span></code> in our host config file. Here is a snippet with these settings for LLNL’s Surface Cluster:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="c">###########################################################</span>
+<span class="c"># MPI Support</span>
+<span class="c">###########################################################</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">ENABLE_MPI</span> <span class="s">ON</span> <span class="s">CACHE</span> <span class="s">BOOL</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">MPI_C_COMPILER</span> <span class="s2">&quot;/usr/local/tools/mvapich2-gnu-2.0/bin/mpicc&quot;</span> <span class="s">CACHE</span> <span class="s">PATH</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">MPI_CXX_COMPILER</span> <span class="s2">&quot;/usr/local/tools/mvapich2-gnu-2.0/bin/mpicc&quot;</span> <span class="s">CACHE</span> <span class="s">PATH</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, you can see how <code class="docutils literal"><span class="pre">calc_pi_mpi</span></code> and <code class="docutils literal"><span class="pre">test_2</span></code> use <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code>:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="c">###############################################################################</span>
+<span class="c">#</span>
+<span class="c"># Test 2: Add mpi version of calc_pi, and expand test 1 to also test </span>
+<span class="c"># the mpi version.</span>
+<span class="c">#</span>
+<span class="c">###############################################################################</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">MPI_FOUND</span><span class="p">)</span>
+
+    <span class="nb">blt_add_library</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">calc_pi_mpi</span>
+                     <span class="s">HEADERS</span> <span class="s">calc_pi_mpi.hpp</span>
+                     <span class="s">SOURCES</span> <span class="s">calc_pi_mpi.cpp</span> 
+                     <span class="s">DEPENDS_ON</span> <span class="s">mpi</span><span class="p">)</span>
+
+
+    <span class="nb">blt_add_executable</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">test_2</span>
+                        <span class="s">SOURCES</span> <span class="s">test_2.cpp</span> 
+                        <span class="s">DEPENDS_ON</span> <span class="s">calc_pi</span> <span class="s">calc_pi_mpi</span> <span class="s">gtest</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For MPI unit tests, you also need to specify the number of MPI Tasks
+to launch. We use the <code class="docutils literal"><span class="pre">NUM_MPI_TASKS</span></code> argument to <code class="docutils literal"><span class="pre">blt_add_test</span></code> macro.</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span>    <span class="nb">blt_add_test</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">test_2</span> 
+                  <span class="s">COMMAND</span> <span class="s">test_2</span>
+                  <span class="s">NUM_MPI_TASKS</span> <span class="s">2</span><span class="p">)</span> <span class="c"># number of mpi tasks to use</span>
+</pre></div>
+</div>
+<p>As mentioned in <a class="reference internal" href="unit_testing.html#unittesting"><span class="std std-ref">Unit Testing</span></a>, google test provides a default <code class="docutils literal"><span class="pre">main()</span></code> driver
+that will execute all unit tests defined in the source. To test MPI code we need to create a main that initializes and finalizes MPI in addition to google test. <code class="docutils literal"><span class="pre">test_2.cpp</span></code> provides an example driver for MPI with google test.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="c1">// main driver that allows using mpi w/ google test</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="o">::</span><span class="n">testing</span><span class="o">::</span><span class="n">InitGoogleTest</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+
+    <span class="n">MPI_Init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">argv</span><span class="p">);</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">RUN_ALL_TESTS</span><span class="p">();</span>
+
+    <span class="n">MPI_Finalize</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cuda-example">
+<h2>CUDA Example<a class="headerlink" href="#cuda-example" title="Permalink to this headline">¶</a></h2>
+<p>Finally, <code class="docutils literal"><span class="pre">test_3</span></code> builds and tests the <code class="docutils literal"><span class="pre">calc_pi_cuda</span></code> library,
+which uses CUDA to parallelize the calculation over the integration intervals.</p>
+<p>To enable CUDA, we set <code class="docutils literal"><span class="pre">ENABLE_CUDA</span></code>, <code class="docutils literal"><span class="pre">CUDA_BIN_DIR</span></code>, and <code class="docutils literal"><span class="pre">CUDA_TOOLKIT_ROOT_DIR</span></code> in our host config file.  Here is a snippet with these settings for LLNL’s Surface Cluster:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="c">###########################################################</span>
+<span class="c"># CUDA support</span>
+<span class="c">###########################################################</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">ENABLE_CUDA</span> <span class="s">ON</span> <span class="s">CACHE</span> <span class="s">BOOL</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">CUDA_TOOLKIT_ROOT_DIR</span> <span class="s2">&quot;/opt/cudatoolkit-8.0&quot;</span> <span class="s">CACHE</span> <span class="s">PATH</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CUDA_BIN_DIR</span> <span class="s2">&quot;/opt/cudatoolkit-8.0/bin&quot;</span> <span class="s">CACHE</span> <span class="s">PATH</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, you can see how <code class="docutils literal"><span class="pre">calc_pi_cuda</span></code> and <code class="docutils literal"><span class="pre">test_3</span></code> use <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code>:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="c">###############################################################################</span>
+<span class="c">#</span>
+<span class="c"># Test 3: Add cuda version of calc_pi, and expand test 1 to also test </span>
+<span class="c"># the cuda version.</span>
+<span class="c">#</span>
+<span class="c">###############################################################################</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">CUDA_FOUND</span><span class="p">)</span>
+
+    <span class="c"># avoid warnings about sm_20 deprecated</span>
+    <span class="nb">set</span><span class="p">(</span><span class="s">CUDA_NVCC_FLAGS</span> <span class="o">${</span><span class="nv">CUDA_NVCC_FLAGS</span><span class="o">}</span><span class="s">;-arch=sm_30</span><span class="p">)</span>
+	
+    <span class="nb">blt_add_library</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">calc_pi_cuda</span>
+                     <span class="s">HEADERS</span> <span class="s">calc_pi_cuda.hpp</span>
+                     <span class="s">SOURCES</span> <span class="s">calc_pi_cuda.cpp</span> 
+                     <span class="s">DEPENDS_ON</span> <span class="s">cuda</span><span class="p">)</span>
+
+
+    <span class="nb">blt_add_executable</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">test_3</span>
+                        <span class="s">SOURCES</span> <span class="s">test_3.cpp</span> 
+                        <span class="s">DEPENDS_ON</span> <span class="s">calc_pi</span> <span class="s">calc_pi_cuda</span> <span class="s">gtest</span> <span class="s">cuda_runtime</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">cuda</span></code> dependency for <code class="docutils literal"><span class="pre">calc_pi_cuda</span></code>  is a little special, in that
+it also tells BLT that this target includes CUDA code that needs to be compiled via <code class="docutils literal"><span class="pre">nvcc</span></code> or <code class="docutils literal"><span class="pre">cuda-clang</span></code>. The <code class="docutils literal"><span class="pre">cuda_runtime</span></code> dependency handles the
+linking of the CUDA runtime.</p>
+<p>Here are the full example host-config files that use gcc 4.9.3 for LLNL’s Surface, Ray and Quartz Clusters.</p>
+<p><a class="reference download internal" href="_downloads/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake" download=""><code class="xref download docutils literal"><span class="pre">llnl-surface-chaos_5_x86_64_ib-gcc&#64;4.9.3.cmake</span></code></a></p>
+<p><a class="reference download internal" href="_downloads/llnl-ray-blue_os-gcc@4.9.3.cmake" download=""><code class="xref download docutils literal"><span class="pre">llnl-ray-blue_os-gcc&#64;4.9.3.cmake</span></code></a></p>
+<p><a class="reference download internal" href="_downloads/llnl-quartz-toss3-gcc@4.9.3.cmake" download=""><code class="xref download docutils literal"><span class="pre">llnl-quartz-toss3-gcc&#64;4.9.3.cmake</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.</p>
+</div>
+<p>Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.</p>
+<p><a class="reference download internal" href="_downloads/llnl-naples-darwin-10.11-clang@7.3.0.cmake" download=""><code class="xref download docutils literal"><span class="pre">llnl-naples-darwin-10.11-clang&#64;7.3.0.cmake</span></code></a></p>
+</div>
+<div class="section" id="building-and-testing-on-surface">
+<h2>Building and testing on Surface<a class="headerlink" href="#building-and-testing-on-surface" title="Permalink to this headline">¶</a></h2>
+<p>Here is how you can use the host-config file to configure a build of the <code class="docutils literal"><span class="pre">calc_pi</span></code>  project with MPI and CUDA enabled on Surface:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># load new cmake b/c default on surface is too old</span>
+<span class="n">use</span> <span class="n">cmake</span><span class="o">-</span><span class="mf">3.5</span><span class="o">.</span><span class="mi">2</span>
+<span class="c1"># create build dir</span>
+<span class="n">mkdir</span> <span class="n">build</span>
+<span class="n">cd</span> <span class="n">build</span>
+<span class="c1"># configure using host-config</span>
+<span class="n">cmake</span> <span class="o">-</span><span class="n">C</span> <span class="o">../../</span><span class="n">host</span><span class="o">-</span><span class="n">configs</span><span class="o">/</span><span class="n">llnl</span><span class="o">-</span><span class="n">surface</span><span class="o">-</span><span class="n">chaos_5_x86_64_ib</span><span class="o">-</span><span class="n">gcc</span><span class="nd">@4</span><span class="o">.</span><span class="mf">9.3</span><span class="o">.</span><span class="n">cmake</span>  <span class="o">-</span><span class="n">DBLT_SOURCE_DIR</span><span class="o">=../../../../</span><span class="n">blt</span> <span class="o">..</span>
+</pre></div>
+</div>
+<p>After building (<code class="docutils literal"><span class="pre">make</span></code>), you can run <code class="docutils literal"><span class="pre">make</span> <span class="pre">test</span></code> on a batch node (where the GPUs reside) to run the unit tests that are using MPI and CUDA:</p>
+<div class="code console highlight-default"><div class="highlight"><pre><span></span>bash-4.1$ salloc -A &lt;valid bank&gt;
+bash-4.1$ make
+bash-4.1$ make test
+
+Running tests...
+Test project blt/docs/tutorial/calc_pi/build
+    Start 1: test_1
+1/8 Test #1: test_1 ...........................   Passed    0.01 sec
+    Start 2: test_2
+2/8 Test #2: test_2 ...........................   Passed    2.79 sec
+    Start 3: test_3
+3/8 Test #3: test_3 ...........................   Passed    0.54 sec
+    Start 4: blt_gtest_smoke
+4/8 Test #4: blt_gtest_smoke ..................   Passed    0.01 sec
+    Start 5: blt_fruit_smoke
+5/8 Test #5: blt_fruit_smoke ..................   Passed    0.01 sec
+    Start 6: blt_mpi_smoke
+6/8 Test #6: blt_mpi_smoke ....................   Passed    2.82 sec
+    Start 7: blt_cuda_smoke
+7/8 Test #7: blt_cuda_smoke ...................   Passed    0.48 sec
+    Start 8: blt_cuda_runtime_smoke
+8/8 Test #8: blt_cuda_runtime_smoke ...........   Passed    0.11 sec
+
+100% tests passed, 0 tests failed out of 8
+
+Total Test time (real) =   6.80 sec
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-and-testing-on-ray">
+<h2>Building and testing on Ray<a class="headerlink" href="#building-and-testing-on-ray" title="Permalink to this headline">¶</a></h2>
+<p>Here is how you can use the host-config file to configure a build of the <code class="docutils literal"><span class="pre">calc_pi</span></code>  project with MPI and CUDA
+enabled on the blue_os Ray cluster:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="c1"># load new cmake b/c default on ray is too old</span>
+<span class="n">ml</span> <span class="n">cmake</span>
+<span class="c1"># create build dir</span>
+<span class="n">mkdir</span> <span class="n">build</span>
+<span class="n">cd</span> <span class="n">build</span>
+<span class="c1"># configure using host-config</span>
+<span class="n">cmake</span> <span class="o">-</span><span class="n">C</span> <span class="o">../../</span><span class="n">host</span><span class="o">-</span><span class="n">configs</span><span class="o">/</span><span class="n">llnl</span><span class="o">-</span><span class="n">ray</span><span class="o">-</span><span class="n">blue_os</span><span class="o">-</span><span class="n">gcc</span><span class="nd">@4</span><span class="o">.</span><span class="mf">9.3</span><span class="o">.</span><span class="n">cmake</span>  <span class="o">-</span><span class="n">DBLT_SOURCE_DIR</span><span class="o">=../../../../</span><span class="n">blt</span> <span class="o">..</span>
+</pre></div>
+</div>
+<p>And here is how to build and test the code on Ray:</p>
+<div class="code console highlight-default"><div class="highlight"><pre><span></span>bash-4.2$ bsub -Is -n20 -G &lt;valid group&gt; bash
+bash-4.2$ make
+bash-4.2$ make test
+
+Running tests...
+Test project /g/g15/weiss27/projects/blt/docs/tutorial/calc_pi/build
+    Start 1: test_1
+1/7 Test #1: test_1 ...........................   Passed    0.01 sec
+    Start 2: test_2
+2/7 Test #2: test_2 ...........................   Passed    1.24 sec
+    Start 3: test_3
+3/7 Test #3: test_3 ...........................   Passed    0.17 sec
+    Start 4: blt_gtest_smoke
+4/7 Test #4: blt_gtest_smoke ..................   Passed    0.01 sec
+    Start 5: blt_mpi_smoke
+5/7 Test #5: blt_mpi_smoke ....................   Passed    0.82 sec
+    Start 6: blt_cuda_smoke
+6/7 Test #6: blt_cuda_smoke ...................   Passed    0.15 sec
+    Start 7: blt_cuda_runtime_smoke
+7/7 Test #7: blt_cuda_runtime_smoke ...........   Passed    0.04 sec
+
+100% tests passed, 0 tests failed out of 7
+
+Total Test time (real) =   2.47 sec
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="creating_documentation.html" class="btn btn-neutral float-right" title="Creating Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="unit_testing.html" class="btn btn-neutral" title="Unit Testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, BLT Development Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

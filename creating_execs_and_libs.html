@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Creating Libraries and Executables &mdash; BLT Tutorial Guide  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BLT Tutorial Guide  documentation" href="index.html"/>
+        <link rel="next" title="Portable compiler flags" href="using_flags.html"/>
+        <link rel="prev" title="Setup BLT in your CMake Project" href="setup_blt.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> BLT Tutorial Guide
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup_blt.html">Setup BLT in your CMake Project</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating Libraries and Executables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-basic-executable">Example 1: Basic executable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-one-library-one-executable">Example 2: One library, one executable</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="using_flags.html">Portable compiler flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">Unit Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="external_dependencies.html">External Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documentation.html">Creating Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BLT Tutorial Guide</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Creating Libraries and Executables</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/creating_execs_and_libs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="creating-libraries-and-executables">
+<span id="addtarget"></span><h1>Creating Libraries and Executables<a class="headerlink" href="#creating-libraries-and-executables" title="Permalink to this headline">¶</a></h1>
+<p>In the previous section, we learned the basics about how to create a CMake project with BLT,
+how to configure the project and how to build and test BLT’s built-in third party libraries.</p>
+<p>We now move on to creating libraries and executables
+using two of BLT’s core macros: <code class="docutils literal"><span class="pre">blt_add_library</span></code> and <code class="docutils literal"><span class="pre">blt_add_executable</span></code>.</p>
+<p>We begin with a simple executable that calculates pi by numerical integration (<code class="docutils literal"><span class="pre">example_1</span></code>).
+We will then extract that code into a library, which we link into a new executable (<code class="docutils literal"><span class="pre">example_2</span></code>).</p>
+<div class="section" id="example-1-basic-executable">
+<h2>Example 1: Basic executable<a class="headerlink" href="#example-1-basic-executable" title="Permalink to this headline">¶</a></h2>
+<p>This example is as basic as it gets. After setting up a BLT CMake project,
+like <code class="docutils literal"><span class="pre">blank_project</span></code> in the previous section, we can start using BLT’s macros.
+Creating an executable is as simple as calling the following macro:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="nb">blt_add_executable</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">example_1</span>
+                    <span class="s">SOURCES</span> <span class="s">example_1.cpp</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>This tells CMake to create an executable named <code class="docutils literal"><span class="pre">example_1</span></code> with one source file (<code class="docutils literal"><span class="pre">example_1.cpp</span></code>).</p>
+<p>You can create this project yourself or you can run the already provided <code class="docutils literal"><span class="pre">tutorial/calc_pi</span></code> project.
+For ease of use, we have combined many examples into this one CMake project.  After running
+the following commands, you will create the executable <code class="docutils literal"><span class="pre">&lt;build</span> <span class="pre">dir&gt;/bin/example_1</span></code>:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">BLT</span> <span class="n">repository</span><span class="o">/</span><span class="n">docs</span><span class="o">/</span><span class="n">tutorial</span><span class="o">/</span><span class="n">calc_pi</span>
+<span class="n">mkdir</span> <span class="n">build</span>
+<span class="n">cd</span> <span class="n">build</span>
+<span class="n">cmake</span> <span class="o">-</span><span class="n">DBLT_SOURCE_DIR</span><span class="o">=../../..</span> <span class="o">..</span>
+<span class="n">make</span>
+</pre></div>
+</div>
+<div class="hint admonition">
+<p class="first admonition-title">blt_add_executable</p>
+<p class="last">This is one of the core macros that enables BLT to simplify our CMake-based project.
+It unifies many CMake calls into one easy to use macro.
+<code class="docutils literal"><span class="pre">blt_add_executable</span></code> creates a CMake executable target with the
+given sources, sets the output directory to <code class="docutils literal"><span class="pre">&lt;build</span> <span class="pre">dir&gt;/bin</span></code> (unless overridden with the
+macro parameter <code class="docutils literal"><span class="pre">OUTPUT_DIR</span></code>) and handles internal and external dependencies in a greatly
+simplified manner.  There will be more on that in the following section.</p>
+</div>
+</div>
+<div class="section" id="example-2-one-library-one-executable">
+<h2>Example 2: One library, one executable<a class="headerlink" href="#example-2-one-library-one-executable" title="Permalink to this headline">¶</a></h2>
+<p>This example is a bit more exciting.  This time we are creating a library that calculates
+pi and then linking that library into an executable.</p>
+<p>First, we create the library with the following BLT code:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="nb">blt_add_library</span><span class="p">(</span> <span class="s">NAME</span>    <span class="s">calc_pi</span>
+                 <span class="s">HEADERS</span> <span class="s">calc_pi.hpp</span>
+                 <span class="s">SOURCES</span> <span class="s">calc_pi.cpp</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Just like before, this creates a CMake library target that will get built to <code class="docutils literal"><span class="pre">&lt;build</span> <span class="pre">dir&gt;/lib/libcalc_pi.a</span></code>.</p>
+<p>Next, we create an executable named <code class="docutils literal"><span class="pre">example_2</span></code> and link in the previously created library target:</p>
+<div class="highlight-cmake"><div class="highlight"><pre><span></span><span class="nb">blt_add_executable</span><span class="p">(</span> <span class="s">NAME</span> <span class="s">example_2</span>
+                    <span class="s">SOURCES</span> <span class="s">example_2.cpp</span> 
+                    <span class="s">DEPENDS_ON</span> <span class="s">calc_pi</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">DEPENDS_ON</span></code> parameter properly links the previously defined library into this executable without any
+more work or CMake function calls.</p>
+<div class="hint admonition">
+<p class="first admonition-title">blt_add_library</p>
+<p class="last">This is another core BLT macro.  It creates a CMake library target and associates the
+given sources and headers along with handling dependencies the same way as <code class="docutils literal"><span class="pre">blt_add_executable</span></code>
+does.  It also provides a few commonly used build options, such as overriding the output name of the
+library and the output directory.  It defaults to building a static library unless you override it with
+<code class="docutils literal"><span class="pre">SHARED</span></code> or with the global BLT option <code class="docutils literal"><span class="pre">ENABLE_SHARED_LIBS</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="using_flags.html" class="btn btn-neutral float-right" title="Portable compiler flags" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setup_blt.html" class="btn btn-neutral" title="Setup BLT in your CMake Project" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, BLT Development Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FRUIT (Fortran Tests) &mdash; BLT Tutorial Guide  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BLT Tutorial Guide  documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> BLT Tutorial Guide
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="setup_blt.html">Setup BLT in your CMake Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_execs_and_libs.html">Creating Libraries and Executables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_flags.html">Portable compiler flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">Unit Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="external_dependencies.html">External Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documentation.html">Creating Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BLT Tutorial Guide</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>FRUIT (Fortran Tests)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/additional_writeup.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="fruit-fortran-tests">
+<h1>FRUIT (Fortran Tests)<a class="headerlink" href="#fruit-fortran-tests" title="Permalink to this headline">¶</a></h1>
+<p>Fortran unit tests using the FRUIT framework are similar in structure to
+the Google Test tests for C and C++ described above.</p>
+<p>The contents of a typical FRUIT test file look like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>module &lt;test_case_name&gt;
+  use iso_c_binding
+  use fruit
+  use &lt;your_code_module_name&gt;
+  implicit none
+
+contains
+
+subroutine test_name_1
+!  Test 1 code here...
+!  call assert_equals(...)
+end subroutine test_name_1
+
+subroutine test_name_2
+!  Test 2 code here...
+!  call assert_true(...)
+end subroutine test_name_2
+
+! Etc.
+</pre></div>
+</div>
+<p>The tests in a FRUIT test file are placed in a Fortran <em>module</em> named for
+the <em>test case name</em>, such as the name of the C++ class whose Fortran interface
+is being tested. Each unit test is in its own Fortran subroutine named
+for the <em>test name</em>, which indicates the functionality being verified by the
+unit test. Within each unit test, logical assertions are defined using
+FRUIT methods. Failure of expected values will cause the test
+to fail, but other tests will continue to run.</p>
+<p>Note that each FRUIT test file defines an executable Fortran program. The
+program is defined at the end of the test file and is organized as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>program fortran_test
+  use fruit
+  use &lt;your_component_unit_name&gt;
+  implicit none
+  logical ok
+
+  ! initialize fruit
+  call init_fruit
+
+  ! run tests
+  call test_name_1
+  call test_name_2
+
+  ! compile summary and finalize fruit
+  call fruit_summary
+  call fruit_finalize
+
+  call is_all_successful(ok)
+  if (.not. ok) then
+    call exit(1)
+  endif
+end program fortran_test
+</pre></div>
+</div>
+<p>Please refer to the <a class="reference external" href="https://sourceforge.net/projects/fortranxunit/">FRUIT documentation</a> for more information.</p>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, BLT Development Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

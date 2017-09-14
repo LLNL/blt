@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BLT &mdash; BLT Tutorial Guide  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BLT Tutorial Guide  documentation" href="#"/>
+        <link rel="next" title="Setup BLT in your CMake Project" href="setup_blt.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> BLT Tutorial Guide
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="setup_blt.html">Setup BLT in your CMake Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_execs_and_libs.html">Creating Libraries and Executables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_flags.html">Portable compiler flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">Unit Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="external_dependencies.html">External Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documentation.html">Creating Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">BLT Tutorial Guide</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>BLT</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="blt">
+<h1>BLT<a class="headerlink" href="#blt" title="Permalink to this headline">¶</a></h1>
+<p><strong>Build, Link and Triumph</strong></p>
+<p>BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development.</p>
+<p>BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license.
+It is developed on github under LLNL’s github organization: <a class="reference external" href="https://github.com/llnl/blt">https://github.com/llnl/blt</a></p>
+<div class="section" id="blt-at-a-glance">
+<h2>BLT at a Glance<a class="headerlink" href="#blt-at-a-glance" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Simplifies Setup<ul>
+<li>CMake macros for:<ul>
+<li>Creating libraries and executables</li>
+<li>Managing compiler flags</li>
+<li>Managing external dependencies</li>
+</ul>
+</li>
+<li>Multi-platform support (HPC Platforms, OSX, Windows)</li>
+</ul>
+</li>
+<li>Batteries included<ul>
+<li>Built-in support for HPC Basics: MPI, OpenMP, and CUDA</li>
+<li>Built-in support for unit testing in C/C++ and Fortran</li>
+</ul>
+</li>
+<li>Streamlines development processes<ul>
+<li>Support for documentation generation</li>
+<li>Support for code health tools:<ul>
+<li>Runtime and static analysis, benchmarking</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="blt-developers">
+<h2>BLT Developers<a class="headerlink" href="#blt-developers" title="Permalink to this headline">¶</a></h2>
+<p>Developers include:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Chris White (<a class="reference external" href="mailto:white238&#37;&#52;&#48;llnl&#46;gov">white238<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Cyrus Harrison (<a class="reference external" href="mailto:harrison37&#37;&#52;&#48;llnl&#46;gov">harrison37<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>George Zagaris (<a class="reference external" href="mailto:zagaris2&#37;&#52;&#48;llnl&#46;gov">zagaris2<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Kenneth Weiss (<a class="reference external" href="mailto:kweiss&#37;&#52;&#48;llnl&#46;gov">kweiss<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Lee Taylor (<a class="reference external" href="mailto:taylor16&#37;&#52;&#48;llnl&#46;gov">taylor16<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Aaron Black (<a class="reference external" href="mailto:black27&#37;&#52;&#48;llnl&#46;gov">black27<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>David A. Beckingsale (<a class="reference external" href="mailto:beckingsale1&#37;&#52;&#48;llnl&#46;gov">beckingsale1<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Richard Hornung (<a class="reference external" href="mailto:hornung1&#37;&#52;&#48;llnl&#46;gov">hornung1<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Randolph Settgast (<a class="reference external" href="mailto:settgast1&#37;&#52;&#48;llnl&#46;gov">settgast1<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+<li>Peter Robinson  (<a class="reference external" href="mailto:robinson96&#37;&#52;&#48;llnl&#46;gov">robinson96<span>&#64;</span>llnl<span>&#46;</span>gov</a>)</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="blt-user-tutorial">
+<h2>BLT User Tutorial<a class="headerlink" href="#blt-user-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial is aimed at getting BLT users up and running as quickly as possible.</p>
+<p>It provides instructions for:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Adding BLT to a CMake project</li>
+<li>Setting up <em>host-config</em> files to handle multiple platform configurations</li>
+<li>Building, linking, and installing libraries and executables</li>
+<li>Setting up unit tests with GTest</li>
+<li>Using external project dependencies</li>
+<li>Creating documentation with Sphinx and Doxygen</li>
+</ul>
+</div></blockquote>
+<p>The tutorial provides several examples that calculate the value of <img class="math" src="_images/math/b7793e4f08d00aca47e272dcdfeb70f933dac222.png" alt="\pi"/>
+by approximating the integral <img class="math" src="_images/math/bd21124dbb916d4a02fc07909dafa15d4b54386c.png" alt="f(x) = \int_0^14/(1+x^2)"/> using numerical
+integration. The code is adapted from:
+<a class="reference external" href="https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html">https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html</a>.</p>
+<p>The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.</p>
+<p><strong>Tutorial Contents</strong></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="setup_blt.html">Setup BLT in your CMake Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#add-blt-as-a-git-submodule">Add BLT as a git submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#copy-blt-into-your-repository">Copy BLT into your repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#include-blt-in-your-project">Include BLT in your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#include-blt-via-blt-source-dir">Include BLT via BLT_SOURCE_DIR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#running-cmake">Running CMake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#example-blank-project">Example: blank_project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_blt.html#host-configs">Host-configs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="creating_execs_and_libs.html">Creating Libraries and Executables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="creating_execs_and_libs.html#example-1-basic-executable">Example 1: Basic executable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating_execs_and_libs.html#example-2-one-library-one-executable">Example 2: One library, one executable</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="using_flags.html">Portable compiler flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unit_testing.html">Unit Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#google-test-c-c-tests">Google Test (C++/C Tests)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#adding-a-blt-unit-test">Adding a BLT unit test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#running-tests-and-examples">Running tests and examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#configuring-tests-within-blt">Configuring tests within BLT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="external_dependencies.html">External Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="external_dependencies.html#mpi-example">MPI Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="external_dependencies.html#cuda-example">CUDA Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="external_dependencies.html#building-and-testing-on-surface">Building and testing on Surface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="external_dependencies.html#building-and-testing-on-ray">Building and testing on Ray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="creating_documentation.html">Creating Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="creating_documentation.html#calc-pi-sphinx-example">Calc Pi Sphinx Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating_documentation.html#calc-pi-doxygen-example">Calc Pi Doxygen Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating_documentation.html#building-the-calc-pi-example-documentation">Building the Calc Pi Example Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="setup_blt.html" class="btn btn-neutral float-right" title="Setup BLT in your CMake Project" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, BLT Development Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
