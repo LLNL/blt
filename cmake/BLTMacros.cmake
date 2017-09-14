@@ -258,7 +258,7 @@ endmacro(blt_register_library)
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
-##                  SHARED
+##                  SHARED [TRUE | FALSE]
 ##                 )
 ##
 ## Adds a library to the project composed by the given source files.
@@ -266,7 +266,7 @@ endmacro(blt_register_library)
 ## Adds a library target, called <libname>, to be built from the given sources.
 ## This macro internally checks if the global option "ENABLE_SHARED_LIBS" is
 ## ON, in which case, it will create a shared library. By default, a static
-## library is generated unless the SHARED option is added.
+## library is generated unless the SHARED to TRUE.
 ##
 ## If given a HEADERS argument and ENABLE_COPY_HEADERS is ON, it first copies
 ## the headers into the out-of-source build directory under the
@@ -291,8 +291,7 @@ endmacro(blt_register_library)
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
-    set(arg_CLEAR_PREFIX FALSE)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
     # parse the arguments
