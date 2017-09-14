@@ -58,10 +58,10 @@ endif()
 ##------------------------------------------------------------------------------
 ## - Macro that helps add all code check targets
 ##
-## add_code_check_targets(cfg)
+## blt_add_code_check_targets(cfg)
 ##
 ##------------------------------------------------------------------------------
-macro(add_code_check_targets cfg_file)
+macro(blt_add_code_check_targets cfg_file)
 
     if(UNCRUSTIFY_FOUND)
         # Only run uncrustify on C and C++ files
@@ -89,11 +89,11 @@ endmacro()
 ##------------------------------------------------------------------------------
 ## - Macro for invoking uncrustify to check code formatting
 ##
-## add_uncrustify_check( CFG_FILE <uncrusify_configuration_file> 
-##                       SRC_FILES <list_of_src_files_to_uncrustify> )
+## blt_add_uncrustify_check( CFG_FILE <uncrusify_configuration_file> 
+##                           SRC_FILES <list_of_src_files_to_uncrustify> )
 ##
 ##------------------------------------------------------------------------------
-macro(add_uncrustify_check)
+macro(blt_add_uncrustify_check)
     
     MESSAGE(STATUS "Creating uncrustify check target: uncrustify_check_${PROJECT_NAME}")
 
@@ -117,11 +117,11 @@ endmacro(add_uncrustify_check)
 ##------------------------------------------------------------------------------
 ## - Macro for invoking uncrustify to apply formatting inplace
 ##
-## add_uncrustify_inplace(CFG_FILE <uncrusify_configuration_file> 
-##                        SRC_FILES <list_of_src_files_to_uncrustify> )
+## blt_add_uncrustify_inplace(CFG_FILE <uncrusify_configuration_file> 
+##                            SRC_FILES <list_of_src_files_to_uncrustify> )
 ##
 ##------------------------------------------------------------------------------
-macro(add_uncrustify_inplace)
+macro(blt_add_uncrustify_inplace)
     
     MESSAGE(STATUS "Creating uncrustify inplace target: uncrustify_inplace_${PROJECT_NAME}")
 
