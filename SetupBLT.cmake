@@ -113,19 +113,8 @@ if (NOT BLT_LOADED)
   ################################
 
   # Defines the layout of the build directory. Namely,
-  # it indicates the location where the various header files should go,
   # where to store libraries (static or shared), the location of the
-  # bin directory for all executables and the location for fortran modules.
-
-  # Set the path where all the headers will be stored
-  if ( ENABLE_COPY_HEADERS )
-      set(HEADER_INCLUDES_DIRECTORY
-          ${PROJECT_BINARY_DIR}/include/
-          CACHE PATH
-          "Directory where all headers will go in the build tree"
-          )
-      include_directories(${HEADER_INCLUDES_DIRECTORY})
-  endif()
+  # bin directory for all executables, and the location for fortran modules.
 
   # Set the path where all the libraries will be stored
   set(LIBRARY_OUTPUT_PATH
@@ -171,7 +160,7 @@ if (NOT BLT_LOADED)
 
   ################################
   # Setup compiler options
-  # (must be included after HEADER_INCLUDES_DIRECTORY and MPI variables are set)
+  # (must be included after MPI variables are set)
   ################################
   include(${BLT_ROOT_DIR}/cmake/SetupCompilerOptions.cmake)
 

@@ -42,55 +42,13 @@
 
 include(CMakeParseArguments)
 
-## Internal BLT CMake Macros
-
-
-##------------------------------------------------------------------------------
-## blt_copy_headers_target( NAME [name] HEADERS [hdr1 ...] DESTINATION [destination] )
+###############################################################################
 ##
-## Adds a custom "copy_headers" target for the given project
+##                        Internal BLT CMake Macros
 ##
-## Adds a custom target, blt_copy_headers_[NAME], for the given project. 
-## The role of this target is to copy the given list of headers, [HEADERS], to 
-## the destination directory [DESTINATION].
+##     !! Note users of BLT should not be calling these macros directly !!
 ##
-## This macro is used to copy the header of each component in to the build
-## space, under an "includes" directory.
-##------------------------------------------------------------------------------
-macro(blt_copy_headers_target)
-
-    set(options)
-    set(singleValueArgs NAME DESTINATION)
-    set(multiValueArgs HEADERS)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
-                        "${multiValueArgs}" ${ARGN} )
-                        
-    # Make all headers paths absolute
-    set(temp_list "")
-    foreach(header ${arg_HEADERS})
-        list(APPEND temp_list ${CMAKE_CURRENT_LIST_DIR}/${header})
-    endforeach()
-    set(arg_HEADERS ${temp_list})
-
-    add_custom_target(blt_copy_headers_${arg_NAME}
-        COMMAND ${CMAKE_COMMAND}
-                 -DOUTPUT_DIRECTORY=${arg_DESTINATION}
-                 -DLIBHEADERS="${arg_HEADERS}"
-                 -P ${BLT_ROOT_DIR}/cmake/copy_headers.cmake
-
-        DEPENDS
-            ${arg_HEADERS}
-
-        WORKING_DIRECTORY
-            ${PROJECT_SOURCE_DIR}
-
-        COMMENT
-            "copy headers ${arg_NAME}"
-        )
-
-endmacro(blt_copy_headers_target)
+###############################################################################
 
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
@@ -108,11 +66,6 @@ macro(blt_setup_target)
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
-    endif()
-
-    # Add it's own copy headers target
-    if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${arg_NAME}")
-        add_dependencies( ${arg_NAME} "blt_copy_headers_${arg_NAME}")
     endif()
 
     # Expand dependency list
@@ -179,11 +132,6 @@ macro(blt_setup_target)
                 blt_add_target_link_flags(TO ${arg_NAME}
                                           FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
             endif()
-        endif()
-
-
-        if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${dependency}")
-            add_dependencies( ${arg_NAME} "blt_copy_headers_${dependency}")
         endif()
 
     endforeach()
