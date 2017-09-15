@@ -178,6 +178,34 @@ script:
   - make
   - env CTEST_OUTPUT_ON_FAILURE=1 make test
   - make install
+  #########################################################
+  #########################################################
+  #  tutorial tests
+  #########################################################
+  #########################################################
+  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${TRAVIS_BUILD_DIR}/blt"
+  #########################################################
+  # test docs/tutorial/blank_project
+  #########################################################
+  - cd ${TRAVIS_BUILD_DIR}
+  - mkdir -p test-tutorial/blank_project
+  - cd test-tutorial/blank_project
+  - cmake ${CMAKE_OPTS} ${TRAVIS_BUILD_DIR}/blt/docs/tutorial/blank_project
+  - make
+  - env CTEST_OUTPUT_ON_FAILURE=1 make test
+  - make install
+  #########################################################
+  # test docs/tutorial/calc_pi
+  #########################################################
+  - cd ${TRAVIS_BUILD_DIR}
+  - mkdir -p test-tutorial/calc_pi
+  - cd test-tutorial/calc_pi
+  - cmake ${CMAKE_OPTS} ${TRAVIS_BUILD_DIR}/blt/docs/tutorial/blank_project
+  - make
+  - env CTEST_OUTPUT_ON_FAILURE=1 make test
+  - make install
+
+  
 
 notifications:
   email:
