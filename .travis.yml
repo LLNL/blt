@@ -125,7 +125,8 @@ install:
 script:
   # set git user info     
   - git config --global user.email "blt-dev@llnl.gov" 
-  - git config --global user.name  "BLT Robot"    
+  - git config --global user.name  "BLT Robot"
+  - BLT_SOURCE_DIR=${TRAVIS_BUILD_DIR}
   - cmake --version
   - cd $TRAVIS_BUILD_DIR/..
   # copy our internal testing project
@@ -183,7 +184,7 @@ script:
   #  tutorial tests
   #########################################################
   #########################################################
-  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${TRAVIS_BUILD_DIR}/blt"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${BLT_SOURCE_DIR}"
   #########################################################
   # test docs/tutorial/blank_project
   #########################################################
