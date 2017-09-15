@@ -184,7 +184,9 @@ script:
   #  tutorial tests
   #########################################################
   #########################################################
-  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${BLT_SOURCE_DIR}"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${BLT_SOURCE_DIR} 
+  # override prev gtest setting
+  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GTEST=ON"
   #########################################################
   # test docs/tutorial/blank_project
   #########################################################
