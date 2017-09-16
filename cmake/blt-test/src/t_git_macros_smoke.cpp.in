@@ -37,36 +37,24 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 // IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-// 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-
-#include "gtest/gtest.h"
-#include <iostream> 
-
-
-//------------------------------------------------------------------------------
-// Simple smoke test for gtest 
-//------------------------------------------------------------------------------
-TEST(blt_gtest_smoke,basic_assert_example)
-{
-  EXPECT_TRUE( true );
-}
-
-
-//------------------------------------------------------------------------------
-// Tests the gtest death test feature, which are disabled by default.
 //
-// Exits program with non-zero exit code, passing the test. 
-// Note: To enable death tests, configure BLT with ENABLE_GTEST_DEATH_TESTS.
-//------------------------------------------------------------------------------
-TEST(blt_gtest_smoke,death_test)
-{
-#if (GTEST_HAS_DEATH_TEST == 0)
-  std::cout <<"Note: Death tests disabled in this configuration." << std::endl;
-#endif 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+#include "gtest/gtest.h"
 
-  // Invoke death test function whether death tests enabled or disabled.
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-  EXPECT_DEATH_IF_SUPPORTED( exit(1), "");
+#include <string>   // for std::string
+
+TEST( blt_git_macros_smoke, basic_usage_test )
+{
+  const std::string EXPECTED_TAG = "test-tag";
+  const std::string ACTUAL_TAG   = "@BLT_TEST_TAG@";
+  EXPECT_EQ( EXPECTED_TAG, ACTUAL_TAG );
+
+  const std::string EXPECTED_BRANCH = "test-branch";
+  const std::string ACTUAL_BRANCH   = "@BLT_TEST_BRANCH@";
+  EXPECT_EQ( EXPECTED_BRANCH, ACTUAL_BRANCH );
+
+  const std::string ACTUAL_HASHCODE = "@BLT_TEST_SHA1@";
+  EXPECT_FALSE( ACTUAL_HASHCODE.empty() );
 }
+
 

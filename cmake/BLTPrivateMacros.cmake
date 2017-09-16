@@ -136,8 +136,13 @@ macro(blt_setup_target)
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            target_include_directories( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_INCLUDES} )
+            if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
+                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                    ${BLT_${uppercase_dependency}_INCLUDES} )
+            else()
+                target_include_directories( ${arg_NAME} PUBLIC
+                    ${BLT_${uppercase_dependency}_INCLUDES} )
+            endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )

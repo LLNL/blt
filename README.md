@@ -6,15 +6,10 @@ BLT v0.1
 
 A streamlined CMake build system foundation for developing HPC software
 
-Quick Start
------------
+User Tutorial
+---------------------
 
-Coming Soon!
-
-User Documentation
-------------------
-
-Coming Soon!
+https://software.llnl.gov/blt
 
 Authors
 -------
@@ -27,9 +22,6 @@ Developers include:
  * Kenneth Weiss (kweiss@llnl.gov)
  * Lee Taylor (taylor16@llnl.gov)
  * Aaron Black (black27@llnl.gov)
-
-Contributors include:
-
  * David A. Beckingsale (beckingsale1@llnl.gov)
  * Richard Hornung (hornung1@llnl.gov)
  * Randolph Settgast (settgast1@llnl.gov)
