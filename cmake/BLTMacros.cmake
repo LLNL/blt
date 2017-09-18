@@ -629,7 +629,7 @@ endmacro(blt_add_benchmark)
 macro(blt_append_custom_compiler_flag)
 
    set(options)
-   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG INTEL XL MSVC)
+   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG INTEL XL MSVC NVCC)
    set(multiValueArgs)
 
    # Parse the arguments
@@ -655,6 +655,11 @@ macro(blt_append_custom_compiler_flag)
    elseif( DEFINED arg_DEFAULT )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_DEFAULT} ")
    endif()   
+
+   # append any NVCC flags to CUDA_NVCC_FLAGS if CUDA is enabled
+   if ( DEFINED arg_NVCC AND ENABLE_CUDA)
+       list (APPEND CUDA_NVCC_FLAGS ${arg_NVCC})
+   endif()
 
 endmacro(blt_append_custom_compiler_flag)
 
