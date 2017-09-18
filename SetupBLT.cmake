@@ -45,6 +45,11 @@ if (NOT BLT_LOADED)
   mark_as_advanced(BLT_LOADED)
 
   set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
+  
+  # if an explicit build dir was not specified, set a default.
+  if( NOT BLT_BUILD_DIR )
+      set( BLT_BUILD_DIR ${PROJECT_BINARY_DIR}/blt CACHE PATH "" FORCE )
+  endif()
 
   ################################
   # Prevent in-source builds
@@ -180,13 +185,13 @@ if (NOT BLT_LOADED)
   ################################
   # builtin third party libs used by BLT
   ################################
-  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin)
+  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin ${BLT_BUILD_DIR}/thirdparty_builtin)
 
   ################################
   # BLT smoke tests
   ################################
   if(ENABLE_TESTS)
-      add_subdirectory(${BLT_ROOT_DIR}/tests)
+      add_subdirectory(${BLT_ROOT_DIR}/tests ${BLT_BUILD_DIR}/tests)
   endif()
 
 endif() # only load BLT once!

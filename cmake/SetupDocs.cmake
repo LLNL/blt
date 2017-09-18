@@ -56,7 +56,7 @@ endif()
 ##------------------------------------------------------------------------------
 ## - Macro for invoking doxygen to generate docs
 ##
-## add_doxygen_target(doxygen_target_name)
+##  blt_add_doxygen_target(doxygen_target_name)
 ##
 ##  Expects to find a Doxyfile.in in the directory the macro is called in. 
 ##  
@@ -65,7 +65,7 @@ endif()
 ##  docs/doxygen/`doxygen_target_name`
 ##
 ##------------------------------------------------------------------------------
-macro(add_doxygen_target doxygen_target_name)
+macro(blt_add_doxygen_target doxygen_target_name)
 
     # add a target to generate API documentation with Doxygen
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
@@ -81,29 +81,29 @@ macro(add_doxygen_target doxygen_target_name)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" 
             DESTINATION docs/doxygen/${doxygen_target_name} OPTIONAL)
 
-endmacro(add_doxygen_target)
+endmacro(blt_add_doxygen_target)
 
 
 ##------------------------------------------------------------------------------
 ## - Macro for invoking sphinx to generate docs
 ##
-## add_sphinx_target(sphinx_target_name)
+##  blt_add_sphinx_target(sphinx_target_name)
 ##
-##  Expects to find a config.py or config.py.in in the directory the macro is 
+##  Expects to find a conf.py or conf.py.in in the directory the macro is 
 ##  called in. 
 ##  
 ##
-##  If config.py is found, it is directly used as input to sphinx.
+##  If conf.py is found, it is directly used as input to sphinx.
 ##
-##  If config.py.in is found, this macro uses CMake's configure_file() command
-##  to generate a config.py, which is then used as input to sphinx.
+##  If conf.py.in is found, this macro uses CMake's configure_file() command
+##  to generate a conf.py, which is then used as input to sphinx.
 ##
 ##  This macro sets up the sphinx paths so that the doc builds happen 
 ##  out of source. For a make install, this will place the resulting docs in 
 ##  docs/sphinx/`sphinx_target_name`
 ##
 ##------------------------------------------------------------------------------
-macro(add_sphinx_target sphinx_target_name )
+macro(blt_add_sphinx_target sphinx_target_name )
 
     MESSAGE(STATUS "Creating sphinx docs target ${sphinx_target_name}")
     
@@ -116,8 +116,8 @@ macro(add_sphinx_target sphinx_target_name )
     # HTML output directory
     set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 
-    # support both direct use of a config.py file and a cmake config-d 
-    # sphinx input file (config.py.in)
+    # support both direct use of a conf.py file and a cmake config-d 
+    # sphinx input file (conf.py.in)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py")
         add_custom_target(${sphinx_target_name}
                           ${SPHINX_EXECUTABLE}
@@ -145,7 +145,7 @@ macro(add_sphinx_target sphinx_target_name )
                           COMMENT "Building HTML documentation with Sphinx"
                           DEPENDS ${deps})
     else()
-        message(FATAL_ERROR "Failed to find sphinx 'config.py' or 'config.py.in' in ${CMAKE_CURRENT_SOURCE_DIR}")
+        message(FATAL_ERROR "Failed to find sphinx 'conf.py' or 'conf.py.in' in ${CMAKE_CURRENT_SOURCE_DIR}")
     endif()
         
     # hook our new target into the docs dependency chain
@@ -161,4 +161,4 @@ macro(add_sphinx_target sphinx_target_name )
     install(DIRECTORY "${SPHINX_HTML_DIR}" 
             DESTINATION "docs/sphinx/${sphinx_target_name}" OPTIONAL)
 
-endmacro(add_sphinx_target)
+endmacro(blt_add_sphinx_target)
