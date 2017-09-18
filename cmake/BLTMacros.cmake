@@ -258,24 +258,22 @@ endmacro(blt_register_library)
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
-##                  SHARED
+##                  SHARED [TRUE | FALSE]
 ##                 )
 ##
-## Adds a library to the project composed by the given source files.
-##
 ## Adds a library target, called <libname>, to be built from the given sources.
-## This macro internally checks if the global option "ENABLE_SHARED_LIBS" is
-## ON, in which case, it will create a shared library. By default, a static
-## library is generated unless the SHARED option is added.
+## This macro uses the ENABLE_SHARED_LIBS, which is defaulted to OFF, to determine
+## whether the library will be build as shared or static. The optional boolean
+## SHARED argument can be used to override this choice.
 ##
 ## If given a HEADERS argument and ENABLE_COPY_HEADERS is ON, it first copies
 ## the headers into the out-of-source build directory under the
-## include/<HEADERS_OUTPUT_SUBDIR>.Because of this HEADERS_OUTPUT_SUBDIR must
+## include/<HEADERS_OUTPUT_SUBDIR>. Because of this HEADERS_OUTPUT_SUBDIR must
 ## be a relative path.
 ## 
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If 
-## not it will add them as a cmake target dependency.
+## not it will add them as a CMake target dependency.
 ##
 ## In addition, this macro will add the associated dependencies to the given
 ## library target. Specifically, it will add the dependency for the CMake target
@@ -284,15 +282,14 @@ endmacro(blt_register_library)
 ## The OUTPUT_DIR is used to control the build output directory of this 
 ## library. This is used to overwrite the default lib directory.
 ##
-## OUTPUT_NAME is the name of the output file.  It defaults to NAME.
+## OUTPUT_NAME is the name of the output file; the default is NAME.
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
-    set(arg_CLEAR_PREFIX FALSE)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
     # parse the arguments
