@@ -184,6 +184,7 @@ macro(blt_register_library)
 
     set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
+                       DEPENDS_ON
                        FORTRAN_MODULES
                        LIBRARIES
                        COMPILE_FLAGS
