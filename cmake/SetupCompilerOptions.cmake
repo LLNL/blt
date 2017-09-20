@@ -205,7 +205,7 @@ endif()
 # RPath Settings
 ################################
 # only apply rpath settings for builds using shared libs
-if(BUILD_SHARED_LIBS)
+if(ENABLE_SHARED_LIBS)
     # use, i.e. don't skip the full RPATH for the build tree
     set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
