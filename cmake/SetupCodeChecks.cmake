@@ -79,8 +79,8 @@ macro(blt_add_code_check_targets cfg_file)
           endif()
         endforeach()
 
-        add_uncrustify_check(CFG_FILE ${cfg_file}   SRC_FILES ${_filt_sources})
-        add_uncrustify_inplace(CFG_FILE ${cfg_file} SRC_FILES ${_filt_sources})
+        blt_add_uncrustify_check(CFG_FILE ${cfg_file}   SRC_FILES ${_filt_sources})
+        blt_add_uncrustify_inplace(CFG_FILE ${cfg_file} SRC_FILES ${_filt_sources})
     endif()
     
 endmacro(blt_add_code_check_targets)
