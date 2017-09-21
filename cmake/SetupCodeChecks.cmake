@@ -77,19 +77,19 @@ macro(blt_add_code_check_targets )
         set(_fileTypes ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h")
     
         # generate the filtered list of source files
-        set(_filt_sources)
+        set(_filtered_sources)
         foreach(_file ${${PROJECT_NAME}_ALL_SOURCES})
           get_filename_component(_ext ${_file} EXT)
           list(FIND _fileTypes "${_ext}" _index)
       
           if(_index GREATER -1)
              file(RELATIVE_PATH _relpath ${CMAKE_CURRENT_BINARY_DIR} ${_file})
-             list(APPEND _filt_sources ${_relpath})
+             list(APPEND _filtered_sources ${_relpath})
           endif()
         endforeach()
 
-        blt_add_uncrustify_check(CFG_FILE ${arg_CFG_FILE}   SRC_FILES ${_filt_sources})
-        blt_add_uncrustify_inplace(CFG_FILE ${arg_CFG_FILE} SRC_FILES ${_filt_sources})
+        blt_add_uncrustify_check(CFG_FILE ${arg_CFG_FILE}   SRC_FILES ${_filtered_sources})
+        blt_add_uncrustify_inplace(CFG_FILE ${arg_CFG_FILE} SRC_FILES ${_filtered_sources})
     endif()
 
 endmacro(blt_add_code_check_targets)
