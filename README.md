@@ -25,6 +25,7 @@ Developers include:
  * David A. Beckingsale (beckingsale1@llnl.gov)
  * Richard Hornung (hornung1@llnl.gov)
  * Randolph Settgast (settgast1@llnl.gov)
+ * Peter Robinson (robinson96@llnl.gov)
 
 Release
 -------

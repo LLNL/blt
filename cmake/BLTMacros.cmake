@@ -48,12 +48,14 @@ include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 ##
 ## Adds pre-processor definitions to the given target.
 ##
-## Adds pre-processor definitions to a particular. This macro provides very
+## Adds pre-processor definitions to a particular target. This macro provides very
 ## similar functionality to cmake's native "add_definitions" command, but,
 ## it provides more fine-grained scoping for the compile definitions on a
 ## per target basis. Given a list of definitions, e.g., FOO and BAR, this macro
 ## adds compiler definitions to the compiler command for the given target, i.e.,
 ## it will pass -DFOO and -DBAR.
+##
+## These compile definitions are not inherited to any dependent targets.
 ##
 ## The supplied target must be added via add_executable() or add_library() or
 ## with the corresponding blt_add_executable() and blt_add_library() macros.
@@ -71,16 +73,7 @@ macro(blt_add_target_definitions)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    get_target_property(defs ${arg_TO} COMPILE_DEFINITIONS)
-    if (defs MATCHES "NOTFOUND")
-        set(defs "")
-    endif()
-
-    foreach (def ${defs} ${arg_TARGET_DEFINITIONS})
-        list(APPEND deflist ${def})
-    endforeach()
-
-    set_target_properties(${arg_TO} PROPERTIES COMPILE_DEFINITIONS "${deflist}")
+    target_compile_definitions(${arg_TO} PRIVATE ${arg_TARGET_DEFINITIONS} )
 
 endmacro(blt_add_target_definitions)
 
@@ -255,10 +248,11 @@ endmacro(blt_register_library)
 ## blt_add_library( NAME <libname>
 ##                  SOURCES [source1 [source2 ...]]
 ##                  HEADERS [header1 [header2 ...]]
+##                  INCLUDES [dir1 [dir2 ...]]
+##                  DEFINES [define1 [define2 ...]]
 ##                  DEPENDS_ON [dep1 ...] 
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
-##                  HEADERS_OUTPUT_SUBDIR [dir]
 ##                  SHARED [TRUE | FALSE]
 ##                 )
 ##
@@ -267,11 +261,14 @@ endmacro(blt_register_library)
 ## whether the library will be build as shared or static. The optional boolean
 ## SHARED argument can be used to override this choice.
 ##
-## If given a HEADERS argument and ENABLE_COPY_HEADERS is ON, it first copies
-## the headers into the out-of-source build directory under the
-## include/<HEADERS_OUTPUT_SUBDIR>. Because of this HEADERS_OUTPUT_SUBDIR must
-## be a relative path.
-## 
+## The INCLUDES argument allows you to define what include directories are
+## needed by any target that is dependent on this library.  These will
+## be inherited by CMake's target dependency rules.
+##
+## The DEFINES argument allows you to add needed compiler definitions that are
+## needed by any target that is dependent on this library.  These will
+## be inherited by CMake's target dependency rules.
+##
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If 
 ## not it will add them as a CMake target dependency.
@@ -291,7 +288,7 @@ endmacro(blt_register_library)
 macro(blt_add_library)
 
     set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED)
-    set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
+    set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
     cmake_parse_arguments(arg
@@ -337,34 +334,8 @@ macro(blt_add_library)
         set_source_files_properties(${_build_headers} PROPERTIES HEADER_FILE_ONLY ON)
 
         add_library( ${arg_NAME} INTERFACE )
-        if ( ENABLE_COPY_HEADERS )
-            target_sources( ${arg_NAME} INTERFACE
-                        $<BUILD_INTERFACE:${_build_headers}>
-                        $<INSTALL_INTERFACE:${_install_headers}>)
-
-            target_include_directories(${arg_NAME} INTERFACE
-                        $<BUILD_INTERFACE:${HEADER_INCLUDES_DIRECTORY}>
-                        $<INSTALL_INTERFACE:include/${arg_HEADERS_OUTPUT_SUBDIR}>)
-        else()
-            target_sources( ${arg_NAME} INTERFACE
+        target_sources( ${arg_NAME} INTERFACE
                         $<BUILD_INTERFACE:${_build_headers}>)
-        endif()
-    endif()
-
-    # Handle copying headers
-    if ( arg_HEADERS AND ENABLE_COPY_HEADERS )
-        # Determine build location of headers
-        set(headers_build_dir ${HEADER_INCLUDES_DIRECTORY})
-        if (arg_HEADERS_OUTPUT_SUBDIR)
-            if (IS_ABSOLUTE ${arg_HEADERS_OUTPUT_SUBDIR})
-                message(FATAL_ERROR "blt_add_library must be called with a relative path for HEADERS_OUTPUT_SUBDIR")
-            endif()
-            set(headers_build_dir ${headers_build_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
-        endif()
-
-        blt_copy_headers_target( NAME        ${arg_NAME}
-                                 HEADERS     ${arg_HEADERS}
-                                 DESTINATION ${headers_build_dir})
     endif()
 
     # Must tell fortran where to look for modules
@@ -381,6 +352,14 @@ macro(blt_add_library)
 
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON} )
+
+    if ( arg_INCLUDES )
+        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+    endif()
+
+    if ( arg_DEFINES )
+        target_compile_definitions(${arg_TO} PUBLIC ${arg_DEFINES} )
+    endif()
 
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES

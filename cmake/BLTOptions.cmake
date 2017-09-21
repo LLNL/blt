@@ -53,7 +53,6 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 ################################
 # Build Options
 ################################
-option(ENABLE_COPY_HEADERS "Copy headers to build directory" OFF)
 option(ENABLE_FORTRAN      "Enables Fortran compiler support" OFF)
 option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
 
