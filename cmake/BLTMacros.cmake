@@ -376,8 +376,11 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
+      target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
+
+    # Otherwise _have_fortran is set for other targets
+    set(_have_fortran False)
 
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON} )
