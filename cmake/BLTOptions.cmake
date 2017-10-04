@@ -58,6 +58,8 @@ option(ENABLE_FORTRAN      "Enables Fortran compiler support" OFF)
 option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
+option(ENABLE_FIND_MPI     "Enables CMake's Find MPI support (Turn off when compiling with the mpi wrapper directly)" ON)
+
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
 option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
