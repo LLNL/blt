@@ -46,17 +46,17 @@
 
 if (ENABLE_FIND_MPI)
     find_package(MPI REQUIRED)
+
+    message(STATUS "MPI C Compile Flags:  ${MPI_C_COMPILE_FLAGS}")
+    message(STATUS "MPI C Include Path:   ${MPI_C_INCLUDE_PATH}")
+    message(STATUS "MPI C Link Flags:     ${MPI_C_LINK_FLAGS}")
+    message(STATUS "MPI C Libraries:      ${MPI_C_LIBRARIES}")
+
+    message(STATUS "MPI CXX Compile Flags: ${MPI_CXX_COMPILE_FLAGS}")
+    message(STATUS "MPI CXX Include Path:  ${MPI_CXX_INCLUDE_PATH}")
+    message(STATUS "MPI CXX Link Flags:    ${MPI_CXX_LINK_FLAGS}")
+    message(STATUS "MPI CXX Libraries:     ${MPI_CXX_LIBRARIES}")
 endif()
-
-message(STATUS "MPI C Compile Flags:  ${MPI_C_COMPILE_FLAGS}")
-message(STATUS "MPI C Include Path:   ${MPI_C_INCLUDE_PATH}")
-message(STATUS "MPI C Link Flags:     ${MPI_C_LINK_FLAGS}")
-message(STATUS "MPI C Libraries:      ${MPI_C_LIBRARIES}")
-
-message(STATUS "MPI CXX Compile Flags: ${MPI_CXX_COMPILE_FLAGS}")
-message(STATUS "MPI CXX Include Path:  ${MPI_CXX_INCLUDE_PATH}")
-message(STATUS "MPI CXX Link Flags:    ${MPI_CXX_LINK_FLAGS}")
-message(STATUS "MPI CXX Libraries:     ${MPI_CXX_LIBRARIES}")
 
 message(STATUS "MPI Executable:       ${MPIEXEC}")
 message(STATUS "MPI Num Proc Flag:    ${MPIEXEC_NUMPROC_FLAG}")
