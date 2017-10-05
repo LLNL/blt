@@ -58,8 +58,6 @@ option(ENABLE_FORTRAN      "Enables Fortran compiler support" OFF)
 option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
-option(ENABLE_FIND_MPI     "Enables CMake's Find MPI support (Turn off when compiling with the mpi wrapper directly)" ON)
-
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
 option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
@@ -100,6 +98,8 @@ endif()
 # Advanced configuration options
 ################################
 
+option(ENABLE_FIND_MPI     "Enables CMake's Find MPI support (Turn off when compiling with the mpi wrapper directly)" ON)
+
 option(
     ENABLE_GTEST_DEATH_TESTS
     "Enables tests that assert application failure. Only valid when tests are enabled"
@@ -111,7 +111,8 @@ option(
     OFF )
 
 # All advanced options should be marked as advanced
-mark_as_advanced( 
+mark_as_advanced(
+    ENABLE_FIND_MPI
     ENABLE_GTEST_DEATH_TESTS
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
        
