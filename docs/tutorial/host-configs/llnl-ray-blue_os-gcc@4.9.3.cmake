@@ -41,7 +41,7 @@ set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda-8.0" CACHE PATH "")
 set(CUDA_BIN_DIR "/usr/local/cuda-8.0/bin" CACHE PATH "")
 
 set (CUDA_ARCH "sm_60" CACHE PATH "")
-set (NVCC_FLAGS -restrict; -arch; ${CUDA_ARCH}; -std c++11; --expt-extended-lambda; )
+set (NVCC_FLAGS -restrict; -arch; ${CUDA_ARCH}; -std c++11; --expt-extended-lambda; -G )
 
 #  options for findCUDA
 set (CUDA_NVCC_FLAGS ${NVCC_FLAGS} CACHE LIST "" )
