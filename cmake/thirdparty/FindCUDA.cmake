@@ -858,11 +858,12 @@ elseif(CUDA_USE_STATIC_CUDA_RUNTIME AND CUDA_cudart_static_LIBRARY)
   if (CUDA_rt_LIBRARY)
     list(APPEND CUDA_LIBRARIES ${CUDA_rt_LIBRARY})
   endif()
-  if(APPLE)
+  #  COMMENTING THIS OUT SINCE WE ARE NOW LINKING WITH NVCC, not the host compiler
+  #  if(APPLE)
     # We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
     # the static cuda runtime can find it at runtime.
-    list(APPEND CUDA_LIBRARIES -Wl,-rpath,/usr/local/cuda/lib)
-  endif()
+    # list(APPEND CUDA_LIBRARIES -Wl,-rpath,/usr/local/cuda/lib)
+    # endif()
 else()
   list(APPEND CUDA_LIBRARIES ${CUDA_CUDART_LIBRARY})
 endif()
