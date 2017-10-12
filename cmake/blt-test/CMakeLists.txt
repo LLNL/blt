@@ -155,4 +155,11 @@ if(ENABLE_GTEST)
 
     endif() # endif Git_FOUND
 
+    ################
+    # CUDA tests
+    #################
+    if (ENABLE_CUDA)
+        include(blt_device_call_from_kernel/CMakeLists.txt)
+    endif()
+
 endif() # endif ENABLE_GTEST
