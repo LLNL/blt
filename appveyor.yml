@@ -75,7 +75,7 @@ build_script:
       ..\blt-test
   - cd ..
   #build
-  - echo Building ...
+  - echo Building blt-test ...
   - cmake --build build --config %CONFIG%
   # run our tests
   - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config %CONFIG% --target RUN_TESTS
@@ -85,9 +85,6 @@ build_script:
   #  tutorial tests
   #########################################################
   #########################################################
-  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${BLT_SOURCE_DIR}"
-  # override prev gtest setting
-  - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GTEST=ON"
   #########################################################
   # test docs/tutorial/blank_project
   #########################################################
@@ -105,7 +102,7 @@ build_script:
       -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
       -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
       -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
-      -D BLT_SOURCE_DIR:PATH=".." ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       ..\docs\tutorial\blank_project
   #build
   - echo Building Tutorial Blank Project Test ...
@@ -129,15 +126,15 @@ build_script:
       -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
       -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
       -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
-      -D BLT_SOURCE_DIR:PATH=".." ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       ..\docs\tutorial\calc_pi
   #build
   - echo Building Tutorial Blank Project Test ...
   - cmake --build build --config %CONFIG%
   # run our tests
   - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config %CONFIG% --target RUN_TESTS
+  - cd ..
 
-  
 on_failure:
   - ps: |
       Write-Output "CMakeOutput.log"
