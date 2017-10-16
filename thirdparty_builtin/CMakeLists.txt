@@ -103,17 +103,26 @@ if(ENABLE_TESTS)
         add_subdirectory(googletest-release-1.8.0 
                          ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-release-1.8.0 )
 
+        if(UNIX AND NOT APPLE)
+            find_package( Threads )
+            set(gtest_extra_libs ${CMAKE_THREAD_LIBS_INIT})
+        endif()
+
         blt_register_library(NAME gtest
                              INCLUDES ${gtest_SOURCE_DIR}/include
-                             LIBRARIES gtest_main gtest
+                             LIBRARIES gtest_main gtest ${gtest_extra_libs}
                              COMPILE_FLAGS ${gtest_extra_flags}
-                             DEFINES  ${gtest_defines})
+                             DEFINES  ${gtest_defines}
+                             TREAT_INCLUDES_AS_SYSTEM ON
+                             )
          if(ENABLE_GMOCK)
              blt_register_library(NAME gmock
                                   INCLUDES ${gmock_SOURCE_DIR}/include
                                   LIBRARIES gmock_main gmock
                                   COMPILE_FLAGS ${gtest_extra_flags}
-                                  DEFINES  ${gtest_defines})
+                                  DEFINES  ${gtest_defines}
+                                  TREAT_INCLUDES_AS_SYSTEM ON
+                                  )
          endif()
     endif()
 
@@ -142,6 +151,7 @@ if(ENABLE_TESTS)
         blt_register_library(NAME gbenchmark
                              INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
                              LIBRARIES benchmark ${RT_LIBRARIES}
+                             TREAT_INCLUDES_AS_SYSTEM ON
                              )
 
         # This sets up a target to run the benchmarks
