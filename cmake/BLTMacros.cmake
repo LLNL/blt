@@ -184,6 +184,7 @@ macro(blt_register_library)
 
     set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
+                       DEPENDS_ON
                        FORTRAN_MODULES
                        LIBRARIES
                        COMPILE_FLAGS
@@ -366,6 +367,10 @@ macro(blt_add_library)
                                  DESTINATION ${headers_build_dir})
     endif()
 
+
+    # Clear value of _have_fortran from previous calls
+    set(_have_fortran False)
+
     # Must tell fortran where to look for modules
     # CMAKE_Fortran_MODULE_DIRECTORY is the location of generated modules
     foreach (_file ${arg_SOURCES})
@@ -375,7 +380,7 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
+      target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
     blt_setup_target( NAME ${arg_NAME}

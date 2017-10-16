@@ -1288,7 +1288,6 @@ macro(CUDA_WRAP_SRCS cuda_target format generated_files)
     set(CUDA_NVCC_COMPILE_DEFINITIONS "$<TARGET_PROPERTY:${cuda_target},COMPILE_DEFINITIONS>")
   endif()
 
-
   # Reset these variables
   set(CUDA_WRAP_OPTION_NVCC_FLAGS)
   foreach(config ${CUDA_configuration_types})
@@ -1740,14 +1739,14 @@ macro(CUDA_ADD_LIBRARY cuda_target)
   # variable will have been defined.
   CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
 
-  target_link_libraries(${cuda_target} PUBLIC
-    ${CUDA_LIBRARIES}
-    )
-
   if(CUDA_SEPARABLE_COMPILATION)
-    target_link_libraries(${cuda_target}
-      ${CUDA_cudadevrt_LIBRARY}
+    target_link_libraries(${cuda_target} PUBLIC
+        ${CUDA_LIBRARIES} ${CUDA_cudadevrt_LIBRARY}
       )
+  else()
+      target_link_libraries(${cuda_target} PUBLIC
+        ${CUDA_LIBRARIES}
+        )
   endif()
 
   # We need to set the linker language based on what the expected generated file

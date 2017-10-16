@@ -74,7 +74,7 @@ Here is an example for setting the appropriate flag to treat warnings as errors:
       )
 
 Since values for ``GNU``, ``CLANG`` and ``INTEL`` are not supplied, 
-they will get the default value (``-Werrror``)
+they will get the default value (``-Werror``)
 which is supplied by the macro's ``DEFAULT`` argument.
 
 BLT also provides a simple macro to add compiler flags to a target.  
