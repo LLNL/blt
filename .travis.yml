@@ -131,8 +131,6 @@ script:
   - cd $TRAVIS_BUILD_DIR/..
   # copy our internal testing project
   - cp -r blt/cmake/blt-test .
-  # symlink blt into this project
-  - ln -s ${TRAVIS_BUILD_DIR} blt-test/blt
   # create a git repo for blt-test to test the git macros
   - cd blt-test
   - git init
@@ -149,8 +147,10 @@ script:
   - ls blt-test
   # change into build dir
   - cd travis-debug-build
+  # point to blt
+  - CMAKE_OPTS="-DBLT_SOURCE_DIR=${BLT_SOURCE_DIR}"
   # build type and install loc
-  - CMAKE_OPTS="-DCMAKE_BUILD_TYPE=Debug"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_INSTALL_PREFIX=../travis-debug-install"
   # c & c++ compilers
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
@@ -184,8 +184,7 @@ script:
   #  tutorial tests
   #########################################################
   #########################################################
-  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_SOURCE_DIR=${BLT_SOURCE_DIR}"
-  # override prev gtest setting
+  # override prev gtest setting, these projects req gtest
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GTEST=ON"
   #########################################################
   # test docs/tutorial/blank_project

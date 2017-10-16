@@ -43,7 +43,6 @@ before_build:
   - ps: cd ..
   - mkdir build
   - cp -r blt\cmake\blt-test .
-  - cp -r blt blt-test
   # create a git repo for blt-test to test the git macros
   - cd blt-test
   - git init
@@ -62,6 +61,7 @@ build_script:
   # configure
   - echo Running cmake ...
   - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
       -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
       -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
@@ -92,6 +92,7 @@ build_script:
   - cd build-tutorial_blank_project
   - echo Running cmake ...
   - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
       -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
       -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
@@ -102,7 +103,6 @@ build_script:
       -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
       -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
       -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
-      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       c:\projects\blt\docs\tutorial\blank_project
   - cd ..
   #build
@@ -117,6 +117,7 @@ build_script:
   - mkdir build-tutorial_calc_pi
   - cd build-tutorial_calc_pi
   - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
       -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
       -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
@@ -127,7 +128,6 @@ build_script:
       -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
       -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
       -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
-      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       c:\projects\blt\docs\tutorial\calc_pi
   - cd ..
   #build
