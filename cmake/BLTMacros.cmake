@@ -667,13 +667,13 @@ endmacro(blt_append_custom_compiler_flag)
 
 
 ##------------------------------------------------------------------------------
-## blt_find_libraries( <VAR>
+## blt_find_libraries( <FOUND_LIBS>
 ##                     NAMES [libname1 [libname2 ...]]
 ##                     PATHS [path1 [path2 ...]] )
 ##
-## This command is used to find a list of libraries. A cache entry named by <VAR> 
+## This command is used to find a list of libraries. A cache entry named by <FOUND_LIBS> 
 ## is created to store the result of this command. If the libraries are found the
-## results are stored in VAR.
+## results are stored in FOUND_LIBS.
 ##
 ## NAMES lists the names of the libraries to search for.
 ##
@@ -681,7 +681,7 @@ endmacro(blt_append_custom_compiler_flag)
 ##
 ##
 ##------------------------------------------------------------------------------
-macro(blt_find_libraries VAR)
+macro(blt_find_libraries FOUND_LIBS)
 
     set(multiValueArgs NAMES
                        PATHS )
@@ -691,11 +691,11 @@ macro(blt_find_libraries VAR)
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if ( NOT DEFINED arg_NAMES )
-        message(FATAL_ERROR "blt_find_libraries requires that NAMES specify the library names you are searching for")
+        message(FATAL_ERROR "blt_find_libraries requires that the input variable NAMES specify the library names you are searching for")
     endif()
 
     if ( NOT DEFINED arg_PATHS )
-        message(FATAL_ERROR "blt_find_libraries requires that PATHS specify the paths to search for NAMES")
+        message(FATAL_ERROR "blt_find_libraries requires that the input variable PATHS specify the paths to search for NAMES")
     endif()
 
     foreach( lib ${arg_NAMES} )
@@ -713,6 +713,6 @@ macro(blt_find_libraries VAR)
             message(FATAL_ERROR "NAMES entry ${lib} not found. These are not the libs you are looking for.")
         endif()
     endforeach()
-    set( ${VAR} ${TEMP_LIBS} )
+    set( ${FOUND_LIBS} ${TEMP_LIBS} )
 
 endmacro(blt_find_libraries)
