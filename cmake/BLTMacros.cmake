@@ -667,7 +667,7 @@ endmacro(blt_append_custom_compiler_flag)
 
 
 ##------------------------------------------------------------------------------
-## blt_find_libraries( <FOUND_LIBS>
+## blt_find_libraries( FOUND_LIBS <FOUND_LIBS>
 ##                     NAMES [libname1 [libname2 ...]]
 ##                     PATHS [path1 [path2 ...]] )
 ##
@@ -681,7 +681,10 @@ endmacro(blt_append_custom_compiler_flag)
 ##
 ##
 ##------------------------------------------------------------------------------
-macro(blt_find_libraries FOUND_LIBS)
+macro(blt_find_libraries)
+
+    set(singleValueArgs FOUND_LIBS )
+
 
     set(multiValueArgs NAMES
                        PATHS )
@@ -713,6 +716,6 @@ macro(blt_find_libraries FOUND_LIBS)
             message(FATAL_ERROR "NAMES entry ${lib} not found. These are not the libs you are looking for.")
         endif()
     endforeach()
-    set( ${FOUND_LIBS} ${TEMP_LIBS} )
+    set( ${arg_FOUND_LIBS} ${TEMP_LIBS} )
 
 endmacro(blt_find_libraries)
