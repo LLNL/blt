@@ -858,12 +858,20 @@ elseif(CUDA_USE_STATIC_CUDA_RUNTIME AND CUDA_cudart_static_LIBRARY)
   if (CUDA_rt_LIBRARY)
     list(APPEND CUDA_LIBRARIES ${CUDA_rt_LIBRARY})
   endif()
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
   #  COMMENTING THIS OUT SINCE WE ARE NOW LINKING WITH NVCC, not the host compiler
-  #  if(APPLE)
-    # We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
-    # the static cuda runtime can find it at runtime.
-    # list(APPEND CUDA_LIBRARIES -Wl,-rpath,/usr/local/cuda/lib)
-    # endif()
+
+  #if(APPLE)
+  #  #We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
+  #  #the static cuda runtime can find it at runtime.
+  #  list(APPEND CUDA_LIBRARIES -Wl,-rpath,/usr/local/cuda/lib)
+  #endif()
+  
+  ####################
+  # END BLT CHANGE #
+  ####################
 else()
   list(APPEND CUDA_LIBRARIES ${CUDA_CUDART_LIBRARY})
 endif()
@@ -1724,11 +1732,21 @@ macro(CUDA_ADD_LIBRARY cuda_target)
     ${_cmake_options} ${_cuda_shared_flag}
     OPTIONS ${_options} )
 
-  # Compute the file name of the intermedate link file used for separable
+  # Compute the file name of the intermediate link file used for separable
   # compilation.
-  # commented out since we are linkinig with nvcc. Leaving this around in case we need to 
+  
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
+  # commented out since we are linking with nvcc. Leaving this around in case we need to 
   # go back to host compiler linking.
-  #CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME(link_file ${cuda_target} "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  # CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME(link_file ${cuda_target} "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  ####################
+  # END BLT CHANGE   #
+  ####################
+
 
   # Add the library.
   add_library(${cuda_target} ${_cmake_options}
@@ -1740,9 +1758,19 @@ macro(CUDA_ADD_LIBRARY cuda_target)
   # Add a link phase for the separable compilation if it has been enabled.  If
   # it has been enabled then the ${cuda_target}_SEPARABLE_COMPILATION_OBJECTS
   # variable will have been defined.
-  # commented out since we are linkinig with nvcc. Leaving this around in case we need to 
+
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
+  # commented out since we are linking with nvcc. Leaving this around in case we need to 
   # go back to host compiler linking.
-  #CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  # CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  ####################
+  # END BLT CHANGE #
+  ####################
+
 
   if(CUDA_SEPARABLE_COMPILATION)
     target_link_libraries(${cuda_target} PUBLIC
@@ -1754,12 +1782,22 @@ macro(CUDA_ADD_LIBRARY cuda_target)
         )
   endif()
 
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
+
   # We need to link with nvcc. Host linking prevents calling device methods in one library from kernels in another (yes, even with separable
   # compilation)
+  
   string (REPLACE ";" " " LD_FLAGS_STR "${CUDA_NVCC_FLAGS}")
   set (CMAKE_CUDA_CREATE_STATIC_LIBRARY "${CUDA_NVCC_EXECUTABLE} --lib ${LD_FLAGS_STR} <OBJECTS>  -o <TARGET> " CACHE PATH "" )
   set (CMAKE_CUDA_CREATE_SHARED_LIBRARY "${CUDA_NVCC_EXECUTABLE} --shared ${LD_FLAGS_STR} <OBJECTS>  -o <TARGET> " CACHE PATH "" )
   set_target_properties(${cuda_target} PROPERTIES LINKER_LANGUAGE "CUDA")
+
+  ####################
+  # END BLT CHANGE #
+  ####################
+
 
 endmacro()
 
@@ -1780,9 +1818,19 @@ macro(CUDA_ADD_EXECUTABLE cuda_target)
 
   # Compute the file name of the intermedate link file used for separable
   # compilation. 
-  # commented out since we are linkinig with nvcc. Leaving this around in case we need to 
+
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
+  # commented out since we are linking with nvcc. Leaving this around in case we need to 
   # go back to host compiler linking.
-  #CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME(link_file ${cuda_target} "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  # CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME(link_file ${cuda_target} "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  ####################
+  # END BLT CHANGE   #
+  ####################
+
 
   # Add the library.
   add_executable(${cuda_target} ${_cmake_options}
@@ -1794,18 +1842,37 @@ macro(CUDA_ADD_EXECUTABLE cuda_target)
   # Add a link phase for the separable compilation if it has been enabled.  If
   # it has been enabled then the ${cuda_target}_SEPARABLE_COMPILATION_OBJECTS
   # variable will have been defined.
-  # commented out since we are linkinig with nvcc. Leaving this around in case we need to 
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
+  # commented out since we are linking with nvcc. Leaving this around in case we need to 
   # go back to host compiler linking.
-  #CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  # CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
+  
+  ####################
+  # END BLT CHANGE   #
+  ####################
+    
 
   target_link_libraries(${cuda_target} PUBLIC ${CUDA_LIBRARIES})
 
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
+
   # We need to link with nvcc. Host linking prevents calling device methods in one library from kernels in another (yes, even with separable
   # compilation)
+  
   string (REPLACE ";" " " LD_FLAGS_STR "${CUDA_NVCC_FLAGS}")
   set (CMAKE_CUDA_LINK_EXECUTABLE  "${CUDA_NVCC_EXECUTABLE}  <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>" CACHE PATH "" )
   set_target_properties(${cuda_target} PROPERTIES LINKER_LANGUAGE "CUDA")
   set_target_properties(${cuda_target} PROPERTIES LINK_FLAGS "${LD_FLAGS_STR}")
+
+  ####################
+  # END BLT CHANGE #
+  ####################
+
 
 endmacro()
 
