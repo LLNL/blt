@@ -668,14 +668,17 @@ endmacro(blt_append_custom_compiler_flag)
 
 ##------------------------------------------------------------------------------
 ## blt_find_libraries( FOUND_LIBS <FOUND_LIBS>
-##                     NAMES [libname1 [libname2 ...]]
+##                     REQUIRED_NAMES [libname1 [libname2 ...]]
+##                     OPTIONAL_NAMES [libname1 [libname2 ...]]
 ##                     PATHS [path1 [path2 ...]] )
 ##
 ## This command is used to find a list of libraries. A cache entry named by <FOUND_LIBS> 
 ## is created to store the result of this command. If the libraries are found the
 ## results are stored in FOUND_LIBS.
 ##
-## NAMES lists the names of the libraries to search for.
+## REQUIRED_NAMES lists the names of the libraries that are required to be found.
+##
+## OPTIONAL_NAMES lists the names of the optional libraries to be found.
 ##
 ## PATH lists the paths in which to search for NAMES.
 ##
@@ -686,22 +689,23 @@ macro(blt_find_libraries)
     set(singleValueArgs FOUND_LIBS )
 
 
-    set(multiValueArgs NAMES
+    set(multiValueArgs REQUIRED_NAMES
+                       OPTIONAL_NAMES
                        PATHS )
 
     ## parse the arguments
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    if ( NOT DEFINED arg_NAMES )
-        message(FATAL_ERROR "blt_find_libraries requires that the input variable NAMES specify the library names you are searching for")
+    if ( NOT DEFINED arg_REQUIRED_NAMES )
+        message(FATAL_ERROR "blt_find_libraries requires that the input variable REQUIRED_NAMES specify the library names you are searching for")
     endif()
 
     if ( NOT DEFINED arg_PATHS )
         message(FATAL_ERROR "blt_find_libraries requires that the input variable PATHS specify the paths to search for NAMES")
     endif()
 
-    foreach( lib ${arg_NAMES} )
+    foreach( lib ${arg_REQUIRED_NAMES} )
         unset( temp CACHE )
         find_library( temp NAMES ${lib}
                       PATHS ${arg_PATHS}
@@ -711,11 +715,30 @@ macro(blt_find_libraries)
                       NO_SYSTEM_ENVIRONMENT_PATH
                       NO_CMAKE_SYSTEM_PATH)
         if( temp )
-            set( TEMP_LIBS ${TEMP_LIBS} ${temp} )
+            list( APPEND TEMP_LIBS ${temp} )
         else()
-            message(FATAL_ERROR "NAMES entry ${lib} not found. These are not the libs you are looking for.")
+            message(FATAL_ERROR "REQUIRED_NAMES entry ${lib} not found. These are not the libs you are looking for.")
         endif()
     endforeach()
+    
+    
+    foreach( lib ${arg_OPTIONAL_NAMES} )
+        unset( temp CACHE )
+        find_library( temp NAMES ${lib}
+                      PATHS ${arg_PATHS}
+                      NO_DEFAULT_PATH
+                      NO_CMAKE_ENVIRONMENT_PATH
+                      NO_CMAKE_PATH
+                      NO_SYSTEM_ENVIRONMENT_PATH
+                      NO_CMAKE_SYSTEM_PATH)
+        if( temp )
+            list( APPEND TEMP_LIBS ${temp} )
+        else()
+            message( WARNING "OPTIONAL_NAMES entry ${lib} not found.")
+        endif()
+    endforeach()
+    
+    
     set( ${arg_FOUND_LIBS} ${TEMP_LIBS} )
 
 endmacro(blt_find_libraries)
