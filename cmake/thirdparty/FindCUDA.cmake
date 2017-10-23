@@ -874,13 +874,12 @@ elseif(CUDA_USE_STATIC_CUDA_RUNTIME AND CUDA_cudart_static_LIBRARY)
   ####################
   # BEGIN BLT CHANGE #
   ####################
-  #  COMMENTING THIS OUT SINCE WE ARE NOW LINKING WITH NVCC, not the host compiler
 
-  #if(APPLE)
-  #  #We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
-  #  #the static cuda runtime can find it at runtime.
-  #  list(APPEND CUDA_LIBRARIES -Wl,-rpath,/usr/local/cuda/lib)
-  #endif()
+  if(APPLE AND NOT CUDA_LINK_WITH_NVCC)
+    #We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
+    #the static cuda runtime can find it at runtime.
+    list(APPEND CUDA_LIBRARIES -Wl,-rpath,/usr/local/cuda/lib)
+  endif()
   
   ####################
   # END BLT CHANGE #
@@ -1749,15 +1748,9 @@ macro(CUDA_ADD_LIBRARY cuda_target)
   # BEGIN BLT CHANGE #
   ####################
   if (NOT CUDA_LINK_WITH_NVCC)
-  ####################
-  # END BLT CHANGE   #
-  ####################
       # Compute the file name of the intermedate link file used for separable
       # compilation.
       CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME(link_file ${cuda_target} "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
-  ####################
-  # BEGIN BLT CHANGE #
-  ####################
   endif()
   ####################
   # END BLT CHANGE   #
@@ -1780,7 +1773,7 @@ macro(CUDA_ADD_LIBRARY cuda_target)
       CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS("${link_file}" ${cuda_target} "${_options}" "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
   endif()
   ####################
-  # END BLT CHANGE  (CUDA_LINK_WITH_NVCC added by BLT)
+  # END BLT CHANGE 
   ####################
 
   if(CUDA_SEPARABLE_COMPILATION)
@@ -1804,18 +1797,12 @@ macro(CUDA_ADD_LIBRARY cuda_target)
       set (CMAKE_CUDA_CREATE_SHARED_LIBRARY "${CUDA_NVCC_EXECUTABLE} --shared ${LD_FLAGS_STR} <OBJECTS>  -o <TARGET> " CACHE PATH "" )
       set_target_properties(${cuda_target} PROPERTIES LINKER_LANGUAGE "CUDA")
   else() 
-  ####################
-  # END BLT CHANGE #
-  ####################
       # We need to set the linker language based on what the expected generated file
       # would be. CUDA_C_OR_CXX is computed based on CUDA_HOST_COMPILATION_CPP.
       set_target_properties(${cuda_target}
         PROPERTIES
         LINKER_LANGUAGE ${CUDA_C_OR_CXX}
         )
-  ####################
-  # BEGIN BLT CHANGE #
-  ####################
   endif()
   ####################
   # END BLT CHANGE #
@@ -1844,13 +1831,7 @@ macro(CUDA_ADD_EXECUTABLE cuda_target)
   # BEGIN BLT CHANGE #
   ####################
   if (NOT CUDA_LINK_WITH_NVCC)
-  ####################
-  # END BLT CHANGE   #
-  ####################
       CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME(link_file ${cuda_target} "${${cuda_target}_SEPARABLE_COMPILATION_OBJECTS}")
-  ####################
-  # BEGIN BLT CHANGE #
-  ####################
   endif()
   ####################
   # END BLT CHANGE   #
@@ -1883,18 +1864,12 @@ macro(CUDA_ADD_EXECUTABLE cuda_target)
       set_target_properties(${cuda_target} PROPERTIES LINKER_LANGUAGE "CUDA")
       set_target_properties(${cuda_target} PROPERTIES LINK_FLAGS "${LD_FLAGS_STR}")
   else()
-  ####################
-  # END BLT CHANGE #
-  ####################
     # We need to set the linker language based on what the expected generated file
     # would be. CUDA_C_OR_CXX is computed based on CUDA_HOST_COMPILATION_CPP.
    set_target_properties(${cuda_target}
      PROPERTIES
      LINKER_LANGUAGE ${CUDA_C_OR_CXX}
      )
-  ####################
-  # BEGIN BLT CHANGE #
-  ####################
   endif()
   ####################
   # END BLT CHANGE #
