@@ -46,4 +46,5 @@ set (NVCC_FLAGS -restrict; -arch; ${CUDA_ARCH}; -std c++11; --expt-extended-lamb
 #  options for findCUDA
 set (CUDA_NVCC_FLAGS ${NVCC_FLAGS} CACHE LIST "" )
 set (CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
+set (CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
 set (CUDA_HOST_COMPILER ${MPI_CXX_COMPILER})
