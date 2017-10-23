@@ -523,8 +523,14 @@ option(CUDA_PROPAGATE_HOST_FLAGS "Propage C/CXX_FLAGS and friends to the host co
 # Enable CUDA_SEPARABLE_COMPILATION
 option(CUDA_SEPARABLE_COMPILATION "Compile CUDA objects with separable compilation enabled.  Requires CUDA 5.0+" OFF)
 
+####################
+# BEGIN BLT CHANGE #
+####################
 # Enable Linking wth NVCC
 option(CUDA_LINK_WITH_NVCC "Link CUDA executables with nvcc instead of your host compiler." OFF)
+####################
+# END BLT CHANGE #
+####################
 
 # Specifies whether the commands used when compiling the .cu file will be printed out.
 option(CUDA_VERBOSE_BUILD "Print out the commands run while compiling the CUDA source file.  With the Makefile generator this defaults to VERBOSE variable specified on the command line, but can be forced on with this option." OFF)
