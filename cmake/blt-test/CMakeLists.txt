@@ -49,10 +49,15 @@ cmake_minimum_required(VERSION 3.1)
 
 project(blt-example LANGUAGES C CXX)
 
-################################
-# Include BLT
-################################
-include(blt/SetupBLT.cmake)
+###############################################################################
+# Setup BLT
+###############################################################################
+# Set BLT_SOURCE_DIR to default location, if not set by user 
+if(NOT BLT_SOURCE_DIR)
+    set(BLT_SOURCE_DIR "blt")
+endif()
+
+include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
 ################################
 # Add a library

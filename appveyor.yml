@@ -43,7 +43,6 @@ before_build:
   - ps: cd ..
   - mkdir build
   - cp -r blt\cmake\blt-test .
-  - cp -r blt blt-test
   # create a git repo for blt-test to test the git macros
   - cd blt-test
   - git init
@@ -52,9 +51,17 @@ before_build:
   - git checkout -b test-branch
   - git tag test-tag  
   - cd ..\build
+
+build_script:
+  #########################################################
+  #########################################################  
+  # blt-test
+  #########################################################
+  #########################################################
   # configure
   - echo Running cmake ...
   - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
       -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
       -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
       -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
@@ -67,16 +74,69 @@ before_build:
       -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
       ..\blt-test
   - cd ..
-
-build_script:
   #build
-  - echo Building ...
+  - echo Building blt-test ...
   - cmake --build build --config %CONFIG%
-
-after_build:
   # run our tests
   - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config %CONFIG% --target RUN_TESTS
-  
+  - cd ..
+  #########################################################
+  #########################################################
+  #  tutorial tests
+  #########################################################
+  #########################################################
+  #########################################################
+  # test docs/tutorial/blank_project
+  #########################################################
+  - mkdir build-tutorial_blank_project
+  - cd build-tutorial_blank_project
+  - echo Running cmake ...
+  - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
+      -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
+      -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
+      -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
+      -D ENABLE_OPENMP=ON ^
+      -D ENABLE_MPI=%ENABLE_MPI% ^
+      -D MPI_HOME:PATH="C:/Program Files (x86)/Microsoft SDKs/MPI" ^
+      -D MPI_C_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
+      -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
+      -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
+      -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
+      c:\projects\blt\docs\tutorial\blank_project
+  - cd ..
+  #build
+  - echo Building Tutorial Blank Project ...
+  - cmake --build build-tutorial_blank_project --config %CONFIG%
+  # run our tests
+  - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build-tutorial_blank_project --config %CONFIG% --target RUN_TESTS
+  - cd ..
+  #########################################################
+  # test docs/tutorial/calc_pi
+  #########################################################
+  - mkdir build-tutorial_calc_pi
+  - cd build-tutorial_calc_pi
+  - cmake -G "%CMAKE_GENERATOR%" ^
+      -D BLT_SOURCE_DIR:PATH="c:\projects\blt" ^
+      -D BUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ^
+      -D ENABLE_GMOCK=%ENABLE_GMOCK% ^
+      -D ENABLE_BENCHMARKS=%ENABLE_BENCHMARKS% ^
+      -D ENABLE_OPENMP=ON ^
+      -D ENABLE_MPI=%ENABLE_MPI% ^
+      -D MPI_HOME:PATH="C:/Program Files (x86)/Microsoft SDKs/MPI" ^
+      -D MPI_C_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
+      -D MPI_C_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
+      -D MPI_CXX_INCLUDE_PATH:PATH="${MPI_HOME}/Include" ^
+      -D MPI_CXX_LIBRARIES:PATH="${MPI_HOME}/Lib/x86/msmpi.lib" ^
+      c:\projects\blt\docs\tutorial\calc_pi
+  - cd ..
+  #build
+  - echo Building Tutorial Calc Pi ...
+  - cmake --build build-tutorial_calc_pi --config %CONFIG%
+  # run our tests
+  - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build-tutorial_calc_pi --config %CONFIG% --target RUN_TESTS
+  - cd ..
+
 on_failure:
   - ps: |
       Write-Output "CMakeOutput.log"
