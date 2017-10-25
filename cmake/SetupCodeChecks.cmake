@@ -45,69 +45,69 @@
 ###############################################################################
 
 add_custom_target(check)
+add_custom_target(style)
 
 if(UNCRUSTIFY_FOUND)
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
     add_dependencies(check uncrustify_check)
-    # targets for forcing formatting
-    add_custom_target(uncrustify_inplace)
 
+    # targets for modifying formatting
+    add_custom_target(uncrustify_style)
+    add_custom_target(style uncrustify_style)
 endif()
 
-##------------------------------------------------------------------------------
-## - Macro that helps add all code check targets
-##
-## blt_add_code_check_targets(cfg)
-##
-##------------------------------------------------------------------------------
-macro(blt_add_code_check_targets cfg_file)
-
-    if(UNCRUSTIFY_FOUND)
-        # Only run uncrustify on C and C++ files
-        # Note, we can later extend this by passing in a list of valid types to the macro
-        set(_fileTypes ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh")
-    
-        # generate the filtered list of source files
-        set(_filt_sources)
-        foreach(_file ${${PROJECT_NAME}_ALL_SOURCES})
-          get_filename_component(_ext ${_file} EXT)
-          list(FIND _fileTypes "${_ext}" _index)
-      
-          if(_index GREATER -1)
-             file(RELATIVE_PATH _relpath ${CMAKE_CURRENT_BINARY_DIR} ${_file})
-             list(APPEND _filt_sources ${_relpath})
-          endif()
-        endforeach()
-
-        blt_add_uncrustify_check(CFG_FILE ${cfg_file}   SRC_FILES ${_filt_sources})
-        blt_add_uncrustify_inplace(CFG_FILE ${cfg_file} SRC_FILES ${_filt_sources})
-    endif()
-    
-endmacro()
-    
 
 ##------------------------------------------------------------------------------
-## - Macro for invoking uncrustify to check code formatting
+## blt_add_uncrustify_target( NAME              <Created Target Name>
+##                            MODIFY_FILES      [TRUE | FALSE (default)]
+##                            CFG_FILE          <Uncrustify Configuration File> 
+##                            FLAGS             <Additional Flags to Uncrustify>
+##                            COMMENT           <Additional Comment for Target Invocation>
+##                            WORKING_DIRECTORY <Working Directory>
+##                            REDIRECT          <Redirection Command>
+##                            SRC_FILES         [FILE1 | [FILE2 ...]] )
 ##
-## blt_add_uncrustify_check( CFG_FILE <uncrustify_configuration_file> 
-##                           FLAGS <additional_flags_to_uncrustify>
-##                           COMMENT <additional_comment_for_target_invocation>
-##                           WORKING_DIRECTORY <working_directory>
-##                           REDIRECT <redirection_commands>
-##                           SRC_FILES <list_of_src_files_to_uncrustify> )
+## Creates a new target with the given NAME for running uncrustify over the given SRC_FILES.
+##
+## MODIFY_FILES, if set to TRUE, modifies the files in place and adds the created target to
+## the style target.  Otherwise the files are not modified and the created target is added
+## to the check target.
+##
+## CFG_FILE defines the uncrustify settings.
+##
+## FLAGS are additional flags given to uncrustify.
+##
+## COMMENT is prepended to the commented outputted by CMake.
+##
+## WORKING_DIRECTORY is the directory that uncrustify will be ran.  It defaults to the directory
+## where this macro is called.
+##
+## REDIRECT is appended to the uncrustify command and allows you to redirect output to a file.
 ##
 ##------------------------------------------------------------------------------
-macro(blt_add_uncrustify_check)
+macro(blt_add_uncrustify_target)
     
-    MESSAGE(STATUS "Creating uncrustify check target: uncrustify_check_${PROJECT_NAME}")
-
     ## parse the arguments to the macro
     set(options)
-    set(singleValueArgs CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(singleValueArgs NAME CFG_FILE COMMENT WORKING_DIRECTORY)
     set(multiValueArgs SRC_FILES FLAGS REDIRECT)
+
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check required parameters
+    if(NOT DEFINED ${arg_NAME})
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED ${arg_CFG_FILE})
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a CFG_FILE parameter")
+    endif()
+
+    if(NOT DEFINED ${arg_SRC_FILES})
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
+    endif()
 
     if(${arg_WORKING_DIRECTORY})
         set(_wd ${arg_WORKING_DIRECTORY})
@@ -115,52 +115,23 @@ macro(blt_add_uncrustify_check)
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    add_custom_target("uncrustify_check_${PROJECT_NAME}"
-            ${UNCRUSTIFY_EXECUTABLE} ${arg_FLAGS}
-            -c ${arg_CFG_FILE} --check ${arg_SRC_FILES} ${arg_REDIRECT}
-             WORKING_DIRECTORY ${_wd} 
-             COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
+    if(NOT ${arg_MODIFY_FILES} or NOT DEFINED ${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG "--check")
+    else()
+        set(MODIFY_FILES_FLAG "--no-backup")
+    endif()
+
+    add_custom_target(${arg_NAME}
+            COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_FLAGS}
+                -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_REDIRECT}
+            WORKING_DIRECTORY ${_wd} 
+            COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
         
-    # hook our new target into the check dependency chain
-    add_dependencies(uncrustify_check "uncrustify_check_${PROJECT_NAME}")
+    if(NOT ${arg_MODIFY_FILES} or NOT DEFINED ${arg_MODIFY_FILES})
+        # hook our new target into the check dependency chain
+        add_dependencies(uncrustify_check ${arg_NAME})
+    else()
+        add_dependencies(uncrustify_style ${arg_NAME})
+    endif()
 
 endmacro(blt_add_uncrustify_check)
-
-##------------------------------------------------------------------------------
-## - Macro for invoking uncrustify to apply formatting inplace
-##
-## blt_add_uncrustify_inplace(CFG_FILE <uncrustify_configuration_file> 
-##                            FLAGS <additional_flags_to_uncrustify>
-##                            COMMENT <additional_comment_for_target_invocation>
-##                            WORKING_DIRECTORY <working_directory>
-##                            REDIRECT <redirection_commands>
-##                            SRC_FILES <list_of_src_files_to_uncrustify> )
-##
-##------------------------------------------------------------------------------
-macro(blt_add_uncrustify_inplace)
-    
-    MESSAGE(STATUS "Creating uncrustify inplace target: uncrustify_inplace_${PROJECT_NAME}")
-
-    ## parse the arguments to the macro
-    set(options)
-    set(singleValueArgs CFG_FILE COMMENT WORKING_DIRECTORY)
-    set(multiValueArgs SRC_FILES FLAGS REDIRECT)
-    cmake_parse_arguments(arg
-        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    if(${arg_WORKING_DIRECTORY})
-        set(_wd ${arg_WORKING_DIRECTORY})
-    else()
-        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
-    endif()
-
-    add_custom_target("uncrustify_inplace_${PROJECT_NAME}"
-            ${UNCRUSTIFY_EXECUTABLE} ${arg_FLAGS}
-            -c ${arg_CFG_FILE} --no-backup ${arg_SRC_FILES} ${arg_REDIRECT}
-             WORKING_DIRECTORY ${_wd} 
-             COMMENT "${arg_COMMENT}Running uncrustify to apply code formatting settings.")
-        
-    # hook our new target into the uncrustify_inplace dependency chain
-    add_dependencies(uncrustify_inplace "uncrustify_inplace_${PROJECT_NAME}")
-
-endmacro(blt_add_uncrustify_inplace)

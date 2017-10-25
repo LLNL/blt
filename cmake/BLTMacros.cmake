@@ -667,7 +667,7 @@ endmacro(blt_append_custom_compiler_flag)
 ##------------------------------------------------------------------------------
 ## blt_find_libraries( FOUND_LIBS <FOUND_LIBS variable name>
 ##                     NAMES [libname1 [libname2 ...]]
-##                     OPTIONAL [TRUE | FALSE ]
+##                     REQUIRED [TRUE (default) | FALSE ]
 ##                     PATHS [path1 [path2 ...]] )
 ##
 ## This command is used to find a list of libraries.
@@ -676,8 +676,8 @@ endmacro(blt_append_custom_compiler_flag)
 ##
 ## NAMES lists the names of the libraries that will be searched for in the given PATHS.
 ##
-## If OPTIONAL is set to TRUE, BLT will not produce an error message if any of the
-## given libraries that are not found.  The default value is FALSE.
+## If REQUIRED is set to TRUE, BLT will produce an error message if any of the
+## given libraries that are not found.  The default value is TRUE.
 ##
 ## PATH lists the paths in which to search for NAMES. No system paths will be searched.
 ##
@@ -685,7 +685,7 @@ endmacro(blt_append_custom_compiler_flag)
 macro(blt_find_libraries)
 
     set(options )
-    set(singleValueArgs FOUND_LIBS OPTIONAL)
+    set(singleValueArgs FOUND_LIBS REQUIRED )
     set(multiValueArgs NAMES PATHS )
 
     ## parse the arguments
@@ -704,8 +704,8 @@ macro(blt_find_libraries)
         message(FATAL_ERROR "The blt_find_libraries required parameter PATHS specifies the paths to search for NAMES.")
     endif()
 
-    if ( NOT DEFINED arg_OPTIONAL)
-        set(arg_OPTIONAL FALSE)
+    if ( NOT DEFINED arg_REQUIRED)
+        set(arg_REQUIRED TRUE)
     endif()
 
     foreach( lib ${arg_NAMES} )
@@ -719,8 +719,8 @@ macro(blt_find_libraries)
                       NO_CMAKE_SYSTEM_PATH)
         if( temp )
             list( APPEND ${arg_FOUND_LIBS} ${temp} )
-        else if (${arg_OPTIONAL})
-            message(FATAL_ERROR "NAMES entry ${lib} not found. These are not the libs you are looking for.")
+        elseif (${arg_REQUIRED})
+            message(FATAL_ERROR "blt_find_libraries required NAMES entry ${lib} not found. These are not the libs you are looking for.")
         endif()
     endforeach()
 
