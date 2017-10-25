@@ -54,7 +54,7 @@ if(UNCRUSTIFY_FOUND)
 
     # targets for modifying formatting
     add_custom_target(uncrustify_style)
-    add_custom_target(style uncrustify_style)
+    add_dependencies(style uncrustify_style)
 endif()
 
 
@@ -97,15 +97,15 @@ macro(blt_add_uncrustify_target)
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     # Check required parameters
-    if(NOT DEFINED ${arg_NAME})
+    if(NOT DEFINED arg_NAME)
         message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
     endif()
 
-    if(NOT DEFINED ${arg_CFG_FILE})
+    if(NOT DEFINED arg_CFG_FILE)
         message(FATAL_ERROR "blt_add_uncrustify_target requires a CFG_FILE parameter")
     endif()
 
-    if(NOT DEFINED ${arg_SRC_FILES})
+    if(NOT DEFINED arg_SRC_FILES)
         message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
     endif()
 
@@ -115,7 +115,7 @@ macro(blt_add_uncrustify_target)
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    if(NOT ${arg_MODIFY_FILES} or NOT DEFINED ${arg_MODIFY_FILES})
+    if(NOT DEFINED arg_MODIFY_FILES OR NOT ${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG "--check")
     else()
         set(MODIFY_FILES_FLAG "--no-backup")
@@ -127,11 +127,11 @@ macro(blt_add_uncrustify_target)
             WORKING_DIRECTORY ${_wd} 
             COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
         
-    if(NOT ${arg_MODIFY_FILES} or NOT DEFINED ${arg_MODIFY_FILES})
+    if(NOT DEFINED arg_MODIFY_FILES OR NOT ${arg_MODIFY_FILES})
         # hook our new target into the check dependency chain
         add_dependencies(uncrustify_check ${arg_NAME})
     else()
         add_dependencies(uncrustify_style ${arg_NAME})
     endif()
 
-endmacro(blt_add_uncrustify_check)
+endmacro(blt_add_uncrustify_target)
