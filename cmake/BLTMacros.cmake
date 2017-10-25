@@ -677,7 +677,7 @@ endmacro(blt_append_custom_compiler_flag)
 ## NAMES lists the names of the libraries that will be searched for in the given PATHS.
 ##
 ## If REQUIRED is set to TRUE, BLT will produce an error message if any of the
-## given libraries that are not found.  The default value is TRUE.
+## given libraries are not found.  The default value is TRUE.
 ##
 ## PATH lists the paths in which to search for NAMES. No system paths will be searched.
 ##
