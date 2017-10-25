@@ -62,11 +62,11 @@ endif()
 ## blt_add_uncrustify_target( NAME              <Created Target Name>
 ##                            MODIFY_FILES      [TRUE | FALSE (default)]
 ##                            CFG_FILE          <Uncrustify Configuration File> 
-##                            FLAGS             <Additional Flags to Uncrustify>
+##                            PREPEND_FLAGS     <Additional Flags to Uncrustify>
+##                            APPEND_FLAGS      <Additional Flags to Uncrustify>
 ##                            COMMENT           <Additional Comment for Target Invocation>
 ##                            WORKING_DIRECTORY <Working Directory>
-##                            REDIRECT          <Redirection Command>
-##                            SRC_FILES         [FILE1 | [FILE2 ...]] )
+##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running uncrustify over the given SRC_FILES.
 ##
@@ -76,14 +76,14 @@ endif()
 ##
 ## CFG_FILE defines the uncrustify settings.
 ##
-## FLAGS are additional flags given to uncrustify.
+## PREPEND_FLAGS are additional flags given to added to the front of the uncrustify flags.
+##
+## APPEND_FLAGS are additional flags given to added to the end of the uncrustify flags.
 ##
 ## COMMENT is prepended to the commented outputted by CMake.
 ##
 ## WORKING_DIRECTORY is the directory that uncrustify will be ran.  It defaults to the directory
 ## where this macro is called.
-##
-## REDIRECT is appended to the uncrustify command and allows you to redirect output to a file.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_add_uncrustify_target)
@@ -91,7 +91,7 @@ macro(blt_add_uncrustify_target)
     ## parse the arguments to the macro
     set(options)
     set(singleValueArgs NAME CFG_FILE COMMENT WORKING_DIRECTORY)
-    set(multiValueArgs SRC_FILES FLAGS REDIRECT)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -122,8 +122,8 @@ macro(blt_add_uncrustify_target)
     endif()
 
     add_custom_target(${arg_NAME}
-            COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_FLAGS}
-                -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_REDIRECT}
+            COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
             WORKING_DIRECTORY ${_wd} 
             COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
         
