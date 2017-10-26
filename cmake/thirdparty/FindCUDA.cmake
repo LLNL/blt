@@ -105,9 +105,15 @@
 #      (e.g. calling CUDA_WRAP_SRCS directly),
 #      CUDA_COMPUTE_SEPARABLE_COMPILATION_OBJECT_FILE_NAME and
 #      CUDA_LINK_SEPARABLE_COMPILATION_OBJECTS should be called.
-
+#
+####################
+# BEGIN BLT CHANGE #
+####################
 #   CUDA_LINK_WITH_NVCC (Default OFF)
 #   -- If set this will enable linking with NVCC instead of your host compiler.  
+####################
+# END BLT CHANGE #
+####################
 #
 #   CUDA_SOURCE_PROPERTY_FORMAT
 #   -- If this source file property is set, it can override the format specified
@@ -546,7 +552,13 @@ mark_as_advanced(
   CUDA_BUILD_EMULATION
   CUDA_VERBOSE_BUILD
   CUDA_SEPARABLE_COMPILATION
+  ####################
+  # BEGIN BLT CHANGE #
+  ####################
   CUDA_LINK_WITH_NVCC
+  ####################
+  # END BLT CHANGE #
+  ####################
   )
 
 # Makefile and similar generators don't define CMAKE_CONFIGURATION_TYPES, so we

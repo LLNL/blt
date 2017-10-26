@@ -1,2 +1,0 @@
-========= CUDA-MEMCHECK
-========= ERROR SUMMARY: 0 errors

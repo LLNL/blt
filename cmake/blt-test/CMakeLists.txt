@@ -164,7 +164,7 @@ if(ENABLE_GTEST)
     # CUDA tests
     #################
     if (ENABLE_CUDA)
-        include(blt_device_call_from_kernel/CMakeLists.txt)
+        add_subdirectory(src/test_cuda_device_call_from_kernel)
     endif()
 
 endif() # endif ENABLE_GTEST
