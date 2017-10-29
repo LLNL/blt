@@ -53,8 +53,14 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 ################################
 # Build Options
 ################################
+get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+if(_languages MATCHES "Fortran")
+    set(_fortran_already_enabled TRUE)
+else()
+    set(_fortran_already_enabled FALSE)
+endif()
 option(ENABLE_COPY_HEADERS "Copy headers to build directory" OFF)
-option(ENABLE_FORTRAN      "Enables Fortran compiler support" OFF)
+option(ENABLE_FORTRAN      "Enables Fortran compiler support" ${_fortran_already_enabled})
 option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
