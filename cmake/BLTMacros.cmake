@@ -617,24 +617,27 @@ endmacro(blt_add_benchmark)
 
 ##------------------------------------------------------------------------------
 ## blt_append_custom_compiler_flag( 
-##                    FLAGS_VAR flagsVar     (required)
-##                    DEFAULT   defaultFlag  (optional)
-##                    GNU       gnuFlag      (optional)
-##                    CLANG     clangFlag    (optional)
-##                    INTEL     intelFlag    (optional)
-##                    XL        xlFlag       (optional)
-##                    MSVC      msvcFlag     (optional)
+##                    FLAGS_VAR  flagsVar       (required)
+##                    DEFAULT    defaultFlag    (optional)
+##                    GNU        gnuFlag        (optional)
+##                    CLANG      clangFlag      (optional)
+##                    INTEL      intelFlag      (optional)
+##                    XL         xlFlag         (optional)
+##                    MSVC       msvcFlag       (optional)
+##                    MSVC_INTEL msvcIntelFlag  (optional)
 ## )
 ##
 ## Appends compiler-specific flags to a given variable of flags
 ##
-## If a custom flag is given for the current compiler, we use that,
+## If a custom flag is given for the current compiler, we use that.
 ## Otherwise, we will use the DEFAULT flag (if present)
+## When using the Intel toolchain within visual studio, we use the 
+## MSVC_INTEL flag, when provided, with a fallback to the MSVC flag.
 ##------------------------------------------------------------------------------
 macro(blt_append_custom_compiler_flag)
 
    set(options)
-   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG INTEL XL MSVC)
+   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG INTEL XL MSVC MSVC_INTEL)
    set(multiValueArgs)
 
    # Parse the arguments
@@ -655,7 +658,9 @@ macro(blt_append_custom_compiler_flag)
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_INTEL} " )
    elseif( DEFINED arg_GNU AND COMPILER_FAMILY_IS_GNU )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_GNU} " )
-   elseif( DEFINED arg_MSVC AND COMPILER_FAMILY_IS_MSVC )
+   elseif( DEFINED arg_MSVC_INTEL AND COMPILER_FAMILY_IS_MSVC_INTEL )
+      set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC_INTEL} " )
+   elseif( DEFINED arg_MSVC AND (COMPILER_FAMILY_IS_MSVC OR COMPILER_FAMILY_IS_MSVC_INTEL) )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC} " )
    elseif( DEFINED arg_DEFAULT )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_DEFAULT} ")
