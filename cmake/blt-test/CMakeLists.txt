@@ -160,4 +160,11 @@ if(ENABLE_GTEST)
 
     endif() # endif Git_FOUND
 
+    ################
+    # CUDA tests
+    #################
+    if (ENABLE_CUDA)
+        add_subdirectory(src/test_cuda_device_call_from_kernel)
+    endif()
+
 endif() # endif ENABLE_GTEST
