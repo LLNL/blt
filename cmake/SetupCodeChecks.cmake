@@ -57,6 +57,109 @@ if(UNCRUSTIFY_FOUND)
     add_dependencies(style uncrustify_style)
 endif()
 
+##------------------------------------------------------------------------------
+## blt_add_code_checks( BASE_NAME           <Base name used for created targets>
+##                      SOURCES             [source1 [source2 ...]]
+##                      C_FILE_EXTS         [ext1 [ext2 ...]]
+##                      F_FILE_EXTS         [ext1 [ext2 ...]]
+##                      UNCRUSTIFY_CFG_FILE <path to uncrustify config file>)
+##
+## This macro adds all enabled code check targets for the given SOURCES. It
+## filters based on file extensions.
+##
+## C_FILE_EXTS is an optional list of file extensions to filter out the C/C++ SOURCES.
+## Otherwise it defaults to the list below.
+##
+## F_FILE_EXTS is an optional list of file extensions to filter out the Fortran SOURCES.
+## Otherwise it defaults to the list below.
+##
+## UNCRUSTIFY_CFG_FILE is the configuration file for Uncrustify. If UNCRUSTIFY_EXECUTABLE
+## is defined, found, and UNCRUSTIFY_CFG_FILE is defined it will create both check and
+## style function for the given C/C++ files.
+##
+## Repeated calls to this macro with the same BASE_NAME creates numbered targets.
+## For example: ${BASE_NAME}_uncrustify_check, ${BASE_NAME}_uncrustify_check_1, ...
+##------------------------------------------------------------------------------
+
+macro(blt_add_code_checks)
+
+    set(options )
+    set(singleValueArgs BASE_NAME UNCRUSTIFY_CFG_FILE)
+    set(multiValueArgs SOURCES C_FILE_EXTS F_FILE_EXTS)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if (NOT DEFINED arg_BASE_NAME)
+        message(FATAL_ERROR "blt_add_code_checks requires the parameter BASE_NAME.")
+    endif()
+
+    if (NOT DEFINED arg_SOURCES)
+        message(FATAL_ERROR "blt_add_code_checks requires the parameter SOURCES.")
+    endif()
+
+    # Setup default parameters
+    if (NOT DEFINED arg_C_FILE_EXTS)
+        set(arg_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh")
+    endif()
+    if (NOT DEFINED arg_F_FILE_EXTS)
+        set(arg_F_FILE_EXTS ".F" ".f" ".f90")
+    endif()
+
+    # Generate source lists based on language
+    set(_c_sources)
+    set(_f_sources)
+    foreach(_file ${arg_SOURCES})
+        # Get full path
+        if(IS_ABSOLUTE ${_file})
+            set(_full_path ${_file})
+        else()
+            set(_full_path ${CMAKE_CURRENT_SOURCE_DIR}/${_file})
+        endif()
+
+        get_filename_component(_ext ${_full_path} EXT)
+        file(RELATIVE_PATH _relpath ${CMAKE_BINARY_DIR} ${_full_path})
+
+        if(${_ext} IN_LIST arg_C_FILE_EXTS)
+            list(APPEND _c_sources ${_relpath})
+        elseif(${_ext} IN_LIST arg_F_FILE_EXTS)
+            list(APPEND _f_sources ${_relpath})
+        else()
+            message(FATAL_ERROR "blt_add_code_checks given source file with unknown file extension.")
+        endif()
+    endforeach()
+
+    # Add code checks
+    if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
+        # Find unused name
+        if (NOT DEFINED BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX)
+            set(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX "0" CACHE STRING "")
+            set(_check_target_name ${arg_BASE_NAME}_uncrustify_check)
+            set(_style_target_name ${arg_BASE_NAME}_uncrustify_style)
+        else()
+            math(EXPR _new_index "${BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX}+1")
+            set(_check_target_name ${arg_BASE_NAME}_uncrustify_check_${_new_index})
+            set(_style_target_name ${arg_BASE_NAME}_uncrustify_style_${_new_index})
+            set(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX ${_new_index} CACHE STRING "" FORCE)
+        endif()
+
+        blt_add_uncrustify_target( NAME              ${_check_target_name}
+                                   MODIFY_FILES      FALSE
+                                   CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
+                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                   SRC_FILES         ${_c_sources} )
+        add_dependencies(uncrustify_check ${_check_target_name})
+
+        blt_add_uncrustify_target( NAME              ${_style_target_name}
+                                   MODIFY_FILES      TRUE
+                                   CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
+                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                   SRC_FILES         ${_c_sources} )
+        add_dependencies(uncrustify_style ${_style_target_name})
+    endif()
+
+endmacro(blt_add_code_checks)
+
 
 ##------------------------------------------------------------------------------
 ## blt_add_uncrustify_target( NAME              <Created Target Name>
@@ -90,7 +193,7 @@ macro(blt_add_uncrustify_target)
     
     ## parse the arguments to the macro
     set(options)
-    set(singleValueArgs NAME CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
     set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
 
     cmake_parse_arguments(arg
@@ -109,16 +212,20 @@ macro(blt_add_uncrustify_target)
         message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
     endif()
 
-    if(${arg_WORKING_DIRECTORY})
+    if(NOT DEFINED arg_MODIFY_FILES)
+        set(arg_MODIFY_FILES FALSE)
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
         set(_wd ${arg_WORKING_DIRECTORY})
     else()
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    if(NOT DEFINED arg_MODIFY_FILES OR NOT ${arg_MODIFY_FILES})
-        set(MODIFY_FILES_FLAG "--check")
-    else()
+    if(${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG "--no-backup")
+    else()
+        set(MODIFY_FILES_FLAG "--check")
     endif()
 
     add_custom_target(${arg_NAME}
@@ -127,11 +234,11 @@ macro(blt_add_uncrustify_target)
             WORKING_DIRECTORY ${_wd} 
             COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
         
-    if(NOT DEFINED arg_MODIFY_FILES OR NOT ${arg_MODIFY_FILES})
-        # hook our new target into the check dependency chain
-        add_dependencies(uncrustify_check ${arg_NAME})
-    else()
+    # hook our new target into the proper dependency chain
+    if(${arg_MODIFY_FILES})
         add_dependencies(uncrustify_style ${arg_NAME})
+    else()
+        add_dependencies(uncrustify_check ${arg_NAME})
     endif()
 
 endmacro(blt_add_uncrustify_target)
