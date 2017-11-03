@@ -68,13 +68,13 @@ endif()
 ## filters based on file extensions.
 ##
 ## C_FILE_EXTS is an optional list of file extensions to filter out the C/C++ SOURCES.
-## Otherwise it defaults to the list below.
+## Otherwise it defaults to: ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh"
 ##
 ## F_FILE_EXTS is an optional list of file extensions to filter out the Fortran SOURCES.
-## Otherwise it defaults to the list below.
+## Otherwise it defaults to: ".F" ".f" ".f90" ".F90"
 ##
 ## UNCRUSTIFY_CFG_FILE is the configuration file for Uncrustify. If UNCRUSTIFY_EXECUTABLE
-## is defined, found, and UNCRUSTIFY_CFG_FILE is defined it will create both check and
+## is defined, found, and UNCRUSTIFY_CFG_FILE is provided it will create both check and
 ## style function for the given C/C++ files.
 ##
 ## Repeated calls to this macro with the same BASE_NAME creates numbered targets.
@@ -103,7 +103,7 @@ macro(blt_add_code_checks)
         set(arg_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh")
     endif()
     if (NOT DEFINED arg_F_FILE_EXTS)
-        set(arg_F_FILE_EXTS ".F" ".f" ".f90")
+        set(arg_F_FILE_EXTS ".F" ".f" ".f90" ".F90")
     endif()
 
     # Generate source lists based on language
@@ -133,7 +133,9 @@ macro(blt_add_code_checks)
     if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
         # Find unused name
         if (NOT DEFINED BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX)
-            set(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX "0" CACHE STRING "")
+            set(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX "0" CACHE STRING
+                "Internal BLT variable used for avoiding duplicate targets in blt_add_code_checks")
+            mark_as_advanced(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX)
             set(_check_target_name ${arg_BASE_NAME}_uncrustify_check)
             set(_style_target_name ${arg_BASE_NAME}_uncrustify_style)
         else()
