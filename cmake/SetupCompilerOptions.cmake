@@ -72,7 +72,12 @@ endif()
 if("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)")
     set(COMPILER_FAMILY_IS_MSVC 1)
     message(STATUS "Compiler family is MSVC")
-
+    
+    if(CMAKE_GENERATOR_TOOLSET AND "${CMAKE_GENERATOR_TOOLSET}" MATCHES "Intel")
+        set(COMPILER_FAMILY_IS_MSVC_INTEL 1) 
+        message(STATUS "Toolset is ${CMAKE_GENERATOR_TOOLSET}")
+    endif()
+    
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(COMPILER_FAMILY_IS_GNU 1)
     message(STATUS "Compiler family is GNU")
@@ -90,6 +95,8 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     message(STATUS "Compiler family is Intel")
 
 endif()
+
+
 
 
 ################################################
@@ -263,17 +270,17 @@ message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected")
 
 blt_append_custom_compiler_flag(
     FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_FLAG
-     DEFAULT "-Wall -Wextra"
-     CLANG   "-Wall -Wextra" 
-                    # Additional  possibilities for clang include: 
-                    #       "-Wdocumentation -Wdeprecated -Weverything"
-     MSVC    "/W4"
-                    # Additional  possibilities for visual studio include:
-                    # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
-     XL      ""     # qinfo=<grp> produces additional messages on XL
-                    # qflag=<x>:<x> defines min severity level to produce messages on XL
-                    #     where x is i info, w warning, e error, s severe; default is: 
-                    # (default is  qflag=i:i)
+     DEFAULT    "-Wall -Wextra"
+     CLANG      "-Wall -Wextra" 
+                       # Additional  possibilities for clang include: 
+                       #       "-Wdocumentation -Wdeprecated -Weverything"
+     MSVC       "/W4"
+                       # Additional  possibilities for visual studio include:
+                       # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
+     XL         ""     # qinfo=<grp> produces additional messages on XL
+                       # qflag=<x>:<x> defines min severity level to produce messages on XL
+                       #     where x is i info, w warning, e error, s severe; default is: 
+                       # (default is  qflag=i:i)
      )
 
 blt_append_custom_compiler_flag(
