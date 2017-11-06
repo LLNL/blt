@@ -95,6 +95,12 @@ endif()
 
 
 ################################
+# Generator Options
+################################
+option(ENABLE_FOLDERS "Organize projects using folders (in generators that support this)" OFF)
+
+
+################################
 # Advanced configuration options
 ################################
 

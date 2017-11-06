@@ -116,6 +116,49 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
+## blt_set_target_folder (TO <target> NAME <name>)
+##
+## Sets the FOLDER property of cmake target <target> to <name>.
+##
+## This feature is only available when blt's ENABLE_FOLDERS option is ON and 
+## in cmake generators that support folders (but is safe to call regardless
+## of the generator or value of ENABLE_FOLDERS).
+##
+## Note: Do not use this macro on header-only (INTERFACE) library targets, since 
+## this will generate a cmake configuration error.
+##------------------------------------------------------------------------------
+macro(blt_set_target_folder)
+
+    set(options)
+    set(singleValuedArgs TO NAME)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
+
+    ## check for required arguments
+    if(NOT DEFINED arg_TO)
+        message(FATAL_ERROR "TO is a required parameter for blt_set_target_folder macro")
+    endif()
+
+    if(NOT TARGET ${arg_TO})
+        message(FATAL_ERROR "Target ${arg_TO} passed to blt_set_target_folder is not a valid cmake target")
+    endif()
+
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "NAME is a required parameter for blt_set_target_folder macro")
+    endif()
+
+    ## set the folder property for this target
+    if(ENABLE_FOLDERS AND NOT "${arg_NAME}" STREQUAL "")
+        set_property(TARGET ${arg_TO} PROPERTY FOLDER "${arg_NAME}")
+    endif()
+
+endmacro(blt_set_target_folder)
+
+
+##------------------------------------------------------------------------------
 ## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
@@ -260,6 +303,7 @@ endmacro(blt_register_library)
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
 ##                  SHARED [TRUE | FALSE]
+##                  FOLDER [name]
 ##                 )
 ##
 ## Adds a library target, called <libname>, to be built from the given sources.
@@ -287,10 +331,15 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
+## FOLDER is an optional keyword to organize the target into a folder in an IDE.
+## This is available when ENABLE_FOLDERS is ON and when the cmake generator
+## supports this feature and will otherwise be ignored. 
+## Note: Do not use with header-only (INTERFACE)libraries, as this will generate 
+## a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED FOLDER)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
     # parse the arguments
@@ -401,6 +450,11 @@ macro(blt_add_library)
             PREFIX "" )
     endif()
 
+    # Handle optional FOLDER keyword for this target
+    if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
+        blt_set_target_folder(TO ${arg_NAME} NAME "${arg_FOLDER}")
+    endif()
+
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
 
 endmacro(blt_add_library)
@@ -410,6 +464,7 @@ endmacro(blt_add_library)
 ##                     SOURCES [source1 [source2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
 ##                     OUTPUT_DIR [dir])
+##                     FOLDER [name]
 ##
 ## Adds an executable target, called <name>.
 ##
@@ -423,11 +478,14 @@ endmacro(blt_add_library)
 ## If the first entry in SOURCES is a Fortran source file, the fortran linker 
 ## is used. (via setting the CMake target property LINKER_LANGUAGE to Fortran )
 ##
+## FOLDER is an optional keyword to organize the target into a folder in an IDE.
+## This is available when ENABLE_FOLDERS is ON and when using a cmake generator
+## that supports this feature and will otherwise be ignored.
 ##------------------------------------------------------------------------------
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR)
+    set(singleValueArgs NAME OUTPUT_DIR FOLDER)
     set(multiValueArgs SOURCES DEPENDS_ON)
 
     # Parse the arguments to the macro
@@ -470,6 +528,11 @@ macro(blt_add_executable)
     if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
            set_target_properties(${arg_NAME} PROPERTIES
            RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
+    endif()
+
+    # Handle optional FOLDER keyword for this target
+    if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
+        blt_set_target_folder(TO ${arg_NAME} NAME "${arg_FOLDER}")
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
