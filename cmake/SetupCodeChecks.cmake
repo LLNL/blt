@@ -58,7 +58,7 @@ if(UNCRUSTIFY_FOUND)
 endif()
 
 ##------------------------------------------------------------------------------
-## blt_add_code_checks( BASE_NAME           <Base name used for created targets>
+## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
 ##                      C_FILE_EXTS         [ext1 [ext2 ...]]
 ##                      F_FILE_EXTS         [ext1 [ext2 ...]]
@@ -66,6 +66,9 @@ endif()
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
 ## filters based on file extensions.
+##
+## PREFIX is used in the creation of all the underlying targets. For example:
+## <PREFIX>_uncrustify_check.
 ##
 ## C_FILE_EXTS is an optional list of file extensions to filter out the C/C++ SOURCES.
 ## Otherwise it defaults to: ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh"
@@ -77,21 +80,19 @@ endif()
 ## is defined, found, and UNCRUSTIFY_CFG_FILE is provided it will create both check and
 ## style function for the given C/C++ files.
 ##
-## Repeated calls to this macro with the same BASE_NAME creates numbered targets.
-## For example: ${BASE_NAME}_uncrustify_check, ${BASE_NAME}_uncrustify_check_1, ...
 ##------------------------------------------------------------------------------
 
 macro(blt_add_code_checks)
 
     set(options )
-    set(singleValueArgs BASE_NAME UNCRUSTIFY_CFG_FILE)
+    set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE)
     set(multiValueArgs SOURCES C_FILE_EXTS F_FILE_EXTS)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if (NOT DEFINED arg_BASE_NAME)
-        message(FATAL_ERROR "blt_add_code_checks requires the parameter BASE_NAME.")
+    if (NOT DEFINED arg_PREFIX)
+        message(FATAL_ERROR "blt_add_code_checks requires the parameter PREFIX.")
     endif()
 
     if (NOT DEFINED arg_SOURCES)
@@ -131,18 +132,15 @@ macro(blt_add_code_checks)
 
     # Add code checks
     if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
-        # Find unused name
-        if (NOT DEFINED BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX)
-            set(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX "0" CACHE STRING
-                "Internal BLT variable used for avoiding duplicate targets in blt_add_code_checks")
-            mark_as_advanced(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX)
-            set(_check_target_name ${arg_BASE_NAME}_uncrustify_check)
-            set(_style_target_name ${arg_BASE_NAME}_uncrustify_style)
-        else()
-            math(EXPR _new_index "${BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX}+1")
-            set(_check_target_name ${arg_BASE_NAME}_uncrustify_check_${_new_index})
-            set(_style_target_name ${arg_BASE_NAME}_uncrustify_style_${_new_index})
-            set(BLT_${arg_BASE_NAME}_UNCRUSTIFY_INDEX ${_new_index} CACHE STRING "" FORCE)
+        set(_check_target_name ${arg_PREFIX}_uncrustify_check)
+        if (TARGET ${_check_target_name})
+            message(FATAL_ERROR "blt_add_code_checks tried to create an already existing target with "
+                                "given PREFIX. Duplicate target name: ${_check_target_name}")
+        endif()
+        set(_style_target_name ${arg_PREFIX}_uncrustify_style)
+        if (TARGET ${_style_target_name})
+            message(FATAL_ERROR "blt_add_code_checks tried to create an already existing target with "
+                                "given PREFIX. Duplicate target name: ${_style_target_name}")
         endif()
 
         blt_add_uncrustify_target( NAME              ${_check_target_name}
