@@ -43,7 +43,7 @@
 if(ENABLE_TESTS)
     include(CTest)
 
-    set(_blt_thirdparty)
+    set(_blt_tpl_targets) # tracks names of enabled tpl targets
 
     if(WIN32 AND BUILD_SHARED_LIBS)
         add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
@@ -118,7 +118,7 @@ if(ENABLE_TESTS)
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
 
-        list(APPEND _blt_thirdparty gtest gtest_main)
+        list(APPEND _blt_tpl_targets gtest gtest_main)
 
         if(ENABLE_GMOCK)
             blt_register_library(NAME gmock
@@ -128,7 +128,7 @@ if(ENABLE_TESTS)
                                  DEFINES  ${gtest_defines}
                                  TREAT_INCLUDES_AS_SYSTEM ON
                                  )
-            list(APPEND _blt_thirdparty gmock gmock_main)
+            list(APPEND _blt_tpl_targets gmock gmock_main)
         endif()
     endif()
 
@@ -138,7 +138,7 @@ if(ENABLE_TESTS)
         if(ENABLE_FRUIT)
             add_subdirectory(fruit-3.4.1
                              ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.1)
-            list(APPEND _blt_thirdparty fruit)
+            list(APPEND _blt_tpl_targets fruit)
         endif()
     endif()
 
@@ -161,7 +161,7 @@ if(ENABLE_TESTS)
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
 
-        list(APPEND _blt_thirdparty benchmark)
+        list(APPEND _blt_tpl_targets benchmark)
 
         # This sets up a target to run the benchmarks
         add_custom_target(run_benchmarks 
@@ -172,7 +172,7 @@ if(ENABLE_TESTS)
 
     # Set the folder property of the blt thirdparty libraries 
     if(ENABLE_FOLDERS)
-        foreach(tpl ${_blt_thirdparty})
+        foreach(tpl ${_blt_tpl_targets})
             blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
         endforeach()
     endif()
