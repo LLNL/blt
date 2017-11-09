@@ -116,9 +116,9 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
-## blt_set_target_folder (TO <target> NAME <name>)
+## blt_set_target_folder (TARGET <target> FOLDER <folder>)
 ##
-## Sets the FOLDER property of cmake target <target> to <name>.
+## Sets the folder property of cmake target <target> to <folder>.
 ##
 ## This feature is only available when blt's ENABLE_FOLDERS option is ON and 
 ## in cmake generators that support folders (but is safe to call regardless
@@ -130,7 +130,7 @@ endmacro(blt_add_target_compile_flags)
 macro(blt_set_target_folder)
 
     set(options)
-    set(singleValuedArgs TO NAME)
+    set(singleValuedArgs TARGET FOLDER)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
@@ -138,21 +138,21 @@ macro(blt_set_target_folder)
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
     ## check for required arguments
-    if(NOT DEFINED arg_TO)
-        message(FATAL_ERROR "TO is a required parameter for blt_set_target_folder macro")
+    if(NOT DEFINED arg_TARGET)
+        message(FATAL_ERROR "TARGET is a required parameter for blt_set_target_folder macro")
     endif()
 
-    if(NOT TARGET ${arg_TO})
-        message(FATAL_ERROR "Target ${arg_TO} passed to blt_set_target_folder is not a valid cmake target")
+    if(NOT TARGET ${arg_TARGET})
+        message(FATAL_ERROR "Target ${arg_TARGET} passed to blt_set_target_folder is not a valid cmake target")
     endif()
 
-    if(NOT DEFINED arg_NAME)
-        message(FATAL_ERROR "NAME is a required parameter for blt_set_target_folder macro")
+    if(NOT DEFINED arg_FOLDER)
+        message(FATAL_ERROR "FOLDER is a required parameter for blt_set_target_folder macro")
     endif()
 
     ## set the folder property for this target
-    if(ENABLE_FOLDERS AND NOT "${arg_NAME}" STREQUAL "")
-        set_property(TARGET ${arg_TO} PROPERTY FOLDER "${arg_NAME}")
+    if(ENABLE_FOLDERS AND NOT "${arg_FOLDER}" STREQUAL "")
+        set_property(TARGET ${arg_TARGET} PROPERTY FOLDER "${arg_FOLDER}")
     endif()
 
 endmacro(blt_set_target_folder)
@@ -452,7 +452,7 @@ macro(blt_add_library)
 
     # Handle optional FOLDER keyword for this target
     if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
-        blt_set_target_folder(TO ${arg_NAME} NAME "${arg_FOLDER}")
+        blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
@@ -532,7 +532,7 @@ macro(blt_add_executable)
 
     # Handle optional FOLDER keyword for this target
     if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
-        blt_set_target_folder(TO ${arg_NAME} NAME "${arg_FOLDER}")
+        blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )

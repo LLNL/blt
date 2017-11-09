@@ -173,7 +173,7 @@ if(ENABLE_TESTS)
     # Set the folder property of the blt thirdparty libraries 
     if(ENABLE_FOLDERS)
         foreach(tpl ${_blt_thirdparty})
-            blt_set_target_folder(TO ${tpl} NAME blt/thirdparty)
+            blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
         endforeach()
     endif()
 
