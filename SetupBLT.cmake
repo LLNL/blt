@@ -82,6 +82,14 @@ if (NOT BLT_LOADED)
   endif()
 
   ################################
+  # Enable cmake generator folder feature
+  # if ENABLE_FOLDERS == ON
+  ################################
+  if(ENABLE_FOLDERS)
+      set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+  endif()
+
+  ################################
   # Macros
   ################################
   include(${BLT_ROOT_DIR}/cmake/BLTMacros.cmake)
