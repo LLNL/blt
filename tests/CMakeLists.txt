@@ -93,7 +93,7 @@ endif()
 ################
 if (ENABLE_FORTRAN AND ENABLE_FRUIT)
     blt_add_executable(NAME blt_fruit_smoke
-                       SOURCES blt_fruit_smoke.f
+                       SOURCES blt_fruit_smoke.f90
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
                        DEPENDS_ON fruit
                        FOLDER blt/tests )

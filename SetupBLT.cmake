@@ -75,7 +75,7 @@ if (NOT BLT_LOADED)
   endif()
 
   ################################
-  # Enable ctest support 
+  # Enable ctest support
   ################################
   if(ENABLE_TESTS)
       enable_testing()
