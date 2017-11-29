@@ -42,8 +42,10 @@
 #ifndef _EXAMPLE_HPP_
 #define _EXAMPLE_HPP_
 
+#include "Example_Exports.h"
+
 //------------------------------------------------------------------------------
-class Example
+class EXAMPLE_API Example
 {
   public:
      Example();
