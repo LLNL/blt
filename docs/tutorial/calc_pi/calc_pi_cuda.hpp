@@ -10,13 +10,13 @@
 
 #ifndef CALC_PI_CUDA_HPP
 #define CALC_PI_CUDA_HPP
-
+#include "calc_pi_cuda_exports.h"
 ///
 /// \brief calculate pi using cuda 
 ///
 ///  Estimate pi by integrating f(x) = 4/(1+x^2) from 0 to 1 using 
 ///  numerical integration over a given number of intervals.
 ///
-double calc_pi_cuda(int num_intervals);
+double CALC_PI_CUDA_API calc_pi_cuda(int num_intervals);
 
 #endif

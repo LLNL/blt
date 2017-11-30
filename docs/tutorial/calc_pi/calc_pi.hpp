@@ -10,13 +10,13 @@
 
 #ifndef CALC_PI_HPP
 #define CALC_PI_HPP
-
+#include "calc_pi_exports.h"
 ///
 /// \brief calculate pi 
 ///
 ///  Estimate pi by integrating f(x) = 4/(1+x^2) from 0 to 1 using 
 ///  numerical integration over a given number of intervals.
 /// 
-double calc_pi(int num_intervals);
+double CALC_PI_API calc_pi(int num_intervals);
 
 #endif
