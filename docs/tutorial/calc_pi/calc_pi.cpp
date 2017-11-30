@@ -7,7 +7,7 @@
 // Adapted from:
 //  https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html
 ///////////////////////////////////////////////////////////////////////////////
-
+#include "calc_pi.hpp"
 // -- calculate pi via simple integration  -- //
 double calc_pi(int num_intervals)
 {

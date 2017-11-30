@@ -59,6 +59,10 @@ endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
+if(WIN32 AND ENABLE_SHARED_LIBS)
+    add_definitions("-DWIN32_SHARED_LIBS")
+endif()
+
 ################################
 # Add a library
 ################################

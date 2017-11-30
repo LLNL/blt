@@ -64,7 +64,7 @@ Creating an executable is as simple as calling the following macro:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 24-25
+   :lines: 28-29
 
 This tells CMake to create an executable named ``example_1`` with one source file (``example_1.cpp``).
 
@@ -101,7 +101,7 @@ First, we create the library with the following BLT code:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 32-34
+   :lines: 36-38
 
 Just like before, this creates a CMake library target that will get built to ``<build dir>/lib/libcalc_pi.a``.
 
@@ -109,7 +109,7 @@ Next, we create an executable named ``example_2`` and link in the previously cre
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 37-39
+   :lines: 41-43
 
 The ``DEPENDS_ON`` parameter properly links the previously defined library into this executable without any
 more work or CMake function calls.
