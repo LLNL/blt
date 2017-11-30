@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "mpi.h"
-
+#include "calc_pi_mpi.hpp"
 // -- calculate pi via simple integration  -- //
 double calc_pi_mpi(int num_intervals)
 {
