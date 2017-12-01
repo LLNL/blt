@@ -101,7 +101,7 @@ macro(blt_add_code_checks)
 
     # Setup default parameters
     if (NOT DEFINED arg_C_FILE_EXTS)
-        set(arg_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh")
+        set(arg_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh" ".inl")
     endif()
     if (NOT DEFINED arg_F_FILE_EXTS)
         set(arg_F_FILE_EXTS ".F" ".f" ".f90" ".F90")
