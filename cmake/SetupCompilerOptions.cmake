@@ -167,6 +167,14 @@ if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
     endforeach(flag_var)
 endif()
 
+################################################
+# Support extra linker flags
+################################################
+if(BLT_EXE_LINKER_FLAGS)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${BLT_EXE_LINKER_FLAGS}")
+    message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
+endif()
+
 
 ###############################################################
 # Support Extra Flags based on CMake Config Type
