@@ -86,6 +86,10 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
     set(COMPILER_FAMILY_IS_CLANG 1)
     message(STATUS "Compiler family is Clang")
     
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "HCC") # For ROCm
+    set(COMPILER_FAMILY_IS_HCC 1)
+    message(STATUS "Compiler family is HCC Clang")
+    
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
     set(COMPILER_FAMILY_IS_XL 1)
     message(STATUS "Compiler family is XL")
