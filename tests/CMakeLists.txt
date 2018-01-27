@@ -174,7 +174,7 @@ if (ENABLE_ROCM)
     blt_add_executable(NAME blt_rocm_runtime_smoke
                        SOURCES blt_rocm_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON gtest
+                       DEPENDS_ON rocm gtest
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_rocm_runtime_smoke
