@@ -158,3 +158,28 @@ if (ENABLE_CUDA)
 
 endif()
 
+################
+#  ROCM test
+################
+if (ENABLE_ROCM)
+    blt_add_executable(NAME blt_rocm_smoke
+                       SOURCES blt_rocm_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                       DEPENDS_ON rocm gtest
+                       FOLDER blt/tests )
+
+    blt_add_test(NAME blt_rocm_smoke
+                 COMMAND blt_rocm_smoke)
+
+    blt_add_executable(NAME blt_rocm_runtime_smoke
+                       SOURCES blt_rocm_runtime_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                       DEPENDS_ON gtest
+                       FOLDER blt/tests )
+
+    blt_add_test(NAME blt_rocm_runtime_smoke
+                 COMMAND blt_rocm_runtime_smoke)
+
+
+endif()
+

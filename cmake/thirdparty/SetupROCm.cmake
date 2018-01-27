@@ -53,10 +53,10 @@ if (ENABLE_ROCM)
         set(ROCMEXEC ${HCC_COMPILER})
 
 
-        message(STATUS "ROCM  Compile Flags:  ${ROCM_C_COMPILE_FLAGS}")
-        message(STATUS "ROCM  Include Path:   ${ROCM_C_INCLUDE_PATH}")
-        message(STATUS "ROCM  Link Flags:     ${ROCM_C_LINK_FLAGS}")
-        message(STATUS "ROCM  Libraries:      ${ROCM_C_LIBRARIES}")
+        message(STATUS "ROCM  Compile Flags:  ${ROCM_COMPILE_FLAGS}")
+        message(STATUS "ROCM  Include Path:   ${ROCM_INCLUDE_PATH}")
+        message(STATUS "ROCM  Link Flags:     ${ROCM_LINK_FLAGS}")
+        message(STATUS "ROCM  Libraries:      ${ROCM_LIBRARIES}")
 
         if (ENABLE_FORTRAN)
              message(ERROR "ROCM does not support Fortran at this time")
@@ -71,10 +71,10 @@ endif()
 
 # register ROCM with blt
 blt_register_library(NAME rocm
-                     INCLUDES ${ROCM_C_INCLUDE_PATH}  
-                     LIBRARIES ${ROCM_C_LIBRARIES}  
-                     COMPILE_FLAGS ${ROCM_C_COMPILE_FLAGS}
-                     LINK_FLAGS    ${ROCM_C_LINK_FLAGS} 
+                     INCLUDES ${ROCM_CXX_INCLUDE_PATH}  
+                     LIBRARIES ${ROCM_CXX_LIBRARIES}  
+                     COMPILE_FLAGS ${ROCM_CXX_COMPILE_FLAGS}
+                     LINK_FLAGS    ${ROCM_CXX_LINK_FLAGS} 
                      DEFINES USE_ROCM)
 
 

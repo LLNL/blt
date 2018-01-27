@@ -284,6 +284,7 @@ blt_append_custom_compiler_flag(
     FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_FLAG
      DEFAULT    "-Wall -Wextra"
      CLANG      "-Wall -Wextra" 
+     HCC        "-Wall" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
      MSVC       "/W4"
