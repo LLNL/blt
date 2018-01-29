@@ -80,7 +80,7 @@ registered dependency in test_1:  ``gtest``
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 41-47
+   :lines: 45-51
 
 
 ``gtest`` is the name for the google test dependency in BLT registered via ``blt_register_library``.
@@ -105,7 +105,7 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 51-68
+   :lines: 55-72
 
 
 For MPI unit tests, you also need to specify the number of MPI Tasks
@@ -113,7 +113,7 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test`` macro.
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 69-71
+   :lines: 73-75
 
 
 
@@ -143,7 +143,7 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 74-94
+   :lines: 78-97
 
 
 The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, in that 

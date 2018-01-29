@@ -43,6 +43,8 @@
 if(ENABLE_TESTS)
     include(CTest)
 
+    set(_blt_tpl_targets) # tracks names of enabled tpl targets
+
     if(WIN32 AND BUILD_SHARED_LIBS)
         add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
         list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
@@ -103,18 +105,31 @@ if(ENABLE_TESTS)
         add_subdirectory(googletest-release-1.8.0 
                          ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-release-1.8.0 )
 
+        if(UNIX AND NOT APPLE)
+            find_package( Threads )
+            set(gtest_extra_libs ${CMAKE_THREAD_LIBS_INIT})
+        endif()
+
         blt_register_library(NAME gtest
                              INCLUDES ${gtest_SOURCE_DIR}/include
-                             LIBRARIES gtest_main gtest
+                             LIBRARIES gtest_main gtest ${gtest_extra_libs}
                              COMPILE_FLAGS ${gtest_extra_flags}
-                             DEFINES  ${gtest_defines})
-         if(ENABLE_GMOCK)
-             blt_register_library(NAME gmock
-                                  INCLUDES ${gmock_SOURCE_DIR}/include
-                                  LIBRARIES gmock_main gmock
-                                  COMPILE_FLAGS ${gtest_extra_flags}
-                                  DEFINES  ${gtest_defines})
-         endif()
+                             DEFINES  ${gtest_defines}
+                             TREAT_INCLUDES_AS_SYSTEM ON
+                             )
+
+        list(APPEND _blt_tpl_targets gtest gtest_main)
+
+        if(ENABLE_GMOCK)
+            blt_register_library(NAME gmock
+                                 INCLUDES ${gmock_SOURCE_DIR}/include
+                                 LIBRARIES gmock_main gmock
+                                 COMPILE_FLAGS ${gtest_extra_flags}
+                                 DEFINES  ${gtest_defines}
+                                 TREAT_INCLUDES_AS_SYSTEM ON
+                                 )
+            list(APPEND _blt_tpl_targets gmock gmock_main)
+        endif()
     endif()
 
     # Enable Fruit (FortRan UnIT testing) support
@@ -123,6 +138,7 @@ if(ENABLE_TESTS)
         if(ENABLE_FRUIT)
             add_subdirectory(fruit-3.4.1
                              ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.1)
+            list(APPEND _blt_tpl_targets fruit)
         endif()
     endif()
 
@@ -142,7 +158,10 @@ if(ENABLE_TESTS)
         blt_register_library(NAME gbenchmark
                              INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
                              LIBRARIES benchmark ${RT_LIBRARIES}
+                             TREAT_INCLUDES_AS_SYSTEM ON
                              )
+
+        list(APPEND _blt_tpl_targets benchmark)
 
         # This sets up a target to run the benchmarks
         add_custom_target(run_benchmarks 
@@ -150,4 +169,12 @@ if(ENABLE_TESTS)
                           WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
                           )
     endif()
+
+    # Set the folder property of the blt thirdparty libraries 
+    if(ENABLE_FOLDERS)
+        foreach(tpl ${_blt_tpl_targets})
+            blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
+        endforeach()
+    endif()
+
 endif()

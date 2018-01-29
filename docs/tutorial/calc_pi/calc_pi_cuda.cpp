@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
-
+#include "calc_pi_cuda.hpp"
 const int block_size = 512;
 
 // -- helper for calcing number of blocks to launch -- //

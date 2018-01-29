@@ -123,5 +123,6 @@ The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 o
     unit_testing
     external_dependencies
     creating_documentation
+    recommendations
 
 

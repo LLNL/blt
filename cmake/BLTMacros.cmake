@@ -116,6 +116,49 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
+## blt_set_target_folder (TARGET <target> FOLDER <folder>)
+##
+## Sets the folder property of cmake target <target> to <folder>.
+##
+## This feature is only available when blt's ENABLE_FOLDERS option is ON and 
+## in cmake generators that support folders (but is safe to call regardless
+## of the generator or value of ENABLE_FOLDERS).
+##
+## Note: Do not use this macro on header-only (INTERFACE) library targets, since 
+## this will generate a cmake configuration error.
+##------------------------------------------------------------------------------
+macro(blt_set_target_folder)
+
+    set(options)
+    set(singleValuedArgs TARGET FOLDER)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
+
+    ## check for required arguments
+    if(NOT DEFINED arg_TARGET)
+        message(FATAL_ERROR "TARGET is a required parameter for blt_set_target_folder macro")
+    endif()
+
+    if(NOT TARGET ${arg_TARGET})
+        message(FATAL_ERROR "Target ${arg_TARGET} passed to blt_set_target_folder is not a valid cmake target")
+    endif()
+
+    if(NOT DEFINED arg_FOLDER)
+        message(FATAL_ERROR "FOLDER is a required parameter for blt_set_target_folder macro")
+    endif()
+
+    ## set the folder property for this target
+    if(ENABLE_FOLDERS AND NOT "${arg_FOLDER}" STREQUAL "")
+        set_property(TARGET ${arg_TARGET} PROPERTY FOLDER "${arg_FOLDER}")
+    endif()
+
+endmacro(blt_set_target_folder)
+
+
+##------------------------------------------------------------------------------
 ## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
@@ -184,6 +227,7 @@ macro(blt_register_library)
 
     set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
+                       DEPENDS_ON
                        FORTRAN_MODULES
                        LIBRARIES
                        COMPILE_FLAGS
@@ -259,6 +303,7 @@ endmacro(blt_register_library)
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
 ##                  SHARED [TRUE | FALSE]
+##                  FOLDER [name]
 ##                 )
 ##
 ## Adds a library target, called <libname>, to be built from the given sources.
@@ -286,10 +331,15 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
+## FOLDER is an optional keyword to organize the target into a folder in an IDE.
+## This is available when ENABLE_FOLDERS is ON and when the cmake generator
+## supports this feature and will otherwise be ignored. 
+## Note: Do not use with header-only (INTERFACE)libraries, as this will generate 
+## a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED FOLDER)
     set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
     # parse the arguments
@@ -366,6 +416,10 @@ macro(blt_add_library)
                                  DESTINATION ${headers_build_dir})
     endif()
 
+
+    # Clear value of _have_fortran from previous calls
+    set(_have_fortran False)
+
     # Must tell fortran where to look for modules
     # CMAKE_Fortran_MODULE_DIRECTORY is the location of generated modules
     foreach (_file ${arg_SOURCES})
@@ -375,7 +429,7 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
+      target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
     blt_setup_target( NAME ${arg_NAME}
@@ -396,6 +450,11 @@ macro(blt_add_library)
             PREFIX "" )
     endif()
 
+    # Handle optional FOLDER keyword for this target
+    if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
+        blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
+    endif()
+
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
 
 endmacro(blt_add_library)
@@ -405,6 +464,7 @@ endmacro(blt_add_library)
 ##                     SOURCES [source1 [source2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
 ##                     OUTPUT_DIR [dir])
+##                     FOLDER [name]
 ##
 ## Adds an executable target, called <name>.
 ##
@@ -418,11 +478,14 @@ endmacro(blt_add_library)
 ## If the first entry in SOURCES is a Fortran source file, the fortran linker 
 ## is used. (via setting the CMake target property LINKER_LANGUAGE to Fortran )
 ##
+## FOLDER is an optional keyword to organize the target into a folder in an IDE.
+## This is available when ENABLE_FOLDERS is ON and when using a cmake generator
+## that supports this feature and will otherwise be ignored.
 ##------------------------------------------------------------------------------
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR)
+    set(singleValueArgs NAME OUTPUT_DIR FOLDER)
     set(multiValueArgs SOURCES DEPENDS_ON)
 
     # Parse the arguments to the macro
@@ -453,9 +516,9 @@ macro(blt_add_executable)
     get_source_file_property(_lang ${_first} LANGUAGE)
     if(_lang STREQUAL Fortran)
         set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
+        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
-        
-
+       
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
@@ -465,6 +528,11 @@ macro(blt_add_executable)
     if ( arg_OUTPUT_DIR AND NOT (WIN32 AND BUILD_SHARED_LIBS) )
            set_target_properties(${arg_NAME} PROPERTIES
            RUNTIME_OUTPUT_DIRECTORY ${arg_OUTPUT_DIR} )
+    endif()
+
+    # Handle optional FOLDER keyword for this target
+    if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
+        blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
@@ -612,24 +680,27 @@ endmacro(blt_add_benchmark)
 
 ##------------------------------------------------------------------------------
 ## blt_append_custom_compiler_flag( 
-##                    FLAGS_VAR flagsVar     (required)
-##                    DEFAULT   defaultFlag  (optional)
-##                    GNU       gnuFlag      (optional)
-##                    CLANG     clangFlag    (optional)
-##                    INTEL     intelFlag    (optional)
-##                    XL        xlFlag       (optional)
-##                    MSVC      msvcFlag     (optional)
+##                    FLAGS_VAR  flagsVar       (required)
+##                    DEFAULT    defaultFlag    (optional)
+##                    GNU        gnuFlag        (optional)
+##                    CLANG      clangFlag      (optional)
+##                    INTEL      intelFlag      (optional)
+##                    XL         xlFlag         (optional)
+##                    MSVC       msvcFlag       (optional)
+##                    MSVC_INTEL msvcIntelFlag  (optional)
 ## )
 ##
 ## Appends compiler-specific flags to a given variable of flags
 ##
-## If a custom flag is given for the current compiler, we use that,
+## If a custom flag is given for the current compiler, we use that.
 ## Otherwise, we will use the DEFAULT flag (if present)
+## When using the Intel toolchain within visual studio, we use the 
+## MSVC_INTEL flag, when provided, with a fallback to the MSVC flag.
 ##------------------------------------------------------------------------------
 macro(blt_append_custom_compiler_flag)
 
    set(options)
-   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG INTEL XL MSVC)
+   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG INTEL XL MSVC MSVC_INTEL)
    set(multiValueArgs)
 
    # Parse the arguments
@@ -650,7 +721,9 @@ macro(blt_append_custom_compiler_flag)
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_INTEL} " )
    elseif( DEFINED arg_GNU AND COMPILER_FAMILY_IS_GNU )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_GNU} " )
-   elseif( DEFINED arg_MSVC AND COMPILER_FAMILY_IS_MSVC )
+   elseif( DEFINED arg_MSVC_INTEL AND COMPILER_FAMILY_IS_MSVC_INTEL )
+      set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC_INTEL} " )
+   elseif( DEFINED arg_MSVC AND (COMPILER_FAMILY_IS_MSVC OR COMPILER_FAMILY_IS_MSVC_INTEL) )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC} " )
    elseif( DEFINED arg_DEFAULT )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_DEFAULT} ")
@@ -658,3 +731,65 @@ macro(blt_append_custom_compiler_flag)
 
 endmacro(blt_append_custom_compiler_flag)
 
+
+##------------------------------------------------------------------------------
+## blt_find_libraries( FOUND_LIBS <FOUND_LIBS variable name>
+##                     NAMES [libname1 [libname2 ...]]
+##                     REQUIRED [TRUE (default) | FALSE ]
+##                     PATHS [path1 [path2 ...]] )
+##
+## This command is used to find a list of libraries.
+## 
+## If the libraries are found the results are appended to the given FOUND_LIBS variable name.
+##
+## NAMES lists the names of the libraries that will be searched for in the given PATHS.
+##
+## If REQUIRED is set to TRUE, BLT will produce an error message if any of the
+## given libraries are not found.  The default value is TRUE.
+##
+## PATH lists the paths in which to search for NAMES. No system paths will be searched.
+##
+##------------------------------------------------------------------------------
+macro(blt_find_libraries)
+
+    set(options )
+    set(singleValueArgs FOUND_LIBS REQUIRED )
+    set(multiValueArgs NAMES PATHS )
+
+    ## parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if ( NOT DEFINED arg_FOUND_LIBS )
+        message(FATAL_ERROR "The blt_find_libraries required parameter FOUND_LIBS specifies the list that found libraries will be appended to.")
+    endif()
+
+    if ( NOT DEFINED arg_NAMES )
+        message(FATAL_ERROR "The blt_find_libraries required parameter NAMES specifies the library names you are searching for.")
+    endif()
+
+    if ( NOT DEFINED arg_PATHS )
+        message(FATAL_ERROR "The blt_find_libraries required parameter PATHS specifies the paths to search for NAMES.")
+    endif()
+
+    if ( NOT DEFINED arg_REQUIRED)
+        set(arg_REQUIRED TRUE)
+    endif()
+
+    foreach( lib ${arg_NAMES} )
+        unset( temp CACHE )
+        find_library( temp NAMES ${lib}
+                      PATHS ${arg_PATHS}
+                      NO_DEFAULT_PATH
+                      NO_CMAKE_ENVIRONMENT_PATH
+                      NO_CMAKE_PATH
+                      NO_SYSTEM_ENVIRONMENT_PATH
+                      NO_CMAKE_SYSTEM_PATH)
+        if( temp )
+            list( APPEND ${arg_FOUND_LIBS} ${temp} )
+        elseif (${arg_REQUIRED})
+            message(FATAL_ERROR "blt_find_libraries required NAMES entry ${lib} not found. These are not the libs you are looking for.")
+        endif()
+    endforeach()
+
+endmacro(blt_find_libraries)

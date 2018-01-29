@@ -53,9 +53,20 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 ################################
 # Build Options
 ################################
+get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+if(_languages MATCHES "Fortran")
+    set(_fortran_already_enabled TRUE)
+else()
+    set(_fortran_already_enabled FALSE)
+endif()
+if(DEFINED BUILD_SHARED_LIBS)
+    set(_build_shared_libs  ${BUILD_SHARED_LIBS})
+else()
+    set(_build_shared_libs OFF)
+endif()
 option(ENABLE_COPY_HEADERS "Copy headers to build directory" OFF)
-option(ENABLE_FORTRAN      "Enables Fortran compiler support" OFF)
-option(ENABLE_SHARED_LIBS  "Enables shared libraries." OFF)
+option(ENABLE_FORTRAN      "Enables Fortran compiler support" ${_fortran_already_enabled})
+option(ENABLE_SHARED_LIBS  "Enables shared libraries." ${_build_shared_libs})
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
@@ -72,10 +83,20 @@ mark_as_advanced(BLT_CLANG_CUDA_ARCH)
 #
 # Google Mock requires and always builds Google Test, so ENABLE_GMOCK=ON implies ENABLE_GTEST=ON.
 #
-option(ENABLE_GTEST        "Enable Google Test testing support (if ENABLE_TESTS=ON)" ON)
+get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+if(_languages MATCHES "CXX")
+  set(_CXX_enabled ON)
+else()
+  set(_CXX_enabled OFF)
+endif()
+option(ENABLE_GTEST        "Enable Google Test testing support (if ENABLE_TESTS=ON)" ${_CXX_enabled})
 option(ENABLE_GMOCK        "Enable Google Mock testing support (if ENABLE_TESTS=ON)" OFF)
 option(ENABLE_FRUIT        "Enable Fruit testing support (if ENABLE_TESTS=ON and ENABLE_FORTRAN=ON)" ON)
-    
+
+if( (NOT _CXX_enabled) AND ENABLE_GTEST )
+  message( FATAL_ERROR
+    "You must have CXX enabled in your project to use GTEST!" )
+endif()
 
 ################################
 # Compiler Options
@@ -95,8 +116,16 @@ endif()
 
 
 ################################
+# Generator Options
+################################
+option(ENABLE_FOLDERS "Organize projects using folders (in generators that support this)" OFF)
+
+
+################################
 # Advanced configuration options
 ################################
+
+option(ENABLE_FIND_MPI     "Enables CMake's Find MPI support (Turn off when compiling with the mpi wrapper directly)" ON)
 
 option(
     ENABLE_GTEST_DEATH_TESTS
@@ -109,7 +138,8 @@ option(
     OFF )
 
 # All advanced options should be marked as advanced
-mark_as_advanced( 
+mark_as_advanced(
+    ENABLE_FIND_MPI
     ENABLE_GTEST_DEATH_TESTS
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
        

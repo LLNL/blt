@@ -394,6 +394,7 @@ void DefaultPrintTo(IsContainer /* dummy */,
   *os << '}';
 }
 
+
 // Used to print a pointer that is neither a char pointer nor a member
 // pointer, when the user doesn't define PrintTo() for it.  (A member
 // variable pointer or member function pointer doesn't really point to
@@ -423,9 +424,9 @@ void DefaultPrintTo(IsNotContainer /* dummy */,
       // void*.  However, we cannot cast it to const void* directly,
       // even using reinterpret_cast, as earlier versions of gcc
       // (e.g. 3.4.5) cannot compile the cast when p is a function
-      // pointer.  Casting to UInt64 first solves the problem.
+      // pointer.  Casting to an unsigned int first solves the problem.
       *os << reinterpret_cast<const void*>(
-          reinterpret_cast<internal::UInt64>(p));
+            reinterpret_cast<internal::TypeWithSize<sizeof(int*)>::UInt>(p));
     }
   }
 }

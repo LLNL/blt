@@ -75,10 +75,18 @@ if (NOT BLT_LOADED)
   endif()
 
   ################################
-  # Enable ctest support 
+  # Enable ctest support
   ################################
   if(ENABLE_TESTS)
       enable_testing()
+  endif()
+
+  ################################
+  # Enable cmake generator folder feature
+  # if ENABLE_FOLDERS == ON
+  ################################
+  if(ENABLE_FOLDERS)
+      set_property(GLOBAL PROPERTY USE_FOLDERS ON)
   endif()
 
   ################################

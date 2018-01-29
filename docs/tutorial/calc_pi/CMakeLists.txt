@@ -18,6 +18,10 @@ endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
+if(WIN32 AND ENABLE_SHARED_LIBS)
+    add_definitions("-DWIN32_SHARED_LIBS")
+endif()
+
 ###############################################################################
 # Example 1: Creating a simple executable.
 ###############################################################################
@@ -30,7 +34,7 @@ blt_add_executable( NAME example_1
 # Example 2: Creating a library and an executable using our library.
 ###############################################################################
 blt_add_library( NAME    calc_pi
-                 HEADERS calc_pi.hpp
+                 HEADERS calc_pi.hpp calc_pi_exports.h
                  SOURCES calc_pi.cpp )
 
 
@@ -57,7 +61,7 @@ blt_add_test( NAME test_1
 if(MPI_FOUND)
 
     blt_add_library( NAME calc_pi_mpi
-                     HEADERS calc_pi_mpi.hpp
+                     HEADERS calc_pi_mpi.hpp calc_pi_mpi_exports.h
                      SOURCES calc_pi_mpi.cpp 
                      DEPENDS_ON mpi)
 
@@ -83,7 +87,7 @@ if(CUDA_FOUND)
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30)
 	
     blt_add_library( NAME calc_pi_cuda
-                     HEADERS calc_pi_cuda.hpp
+                     HEADERS calc_pi_cuda.hpp calc_pi_cuda_exports.h
                      SOURCES calc_pi_cuda.cpp 
                      DEPENDS_ON cuda)
 

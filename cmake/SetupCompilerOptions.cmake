@@ -72,7 +72,12 @@ endif()
 if("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)")
     set(COMPILER_FAMILY_IS_MSVC 1)
     message(STATUS "Compiler family is MSVC")
-
+    
+    if(CMAKE_GENERATOR_TOOLSET AND "${CMAKE_GENERATOR_TOOLSET}" MATCHES "Intel")
+        set(COMPILER_FAMILY_IS_MSVC_INTEL 1) 
+        message(STATUS "Toolset is ${CMAKE_GENERATOR_TOOLSET}")
+    endif()
+    
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(COMPILER_FAMILY_IS_GNU 1)
     message(STATUS "Compiler family is GNU")
@@ -92,6 +97,8 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 endif()
 
 
+
+
 ################################################
 # Support for extra compiler flags and defines
 ################################################
@@ -104,7 +111,7 @@ message(STATUS "Adding optional BLT definitions and compiler flags")
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 ##############################################
-# Support Extra Definitions for all targets
+# Support extra definitions for all targets
 ##############################################
 if(BLT_DEFINES)
     add_definitions(${BLT_DEFINES})
@@ -123,7 +130,7 @@ endif()
 ##########################################
 
 ##########################################
-# Support Extra Flags for the C compiler.
+# Support extra flags for the C compiler.
 ##########################################
 if(BLT_C_FLAGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_C_FLAGS}")
@@ -131,7 +138,7 @@ if(BLT_C_FLAGS)
 endif()
 
 #############################################
-# Support Extra Flags for the C++ compiler.
+# Support extra flags for the C++ compiler.
 #############################################
 if(BLT_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
@@ -139,7 +146,7 @@ if(BLT_CXX_FLAGS)
 endif()
 
 ################################################
-# Support Extra Flags for the Fortran compiler.
+# Support extra flags for the Fortran compiler.
 ################################################
 if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
@@ -147,7 +154,7 @@ if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
 endif()
 
 ################################################
-# Support Extra Flags for the CUDA compiler.
+# Support extra flags for the CUDA compiler.
 # N.B. must be ; delimited.
 ################################################
 if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
@@ -160,9 +167,17 @@ if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
     endforeach(flag_var)
 endif()
 
+################################################
+# Support extra linker flags
+################################################
+if(BLT_EXE_LINKER_FLAGS)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${BLT_EXE_LINKER_FLAGS}")
+    message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
+endif()
+
 
 ###############################################################
-# Support Extra Flags based on CMake Config Type
+# Support extra flags based on CMake configuration type
 ###############################################################
 #
 # We guard this approach to avoid issues with CMake generators
@@ -204,24 +219,26 @@ endif()
 ################################
 # RPath Settings
 ################################
+# only apply rpath settings for builds using shared libs
+if(ENABLE_SHARED_LIBS)
+    # use, i.e. don't skip the full RPATH for the build tree
+    set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
-# use, i.e. don't skip the full RPATH for the build tree
-set(CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# the RPATH to be used when installing, but only if it's not a system directory
-list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-if("${isSystemDir}" STREQUAL "-1")
+    # when building, don't use the install RPATH already
+    # (but later on when installing)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+
+    # add the automatically determined parts of the RPATH
+    # which point to directories outside the build tree to the install RPATH
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+    # the RPATH to be used when installing, but only if it's not a system directory
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    if("${isSystemDir}" STREQUAL "-1")
+        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    endif()
 endif()
 
 ################################
@@ -261,17 +278,17 @@ message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected")
 
 blt_append_custom_compiler_flag(
     FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_FLAG
-     DEFAULT "-Wall -Wextra"
-     CLANG   "-Wall -Wextra" 
-                    # Additional  possibilities for clang include: 
-                    #       "-Wdocumentation -Wdeprecated -Weverything"
-     MSVC    "/W4"
-                    # Additional  possibilities for visual studio include:
-                    # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
-     XL      ""     # qinfo=<grp> produces additional messages on XL
-                    # qflag=<x>:<x> defines min severity level to produce messages on XL
-                    #     where x is i info, w warning, e error, s severe; default is: 
-                    # (default is  qflag=i:i)
+     DEFAULT    "-Wall -Wextra"
+     CLANG      "-Wall -Wextra" 
+                       # Additional  possibilities for clang include: 
+                       #       "-Wdocumentation -Wdeprecated -Weverything"
+     MSVC       "/W4"
+                       # Additional  possibilities for visual studio include:
+                       # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
+     XL         ""     # qinfo=<grp> produces additional messages on XL
+                       # qflag=<x>:<x> defines min severity level to produce messages on XL
+                       #     where x is i info, w warning, e error, s severe; default is: 
+                       # (default is  qflag=i:i)
      )
 
 blt_append_custom_compiler_flag(
@@ -324,9 +341,6 @@ if(ENABLE_FORTRAN)
     else()
         message(FATAL_ERROR "Fortran support selected, but no Fortran compiler was found.")
     endif()
-
-    # default property to free form
-    set(CMAKE_Fortran_FORMAT FREE)
 
     list(APPEND langFlags "CMAKE_Fortran_FLAGS")
 else()

@@ -49,10 +49,19 @@ cmake_minimum_required(VERSION 3.1)
 
 project(blt-example LANGUAGES C CXX)
 
-################################
-# Include BLT
-################################
-include(blt/SetupBLT.cmake)
+###############################################################################
+# Setup BLT
+###############################################################################
+# Set BLT_SOURCE_DIR to default location, if not set by user 
+if(NOT BLT_SOURCE_DIR)
+    set(BLT_SOURCE_DIR "blt")
+endif()
+
+include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
+
+if(WIN32 AND ENABLE_SHARED_LIBS)
+    add_definitions("-DWIN32_SHARED_LIBS")
+endif()
 
 ################################
 # Add a library
@@ -154,5 +163,12 @@ if(ENABLE_GTEST)
       endif() # endif is_git_repo
 
     endif() # endif Git_FOUND
+
+    ################
+    # CUDA tests
+    #################
+    if (ENABLE_CUDA)
+        add_subdirectory(src/test_cuda_device_call_from_kernel)
+    endif()
 
 endif() # endif ENABLE_GTEST
