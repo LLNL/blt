@@ -100,10 +100,13 @@ if(ENABLE_TESTS)
         blt_append_custom_compiler_flag( FLAGS_VAR gtest_extra_flags
                                          DEFAULT " " 
                                          MSVC  "/wd4251 /wd4275" )
+
+        set (INSTALL_GMOCK Off)
+        set (INSTALL_GTEST Off)
                 
         # Enable builtin google test 
-        add_subdirectory(googletest-release-1.8.0 
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-release-1.8.0 )
+        add_subdirectory(googletest-master-2018-02-01
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2018-02-01)
 
         if(UNIX AND NOT APPLE)
             find_package( Threads )
