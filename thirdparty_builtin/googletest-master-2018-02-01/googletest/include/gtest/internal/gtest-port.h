@@ -802,6 +802,7 @@ using ::std::tuple_size;
 # endif  // !GTEST_OS_WINDOWS_MOBILE && !GTEST_OS_SYMBIAN
 #endif  // GTEST_HAS_STREAM_REDIRECTION
 
+#ifndef GTEST_HAS_DEATH_TEST
 // Determines whether to support death tests.
 // Google Test does not support death tests for VC 7.1 and earlier as
 // abort() in a VC 7.1 application compiled as GUI in debug config
@@ -812,6 +813,7 @@ using ::std::tuple_size;
      GTEST_OS_WINDOWS_MINGW || GTEST_OS_AIX || GTEST_OS_HPUX || \
      GTEST_OS_OPENBSD || GTEST_OS_QNX || GTEST_OS_FREEBSD || GTEST_OS_NETBSD)
 # define GTEST_HAS_DEATH_TEST 1
+#endif
 #endif
 
 // Determines whether to support type-driven tests.
