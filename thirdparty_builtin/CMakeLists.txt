@@ -101,8 +101,8 @@ if(ENABLE_TESTS)
                                          DEFAULT " " 
                                          MSVC  "/wd4251 /wd4275" )
 
-        set (INSTALL_GMOCK Off)
-        set (INSTALL_GTEST Off)
+        set (INSTALL_GMOCK OFF)
+        set (INSTALL_GTEST OFF)
                 
         # Enable builtin google test 
         add_subdirectory(googletest-master-2018-02-01
