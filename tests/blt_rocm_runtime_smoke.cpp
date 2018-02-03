@@ -49,8 +49,8 @@
 //-----------------------------------------------------------------------------
 
 #include <iostream>
+#include <vector>
 #include "gtest/gtest.h"
-#include <stdio.h>
 #include "hc.hpp"
 
 

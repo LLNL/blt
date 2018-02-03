@@ -48,9 +48,7 @@
 ///
 //-----------------------------------------------------------------------------
 
-#include <iostream>
 #include "gtest/gtest.h"
-#include <stdio.h>
 
 #include <hc.hpp>
 #include <hc_printf.hpp>

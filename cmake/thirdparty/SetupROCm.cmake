@@ -45,7 +45,6 @@
 ################################
 
 if (ENABLE_ROCM)
-    message(STATUS "BLT_ROOT_DIR ${BLT_ROOT_DIR}")
     set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
     find_package(ROCm REQUIRED)
 
