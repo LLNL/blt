@@ -51,6 +51,12 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 
 
 ################################
+# TPL Options
+################################
+option(ENABLE_GIT       "Enables Git support" ON)
+
+
+################################
 # Build Options
 ################################
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
