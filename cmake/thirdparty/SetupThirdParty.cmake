@@ -47,14 +47,18 @@
 ################################
 # Git
 ################################
-message(STATUS "Git Support is ${ENABLE_GIT}")
 if (ENABLE_GIT)
     find_package(Git)
     if (Git_FOUND)
+        message(STATUS "Git Support is ON")
         set(GIT_FOUND TRUE)
         message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
         message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
+    else()
+        message(STATUS "Git Support is OFF")
     endif()
+else()
+    message(STATUS "Git Support is OFF")
 endif()
 
 ################################
