@@ -49,13 +49,11 @@ if (ENABLE_ROCM)
     find_package(ROCm REQUIRED)
 
     if (ROCM_FOUND)
-        set(ROCMEXEC ${HCC_COMPILER})
-
-
-        message(STATUS "ROCM  Compile Flags:  ${ROCM_COMPILE_FLAGS}")
+        message(STATUS "ROCM  Compile Flags:  ${ROCM_CXX_COMPILE_FLAGS}")
         message(STATUS "ROCM  Include Path:   ${ROCM_INCLUDE_PATH}")
-        message(STATUS "ROCM  Link Flags:     ${ROCM_LINK_FLAGS}")
-        message(STATUS "ROCM  Libraries:      ${ROCM_LIBRARIES}")
+        message(STATUS "ROCM  Link Flags:     ${ROCM_CXX_LINK_FLAGS}")
+        message(STATUS "ROCM  Libraries:      ${ROCM_CXX_LIBRARIES}")
+        message(STATUS "ROCM  Device Arch:    ${ROCM_ARCH}")
 
         if (ENABLE_FORTRAN)
              message(ERROR "ROCM does not support Fortran at this time")
@@ -63,7 +61,6 @@ if (ENABLE_ROCM)
     else()
         message(ERROR "ROCM Executable not found")
     endif()
-message(STATUS "ROCM Executable:       ${ROCMEXEC}")
 endif()
 
 

@@ -31,52 +31,16 @@
 
 find_path(ROCM_PATH
      NAMES bin/hcc
-     PATHS /opt/rocm
+     PATHS
+       ENV ROCM_DIR
+       ${ROCM_ROOT_DIR}
+       /opt/rocm
      DOC "Path to ROCm hcc executable")
 
 
 if(ROCM_PATH)
     message(STATUS "ROCM_PATH:  ${ROCM_PATH}")
     set(CMAKE_CXX_COMPILER_ID "HCC")
-
-    set(HSA_PATH "${ROCM_PATH}/hsa")
-
-# this would be the elegant solution, but cmake is not running the command
-# at make time
-#    set(ROCM_COMPILE_FLAGS "`/opt/rocm/hcc/bin/hcc-config  --cxxflags`")
-#    set(ROCM_LINK_FLAGS "`/opt/rocm/hcc/bin/hcc-config  --ldflags`")
-# so we run the command at cmake time
-    execute_process(COMMAND ${ROCM_PATH}/hcc/bin/hcc-config --cxxflags OUTPUT_VARIABLE ROCM_COMPILE_FLAGS)
-    execute_process(COMMAND ${ROCM_PATH}/hcc/bin/hcc-config --ldflags OUTPUT_VARIABLE ROCM_LINK_FLAGS)
-    set(ROCM_INCLUDE_PATH "${ROCM_PATH}/hcc/include")
-    set(ROCM_ARCH_FLAG "-amdgpu-target=${BLT_ROCM_ARCH}")
-    set(ROCM_LIBRARIES "-L${ROCM_PATH}/lib  -lhc_am -lhip_hcc")
-
-#    set(ROCM_C_COMPILE_FLAGS ${ROCM_COMPILE_FLAGS})
-#    set(ROCM_C_INCLUDE_PATH "${ROCM_PATH}/hcc/include")
-#    set(ROCM_C_LIBRARIES ${ROCM_LIBRARIES})
-#    set(ROCM_C_LIBRARY_PATH "${ROCM_PATH}/hcc/lib")
-#    set(ROCM_C_LINK_FLAGS "${ROCM_C_LIBRARIES} -L${ROCM_C_LIBRARY_PATH} ${ROCM_ARCH_FLAG}")
-
-    set(ROCM_CXX_COMPILE_FLAGS "${ROCM_COMPILE_FLAGS} -Wno-unused-command-line-argument -DHCC_ENABLE_ACCELERATOR_PRINTF")
-    set(ROCM_CXX_INCLUDE_PATH "${ROCM_PATH}/hcc/include")
-    set(ROCM_CXX_LIBRARIES ${ROCM_LIBRARIES})
-    set(ROCM_CXX_LIBRARY_PATH "${ROCM_PATH}/hcc/lib")
-    set(ROCM_CXX_LINK_FLAGS "${ROCM_LINK_FLAGS} ${ROCM_ARCH_FLAG}")
-
-
-    set(HCC_COMPILER ${ROCM_PATH}/bin/hcc)
-
-
-    set(CMAKE_CXX_INCLUDE_PATH ${ROCM_CXX_INCLUDE_PATH})
-    set(CMAKE_CXX_LINK_FLAGS ${ROCM_CXX_LINK_FLAGS})
-
-    set(CMAKE_CXX_COMPILER "${ROCM_PATH}/bin/hcc" CACHE FILEPATH "HCC compiler" FORCE)
-    set(CMAKE_CXX_FLAGS "${ROCM_CXX_COMPILE_FLAGS}" CACHE STRING "HCC compiler flags" FORCE)
-    set(CMAKE_LINKER "${ROCM_PATH}/bin/hcc" CACHE FILEPATH "HCC linker" FORCE)
-    set(CMAKE_EXE_LINKER_FLAGS ${ROCM_CXX_LINK_FLAGS} CACHE STRING "HCC link flags" FORCE)
-
-    set(CMAKE_CXX_LINK_EXECUTABLE "${HCC_COMPILER} ${ROCM_LINK_FLAGS} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" CACHE STRING "HCC linker command line" FORCE)
 
     set(ROCM_FOUND TRUE)
 
