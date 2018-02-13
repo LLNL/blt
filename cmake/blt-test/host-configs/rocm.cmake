@@ -10,6 +10,26 @@
 ## For release details and restrictions, please see RAJA/LICENSE.
 ##
 
+# The CMake command line to use this host config file must have certain
+# defines enabled.  Here is an example script for an out-of-place build of the
+# tutorial blank project template:
+## rocm.sh
+##!/bin/bash
+#rm -rf build-rocm-release 2>/dev/null
+#mkdir build-rocm-release && cd build-rocm-release
+
+#BLT_DIR=$(git rev-parse --show-toplevel)
+
+#cmake \
+#  -DCMAKE_BUILD_TYPE=Release \
+#  -DENABLE_ROCM=ON -DBLT_SOURCE_DIR=${BLT_DIR} \
+#  -DROCM_ARCH=gfx900 \
+#  -C ${BLT_DIR}/cmake/blt-test/host-configs/rocm.cmake \
+#  -DCMAKE_INSTALL_PREFIX=../install-rocm-release \
+#  "$@" \
+#  ${BLT_DIR}/docs/tutorial/blank_project
+
+
 ###########################################################
 # standard ROCm HCC compiler
 ###########################################################
@@ -46,6 +66,6 @@ set(ROCM_CXX_LINK_FLAGS "${ROCM_CXX_LINK_FLAGS} ${ROCM_ARCH_FLAG} ${ROCM_CXX_LIB
 # set CMake cache variables
 ###########################################################
 set(CMAKE_CXX_COMPILER "${ROCM_ROOT_DIR}/hcc/bin/hcc" CACHE FILEPATH "ROCm HCC compiler")
-set(CMAKE_CXX_FLAGS "${ROCM_CXX_COMPILE_FLAGS}" CACHE STRING "HCC compiler flags")
+set(BLT_CXX_FLAGS "${ROCM_CXX_COMPILE_FLAGS}" CACHE STRING "HCC compiler flags")
 
 set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_COMPILER} ${ROCM_CXX_LINK_FLAGS} <OBJECTS> <LINK_LIBRARIES> -o <TARGET>" CACHE STRING "HCC linker command line")

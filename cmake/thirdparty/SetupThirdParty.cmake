@@ -73,7 +73,7 @@ endif()
 ################################
 # ROCM
 ################################
-message(STATUS "ROCm Support is ${ENABLE_ROCM}")
+message(STATUS "ROCM Support is ${ENABLE_ROCM}")
 if (ENABLE_ROCM)
   include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
 endif()
