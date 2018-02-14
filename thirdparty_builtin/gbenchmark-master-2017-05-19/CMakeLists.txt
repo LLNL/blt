@@ -1,5 +1,14 @@
 cmake_minimum_required (VERSION 2.8.12)
 
+##########################################################
+# BLT FIX:
+# Add policy setting to avoid warnings for project command
+# without VERSION argument
+##########################################################
+if (POLICY CMP0048)
+  cmake_policy(SET CMP0048 NEW)
+endif ()
+
 project (benchmark)
 
 foreach(p
