@@ -86,6 +86,10 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
     set(COMPILER_FAMILY_IS_CLANG 1)
     message(STATUS "Compiler family is Clang")
     
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "HCC") # For ROCm
+    set(COMPILER_FAMILY_IS_HCC 1)
+    message(STATUS "Compiler family is HCC Clang")
+    
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
     set(COMPILER_FAMILY_IS_XL 1)
     message(STATUS "Compiler family is XL")
@@ -282,6 +286,7 @@ blt_append_custom_compiler_flag(
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
+     HCC        "-Wall" 
      MSVC       "/W4"
                        # Additional  possibilities for visual studio include:
                        # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
