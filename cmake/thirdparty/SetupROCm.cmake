@@ -40,70 +40,37 @@
 #
 ###############################################################################
 
-####################################
-# BLT 3rd Party Lib Support
-####################################
-
-################################
-# Git
-################################
-if (ENABLE_GIT)
-    find_package(Git)
-    if (Git_FOUND)
-        message(STATUS "Git Support is ON")
-        set(GIT_FOUND TRUE)
-        message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
-        message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
-    else()
-        message(STATUS "Git Support is OFF")
-    endif()
-else()
-    message(STATUS "Git Support is OFF")
-endif()
-
-################################
-# MPI
-################################
-message(STATUS "MPI Support is ${ENABLE_MPI}")
-if (ENABLE_MPI)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupMPI.cmake)
-endif()
-
-################################
-# CUDA
-################################
-message(STATUS "CUDA Support is ${ENABLE_CUDA}")
-if (ENABLE_CUDA)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake)
-endif()
-
 ################################
 # ROCM
 ################################
-message(STATUS "ROCM Support is ${ENABLE_ROCM}")
+
 if (ENABLE_ROCM)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
+    set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
+    find_package(ROCm REQUIRED)
+
+    if (ROCM_FOUND)
+        message(STATUS "ROCM  Compile Flags:  ${ROCM_CXX_COMPILE_FLAGS}")
+        message(STATUS "ROCM  Include Path:   ${ROCM_INCLUDE_PATH}")
+        message(STATUS "ROCM  Link Flags:     ${ROCM_CXX_LINK_FLAGS}")
+        message(STATUS "ROCM  Libraries:      ${ROCM_CXX_LIBRARIES}")
+        message(STATUS "ROCM  Device Arch:    ${ROCM_ARCH}")
+
+        if (ENABLE_FORTRAN)
+             message(ERROR "ROCM does not support Fortran at this time")
+        endif()
+    else()
+        message(ERROR "ROCM Executable not found")
+    endif()
 endif()
 
-################################
-# Documentation Packages
-################################
-if (DOXYGEN_EXECUTABLE)
-    find_package(Doxygen)
-endif()
 
-if (SPHINX_EXECUTABLE)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/FindSphinx.cmake)
-endif()
 
-################################
-# Valgrind
-################################
-include(${BLT_ROOT_DIR}/cmake/thirdparty/FindValgrind.cmake)
+# register ROCM with blt
+blt_register_library(NAME rocm
+                     INCLUDES ${ROCM_CXX_INCLUDE_PATH}  
+                     LIBRARIES ${ROCM_CXX_LIBRARIES}  
+                     COMPILE_FLAGS ${ROCM_CXX_COMPILE_FLAGS}
+                     LINK_FLAGS    ${ROCM_CXX_LINK_FLAGS} 
+                     DEFINES USE_ROCM)
 
-################################
-# linting via Uncrustify
-################################
-if (UNCRUSTIFY_EXECUTABLE)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindUncrustify.cmake)
-endif()
+
