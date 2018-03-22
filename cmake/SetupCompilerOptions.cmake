@@ -260,28 +260,18 @@ if( BLT_CXX_STD STREQUAL c++98 )
     set(CMAKE_CXX_STANDARD 98)
 elseif( BLT_CXX_STD STREQUAL c++11 )
     set(CMAKE_CXX_STANDARD 11)
-    if (COMPILER_FAMILY_IS_XL)
-      blt_append_custom_compiler_flag(
+    blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT "-std=c++11")
-    endif ()
-    if (COMPILER_FAMILY_IS_PGI)
-      blt_append_custom_compiler_flag(
-        FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT "--c++11")
-    endif ()
-elseif( BLT_CXX_STD STREQUAL c++14 )
+        DEFAULT " "
+        XL "-std=c++11"
+        PGI "--c++11")
+elseif( BLT_CXX_STD STREQUAL c++14)
     set(CMAKE_CXX_STANDARD 14)
-    if (COMPILER_FAMILY_IS_XL)
-      blt_append_custom_compiler_flag(
+    blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT "-std=c++1y")
-    endif ()
-    if (COMPILER_FAMILY_IS_PGI)
-      blt_append_custom_compiler_flag(
-        FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT "--c++14")
-    endif ()
+        DEFAULT " "
+        XL "-std=c++1y"
+        PGI "--c++14")
 else()
     message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
     Valid Options are ( c++98, c++11, c++14 )")
