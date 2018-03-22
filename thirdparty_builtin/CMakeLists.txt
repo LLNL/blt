@@ -145,13 +145,6 @@ if(ENABLE_TESTS)
         endif()
     endif()
 
-    # Set the folder property of the blt thirdparty libraries 
-    if(ENABLE_FOLDERS)
-        foreach(tpl ${_blt_tpl_targets})
-            blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
-        endforeach()
-    endif()
-
 endif()
 
 if(ENABLE_BENCHMARKS)
@@ -180,5 +173,12 @@ if(ENABLE_BENCHMARKS)
                       COMMAND ctest -C Benchmark -VV -R benchmark
                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
                       )
+endif()
+
+# Set the folder property of the blt thirdparty libraries 
+if(ENABLE_FOLDERS)
+    foreach(tpl ${_blt_tpl_targets})
+        blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
+    endforeach()
 endif()
 
