@@ -691,6 +691,7 @@ endmacro(blt_add_benchmark)
 ##                    XL         xlFlag         (optional)
 ##                    MSVC       msvcFlag       (optional)
 ##                    MSVC_INTEL msvcIntelFlag  (optional)
+##                    PGI        pgiFlag        (optional)
 ## )
 ##
 ## Appends compiler-specific flags to a given variable of flags
@@ -703,7 +704,7 @@ endmacro(blt_add_benchmark)
 macro(blt_append_custom_compiler_flag)
 
    set(options)
-   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG HCC INTEL XL MSVC MSVC_INTEL)
+   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG HCC PGI INTEL XL MSVC MSVC_INTEL)
    set(multiValueArgs)
 
    # Parse the arguments
@@ -726,6 +727,8 @@ macro(blt_append_custom_compiler_flag)
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_GNU} " )
    elseif( DEFINED arg_HCC AND COMPILER_FAMILY_IS_HCC )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_HCC} " )
+    elseif( DEFINED arg_PGI AND COMPILER_FAMILY_IS_PGI )
+      set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_PGI} " )
    elseif( DEFINED arg_MSVC_INTEL AND COMPILER_FAMILY_IS_MSVC_INTEL )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC_INTEL} " )
    elseif( DEFINED arg_MSVC AND (COMPILER_FAMILY_IS_MSVC OR COMPILER_FAMILY_IS_MSVC_INTEL) )
