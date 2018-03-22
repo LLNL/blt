@@ -40,10 +40,10 @@
 #
 ###############################################################################
 
+set(_blt_tpl_targets) # tracks names of enabled tpl targets
+
 if(ENABLE_TESTS)
     include(CTest)
-
-    set(_blt_tpl_targets) # tracks names of enabled tpl targets
 
     if(WIN32 AND BUILD_SHARED_LIBS)
         add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
@@ -168,11 +168,13 @@ if(ENABLE_BENCHMARKS)
 
     list(APPEND _blt_tpl_targets benchmark)
 
-    # This sets up a target to run the benchmarks
-    add_custom_target(run_benchmarks 
-                      COMMAND ctest -C Benchmark -VV -R benchmark
-                      WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                      )
+    if(ENABLE_TESTS)
+      # This sets up a target to run the benchmarks
+      add_custom_target(run_benchmarks 
+                        COMMAND ctest -C Benchmark -VV -R benchmark
+                        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+                        )
+    endif()
 endif()
 
 # Set the folder property of the blt thirdparty libraries 
@@ -181,4 +183,5 @@ if(ENABLE_FOLDERS)
         blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
     endforeach()
 endif()
+
 
