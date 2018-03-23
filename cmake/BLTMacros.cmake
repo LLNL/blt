@@ -673,7 +673,9 @@ macro(blt_add_benchmark)
                 CONFIGURATIONS Benchmark   
                 )
 
-      add_dependencies(run_benchmarks ${arg_NAME})
+      if(ENABLE_TESTS)
+        add_dependencies(run_benchmarks ${arg_NAME})
+      endif()
    endif()
 
 endmacro(blt_add_benchmark)
