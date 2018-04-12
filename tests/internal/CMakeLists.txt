@@ -54,7 +54,7 @@ project(blt-example LANGUAGES C CXX)
 ###############################################################################
 # Set BLT_SOURCE_DIR to default location, if not set by user 
 if(NOT BLT_SOURCE_DIR)
-    set(BLT_SOURCE_DIR "blt")
+    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../..")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
