@@ -52,7 +52,7 @@ before_build:
   # copy blt into blt-test and setup to build there
   - ps: cd ..
   - mkdir build
-  - cp -r blt\cmake\blt-test .
+  - cp -r blt\tests\internal blt-test
   # create a git repo for blt-test to test the git macros
   - cd blt-test
   - git init
@@ -81,6 +81,7 @@ build_script:
       -D MPI_C_LIBRARIES:PATH="%MPI_HOME%/Lib/x86/msmpi.lib" ^
       -D MPI_CXX_INCLUDE_PATH:PATH="%MPI_HOME%/Include" ^
       -D MPI_CXX_LIBRARIES:PATH="%MPI_HOME%/Lib/x86/msmpi.lib" ^
+      -D TEST_GIT_MACROS=ON ^
       ..\blt-test
   - cd ..
   #build
