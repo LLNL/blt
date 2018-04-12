@@ -130,7 +130,7 @@ script:
   - cmake --version
   - cd $TRAVIS_BUILD_DIR/..
   # copy our internal testing project
-  - cp -r blt/cmake/blt-test .
+  - cp -r blt/tests/internal blt-test
   # create a git repo for blt-test to test the git macros
   - cd blt-test
   - git init
@@ -173,6 +173,8 @@ script:
   - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_C_COMPILER=mpicc"
   - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_CXX_COMPILER=mpicc"
   - CMAKE_OPTS="${CMAKE_OPTS} -DMPI_Fortran_COMPILER=mpif90"
+  # test git macros
+  - CMAKE_OPTS="${CMAKE_OPTS} -DTEST_GIT_MACROS=ON"
   # configure with cmake
   - cmake  ${CMAKE_OPTS} ../blt-test
   # build, link, and triumph 
