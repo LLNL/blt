@@ -46,8 +46,8 @@
 # find_package(cppcheck)
 #
 # If successful the following variables will be defined
-# UNCRUSTIFY_FOUND
-# UNCRUSTIFY_EXECUTABLE
+# CPPCHECK_FOUND
+# CPPCHECK_EXECUTABLE
 ################################################################################
 
 find_program(CPPCHECK_EXECUTABLE
@@ -55,7 +55,7 @@ find_program(CPPCHECK_EXECUTABLE
              DOC "Path to cppcheck executable")
 
 # Handle REQUIRED and QUIET arguments
-# this will also set UNCRUSTIFY_FOUND to true if UNCRUSTIFY_EXECUTABLE exists
+# this will also set CPPCHECK_FOUND to true if CPPCHECK_EXECUTABLE exists
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(CPPCHECK
                                   "Failed to locate cppcheck executable"

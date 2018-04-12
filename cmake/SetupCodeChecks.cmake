@@ -161,7 +161,7 @@ macro(blt_add_code_checks)
         set(_cppcheck_target_name ${arg_PREFIX}_cppcheck_check)
         blt_error_if_target_exists(${_cppcheck_target_name} ${_error_msg})
 
-	blt_add_cppcheck_target( NAME              ${_cppcheck_target_name}
+        blt_add_cppcheck_target( NAME              ${_cppcheck_target_name}
                                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                  SRC_FILES         ${_c_sources})
     endif()
