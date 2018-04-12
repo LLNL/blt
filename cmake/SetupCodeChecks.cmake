@@ -57,6 +57,12 @@ if(UNCRUSTIFY_FOUND)
     add_dependencies(style uncrustify_style)
 endif()
 
+if(CPPCHECK_FOUND)
+    add_custom_target(cppcheck_check)
+    add_dependencies(check cppcheck_check)
+endif()
+
+
 ##------------------------------------------------------------------------------
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
@@ -131,34 +137,93 @@ macro(blt_add_code_checks)
     endforeach()
 
     # Add code checks
+    set(_error_msg "blt_add_code_checks tried to create an already existing target with given PREFIX: ${arg_PREFIX}. ")
     if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
-        set(_check_target_name ${arg_PREFIX}_uncrustify_check)
-        if (TARGET ${_check_target_name})
-            message(FATAL_ERROR "blt_add_code_checks tried to create an already existing target with "
-                                "given PREFIX. Duplicate target name: ${_check_target_name}")
-        endif()
-        set(_style_target_name ${arg_PREFIX}_uncrustify_style)
-        if (TARGET ${_style_target_name})
-            message(FATAL_ERROR "blt_add_code_checks tried to create an already existing target with "
-                                "given PREFIX. Duplicate target name: ${_style_target_name}")
-        endif()
+        set(_uc_check_target_name ${arg_PREFIX}_uncrustify_check)
+        blt_error_if_target_exists(${_uc_check_target_name} ${_error_msg})
+        set(_uc_style_target_name ${arg_PREFIX}_uncrustify_style)
+        blt_error_if_target_exists(${_uc_style_target_name} ${_error_msg})
 
-        blt_add_uncrustify_target( NAME              ${_check_target_name}
+        blt_add_uncrustify_target( NAME              ${_uc_check_target_name}
                                    MODIFY_FILES      FALSE
                                    CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                    SRC_FILES         ${_c_sources} )
-        add_dependencies(uncrustify_check ${_check_target_name})
 
-        blt_add_uncrustify_target( NAME              ${_style_target_name}
+        blt_add_uncrustify_target( NAME              ${_uc_style_target_name}
                                    MODIFY_FILES      TRUE
                                    CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                    SRC_FILES         ${_c_sources} )
-        add_dependencies(uncrustify_style ${_style_target_name})
+    endif()
+
+    if (CPPCHECK_FOUND)
+        set(_cppcheck_target_name ${arg_PREFIX}_cppcheck_check)
+        blt_error_if_target_exists(${_cppcheck_target_name} ${_error_msg})
+
+	blt_add_cppcheck_target( NAME              ${_cppcheck_target_name}
+                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                 SRC_FILES         ${_c_sources})
     endif()
 
 endmacro(blt_add_code_checks)
+
+
+##-----------------------------------------------------------------------------
+## blt_add_cppcheck_target( NAME                <Created Target Name>
+##                          WORKING_DIRECTORY   <Working Directory>
+##                          PREPEND_FLAGS       <additional flags for cppcheck>
+##                          APPEND_FLAGS        <additional flags for cppcheck>
+##                          COMMENT             <Additional Comment for Target Invocation>
+##                          SRC_FILES           [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running cppcheck over the given SRC_FILES
+##
+## PREPEND_FLAGS are additional flags given to added to the front of the uncrustify flags.
+##
+## APPEND_FLAGS are additional flags given to added to the end of the uncrustify flags.
+##
+## COMMENT is prepended to the commented outputted by CMake.
+##
+## WORKING_DIRECTORY is the directory that uncrustify will be ran.  It defaults to the directory
+## where this macro is called.
+##
+## SRC_FILES is a list of source files that cppcheck will be run on.
+##-----------------------------------------------------------------------------
+macro(blt_add_cppcheck_target)
+
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    add_custom_target(${arg_NAME}
+            COMMAND ${CPPCHECK_EXECUTABLE} ${arg_PREPEND_FLAGS} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running cppcheck source code static analysis checks.")
+
+    # hook our new target into the proper dependency chain
+    add_dependencies(cppcheck_check ${arg_NAME})
+
+endmacro(blt_add_cppcheck_target)
 
 
 ##------------------------------------------------------------------------------
@@ -187,6 +252,8 @@ endmacro(blt_add_code_checks)
 ##
 ## WORKING_DIRECTORY is the directory that uncrustify will be ran.  It defaults to the directory
 ## where this macro is called.
+##
+## SRC_FILES is a list of source files that uncrustify will be ran on.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_add_uncrustify_target)
