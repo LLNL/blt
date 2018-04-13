@@ -346,6 +346,15 @@ macro(blt_add_library)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
+    # sanity checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_add_library() must be called with argument NAME <name>")
+    endif()
+
+    if (NOT arg_SOURCES AND NOT arg_HEADERS )
+        message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) called with no given sources or headers")
+    endif()
+
     if ( arg_SOURCES )
         #
         #  CUDA support
@@ -492,11 +501,14 @@ macro(blt_add_executable)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # sanity check
+    # sanity checks
     if( "${arg_NAME}" STREQUAL "" )
-        message(FATAL_ERROR "Must specify executable name with argument NAME <name>")
+        message(FATAL_ERROR "blt_add_executable() must be called with argument NAME <name>")
     endif()
 
+    if (NOT arg_SOURCES )
+        message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
+    endif()
 
     #
     #  cuda support
