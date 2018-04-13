@@ -199,7 +199,7 @@ if (NOT BLT_LOADED)
   # BLT smoke tests
   ################################
   if(ENABLE_TESTS)
-      add_subdirectory(${BLT_ROOT_DIR}/tests ${BLT_BUILD_DIR}/tests)
+      add_subdirectory(${BLT_ROOT_DIR}/tests/smoke ${BLT_BUILD_DIR}/tests/smoke)
   endif()
 
 endif() # only load BLT once!

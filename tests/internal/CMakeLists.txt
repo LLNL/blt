@@ -54,7 +54,7 @@ project(blt-example LANGUAGES C CXX)
 ###############################################################################
 # Set BLT_SOURCE_DIR to default location, if not set by user 
 if(NOT BLT_SOURCE_DIR)
-    set(BLT_SOURCE_DIR "blt")
+    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../..")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
@@ -62,6 +62,15 @@ include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 if(WIN32 AND ENABLE_SHARED_LIBS)
     add_definitions("-DWIN32_SHARED_LIBS")
 endif()
+
+
+################################
+# Project options
+################################
+option(TEST_GIT_MACROS 
+       "Toggle smoke tests for git macros. Off by default since it requires a modified git repo." 
+       OFF)
+
 
 ################################
 # Add a library
@@ -109,7 +118,7 @@ if(ENABLE_GTEST)
     ####################
     # Git Macros test
     ####################
-    if ( GIT_FOUND )
+    if ( GIT_FOUND AND TEST_GIT_MACROS)
 
       blt_is_git_repo( OUTPUT_STATE is_git_repo
                        SOURCE_DIR ${PROJECT_SOURCE_DIR} )
