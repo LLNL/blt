@@ -40,78 +40,24 @@
 #
 ###############################################################################
 
-####################################
-# BLT 3rd Party Lib Support
-####################################
+################################################################################
+# Example usage:
+#
+# find_package(cppcheck)
+#
+# If successful the following variables will be defined
+# CPPCHECK_FOUND
+# CPPCHECK_EXECUTABLE
+################################################################################
 
-################################
-# Git
-################################
-if (ENABLE_GIT)
-    find_package(Git)
-    if (Git_FOUND)
-        message(STATUS "Git Support is ON")
-        set(GIT_FOUND TRUE)
-        message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
-        message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
-    else()
-        message(STATUS "Git Support is OFF")
-    endif()
-else()
-    message(STATUS "Git Support is OFF")
-endif()
+find_program(CPPCHECK_EXECUTABLE
+             NAMES cppcheck
+             DOC "Path to cppcheck executable")
 
-################################
-# MPI
-################################
-message(STATUS "MPI Support is ${ENABLE_MPI}")
-if (ENABLE_MPI)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupMPI.cmake)
-endif()
-
-################################
-# CUDA
-################################
-message(STATUS "CUDA Support is ${ENABLE_CUDA}")
-if (ENABLE_CUDA)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake)
-endif()
-
-################################
-# ROCM
-################################
-message(STATUS "ROCM Support is ${ENABLE_ROCM}")
-if (ENABLE_ROCM)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
-endif()
-
-################################
-# Documentation Packages
-################################
-if (DOXYGEN_EXECUTABLE)
-    find_package(Doxygen)
-endif()
-
-if (SPHINX_EXECUTABLE)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/FindSphinx.cmake)
-endif()
-
-################################
-# Valgrind
-################################
-include(${BLT_ROOT_DIR}/cmake/thirdparty/FindValgrind.cmake)
-
-################################
-# linting via Uncrustify
-################################
-if (UNCRUSTIFY_EXECUTABLE)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindUncrustify.cmake)
-endif()
-
-################################
-# Static analysis via cppcheck
-################################
-if (CPPCHECK_EXECUTABLE)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindCppcheck.cmake)
-endif()
+# Handle REQUIRED and QUIET arguments
+# this will also set CPPCHECK_FOUND to true if CPPCHECK_EXECUTABLE exists
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(CPPCHECK
+                                  "Failed to locate cppcheck executable"
+                                  CPPCHECK_EXECUTABLE)
 
