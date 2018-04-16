@@ -92,6 +92,18 @@ macro(blt_copy_headers_target)
 
 endmacro(blt_copy_headers_target)
 
+##-----------------------------------------------------------------------------
+## blt_error_if_target_exists()
+##
+## Checks if target already exists in CMake project and errors out with given 
+## error_msg.
+##-----------------------------------------------------------------------------
+function(blt_error_if_target_exists target_name error_msg)
+    if (TARGET ${target_name})
+        message(FATAL_ERROR "${error_msg}Duplicate target name: ${target_name}")
+    endif()
+endfunction()
+
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
 ##------------------------------------------------------------------------------
@@ -241,7 +253,7 @@ endmacro(blt_setup_cuda_source_properties)
 
 
 ##------------------------------------------------------------------------------
-## update_project_sources( TARGET_SOURCES <sources> )
+## blt_update_project_sources( TARGET_SOURCES <sources> )
 ##------------------------------------------------------------------------------
 macro(blt_update_project_sources)
 
@@ -273,3 +285,4 @@ macro(blt_update_project_sources)
     mark_as_advanced("${PROJECT_NAME}_ALL_SOURCES")
 
 endmacro(blt_update_project_sources)
+
