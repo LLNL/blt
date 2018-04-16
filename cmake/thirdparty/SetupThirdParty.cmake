@@ -47,11 +47,18 @@
 ################################
 # Git
 ################################
-find_package(Git)
-if (Git_FOUND)
-  set(GIT_FOUND TRUE)
-  message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
-  message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
+if (ENABLE_GIT)
+    find_package(Git)
+    if (Git_FOUND)
+        message(STATUS "Git Support is ON")
+        set(GIT_FOUND TRUE)
+        message(STATUS "Git Executable: " ${GIT_EXECUTABLE} )
+        message(STATUS "Git Version: " ${GIT_VERSION_STRING} )
+    else()
+        message(STATUS "Git Support is OFF")
+    endif()
+else()
+    message(STATUS "Git Support is OFF")
 endif()
 
 ################################
@@ -68,6 +75,14 @@ endif()
 message(STATUS "CUDA Support is ${ENABLE_CUDA}")
 if (ENABLE_CUDA)
   include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake)
+endif()
+
+################################
+# ROCM
+################################
+message(STATUS "ROCM Support is ${ENABLE_ROCM}")
+if (ENABLE_ROCM)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
 endif()
 
 ################################

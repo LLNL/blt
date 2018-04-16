@@ -51,6 +51,12 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 
 
 ################################
+# TPL Options
+################################
+option(ENABLE_GIT       "Enables Git support" ON)
+
+
+################################
 # Build Options
 ################################
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
@@ -75,6 +81,8 @@ option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
 mark_as_advanced(ENABLE_CLANG_CUDA)
 set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
 mark_as_advanced(BLT_CLANG_CUDA_ARCH)
+option(ENABLE_ROCM         "Enable ROCM support" OFF)
+set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")
 
 # Options that control if Google Test, Google Mock, and Fruit are built 
 # and available for use. 

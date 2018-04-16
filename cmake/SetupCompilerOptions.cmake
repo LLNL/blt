@@ -86,6 +86,14 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
     set(COMPILER_FAMILY_IS_CLANG 1)
     message(STATUS "Compiler family is Clang")
     
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "HCC") # For ROCm
+    set(COMPILER_FAMILY_IS_HCC 1)
+    message(STATUS "Compiler family is HCC Clang")
+    
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "PGI")
+    set(COMPILER_FAMILY_IS_PGI 1)
+    message(STATUS "Compiler family is PGI")
+    
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
     set(COMPILER_FAMILY_IS_XL 1)
     message(STATUS "Compiler family is XL")
@@ -252,18 +260,18 @@ if( BLT_CXX_STD STREQUAL c++98 )
     set(CMAKE_CXX_STANDARD 98)
 elseif( BLT_CXX_STD STREQUAL c++11 )
     set(CMAKE_CXX_STANDARD 11)
-    if (COMPILER_FAMILY_IS_XL)
-      blt_append_custom_compiler_flag(
+    blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT "-std=c++11")
-    endif ()
-elseif( BLT_CXX_STD STREQUAL c++14 )
+        DEFAULT " "
+        XL "-std=c++11"
+        PGI "--c++11")
+elseif( BLT_CXX_STD STREQUAL c++14)
     set(CMAKE_CXX_STANDARD 14)
-    if (COMPILER_FAMILY_IS_XL)
-      blt_append_custom_compiler_flag(
+    blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT "-std=c++1y")
-    endif ()
+        DEFAULT " "
+        XL "-std=c++1y"
+        PGI "--c++14")
 else()
     message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
     Valid Options are ( c++98, c++11, c++14 )")
@@ -282,6 +290,8 @@ blt_append_custom_compiler_flag(
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
+     HCC        "-Wall" 
+     PGI        "-Minform=warn"
      MSVC       "/W4"
                        # Additional  possibilities for visual studio include:
                        # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
