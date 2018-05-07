@@ -180,7 +180,7 @@ endif()
 ################################################
 if(BLT_EXE_LINKER_FLAGS)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${BLT_EXE_LINKER_FLAGS}")
-    message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
+    message(STATUS "Updated CMAKE_EXE_LINKER_FLAGS to \"${CMAKE_EXE_LINKER_FLAGS}\"")
 endif()
 
 
