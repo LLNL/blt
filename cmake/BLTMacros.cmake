@@ -93,8 +93,8 @@ endmacro(blt_add_target_definitions)
 macro(blt_add_target_compile_flags)
 
     set(options)
-    set(singleValuedArgs TO FLAGS)
-    set(multiValuedArgs)
+    set(singleValuedArgs TO)
+    set(multiValuedArgs FLAGS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -166,8 +166,8 @@ endmacro(blt_set_target_folder)
 macro(blt_add_target_link_flags)
 
     set(options)
-    set(singleValuedArgs TO FLAGS)
-    set(multiValuedArgs)
+    set(singleValuedArgs TO)
+    set(multiValuedArgs FLAGS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -355,6 +355,13 @@ macro(blt_add_library)
         message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) called with no given sources or headers")
     endif()
 
+    # Determine whether to build as a shared library. Default to global variable unless
+    # SHARED parameter is specified
+    set(_build_shared_library ${ENABLE_SHARED_LIBS})
+    if( DEFINED arg_SHARED )
+        set(_build_shared_library ${arg_SHARED})
+    endif()
+
     if ( arg_SOURCES )
         #
         #  CUDA support
@@ -365,12 +372,12 @@ macro(blt_add_library)
             blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                              TARGET_SOURCES ${arg_SOURCES})
 
-            if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+            if ( ${_build_shared_library} )
                 cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
             else()
                 cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
             endif()
-        elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
+        elseif ( ${_build_shared_library} )
             add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
         else()
             add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
