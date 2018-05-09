@@ -163,8 +163,8 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
-            # This stops cmake from falling back on adding -l<library name>
-            # to the command line for BLT registered libraries which are not
+            # This prevents cmake from adding -l<library name> to the
+            # command line for BLT registered libraries which are not
             # actual CMake targets
             if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
