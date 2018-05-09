@@ -163,6 +163,9 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+            # This prevents cmake from adding -l<library name> to the
+            # command line for BLT registered libraries which are not
+            # actual CMake targets
             if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
                 target_link_libraries( ${arg_NAME} PUBLIC
@@ -178,21 +181,14 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
-            if(NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}"
-                    STREQUAL "BLT_NO_COMPILE_FLAGS" )
-                blt_add_target_compile_flags(TO ${arg_NAME} 
-                                             FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
-            endif()
+            blt_add_target_compile_flags(TO ${arg_NAME} 
+                                         FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
-            if(NOT "${BLT_${uppercase_dependency}_LINK_FLAGS}"
-                    STREQUAL "BLT_NO_LINK_FLAGS" )
-                blt_add_target_link_flags(TO ${arg_NAME}
-                                          FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
-            endif()
+            blt_add_target_link_flags(TO ${arg_NAME}
+                                      FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
-
 
         if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${dependency}")
             add_dependencies( ${arg_NAME} "blt_copy_headers_${dependency}")

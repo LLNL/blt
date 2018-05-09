@@ -93,8 +93,8 @@ endmacro(blt_add_target_definitions)
 macro(blt_add_target_compile_flags)
 
     set(options)
-    set(singleValuedArgs TO FLAGS)
-    set(multiValuedArgs)
+    set(singleValuedArgs TO)
+    set(multiValuedArgs FLAGS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -166,8 +166,8 @@ endmacro(blt_set_target_folder)
 macro(blt_add_target_link_flags)
 
     set(options)
-    set(singleValuedArgs TO FLAGS)
-    set(multiValuedArgs)
+    set(singleValuedArgs TO)
+    set(multiValuedArgs FLAGS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -241,12 +241,12 @@ macro(blt_register_library)
     string(TOUPPER ${arg_NAME} uppercase_name)
 
     if( arg_DEPENDS_ON )
-        set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE LIST "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_DEPENDS_ON)
     endif()
 
     if( arg_INCLUDES )
-        set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE LIST "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
     endif()
 
@@ -258,36 +258,32 @@ macro(blt_register_library)
     mark_as_advanced(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
-        set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE LIST "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_FORTRAN_MODULES)
     endif()
 
     if( arg_LIBRARIES )
-        set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE LIST "" FORCE)
     else()
-        set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE PATH "" FORCE)
+        # This prevents cmake from falling back on adding -l<library name>
+        # to the command line for BLT registered libraries which are not
+        # actual CMake targets
+        set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE STRING "" FORCE)
     endif()
-
     mark_as_advanced(BLT_${uppercase_name}_LIBRARIES)
 
     if( arg_COMPILE_FLAGS )
-        set(BLT_${uppercase_name}_COMPILE_FLAGS ${arg_COMPILE_FLAGS} CACHE PATH "" FORCE)
-    else()
-        set(BLT_${uppercase_name}_COMPILE_FLAGS "BLT_NO_COMPILE_FLAGS" CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_COMPILE_FLAGS "${arg_COMPILE_FLAGS}" CACHE STRING "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_COMPILE_FLAGS)
     endif()
-
-    mark_as_advanced(BLT_${uppercase_name}_COMPILE_FLAGS)
 
     if( arg_LINK_FLAGS )
-        set(BLT_${uppercase_name}_LINK_FLAGS ${arg_LINK_FLAGS} CACHE PATH "" FORCE)
-    else()
-        set(BLT_${uppercase_name}_LINK_FLAGS "BLT_NO_LINK_FLAGS" CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_LINK_FLAGS "${arg_LINK_FLAGS}" CACHE STRING "" FORCE)
+        mark_as_advanced(BLT_${uppercase_name}_LINK_FLAGS)
     endif()
 
-    mark_as_advanced(BLT_${uppercase_name}_LINK_FLAGS)
-
     if( arg_DEFINES )
-        set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE PATH "" FORCE)
+        set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE LIST "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_DEFINES)
     endif()
 
@@ -298,11 +294,14 @@ endmacro(blt_register_library)
 ## blt_add_library( NAME <libname>
 ##                  SOURCES [source1 [source2 ...]]
 ##                  HEADERS [header1 [header2 ...]]
+##                  INCLUDES [dir1 [dir2 ...]]
+##                  DEFINES [define1 [define2 ...]]
 ##                  DEPENDS_ON [dep1 ...] 
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
 ##                  SHARED [TRUE | FALSE]
+##                  CLEAR_PREFIX [TRUE | FALSE]
 ##                  FOLDER [name]
 ##                 )
 ##
@@ -316,6 +315,14 @@ endmacro(blt_register_library)
 ## include/<HEADERS_OUTPUT_SUBDIR>. Because of this HEADERS_OUTPUT_SUBDIR must
 ## be a relative path.
 ## 
+## The INCLUDES argument allows you to define what include directories are
+## needed by any target that is dependent on this library.  These will
+## be inherited by CMake's target dependency rules.
+##
+## The DEFINES argument allows you to add needed compiler definitions that are
+## needed by any target that is dependent on this library.  These will
+## be inherited by CMake's target dependency rules.
+##
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If 
 ## not it will add them as a CMake target dependency.
@@ -331,6 +338,9 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
+## CLEAR_PREFIX allows you to remove the automatically appended "lib" prefix
+## from your built library.  The created library will be foo.a instead of libfoo.a.
+##
 ## FOLDER is an optional keyword to organize the target into a folder in an IDE.
 ## This is available when ENABLE_FOLDERS is ON and when the cmake generator
 ## supports this feature and will otherwise be ignored. 
@@ -339,8 +349,9 @@ endmacro(blt_register_library)
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED FOLDER)
-    set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
+    set(options)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED CLEAR_PREFIX FOLDER)
+    set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
     cmake_parse_arguments(arg
@@ -355,6 +366,13 @@ macro(blt_add_library)
         message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) called with no given sources or headers")
     endif()
 
+    # Determine whether to build as a shared library. Default to global variable unless
+    # SHARED parameter is specified
+    set(_build_shared_library ${ENABLE_SHARED_LIBS})
+    if( DEFINED arg_SHARED )
+        set(_build_shared_library ${arg_SHARED})
+    endif()
+
     if ( arg_SOURCES )
         #
         #  CUDA support
@@ -365,12 +383,12 @@ macro(blt_add_library)
             blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                              TARGET_SOURCES ${arg_SOURCES})
 
-            if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+            if ( ${_build_shared_library} )
                 cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
             else()
                 cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
             endif()
-        elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
+        elseif ( ${_build_shared_library} )
             add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
         else()
             add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
@@ -425,7 +443,6 @@ macro(blt_add_library)
                                  DESTINATION ${headers_build_dir})
     endif()
 
-
     # Clear value of _have_fortran from previous calls
     set(_have_fortran False)
 
@@ -438,11 +455,19 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-      target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
+        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON} )
+
+    if ( arg_INCLUDES )
+        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+    endif()
+
+    if ( arg_DEFINES )
+        target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+    endif()
 
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES
@@ -471,11 +496,19 @@ endmacro(blt_add_library)
 ##------------------------------------------------------------------------------
 ## blt_add_executable( NAME <name>
 ##                     SOURCES [source1 [source2 ...]]
+##                     INCLUDES [dir1 [dir2 ...]]
+##                     DEFINES [define1 [define2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
 ##                     OUTPUT_DIR [dir])
 ##                     FOLDER [name]
 ##
 ## Adds an executable target, called <name>.
+##
+## The INCLUDES argument allows you to define what include directories are
+## needed to compile this executable.
+##
+## The DEFINES argument allows you to add needed compiler definitions that are
+## needed to compile this executable.
 ##
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If
@@ -495,7 +528,7 @@ macro(blt_add_executable)
 
     set(options )
     set(singleValueArgs NAME OUTPUT_DIR FOLDER)
-    set(multiValueArgs SOURCES DEPENDS_ON)
+    set(multiValueArgs SOURCES INCLUDES DEFINES DEPENDS_ON)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
