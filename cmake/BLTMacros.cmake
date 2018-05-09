@@ -265,7 +265,7 @@ macro(blt_register_library)
     if( arg_LIBRARIES )
         set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE LIST "" FORCE)
     else()
-        # This stops cmake from falling back on adding -l<library name>
+        # This prevents cmake from falling back on adding -l<library name>
         # to the command line for BLT registered libraries which are not
         # actual CMake targets
         set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE STRING "" FORCE)
@@ -294,11 +294,14 @@ endmacro(blt_register_library)
 ## blt_add_library( NAME <libname>
 ##                  SOURCES [source1 [source2 ...]]
 ##                  HEADERS [header1 [header2 ...]]
+##                  INCLUDES [dir1 [dir2 ...]]
+##                  DEFINES [define1 [define2 ...]]
 ##                  DEPENDS_ON [dep1 ...] 
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
 ##                  SHARED [TRUE | FALSE]
+##                  CLEAR_PREFIX [TRUE | FALSE]
 ##                  FOLDER [name]
 ##                 )
 ##
@@ -312,6 +315,14 @@ endmacro(blt_register_library)
 ## include/<HEADERS_OUTPUT_SUBDIR>. Because of this HEADERS_OUTPUT_SUBDIR must
 ## be a relative path.
 ## 
+## The INCLUDES argument allows you to define what include directories are
+## needed by any target that is dependent on this library.  These will
+## be inherited by CMake's target dependency rules.
+##
+## The DEFINES argument allows you to add needed compiler definitions that are
+## needed by any target that is dependent on this library.  These will
+## be inherited by CMake's target dependency rules.
+##
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If 
 ## not it will add them as a CMake target dependency.
@@ -327,6 +338,9 @@ endmacro(blt_register_library)
 ## It's useful when multiple libraries with the same name need to be created
 ## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
 ##
+## CLEAR_PREFIX allows you to remove the automatically appended "lib" prefix
+## from your built library.  The created library will be foo.a instead of libfoo.a.
+##
 ## FOLDER is an optional keyword to organize the target into a folder in an IDE.
 ## This is available when ENABLE_FOLDERS is ON and when the cmake generator
 ## supports this feature and will otherwise be ignored. 
@@ -335,8 +349,9 @@ endmacro(blt_register_library)
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED FOLDER)
-    set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
+    set(options)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED CLEAR_PREFIX FOLDER)
+    set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
     cmake_parse_arguments(arg
@@ -428,7 +443,6 @@ macro(blt_add_library)
                                  DESTINATION ${headers_build_dir})
     endif()
 
-
     # Clear value of _have_fortran from previous calls
     set(_have_fortran False)
 
@@ -441,11 +455,19 @@ macro(blt_add_library)
         endif()
     endforeach()
     if(_have_fortran)
-      target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
+        target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON} )
+
+    if ( arg_INCLUDES )
+        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+    endif()
+
+    if ( arg_DEFINES )
+        target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+    endif()
 
     if ( arg_OUTPUT_DIR )
         set_target_properties(${arg_NAME} PROPERTIES
@@ -474,11 +496,19 @@ endmacro(blt_add_library)
 ##------------------------------------------------------------------------------
 ## blt_add_executable( NAME <name>
 ##                     SOURCES [source1 [source2 ...]]
+##                     INCLUDES [dir1 [dir2 ...]]
+##                     DEFINES [define1 [define2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
 ##                     OUTPUT_DIR [dir])
 ##                     FOLDER [name]
 ##
 ## Adds an executable target, called <name>.
+##
+## The INCLUDES argument allows you to define what include directories are
+## needed to compile this executable.
+##
+## The DEFINES argument allows you to add needed compiler definitions that are
+## needed to compile this executable.
 ##
 ## If given a DEPENDS_ON argument, it will add the necessary includes and 
 ## libraries if they are already registered with blt_register_library.  If
@@ -498,7 +528,7 @@ macro(blt_add_executable)
 
     set(options )
     set(singleValueArgs NAME OUTPUT_DIR FOLDER)
-    set(multiValueArgs SOURCES DEPENDS_ON)
+    set(multiValueArgs SOURCES INCLUDES DEFINES DEPENDS_ON)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
