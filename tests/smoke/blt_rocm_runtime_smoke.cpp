@@ -50,14 +50,11 @@
 
 #include <iostream>
 #include <vector>
-#include "gtest/gtest.h"
 #include "hc.hpp"
 
-
-
-TEST(blt_rocm_runtime_smoke, basic_rocm_runtime_example)
+int main()
 {
-using namespace hc;
+   using namespace hc;
    accelerator acc;
    std::vector<accelerator> accv = acc.get_all() ;
 
@@ -79,6 +76,6 @@ using namespace hc;
    std::cout << "Default Accelerator " << ": " << idefault << " : " ;
    std::wcout << acc.get_device_path() <<  std::endl;
 
-   EXPECT_TRUE( true );
+   return 0;
 }
 

@@ -51,11 +51,10 @@
 //-----------------------------------------------------------------------------
 
 #include <iostream>
-#include "gtest/gtest.h"
 #include "cuda_runtime_api.h"
 #include <stdio.h>
 
-TEST(blt_cuda_runtime_smoke, basic_cuda_runtime_example)
+int main()
 {
     int nDevices;
 
@@ -74,6 +73,6 @@ TEST(blt_cuda_runtime_smoke, basic_cuda_runtime_example)
                2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
     }
 
-    EXPECT_TRUE( true );
+    return 0;
 }
 
