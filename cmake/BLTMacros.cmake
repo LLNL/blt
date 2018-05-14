@@ -743,6 +743,10 @@ endmacro(blt_add_benchmark)
 ##
 ## If a custom flag is given for the current compiler, we use that.
 ## Otherwise, we will use the DEFAULT flag (if present)
+## If ENABLE_FORTRAN is On, any flagsVar with "fortran" (any capitalization)
+## in its name will pick the compiler family (GNU,CLANG, INTEL, etc) based on
+## the fortran compiler family type. This allows mixing C and Fortran compiler
+## families, e.g. using Intel fortran compilers with clang C compilers. 
 ## When using the Intel toolchain within visual studio, we use the 
 ## MSVC_INTEL flag, when provided, with a fallback to the MSVC flag.
 ##------------------------------------------------------------------------------
@@ -763,14 +767,14 @@ macro(blt_append_custom_compiler_flag)
    
    # Set the desired flags based on the compiler family   
    # MSVC COMPILER FAMILY applies to C/C++ and Fortran
-   string(TOLOWER ${arg_FLAGS_VAR} lower_flag_var)
+   string( TOLOWER ${arg_FLAGS_VAR} lower_flag_var )
    if( DEFINED arg_MSVC_INTEL AND COMPILER_FAMILY_IS_MSVC_INTEL )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC_INTEL} " )
    elseif( DEFINED arg_MSVC AND (COMPILER_FAMILY_IS_MSVC OR COMPILER_FAMILY_IS_MSVC_INTEL) )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC} " )
    
    #else, if we are setting a fortran flag, check against the fortran compiler family
-   elseif ( ${lower_flag_var} MATCHES "fortran")
+   elseif ( ENABLE_FORTRAN AND ${lower_flag_var} MATCHES "fortran" )
        if( DEFINED arg_CLANG AND Fortran_COMPILER_FAMILY_IS_CLANG )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_CLANG} " )
        elseif( DEFINED arg_XL AND Fortran_COMPILER_FAMILY_IS_XL )
@@ -797,6 +801,7 @@ macro(blt_append_custom_compiler_flag)
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_DEFAULT} ")
        endif()
    endif()
+   unset(lower_flag_var)
 
 endmacro(blt_append_custom_compiler_flag)
 
