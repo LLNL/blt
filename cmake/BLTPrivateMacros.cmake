@@ -224,7 +224,9 @@ macro(blt_setup_cuda_source_properties)
 
 
     foreach (_file ${arg_TARGET_SOURCES})
-        if (${_file} MATCHES "\\.(f|F)\\*")
+      get_source_file_property(_lang ${_file} LANGUAGE)
+
+      if (${_lang} MATCHES Fortran OR ${_lang} MATCHES C)
             set(_non_cuda_sources ${_non_cuda_sources} ${_file})
         else()
             set(_cuda_sources ${_cuda_sources} ${_file})
