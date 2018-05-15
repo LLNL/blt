@@ -50,7 +50,6 @@
 //-----------------------------------------------------------------------------
 
 #include <iostream>
-#include "gtest/gtest.h"
 #include <stdio.h>
 
 __device__ const char *STR = "HELLO WORLD!";
@@ -61,14 +60,14 @@ __global__ void hello()
     printf("%c\n", STR[threadIdx.x % STR_LENGTH]);
 }
 
-TEST(blt_cuda_smoke,basic_cuda_example)
+int main()
 {
     int num_threads = STR_LENGTH;
     int num_blocks = 1;
     hello<<<num_blocks,num_threads>>>();
     cudaDeviceSynchronize();
     
-    EXPECT_TRUE( true );
+    return 0;
 }
 
 

@@ -140,7 +140,7 @@ if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_smoke
                        SOURCES blt_cuda_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                       DEPENDS_ON cuda gtest
+                       DEPENDS_ON cuda
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_cuda_smoke
@@ -149,7 +149,7 @@ if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_runtime_smoke
                        SOURCES blt_cuda_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                       DEPENDS_ON cuda_runtime gtest
+                       DEPENDS_ON cuda_runtime
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_cuda_runtime_smoke
@@ -165,7 +165,7 @@ if (ENABLE_ROCM)
     blt_add_executable(NAME blt_rocm_smoke
                        SOURCES blt_rocm_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON rocm gtest
+                       DEPENDS_ON rocm
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_rocm_smoke
@@ -174,7 +174,7 @@ if (ENABLE_ROCM)
     blt_add_executable(NAME blt_rocm_runtime_smoke
                        SOURCES blt_rocm_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON rocm gtest
+                       DEPENDS_ON rocm
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_rocm_runtime_smoke
