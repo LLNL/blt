@@ -175,22 +175,11 @@ if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
      message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
 endif()
 
-################################################
-# Support extra flags for the CUDA compiler.
-# N.B. must be ; delimited.
-################################################
-if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
-    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};${BLT_CUDA_FLAGS}")
-    # Replace spaces with semicolons in the CUDA flags
-    foreach(flag_var CUDA_NVCC_FLAGS)
-      if(${flag_var} MATCHES " ")
-        string(REGEX REPLACE " " ";" ${flag_var} "${${flag_var}}")
-      endif(${flag_var} MATCHES " ")
-    endforeach(flag_var)
-endif()
-
 ############################################################
 # Map Legacy FindCUDA variables to native cmake variables
+# Note - we are intentionally breaking the semicolon delimited 
+# list that FindCUDA demanded of CUDA_NVCC_FLAGS so users
+# are forced to clean up their host configs.
 ############################################################
 if (ENABLE_CUDA)
    enable_language(CUDA) 
@@ -202,16 +191,13 @@ if (ENABLE_CUDA)
    if (CUDA_HOST_COMPILER)
       set(CMAKE_CUDA_HOST_COMPILER ${CUDA_HOST_COMPILER})
    endif()
-   # Replace semicolons with spaces in the CUDA_NVCC_FLAGS
-   if (CUDA_NVCC_FLAGS)
-      foreach(flag_var CUDA_NVCC_FLAGS)
-         if(${flag_var} MATCHES ";")
-            string(REGEX REPLACE ";" " " ${flag_var} "${${flag_var}}")
-         endif(${flag_var} MATCHES ";")
-      endforeach(flag_var)
-      set(CMAKE_CUDA_FLAGS  ${CUDA_NVCC_FLAGS})
+   if (BLT_CUDA_FLAGS)
+      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
    endif()
-   # Separable Compilation is handled in the blt_add_library macro. 
+   if (CUDA_NVCC_FLAGS)
+      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${CUDA_NVCC_FLAGS}")
+   endif()
+   # CUDA_SEPARABLE_COMPILATION is handled in the blt_add_library macro. 
    # CUDA_LINK_WITH_NVCC is handled in the blt_add_executable macro. 
 endif()
 
