@@ -189,6 +189,33 @@ if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
     endforeach(flag_var)
 endif()
 
+############################################################
+# Map Legacy FindCUDA variables to native cmake variables
+############################################################
+if (ENABLE_CUDA)
+   enable_language(CUDA) 
+   # where to find nvcc
+   if(CUDA_BIN_PATH)
+      set(CMAKE_CUDA_COMPILER ${CUDA_BIN_PATH}/bin/nvcc)
+   endif()
+   # which compiler nvcc wraps
+   if (CUDA_HOST_COMPILER)
+      set(CMAKE_CUDA_HOST_COMPILER ${CUDA_HOST_COMPILER})
+   endif()
+   # Replace semicolons with spaces in the CUDA_NVCC_FLAGS
+   if (CUDA_NVCC_FLAGS)
+      foreach(flag_var CUDA_NVCC_FLAGS)
+         if(${flag_var} MATCHES ";")
+            string(REGEX REPLACE ";" " " ${flag_var} "${${flag_var}}")
+         endif(${flag_var} MATCHES ";")
+      endforeach(flag_var)
+      set(CMAKE_CUDA_FLAGS  ${CUDA_NVCC_FLAGS})
+   endif()
+   # Separable Compilation is handled in the blt_add_library macro. 
+   # CUDA_LINK_WITH_NVCC is handled in the blt_add_executable macro. 
+endif()
+
+
 ################################################
 # Support extra linker flags
 ################################################
@@ -274,6 +301,9 @@ if( BLT_CXX_STD STREQUAL c++98 )
     set(CMAKE_CXX_STANDARD 98)
 elseif( BLT_CXX_STD STREQUAL c++11 )
     set(CMAKE_CXX_STANDARD 11)
+    if (ENABLE_CUDA)
+       set(CMAKE_CUDA_STANDARD 11)
+    endif()
     blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
         DEFAULT " "
@@ -281,6 +311,9 @@ elseif( BLT_CXX_STD STREQUAL c++11 )
         PGI "--c++11")
 elseif( BLT_CXX_STD STREQUAL c++14)
     set(CMAKE_CXX_STANDARD 14)
+    if (ENABLE_CUDA)
+       set(CMAKE_CUDA_STANDARD 14)
+    endif()
     blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
         DEFAULT " "
