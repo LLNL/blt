@@ -68,15 +68,6 @@ endif()
 option(ENABLE_COPY_HEADERS "Copy headers to build directory" OFF)
 option(ENABLE_FORTRAN      "Enables Fortran compiler support" ${_fortran_already_enabled})
 
-# Make sure these are the same
-if(DEFINED BUILD_SHARED_LIBS)
-    set(_build_shared_libs  ${BUILD_SHARED_LIBS})
-else()
-    set(_build_shared_libs OFF)
-endif()
-option(ENABLE_SHARED_LIBS  "Enables shared libraries." ${_build_shared_libs})
-set(BUILD_SHARED_LIBS ${ENABLE_SHARED_LIBS})
-
 option(ENABLE_MPI          "Enables MPI support" OFF)
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
@@ -154,3 +145,7 @@ mark_as_advanced(
     ENABLE_GTEST_DEATH_TESTS
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
        
+if (DEFINED ENABLE_SHARED_LIBS)
+    message(FATAL_ERROR "ENABLE_SHARED_LIBS is a deprecated BLT option."
+                        "Use the standard CMake option, BUILD_SHARED_LIBS, instead.")
+endif()
