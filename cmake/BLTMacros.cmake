@@ -469,7 +469,7 @@ macro(blt_add_library)
 
     blt_setup_target( NAME ${arg_NAME}
                       DEPENDS_ON ${arg_DEPENDS_ON}
-                      NOLINK ${arg_OBJECT} )
+                      OBJECT ${arg_OBJECT} )
 
     if ( arg_INCLUDES )
         target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
