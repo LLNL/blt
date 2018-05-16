@@ -175,6 +175,7 @@ if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
      message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
 endif()
 
+
 ############################################################
 # Map Legacy FindCUDA variables to native cmake variables
 # Note - we are intentionally breaking the semicolon delimited 
@@ -182,23 +183,14 @@ endif()
 # are forced to clean up their host configs.
 ############################################################
 if (ENABLE_CUDA)
-   enable_language(CUDA) 
-   # where to find nvcc
-   if(CUDA_BIN_PATH)
-      set(CMAKE_CUDA_COMPILER ${CUDA_BIN_PATH}/bin/nvcc)
-   endif()
-   # which compiler nvcc wraps
-   if (CUDA_HOST_COMPILER)
-      set(CMAKE_CUDA_HOST_COMPILER ${CUDA_HOST_COMPILER})
-   endif()
    if (BLT_CUDA_FLAGS)
       set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
    endif()
-   if (CUDA_NVCC_FLAGS)
-      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${CUDA_NVCC_FLAGS}")
-   endif()
-   # CUDA_SEPARABLE_COMPILATION is handled in the blt_add_library macro. 
-   # CUDA_LINK_WITH_NVCC is handled in the blt_add_executable macro. 
+   # quirk of ordering means that one needs to define -std=c++11 in CMAKE_CUDA_FLAGS if
+   # --expt-extended-lambda is being used so cmake can get past the compiler check, 
+   # but the CMAKE_CUDA_STANDARD stuff adds another definition in which breaks things. 
+   # So we rip it out here, but it ends up being inserted in the final build rule by cmake. 
+   STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
 endif()
 
 
