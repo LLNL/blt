@@ -111,7 +111,9 @@ macro(blt_setup_target)
 
     set(options)
     set(singleValueArgs NAME)
+    set(singleValueArgs NOLINK )
     set(multiValueArgs DEPENDS_ON)
+    
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
@@ -120,6 +122,11 @@ macro(blt_setup_target)
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
+    endif()
+    
+    set( _no_link FALSE )
+    if ( DEFINED arg_NOLINK )
+        set( _no_link ${arg_NOLINK} )
     endif()
 
     # Add it's own copy headers target
@@ -168,11 +175,15 @@ macro(blt_setup_target)
             # actual CMake targets
             if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
+            if( NOT ${_no_link} )
                 target_link_libraries( ${arg_NAME} PUBLIC
                     ${BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
+            endif()
         else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
+            if( NOT ${_no_link} )
+                target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
+            endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
