@@ -48,19 +48,16 @@
 ///
 //-----------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-
 #include <hc.hpp>
 #include <hc_printf.hpp>
 
-
-TEST(blt_rocm_smoke,basic_rocm_example)
+int main()
 {
-  hc::parallel_for_each(hc::extent<1>(1), []() [[hc]] {
-      hc::printf("Accelerator: Hello World!\n");
-  }).wait();
-    
-    EXPECT_TRUE( true );
+    hc::parallel_for_each(hc::extent<1>(1), []() [[hc]] {
+        hc::printf("Accelerator: Hello World!\n");
+    }).wait();
+
+    return 0;
 }
 
 
