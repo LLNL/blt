@@ -190,7 +190,9 @@ if (ENABLE_CUDA)
    # --expt-extended-lambda is being used so cmake can get past the compiler check, 
    # but the CMAKE_CUDA_STANDARD stuff adds another definition in which breaks things. 
    # So we rip it out here, but it ends up being inserted in the final build rule by cmake. 
-   STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
+   if (${CMAKE_CUDA_FLAGS})
+      STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
+   endif()
 endif()
 
 
