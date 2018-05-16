@@ -66,8 +66,6 @@ endif()
 ##------------------------------------------------------------------------------
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
-##                      C_FILE_EXTS         [ext1 [ext2 ...]]
-##                      F_FILE_EXTS         [ext1 [ext2 ...]]
 ##                      UNCRUSTIFY_CFG_FILE <path to uncrustify config file>)
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
@@ -76,11 +74,8 @@ endif()
 ## PREFIX is used in the creation of all the underlying targets. For example:
 ## <PREFIX>_uncrustify_check.
 ##
-## C_FILE_EXTS is an optional list of file extensions to filter out the C/C++ SOURCES.
-## Otherwise it defaults to: ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh"
-##
-## F_FILE_EXTS is an optional list of file extensions to filter out the Fortran SOURCES.
-## Otherwise it defaults to: ".F" ".f" ".f90" ".F90"
+## Sources are filtered based on file extensions for use in these code checks.  If you need
+## additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
 ##
 ## UNCRUSTIFY_CFG_FILE is the configuration file for Uncrustify. If UNCRUSTIFY_EXECUTABLE
 ## is defined, found, and UNCRUSTIFY_CFG_FILE is provided it will create both check and
@@ -92,7 +87,7 @@ macro(blt_add_code_checks)
 
     set(options )
     set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE)
-    set(multiValueArgs SOURCES C_FILE_EXTS F_FILE_EXTS)
+    set(multiValueArgs SOURCES)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -105,17 +100,8 @@ macro(blt_add_code_checks)
         message(FATAL_ERROR "blt_add_code_checks requires the parameter SOURCES.")
     endif()
 
-    # Setup default parameters
-    if (NOT DEFINED arg_C_FILE_EXTS)
-        set(arg_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh" ".inl")
-    endif()
-    if (NOT DEFINED arg_F_FILE_EXTS)
-        set(arg_F_FILE_EXTS ".F" ".f" ".f90" ".F90")
-    endif()
-
-    # Generate source lists based on language
-    set(_c_sources)
-    set(_f_sources)
+    # Make the sources relative to the bin directory
+    set(_rel_sources)
     foreach(_file ${arg_SOURCES})
         # Get full path
         if(IS_ABSOLUTE ${_file})
@@ -124,17 +110,16 @@ macro(blt_add_code_checks)
             set(_full_path ${CMAKE_CURRENT_SOURCE_DIR}/${_file})
         endif()
 
-        get_filename_component(_ext ${_full_path} EXT)
-        file(RELATIVE_PATH _relpath ${CMAKE_BINARY_DIR} ${_full_path})
+        file(RELATIVE_PATH _rel_path ${CMAKE_BINARY_DIR} ${_full_path})
+        list(APPEND _rel_sources ${_rel_path})
+    endforeach()   
 
-        if(${_ext} IN_LIST arg_C_FILE_EXTS)
-            list(APPEND _c_sources ${_relpath})
-        elseif(${_ext} IN_LIST arg_F_FILE_EXTS)
-            list(APPEND _f_sources ${_relpath})
-        else()
-            message(FATAL_ERROR "blt_add_code_checks given source file with unknown file extension.")
-        endif()
-    endforeach()
+    # Generate source lists based on language
+    set(_c_sources)
+    set(_f_sources)
+    blt_split_source_list_by_language(SOURCES      ${_rel_sources}
+                                      C_LIST       _c_sources
+                                      Fortran_LIST _f_sources)
 
     # Add code checks
     set(_error_msg "blt_add_code_checks tried to create an already existing target with given PREFIX: ${arg_PREFIX}. ")

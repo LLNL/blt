@@ -92,6 +92,7 @@ macro(blt_copy_headers_target)
 
 endmacro(blt_copy_headers_target)
 
+
 ##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()
 ##
@@ -212,24 +213,19 @@ macro(blt_setup_cuda_source_properties)
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
-
     if ( NOT DEFINED arg_BUILD_TARGET )
         message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_cuda_source_properties' macro")
     endif()
 
-    
     if ( NOT DEFINED arg_TARGET_SOURCES )
         message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
     endif()
 
-
-    foreach (_file ${arg_TARGET_SOURCES})
-        if (${_file} MATCHES "\\.(f|F)\\*")
-            set(_non_cuda_sources ${_non_cuda_sources} ${_file})
-        else()
-            set(_cuda_sources ${_cuda_sources} ${_file})
-        endif()
-    endforeach()
+    set(_cuda_sources)
+    set(_non_cuda_sources)
+    blt_split_source_list_by_language(SOURCES      ${arg_TARGET_SOURCES}
+                                      C_LIST       _cuda_sources
+                                      Fortran_LIST _non_cuda_sources)
 
     set_source_files_properties( ${_cuda_sources}
                                  PROPERTIES
@@ -246,6 +242,46 @@ macro(blt_setup_cuda_source_properties)
     ##message(STATUS "target '${arg_BUILD_TARGET}' non-CUDA Sources: ${_non_cuda_sources}")
 
 endmacro(blt_setup_cuda_source_properties)
+
+
+##------------------------------------------------------------------------------
+## blt_split_source_list_by_language( SOURCES <sources>
+##                                    C_LIST <list name>
+##                                    Fortran_LIST <list name>)
+##------------------------------------------------------------------------------
+macro(blt_split_source_list_by_language)
+
+    set(options)
+    set(singleValueArgs C_LIST Fortran_LIST)
+    set(multiValueArgs SOURCES)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide a SOURCES argument to the 'blt_split_source_list_by_language' macro" )
+    endif()
+
+    # Generate source lists based on language
+    foreach(_file ${arg_SOURCES})
+        get_filename_component(_ext ${_file} EXT)
+
+        if(${_ext} IN_LIST BLT_C_FILE_EXTS)
+            if (${arg_C_LIST})
+                list(APPEND ${arg_C_LIST} ${_file})
+            endif()
+        elseif(${_ext} IN_LIST BLT_Fortran_FILE_EXTS)
+            if (${arg_Fortran_LIST})
+                list(APPEND ${arg_Fortran_LIST} ${_file})
+            endif()
+        else()
+            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS or BLT_Fortran_FILE_EXTS).\n Unknown file: ${_file}")
+        endif()
+    endforeach()
+
+endmacro(blt_split_source_list_by_language)
 
 
 ##------------------------------------------------------------------------------
@@ -281,4 +317,3 @@ macro(blt_update_project_sources)
     mark_as_advanced("${PROJECT_NAME}_ALL_SOURCES")
 
 endmacro(blt_update_project_sources)
-
