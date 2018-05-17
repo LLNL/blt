@@ -229,11 +229,7 @@ macro(blt_setup_cuda_source_properties)
 
     set_source_files_properties( ${_cuda_sources}
                                  PROPERTIES
-                                 CUDA_SOURCE_PROPERTY_FORMAT OBJ)
-
-    set_source_files_properties( ${_non_cuda_sources}
-                                 PROPERTIES
-                                 CUDA_SOURCE_PROPERTY_FORMAT False)
+                                 LANGUAGE CUDA)
 
     #
     # for debugging, or if we add verbose BLT output

@@ -2,6 +2,28 @@
 # CUDA
 ################################
 set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
+
+enable_language(CUDA)
+
+############################################################
+# Map Legacy FindCUDA variables to native cmake variables
+############################################################
+# if we are linking with NVCC, define the link rule here
+# Note that some mpi wrappers might have things like -Wl,-rpath defined, which when using 
+# FindMPI can break nvcc. In that case, you should set ENABLE_FIND_MPI to Off and control
+# the link using CMAKE_CUDA_LINK_FLAGS. -Wl,-rpath, equivalent would be -Xlinker -rpath -Xlinker
+if (CUDA_LINK_WITH_NVCC)
+  set(CMAKE_SHARED_LIBRARY_RPATH_LINK_CUDA_FLAG "-Xlinker -rpath -Xlinker")
+  set(CMAKE_CUDA_LINK_EXECUTABLE
+    "${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS>  <FLAGS>  <LINK_FLAGS>  <OBJECTS> -o <TARGET>  <LINK_LIBRARIES>")
+  # do a no-op for the device links - for some reason the device link library dependencies are only a subset of the 
+  # executable link dependencies so the device link fails if there are any missing CUDA library dependencies. Since
+  # we are doing a link with the nvcc compiler, the device link step is unnecessary .
+  # Frustratingly, nvcc-link errors out if you pass it an empty file, so we have to first compile the empty file. 
+  set(CMAKE_CUDA_DEVICE_LINK_LIBRARY "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
+  set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
+endif()
+
 find_package(CUDA REQUIRED)
 
 message(STATUS "CUDA version:      ${CUDA_VERSION_STRING}")
