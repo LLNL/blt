@@ -18,7 +18,7 @@ endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
-if(WIN32 AND ENABLE_SHARED_LIBS)
+if(WIN32 AND BUILD_SHARED_LIBS)
     add_definitions("-DWIN32_SHARED_LIBS")
 endif()
 
@@ -27,8 +27,6 @@ endif()
 ###############################################################################
 blt_add_executable( NAME example_1
                     SOURCES example_1.cpp )
-
-
 
 ###############################################################################
 # Example 2: Creating a library and an executable using our library.

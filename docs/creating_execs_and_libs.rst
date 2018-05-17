@@ -122,5 +122,5 @@ more work or CMake function calls.
    given sources and headers along with handling dependencies the same way as ``blt_add_executable``
    does.  It also provides a few commonly used build options, such as overriding the output name of the
    library and the output directory.  It defaults to building a static library unless you override it with
-   ``SHARED`` or with the global BLT option ``ENABLE_SHARED_LIBS``.
+   ``SHARED`` or with the global CMake option ``BUILD_SHARED_LIBS``.
 

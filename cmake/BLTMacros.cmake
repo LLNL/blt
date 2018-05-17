@@ -306,7 +306,7 @@ endmacro(blt_register_library)
 ##                 )
 ##
 ## Adds a library target, called <libname>, to be built from the given sources.
-## This macro uses the ENABLE_SHARED_LIBS, which is defaulted to OFF, to determine
+## This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
 ## whether the library will be build as shared or static. The optional boolean
 ## SHARED argument can be used to override this choice.
 ##
@@ -368,7 +368,7 @@ macro(blt_add_library)
 
     # Determine whether to build as a shared library. Default to global variable unless
     # SHARED parameter is specified
-    set(_build_shared_library ${ENABLE_SHARED_LIBS})
+    set(_build_shared_library ${BUILD_SHARED_LIBS})
     if( DEFINED arg_SHARED )
         set(_build_shared_library ${arg_SHARED})
     endif()
