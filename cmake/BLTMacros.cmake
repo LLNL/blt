@@ -882,3 +882,53 @@ macro(blt_find_libraries)
     endforeach()
 
 endmacro(blt_find_libraries)
+
+
+##------------------------------------------------------------------------------
+## blt_combine_static_libraries( NAME <libname>
+##                               SOURCE_LIBS [lib1 ...] 
+##                               LINK_PREPEND []
+##                               LINK_POSTPEND []
+##                 )
+##
+## Adds a library target, called <libname>, to be built from the set of 
+## static libraries given in SOURCE_LIBS.
+## 
+## The LINK_PREFIX argument will be prepended to the library on the link line,
+## while the LINK_SUFFIX will be appended to the libray on the link line. These
+## values are typically "-Wl,--whole-archive", and "-Wl,--no-whole-archive" 
+## on linux systems
+##
+##------------------------------------------------------------------------------
+macro(blt_combine_static_libraries)
+
+    set(options )
+    set(singleValueArgs NAME LINK_PREPEND LINK_POSTPEND )
+    set(multiValueArgs SOURCE_LIBS )
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # sanity checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_combine_static_libraries() must be called with argument NAME <name>")
+    endif()
+
+
+    if( NOT arg_SOURCE_LIBS )
+        message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) called with no given source libraries")
+    endif()
+
+    set( libLinkLine "" )
+    foreach( lib ${arg_SOURCE_LIBS} )
+        list( APPEND libLinkLine ${arg_LINK_PREPEND} ${lib} ${arg_LINK_POSTPEND} )
+    endforeach()
+
+    add_library ( ${arg_NAME} SHARED )
+    target_link_libraries( ${arg_NAME} PRIVATE ${libLinkLine})
+    blt_register_library( NAME ${arg_NAME}
+                          DEPENDS_ON ${arg_SOURCE_LIBS}
+                          LIBRARIES ${arg_NAME}
+                         )
+
+endmacro(blt_combine_static_libraries)
