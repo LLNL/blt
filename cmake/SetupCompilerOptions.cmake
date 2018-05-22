@@ -175,19 +175,26 @@ if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
      message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
 endif()
 
-################################################
-# Support extra flags for the CUDA compiler.
-# N.B. must be ; delimited.
-################################################
-if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
-    set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};${BLT_CUDA_FLAGS}")
-    # Replace spaces with semicolons in the CUDA flags
-    foreach(flag_var CUDA_NVCC_FLAGS)
-      if(${flag_var} MATCHES " ")
-        string(REGEX REPLACE " " ";" ${flag_var} "${${flag_var}}")
-      endif(${flag_var} MATCHES " ")
-    endforeach(flag_var)
+
+############################################################
+# Map Legacy FindCUDA variables to native cmake variables
+# Note - we are intentionally breaking the semicolon delimited 
+# list that FindCUDA demanded of CUDA_NVCC_FLAGS so users
+# are forced to clean up their host configs.
+############################################################
+if (ENABLE_CUDA)
+   if (BLT_CUDA_FLAGS)
+      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
+   endif()
+   # quirk of ordering means that one needs to define -std=c++11 in CMAKE_CUDA_FLAGS if
+   # --expt-extended-lambda is being used so cmake can get past the compiler check, 
+   # but the CMAKE_CUDA_STANDARD stuff adds another definition in which breaks things. 
+   # So we rip it out here, but it ends up being inserted in the final build rule by cmake. 
+   if (${CMAKE_CUDA_FLAGS})
+      STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
+   endif()
 endif()
+
 
 ################################################
 # Support extra linker flags
@@ -242,7 +249,7 @@ endif()
 # RPath Settings
 ################################
 # only apply rpath settings for builds using shared libs
-if(ENABLE_SHARED_LIBS)
+if(BUILD_SHARED_LIBS)
     # use, i.e. don't skip the full RPATH for the build tree
     set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
@@ -274,6 +281,9 @@ if( BLT_CXX_STD STREQUAL c++98 )
     set(CMAKE_CXX_STANDARD 98)
 elseif( BLT_CXX_STD STREQUAL c++11 )
     set(CMAKE_CXX_STANDARD 11)
+    if (ENABLE_CUDA)
+       set(CMAKE_CUDA_STANDARD 11)
+    endif()
     blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
         DEFAULT " "
@@ -281,6 +291,9 @@ elseif( BLT_CXX_STD STREQUAL c++11 )
         PGI "--c++11")
 elseif( BLT_CXX_STD STREQUAL c++14)
     set(CMAKE_CXX_STANDARD 14)
+    if (ENABLE_CUDA)
+       set(CMAKE_CUDA_STANDARD 14)
+    endif()
     blt_append_custom_compiler_flag(
         FLAGS_VAR CMAKE_CXX_FLAGS
         DEFAULT " "

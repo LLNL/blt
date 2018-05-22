@@ -41,165 +41,168 @@
 ###############################################################################
 
 if (NOT BLT_LOADED)
-  set (BLT_LOADED True)
-  mark_as_advanced(BLT_LOADED)
+    set (BLT_LOADED True)
+    mark_as_advanced(BLT_LOADED)
 
-  set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
-  
-  # if an explicit build dir was not specified, set a default.
-  if( NOT BLT_BUILD_DIR )
-      set( BLT_BUILD_DIR ${PROJECT_BINARY_DIR}/blt CACHE PATH "" FORCE )
-  endif()
+    set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
 
-  ################################
-  # Prevent in-source builds
-  ################################
-  # Fail if someone tries to config an in-source build.
-  if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-     message(FATAL_ERROR "In-source builds are not supported. Please remove "
-                         "CMakeCache.txt from the 'src' dir and configure an "
-                         "out-of-source build in another directory.")
-  endif()
+    # if an explicit build dir was not specified, set a default.
+    if( NOT BLT_BUILD_DIR )
+        set( BLT_BUILD_DIR ${PROJECT_BINARY_DIR}/blt CACHE PATH "" FORCE )
+    endif()
 
-  ################################
-  # Setup build options and their default values
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/BLTOptions.cmake)
+    ################################
+    # Prevent in-source builds
+    ################################
+    # Fail if someone tries to config an in-source build.
+    if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+        message(FATAL_ERROR "In-source builds are not supported. Please remove "
+                            "CMakeCache.txt from the 'src' dir and configure an "
+                            "out-of-source build in another directory.")
+    endif()
 
-  ################################
-  # Invoke CMake Fortran setup
-  # if ENABLE_FORTRAN == ON
-  ################################
-  if(ENABLE_FORTRAN)
-      enable_language(Fortran)
-  endif()
+    ################################
+    # Setup build options and their default values
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/BLTOptions.cmake)
 
-  ################################
-  # Enable ctest support
-  ################################
-  if(ENABLE_TESTS)
-      enable_testing()
-  endif()
+    ################################
+    # Invoke CMake Fortran setup
+    # if ENABLE_FORTRAN == ON
+    ################################
+    if(ENABLE_FORTRAN)
+        enable_language(Fortran)
+    endif()
 
-  ################################
-  # Enable cmake generator folder feature
-  # if ENABLE_FOLDERS == ON
-  ################################
-  if(ENABLE_FOLDERS)
-      set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-  endif()
+    ################################
+    # Enable ctest support
+    ################################
+    if(ENABLE_TESTS)
+        enable_testing()
+    endif()
 
-  ################################
-  # Macros
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/BLTMacros.cmake)
+    ################################
+    # Enable cmake generator folder feature
+    # if ENABLE_FOLDERS == ON
+    ################################
+    if(ENABLE_FOLDERS)
+        set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    endif()
 
-  ################################
-  # Standard TPL support
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake)
+    ################################
+    # Macros
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/BLTMacros.cmake)
 
-  ################################
-  # Git related Macros
-  ################################
-  if (Git_FOUND)
-    include(${BLT_ROOT_DIR}/cmake/BLTGitMacros.cmake)
-  endif()
-  
-  ################################
-  # Setup docs targets
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/SetupDocs.cmake)
+    ################################
+    # Standard TPL support
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake)
 
-  ################################
-  # Setup source checks
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/SetupCodeChecks.cmake)
+    ################################
+    # Git related Macros
+    ################################
+    if (Git_FOUND)
+        include(${BLT_ROOT_DIR}/cmake/BLTGitMacros.cmake)
+    endif()
 
-  ################################
-  # Standard Build Layout
-  ################################
+    ################################
+    # Setup docs targets
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/SetupDocs.cmake)
 
-  # Defines the layout of the build directory. Namely,
-  # it indicates the location where the various header files should go,
-  # where to store libraries (static or shared), the location of the
-  # bin directory for all executables and the location for fortran modules.
+    ################################
+    # Setup source checks
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/SetupCodeChecks.cmake)
 
-  # Set the path where all the headers will be stored
-  if ( ENABLE_COPY_HEADERS )
-      set(HEADER_INCLUDES_DIRECTORY
-          ${PROJECT_BINARY_DIR}/include/
-          CACHE PATH
-          "Directory where all headers will go in the build tree"
-          )
-      include_directories(${HEADER_INCLUDES_DIRECTORY})
-  endif()
+    ################################
+    # Standard Build Layout
+    ################################
 
-  # Set the path where all the libraries will be stored
-  set(LIBRARY_OUTPUT_PATH
-      ${PROJECT_BINARY_DIR}/lib
-      CACHE PATH
-      "Directory where compiled libraries will go in the build tree"
-      )
+    # Defines the layout of the build directory. Namely,
+    # it indicates the location where the various header files should go,
+    # where to store libraries (static or shared), the location of the
+    # bin directory for all executables and the location for fortran modules.
 
-  # Set the path where all the installed executables will go
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
-      ${PROJECT_BINARY_DIR}/bin
-      CACHE PATH
-      "Directory where executables will go in the build tree"
-      )
+    # Set the path where all the headers will be stored
+    if ( ENABLE_COPY_HEADERS )
+        set(HEADER_INCLUDES_DIRECTORY
+            ${PROJECT_BINARY_DIR}/include/
+            CACHE PATH
+            "Directory where all headers will go in the build tree")
+        include_directories(${HEADER_INCLUDES_DIRECTORY})
+    endif()
 
-  # Set the path were all test executables will go
-  set(TEST_OUTPUT_DIRECTORY
-      ${PROJECT_BINARY_DIR}/tests
-      CACHE PATH
-      "Directory where test executables will go in the build tree"
-      )
+    # Set the path where all the libraries will be stored
+    set(LIBRARY_OUTPUT_PATH
+        ${PROJECT_BINARY_DIR}/lib
+        CACHE PATH
+        "Directory where compiled libraries will go in the build tree")
 
-  # Set the path were all example test executables will go
-  set(EXAMPLE_OUTPUT_DIRECTORY
-      ${PROJECT_BINARY_DIR}/examples
-      CACHE PATH
-      "Directory where example executables will go in the build tree"
-      )
+    # Set the path where all the installed executables will go
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+        ${PROJECT_BINARY_DIR}/bin
+        CACHE PATH
+        "Directory where executables will go in the build tree")
 
-  # Set the Fortran module directory
-  set(CMAKE_Fortran_MODULE_DIRECTORY
-      ${PROJECT_BINARY_DIR}/lib/fortran
-      CACHE PATH
-      "Directory where all Fortran modules will go in the build tree"
-      )
+    # Set the path were all test executables will go
+    set(TEST_OUTPUT_DIRECTORY
+        ${PROJECT_BINARY_DIR}/tests
+        CACHE PATH
+        "Directory where test executables will go in the build tree")
 
-  # Mark as advanced
-  mark_as_advanced(
+    # Set the path were all example test executables will go
+    set(EXAMPLE_OUTPUT_DIRECTORY
+        ${PROJECT_BINARY_DIR}/examples
+        CACHE PATH
+        "Directory where example executables will go in the build tree")
+
+    # Set the Fortran module directory
+    set(CMAKE_Fortran_MODULE_DIRECTORY
+        ${PROJECT_BINARY_DIR}/lib/fortran
+        CACHE PATH
+        "Directory where all Fortran modules will go in the build tree")
+
+    # Mark as advanced
+    mark_as_advanced(
        LIBRARY_OUTPUT_PATH
        CMAKE_RUNTIME_OUTPUT_DIRECTORY
-       CMAKE_Fortran_MODULE_DIRECTORY
-       )
+       CMAKE_Fortran_MODULE_DIRECTORY)
 
-  ################################
-  # Setup compiler options
-  # (must be included after HEADER_INCLUDES_DIRECTORY and MPI variables are set)
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/SetupCompilerOptions.cmake)
+    ################################
+    # Global variables needed by BLT
+    #
+    ################################
+    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh" ".inl" ".cu"
+               CACHE LIST "List of known file extensions used for C/CXX sources")
+    set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
+               CACHE LIST "List of known file extensions used for Fortran sources")
 
-  ################################
-  # Setup code metrics -
-  # profiling, code coverage, etc.
-  # (must be included after SetupCompilerOptions)
-  ################################
-  include(${BLT_ROOT_DIR}/cmake/SetupCodeMetrics.cmake)
 
-  ################################
-  # builtin third party libs used by BLT
-  ################################
-  add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin ${BLT_BUILD_DIR}/thirdparty_builtin)
+    ################################
+    # Setup compiler options
+    # (must be included after HEADER_INCLUDES_DIRECTORY and MPI variables are set)
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/SetupCompilerOptions.cmake)
 
-  ################################
-  # BLT smoke tests
-  ################################
-  if(ENABLE_TESTS)
-      add_subdirectory(${BLT_ROOT_DIR}/tests/smoke ${BLT_BUILD_DIR}/tests/smoke)
-  endif()
+    ################################
+    # Setup code metrics -
+    # profiling, code coverage, etc.
+    # (must be included after SetupCompilerOptions)
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/SetupCodeMetrics.cmake)
+
+    ################################
+    # builtin third party libs used by BLT
+    ################################
+    add_subdirectory(${BLT_ROOT_DIR}/thirdparty_builtin ${BLT_BUILD_DIR}/thirdparty_builtin)
+
+    ################################
+    # BLT smoke tests
+    ################################
+    if(ENABLE_TESTS)
+        add_subdirectory(${BLT_ROOT_DIR}/tests/smoke ${BLT_BUILD_DIR}/tests/smoke)
+    endif()
 
 endif() # only load BLT once!

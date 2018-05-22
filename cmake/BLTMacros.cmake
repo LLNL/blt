@@ -306,7 +306,7 @@ endmacro(blt_register_library)
 ##                 )
 ##
 ## Adds a library target, called <libname>, to be built from the given sources.
-## This macro uses the ENABLE_SHARED_LIBS, which is defaulted to OFF, to determine
+## This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
 ## whether the library will be build as shared or static. The optional boolean
 ## SHARED argument can be used to override this choice.
 ##
@@ -368,7 +368,7 @@ macro(blt_add_library)
 
     # Determine whether to build as a shared library. Default to global variable unless
     # SHARED parameter is specified
-    set(_build_shared_library ${ENABLE_SHARED_LIBS})
+    set(_build_shared_library ${BUILD_SHARED_LIBS})
     if( DEFINED arg_SHARED )
         set(_build_shared_library ${arg_SHARED})
     endif()
@@ -389,18 +389,25 @@ macro(blt_add_library)
             blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                              TARGET_SOURCES ${arg_SOURCES})
 
-            if ( ${_build_shared_library} )
-                cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
-            else()
-                cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
-            endif()
-        elseif ( ${arg_OBJECT} )
+        if ( ${arg_OBJECT} )
             message( "adding ${arg_NAME} as an OBJECT LIBRARY " )
             add_library( ${arg_NAME} OBJECT ${arg_SOURCES} ${arg_HEADERS} )
         elseif ( ${_build_shared_library} )
             add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
         else()
             add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
+        endif()
+        if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
+           set_target_properties( ${arg_NAME} PROPERTIES LANGUAGE CUDA)
+           if ( ${_build_shared_library})
+               set_target_properties( ${arg_NAME} PROPERTIES CMAKE_CUDA_CREATE_STATIC_LIBRARY ON)
+           else()
+               set_target_properties( ${arg_NAME} PROPERTIES CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
+           endif()
+           if (CUDA_SEPARABLE_COMPILATION)
+              set_target_properties( ${arg_NAME} PROPERTIES
+                                                 CUDA_SEPARABLE_COMPILATION ON)
+           endif()
         endif()
     else()
         #
@@ -560,9 +567,16 @@ macro(blt_add_executable)
     if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                          TARGET_SOURCES ${arg_SOURCES})
-        cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
-    else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} )
+    endif()
+    add_executable( ${arg_NAME} ${arg_SOURCES} )
+    if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
+        if (CUDA_SEPARABLE_COMPILATION)
+           set_target_properties( ${arg_NAME} PROPERTIES
+                                              CUDA_SEPARABLE_COMPILATION ON)
+        endif()
+        if (CUDA_LINK_WITH_NVCC) 
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+        endif()
     endif()
 
     # CMake wants to load with C++ if any of the libraries are C++.

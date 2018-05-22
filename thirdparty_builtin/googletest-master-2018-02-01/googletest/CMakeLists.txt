@@ -27,7 +27,10 @@ option(
   "Build gtest with internal symbols hidden in shared libraries."
   OFF)
 
-set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Generate debug library name with a postfix.")
+# BLT FIX - This causes global issues where it adds 'd' to the end of library names when
+#  building debug libraries.  It has been fixed in the newer gtest
+#set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Generate debug library name with a postfix.")
+# END BLT FIX
 
 # Defines pre_project_set_up_hermetic_build() and set_up_hermetic_build().
 include(cmake/hermetic_build.cmake OPTIONAL)
