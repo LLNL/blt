@@ -894,8 +894,8 @@ endmacro(blt_find_libraries)
 ## Adds a library target, called <libname>, to be built from the set of 
 ## static libraries given in SOURCE_LIBS.
 ## 
-## The LINK_PREFIX argument will be prepended to the library on the link line,
-## while the LINK_SUFFIX will be appended to the libray on the link line. These
+## The LINK_PREPEND argument will be prepended to the library on the link line,
+## while the LINK_POSTPEND will be appended to the libray on the link line. These
 ## values are typically "-Wl,--whole-archive", and "-Wl,--no-whole-archive" 
 ## on linux systems
 ##
@@ -914,6 +914,9 @@ macro(blt_combine_static_libraries)
         message(FATAL_ERROR "blt_combine_static_libraries() must be called with argument NAME <name>")
     endif()
 
+    if(TARGET ${arg_NAME})
+        message(FATAL_ERROR "$A target with the name {arg_NAME} already exists!")
+    endif()
 
     if( NOT arg_SOURCE_LIBS )
         message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) called with no given source libraries")
@@ -931,4 +934,5 @@ macro(blt_combine_static_libraries)
                           LIBRARIES ${arg_NAME}
                          )
 
+    unset( libLinkLine )
 endmacro(blt_combine_static_libraries)
