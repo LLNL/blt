@@ -890,7 +890,7 @@ endmacro(blt_find_libraries)
 ##                               LIB_TYPE [STATIC,SHARED}
 ##                               LINK_PREPEND []
 ##                               LINK_POSTPEND []
-##                 )
+##                             )
 ##
 ## Adds a library target, called <libname>, to be built from the set of 
 ## static libraries given in SOURCE_LIBS.
@@ -936,7 +936,7 @@ macro(blt_combine_static_libraries)
         message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) LIB_TYPE must be SHARED OR STATIC")
     endif()
         
-    add_library ( ${arg_NAME} ${_lib_type} ${BLT_SOURCE_DIR}/tests/internal/src/combine_static_library_test/dummy.cpp)
+    add_library ( ${arg_NAME} ${_lib_type} ${BLT_ROOT_DIR}/tests/internal/src/combine_static_library_test/dummy.cpp)
     target_link_libraries( ${arg_NAME} PRIVATE ${libLinkLine})
     blt_register_library( NAME ${arg_NAME}
                           DEPENDS_ON ${arg_SOURCE_LIBS}
