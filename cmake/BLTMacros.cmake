@@ -887,6 +887,7 @@ endmacro(blt_find_libraries)
 ##------------------------------------------------------------------------------
 ## blt_combine_static_libraries( NAME <libname>
 ##                               SOURCE_LIBS [lib1 ...] 
+##                               LIB_TYPE [STATIC,SHARED}
 ##                               LINK_PREPEND []
 ##                               LINK_POSTPEND []
 ##                 )
@@ -903,7 +904,7 @@ endmacro(blt_find_libraries)
 macro(blt_combine_static_libraries)
 
     set(options )
-    set(singleValueArgs NAME LINK_PREPEND LINK_POSTPEND )
+    set(singleValueArgs NAME LINK_PREPEND LINK_POSTPEND LIB_TYPE )
     set(multiValueArgs SOURCE_LIBS )
 
     cmake_parse_arguments(arg
@@ -927,7 +928,15 @@ macro(blt_combine_static_libraries)
         list( APPEND libLinkLine ${arg_LINK_PREPEND} ${lib} ${arg_LINK_POSTPEND} )
     endforeach()
 
-    add_library ( ${arg_NAME} SHARED )
+    if( ${arg_LIB_TYPE} STREQUAL "STATIC" )
+        set( _lib_type STATIC )
+    elseif( ${arg_LIB_TYPE} STREQUAL "SHARED" ) 
+        set( _lib_type SHARED )
+    else()
+        message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) LIB_TYPE must be SHARED OR STATIC")
+    endif()
+        
+    add_library ( ${arg_NAME} ${_lib_type} ${BLT_SOURCE_DIR}/tests/internal/src/combine_static_library_test/dummy.cpp)
     target_link_libraries( ${arg_NAME} PRIVATE ${libLinkLine})
     blt_register_library( NAME ${arg_NAME}
                           DEPENDS_ON ${arg_SOURCE_LIBS}
