@@ -67,6 +67,12 @@ if (NOT BLT_LOADED)
     include(${BLT_ROOT_DIR}/cmake/BLTOptions.cmake)
 
     ################################
+    # CMP0057 New is required by blt_add_libraries
+    ################################
+    cmake_policy(SET CMP0057 NEW)
+
+
+    ################################
     # Invoke CMake Fortran setup
     # if ENABLE_FORTRAN == ON
     ################################
