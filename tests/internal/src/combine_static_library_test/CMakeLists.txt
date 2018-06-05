@@ -7,11 +7,13 @@ endif()
 blt_add_library( NAME Foo1
                  SOURCES Foo1.cpp
                  HEADERS Foo1.hpp
+                 SHARED FALSE
                )
 
 blt_add_library( NAME Foo23
                  SOURCES Foo2.cpp Foo3.cpp
                  HEADERS Foo2.hpp Foo3.hpp
+                 SHARED FALSE
                )
 
 blt_combine_static_libraries( NAME FooStatic

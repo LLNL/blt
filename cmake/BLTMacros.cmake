@@ -954,8 +954,14 @@ macro(blt_combine_static_libraries)
     
     set( libLinkLine "" )
     foreach( lib ${arg_SOURCE_LIBS} )
-        list( APPEND libLinkLine ${_link_prepend} ${lib} ${_link_postpend} )
+        if( CMAKE_HOST_UNIX )
+            list( APPEND libLinkLine ${_link_prepend} ${lib} ${_link_postpend} )
+        elseif( CMAKE_HOST_WIN32 )
+            list( APPEND libLinkLine "${_link_prepend}${lib}" )
+        endif()
     endforeach()
+
+    message( "libLinkLine = ${libLinkLine}" )
     
     if( ${arg_LIB_TYPE} STREQUAL "STATIC" )
         set( _lib_type STATIC )
