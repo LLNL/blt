@@ -1,9 +1,9 @@
 #include<iostream>
-#include "foo1.hpp"
-#include "foo2.hpp"
+#include "Foo1.hpp"
+#include "Foo2.hpp"
 
 using namespace blt_test;
-int main( int argc, char ** argv )
+int main( int , char **  )
 {
   Foo1 foo1;
   Foo2 foo2;
