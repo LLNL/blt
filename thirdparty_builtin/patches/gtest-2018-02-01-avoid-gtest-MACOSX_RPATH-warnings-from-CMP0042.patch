@@ -1,0 +1,27 @@
+From dcbb29183cb27a4ce448d89d2d2a1843da472d92 Mon Sep 17 00:00:00 2001
+From: Cyrus Harrison <cyrush@llnl.gov>
+Date: Tue, 5 Jun 2018 13:45:33 -0700
+Subject: [PATCH] avoid gtest MACOSX_RPATH warnings from CMP0042
+
+---
+ .../googletest-master-2018-02-01/googletest/CMakeLists.txt    | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/thirdparty_builtin/googletest-master-2018-02-01/googletest/CMakeLists.txt b/thirdparty_builtin/googletest-master-2018-02-01/googletest/CMakeLists.txt
+index 1fe299f..e3827d7 100755
+--- a/thirdparty_builtin/googletest-master-2018-02-01/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest-master-2018-02-01/googletest/CMakeLists.txt
+@@ -61,6 +61,10 @@ if (POLICY CMP0063) # Visibility
+   cmake_policy(SET CMP0063 NEW)
+ endif (POLICY CMP0063)
+ 
++if (POLICY CMP0042) # MACOSX_RPATH behavior
++  cmake_policy(SET CMP0042 OLD)
++endif (POLICY CMP0042)
++
+ if (COMMAND set_up_hermetic_build)
+   set_up_hermetic_build()
+ endif()
+-- 
+2.17.1
+
