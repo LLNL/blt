@@ -887,7 +887,7 @@ endmacro(blt_find_libraries)
 ##------------------------------------------------------------------------------
 ## blt_combine_static_libraries( NAME <libname>
 ##                               SOURCE_LIBS [lib1 ...] 
-##                               LIB_TYPE [STATIC,SHARED}
+##                               LIB_TYPE [STATIC,SHARED]
 ##                               LINK_PREPEND []
 ##                               LINK_POSTPEND []
 ##                             )
@@ -896,9 +896,9 @@ endmacro(blt_find_libraries)
 ## static libraries given in SOURCE_LIBS.
 ## 
 ## The LINK_PREPEND argument will be prepended to the library on the link line,
-## while the LINK_POSTPEND will be appended to the libray on the link line. These
-## values are defaulted to the appropriate values for CMAKE_HOST_APPLE and 
-## CMAKE_HOST_UNIX. CMAKE_HOST_WIN32 is not yet supported.
+## while the LINK_POSTPEND will be appended to the library on the link line.
+## These values are defaulted to the appropriate values for CMAKE_HOST_APPLE and 
+## CMAKE_HOST_UNIX.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_combine_static_libraries)
@@ -916,7 +916,7 @@ macro(blt_combine_static_libraries)
     endif()
 
     if(TARGET ${arg_NAME})
-        message(FATAL_ERROR "$A target with the name {arg_NAME} already exists!")
+        message(FATAL_ERROR "A target with the name ${arg_NAME} already exists!")
     endif()
 
     if( NOT arg_SOURCE_LIBS )
