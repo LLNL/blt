@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -50,9 +50,15 @@
 # CPPCHECK_EXECUTABLE
 ################################################################################
 
-find_program(CPPCHECK_EXECUTABLE
-             NAMES cppcheck
-             DOC "Path to cppcheck executable")
+if (CPPCHECK_EXECUTABLE)
+    if (NOT EXISTS ${CPPCHECK_EXECUTABLE})
+        message(FATAL_ERROR "User defined CPPCHECK_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_CPPCHECK to OFF.")
+    endif()
+else()
+    find_program(CPPCHECK_EXECUTABLE
+                 NAMES cppcheck
+                 DOC "Path to Cppcheck executable")
+endif()
 
 # Handle REQUIRED and QUIET arguments
 # this will also set CPPCHECK_FOUND to true if CPPCHECK_EXECUTABLE exists
@@ -60,4 +66,3 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(CPPCHECK
                                   "Failed to locate cppcheck executable"
                                   CPPCHECK_EXECUTABLE)
-

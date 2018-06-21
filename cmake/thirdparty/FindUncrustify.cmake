@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -50,9 +50,15 @@
 # UNCRUSTIFY_EXECUTABLE
 ################################################################################
 
-find_program(UNCRUSTIFY_EXECUTABLE
-             NAMES uncrustify
-             DOC "Path to uncrustify executable")
+if (UNCRUSTIFY_EXECUTABLE)
+    if (NOT EXISTS ${UNCRUSTIFY_EXECUTABLE})
+        message(FATAL_ERROR "User defined UNCRUSTIFY_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_UNCRUSTIFY to OFF.")
+    endif()
+else()
+    find_program(UNCRUSTIFY_EXECUTABLE
+                 NAMES uncrustify
+                 DOC "Path to uncrustify executable")
+endif()
 
 # Handle REQUIRED and QUIET arguments
 # this will also set UNCRUSTIFY_FOUND to true if UNCRUSTIFY_EXECUTABLE exists
@@ -60,4 +66,3 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Uncrustify
                                   "Failed to locate uncrustify executable"
                                   UNCRUSTIFY_EXECUTABLE)
-

@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -88,30 +88,32 @@ endif()
 ################################
 # Documentation Packages
 ################################
-if (DOXYGEN_EXECUTABLE)
+if (ENABLE_DOXYGEN)
     find_package(Doxygen)
 endif()
 
-if (SPHINX_EXECUTABLE)
+if (ENABLE_SPHINX)
   include(${BLT_ROOT_DIR}/cmake/thirdparty/FindSphinx.cmake)
 endif()
 
 ################################
 # Valgrind
 ################################
-include(${BLT_ROOT_DIR}/cmake/thirdparty/FindValgrind.cmake)
+if (ENABLE_VALGRIND)
+    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindValgrind.cmake)
+endif()
 
 ################################
 # linting via Uncrustify
 ################################
-if (UNCRUSTIFY_EXECUTABLE)
+if (ENABLE_UNCRUSTIFY)
     include(${BLT_ROOT_DIR}/cmake/thirdparty/FindUncrustify.cmake)
 endif()
 
 ################################
-# Static analysis via cppcheck
+# Static analysis via Cppcheck
 ################################
-if (CPPCHECK_EXECUTABLE)
+if (ENABLE_CPPCHECK)
     include(${BLT_ROOT_DIR}/cmake/thirdparty/FindCppcheck.cmake)
 endif()
 

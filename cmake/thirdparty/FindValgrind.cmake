@@ -40,11 +40,26 @@
 #
 ###############################################################################
 
-# Find Valgrind.
+################################################################################
+# Example usage:
+#
+# find_package(Valgrind)
+#
+# If successful the following variables will be defined
+# VALGRIND_FOUND
+# VALGRIND_EXECUTABLE
+################################################################################
 
-find_program(VALGRIND_EXECUTABLE
-             NAMES valgrind
-             DOC "Path to valgrind executable")
+if (VALGRIND_EXECUTABLE)
+    if (NOT EXISTS ${VALGRIND_EXECUTABLE})
+        message(FATAL_ERROR "User defined VALGRIND_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_VALGRIND to OFF.")
+    endif()
+else()
+    find_program(VALGRIND_EXECUTABLE
+                 NAMES valgrind
+                 DOC "Path to uncrustify executable")
+endif()
+
 
 # Handle REQUIRED and QUIET arguments
 # this will also set VALGRIND_FOUND to true if VALGRIND_EXECUTABLE exists

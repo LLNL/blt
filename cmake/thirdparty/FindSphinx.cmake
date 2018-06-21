@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -55,9 +55,15 @@
 # SPHINX_FOUND
 # SPHINX_EXECUTABLE
 
-find_program(SPHINX_EXECUTABLE
-             NAMES sphinx-build sphinx-build2
-             DOC "Path to sphinx-build executable")
+if (SPHINX_EXECUTABLE)
+    if (NOT EXISTS ${SPHINX_EXECUTABLE})
+        message(FATAL_ERROR "User defined SPHINX_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_SPHINX to OFF.")
+    endif()
+else()
+    find_program(SPHINX_EXECUTABLE
+                 NAMES sphinx-build sphinx-build2
+                 DOC "Path to Sphinx executable")
+endif()
 
 # Handle REQUIRED and QUIET arguments
 # this will also set SPHINX_FOUND to true if SPHINX_EXECUTABLE exists
@@ -65,4 +71,3 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Sphinx
                                   "Failed to locate sphinx-build executable"
                                   SPHINX_EXECUTABLE)
-
