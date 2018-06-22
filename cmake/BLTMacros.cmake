@@ -350,7 +350,7 @@ endmacro(blt_register_library)
 macro(blt_add_library)
 
     set(options)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED CLEAR_PREFIX FOLDER)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED CLEAR_PREFIX FOLDER OBJECT )
     set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
@@ -372,6 +372,12 @@ macro(blt_add_library)
     if( DEFINED arg_SHARED )
         set(_build_shared_library ${arg_SHARED})
     endif()
+    
+    if( ${arg_OBJECT} )
+        if( ${_build_shared_library} )
+            message(FATAL_ERROR "blt_add_library() specified Object Library AND Shared Library")
+        endif()
+    endif()
 
     if ( arg_SOURCES )
         #
@@ -383,8 +389,10 @@ macro(blt_add_library)
             blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                              TARGET_SOURCES ${arg_SOURCES})
 
-        endif()
-        if ( ${_build_shared_library} )
+        if ( ${arg_OBJECT} )
+            message( "adding ${arg_NAME} as an OBJECT LIBRARY " )
+            add_library( ${arg_NAME} OBJECT ${arg_SOURCES} ${arg_HEADERS} )
+        elseif ( ${_build_shared_library} )
             add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
         else()
             add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
@@ -467,7 +475,8 @@ macro(blt_add_library)
     endif()
 
     blt_setup_target( NAME ${arg_NAME}
-                      DEPENDS_ON ${arg_DEPENDS_ON} )
+                      DEPENDS_ON ${arg_DEPENDS_ON}
+                      OBJECT ${arg_OBJECT} )
 
     if ( arg_INCLUDES )
         target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
