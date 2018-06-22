@@ -92,28 +92,23 @@ if (ENABLE_DOXYGEN)
     find_package(Doxygen)
 endif()
 
-if (ENABLE_SPHINX)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/FindSphinx.cmake)
-endif()
+blt_find_executable(NAME        Sphinx
+                    EXECUTABLES sphinx-build sphinx-build2)
 
 ################################
 # Valgrind
 ################################
-if (ENABLE_VALGRIND)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindValgrind.cmake)
-endif()
+blt_find_executable(NAME        Valgrind
+                    EXECUTABLES valgrind)
 
 ################################
 # linting via Uncrustify
 ################################
-if (ENABLE_UNCRUSTIFY)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindUncrustify.cmake)
-endif()
+blt_find_executable(NAME        Uncrustify
+                    EXECUTABLES uncrustify)
 
 ################################
 # Static analysis via Cppcheck
 ################################
-if (ENABLE_CPPCHECK)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindCppcheck.cmake)
-endif()
-
+blt_find_executable(NAME        Cppcheck
+                    EXECUTABLES cppcheck)
