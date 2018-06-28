@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -51,9 +51,14 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 
 
 ################################
-# TPL Options
+# TPL Executable Options
 ################################
-option(ENABLE_GIT       "Enables Git support" ON)
+option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
+option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
+option(ENABLE_GIT          "Enables Git support" ON)
+option(ENABLE_SPHINX       "Enables Sphinx support" ON)
+option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
+option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
 
 
 ################################

@@ -105,6 +105,63 @@ function(blt_error_if_target_exists target_name error_msg)
     endif()
 endfunction()
 
+
+################################################################################
+# blt_find_executable(NAME         <name of program to find>
+#                     EXECUTABLES  [exe1 [exe2 ...]])
+#
+# This macro attempts to find the given executable via either a previously defined
+# <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
+# if EXECUTABLES is left empty, then NAME is used.
+#
+# If successful the following variables will be defined:
+# <UPPERCASE_NAME>_FOUND
+# <UPPERCASE_NAME>_EXECUTABLE
+################################################################################
+macro(blt_find_executable)
+
+    set(options)
+    set(singleValueArgs NAME)
+    set(multiValueArgs  EXECUTABLES)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+                        "${multiValueArgs}" ${ARGN} )
+                        
+    # Check arguments
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_find_executable' macro" )
+    endif()
+
+    string(TOUPPER ${arg_NAME} _ucname)
+
+    message(STATUS "${arg_NAME} support is ${ENABLE_${_ucname}}")
+    if (${ENABLE_${_ucname}})
+        set(_exes ${arg_NAME})
+        if (DEFINED arg_EXECUTABLES)
+            set(_exes ${arg_EXECUTABLES})
+        endif()
+
+        if (${_ucname}_EXECUTABLE)
+            if (NOT EXISTS ${${_ucname}_EXECUTABLE})
+                message(FATAL_ERROR "User defined ${_ucname}_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_${_ucname} to OFF.")
+            endif()
+        else()
+            find_program(${_ucname}_EXECUTABLE
+                         NAMES ${_exes}
+                         DOC "Path to ${arg_NAME} executable")
+        endif()
+
+        # Handle REQUIRED and QUIET arguments
+        # this will also set ${_ucname}_FOUND to true if ${_ucname}_EXECUTABLE exists
+        include(FindPackageHandleStandardArgs)
+        find_package_handle_standard_args(${arg_NAME}
+                                          "Failed to locate ${arg_NAME} executable"
+                                          ${_ucname}_EXECUTABLE)
+    endif()
+endmacro(blt_find_executable)
+
+
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
 ##------------------------------------------------------------------------------
