@@ -882,3 +882,101 @@ macro(blt_find_libraries)
     endforeach()
 
 endmacro(blt_find_libraries)
+
+
+##------------------------------------------------------------------------------
+## blt_combine_static_libraries( NAME <libname>
+##                               SOURCE_LIBS [lib1 ...] 
+##                               LIB_TYPE [STATIC,SHARED]
+##                               LINK_PREPEND []
+##                               LINK_POSTPEND []
+##                             )
+##
+## Adds a library target, called <libname>, to be built from the set of 
+## static libraries given in SOURCE_LIBS.
+## 
+## The LINK_PREPEND argument will be prepended to the library on the link line,
+## while the LINK_POSTPEND will be appended to the library on the link line.
+## These values are defaulted to the appropriate values for CMAKE_HOST_APPLE and 
+## CMAKE_HOST_UNIX.
+##
+##------------------------------------------------------------------------------
+macro(blt_combine_static_libraries)
+
+    set(options )
+    set(singleValueArgs NAME LINK_PREPEND LINK_POSTPEND LIB_TYPE )
+    set(multiValueArgs SOURCE_LIBS )
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # sanity checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_combine_static_libraries() must be called with argument NAME <name>")
+    endif()
+
+    if(TARGET ${arg_NAME})
+        message(FATAL_ERROR "A target with the name ${arg_NAME} already exists!")
+    endif()
+
+    if( NOT arg_SOURCE_LIBS )
+        message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) called with no given source libraries")
+    endif()
+    
+    if( NOT arg_LINK_PREPEND )
+        if( CMAKE_HOST_APPLE )
+            set( _link_prepend "-Wl,-force_load" )
+        elseif( CMAKE_HOST_UNIX )
+            set( _link_prepend "-Wl,--whole-archive" )
+        elseif( CMAKE_HOST_WIN32 )
+            set( _link_prepend "-WHOLEARCHIVE:" )
+        else()
+            message(FATAL_ERROR "blt_combine_static_libraries does not support ${CMAKE_HOST_SYSTEM}")
+        endif()
+    else()
+        set( _link_prepend ${arg_LINK_PREPEND})
+    endif()
+    
+    
+    if( NOT arg_LINK_POSTPEND )
+        if( CMAKE_HOST_APPLE )
+            set( _link_postpend "" )
+        elseif( CMAKE_HOST_UNIX )
+            set( _link_postpend "-Wl,--no-whole-archive" )
+        elseif( CMAKE_HOST_WIN32 )
+            set( _link_postpend "" )
+        else()
+            message(FATAL_ERROR "blt_combine_static_libraries does not support ${CMAKE_HOST_SYSTEM}")
+        endif()
+    else()
+        set( _link_postpend ${arg_LINK_POSTPEND})
+    endif()
+    
+    set( libLinkLine "" )
+    foreach( lib ${arg_SOURCE_LIBS} )
+        if( CMAKE_HOST_UNIX )
+            list( APPEND libLinkLine ${_link_prepend} ${lib} ${_link_postpend} )
+        elseif( CMAKE_HOST_WIN32 )
+            list( APPEND libLinkLine "${_link_prepend}${lib}" )
+        endif()
+    endforeach()
+
+    message( "libLinkLine = ${libLinkLine}" )
+    
+    if( ${arg_LIB_TYPE} STREQUAL "STATIC" )
+        set( _lib_type STATIC )
+    elseif( ${arg_LIB_TYPE} STREQUAL "SHARED" ) 
+        set( _lib_type SHARED )
+    else()
+        message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) LIB_TYPE must be SHARED OR STATIC")
+    endif()
+    
+    add_library ( ${arg_NAME} ${_lib_type} ${BLT_ROOT_DIR}/tests/internal/src/combine_static_library_test/dummy.cpp)
+    target_link_libraries( ${arg_NAME} PRIVATE ${libLinkLine})
+    blt_register_library( NAME ${arg_NAME}
+                          DEPENDS_ON ${arg_SOURCE_LIBS}
+                          LIBRARIES ${arg_NAME}
+                         )
+
+    unset( libLinkLine )
+endmacro(blt_combine_static_libraries)
