@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -88,30 +88,27 @@ endif()
 ################################
 # Documentation Packages
 ################################
-if (DOXYGEN_EXECUTABLE)
+if (ENABLE_DOXYGEN)
     find_package(Doxygen)
 endif()
 
-if (SPHINX_EXECUTABLE)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/FindSphinx.cmake)
-endif()
+blt_find_executable(NAME        Sphinx
+                    EXECUTABLES sphinx-build sphinx-build2)
 
 ################################
 # Valgrind
 ################################
-include(${BLT_ROOT_DIR}/cmake/thirdparty/FindValgrind.cmake)
+blt_find_executable(NAME        Valgrind
+                    EXECUTABLES valgrind)
 
 ################################
 # linting via Uncrustify
 ################################
-if (UNCRUSTIFY_EXECUTABLE)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindUncrustify.cmake)
-endif()
+blt_find_executable(NAME        Uncrustify
+                    EXECUTABLES uncrustify)
 
 ################################
-# Static analysis via cppcheck
+# Static analysis via Cppcheck
 ################################
-if (CPPCHECK_EXECUTABLE)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/FindCppcheck.cmake)
-endif()
-
+blt_find_executable(NAME        Cppcheck
+                    EXECUTABLES cppcheck)
