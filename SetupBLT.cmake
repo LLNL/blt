@@ -91,7 +91,6 @@ if (NOT BLT_LOADED)
 
     ################################
     # Enable cmake generator folder feature
-    # if ENABLE_FOLDERS == ON
     ################################
     if(ENABLE_FOLDERS)
         set_property(GLOBAL PROPERTY USE_FOLDERS ON)
