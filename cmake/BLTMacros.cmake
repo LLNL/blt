@@ -603,7 +603,7 @@ endmacro(blt_add_executable)
 ##------------------------------------------------------------------------------
 ## blt_add_test( NAME [name] COMMAND [command] NUM_MPI_TASKS [n] )
 ##
-## Adds a cmake test to the project.
+## Adds a CMake test to the project.
 ##
 ## NAME is used for the name that CTest reports with.
 ##
@@ -611,10 +611,12 @@ endmacro(blt_add_executable)
 ## have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
 ##
 ## NUM_MPI_TASKS indicates this is an MPI test and how many tasks to use. The
-## command line will use MPIEXEC and MPIXEC_NUMPROC_FLAG to create the mpi run
-## line.
-###
-## These should be defined in your host-config specific to your platform.
+## command line will use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND
+## to create the MPI run line.
+##
+## MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
+## be overwritten in your host-config specific to your platform. BLT_MPI_COMMAND_APPEND
+## is useful on machines that require extra arguments to MPIEXEC.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
@@ -661,9 +663,9 @@ macro(blt_add_test)
         set( arg_NUM_MPI_TASKS 1 )
     endif()
 
-    # Handle mpi
+    # Handle MPI
     if ( ${arg_NUM_MPI_TASKS} )
-        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${test_command} )
+        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${test_command} )
     endif()
 
     add_test(NAME ${arg_NAME}
