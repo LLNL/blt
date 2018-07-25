@@ -43,9 +43,9 @@
 BLT
 ===
 
-**Build, Link and Triumph**
+**Build, Link, and Triumph**
 
-BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. 
+BLT is composition of CMake macros and several widely used open-source tools assembled to simplify HPC software development. 
 
 BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
 It is developed on github under LLNL's github organization: https://github.com/llnl/blt
@@ -78,7 +78,6 @@ BLT at a Glance
 
 BLT Developers
 ~~~~~~~~~~~~~~~~~~~
-Developers include:
 
  * Chris White (white238@llnl.gov)
  * Cyrus Harrison (harrison37@llnl.gov)
@@ -89,13 +88,11 @@ Developers include:
  * David A. Beckingsale (beckingsale1@llnl.gov)
  * Richard Hornung (hornung1@llnl.gov)
  * Randolph Settgast (settgast1@llnl.gov)
- * Peter Robinson  (robinson96@llnl.gov)
+ * Peter Robinson (robinson96@llnl.gov)
 
 BLT User Tutorial
 ~~~~~~~~~~~~~~~~~~~
-This tutorial is aimed at getting BLT users up and running as quickly as possible.
-
-It provides instructions for:
+This tutorial aims at getting BLT users up and running as quickly as possible, providing instructions for:
 
     * Adding BLT to a CMake project
     * Setting up *host-config* files to handle multiple platform configurations
@@ -109,7 +106,7 @@ by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
 integration. The code is adapted from:
 https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
 
-The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
+The tutorial requires a C++ compiler and CMake—we recommend CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx, and Doxygen.
 
 
 **Tutorial Contents**
