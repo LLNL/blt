@@ -507,8 +507,8 @@ endmacro(blt_add_library)
 ##                     INCLUDES [dir1 [dir2 ...]]
 ##                     DEFINES [define1 [define2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
-##                     OUTPUT_DIR [dir])
-##                     FOLDER [name]
+##                     OUTPUT_DIR [dir]
+##                     FOLDER [name])
 ##
 ## Adds an executable target, called <name>.
 ##
@@ -581,6 +581,14 @@ macro(blt_add_executable)
        
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
+
+    if ( arg_INCLUDES )
+        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+    endif()
+
+    if ( arg_DEFINES )
+        target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+    endif()
 
     # when using shared libs on windows, all runtime targets
     # (dlls and exes) must live in the same dir
