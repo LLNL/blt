@@ -569,7 +569,13 @@ macro(blt_add_executable)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
         endif()
     endif()
-
+    list(FIND arg_DEPENDS_ON "cuda_runtime" check_for_cuda_rt)
+    if ( ${check_for_cuda_rt} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
+        if (CUDA_LINK_WITH_NVCC) 
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+        endif()
+    endif()
+    
     # CMake wants to load with C++ if any of the libraries are C++.
     # Force to load with Fortran if the first file is Fortran.
     list(GET arg_SOURCES 0 _first)
