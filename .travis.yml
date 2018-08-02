@@ -124,7 +124,7 @@ install:
   - export PATH=${TRAVIS_TPLS_DIR}/cmake/bin:$PATH
 script:
   # set git user info     
-  - git config --global user.email "blt-dev@llnl.gov" 
+  - git config --global user.email "blt-dev@llnl.gov"
   - git config --global user.name  "BLT Robot"
   - BLT_SOURCE_DIR=${TRAVIS_BUILD_DIR}
   - cmake --version
