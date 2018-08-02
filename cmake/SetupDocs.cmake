@@ -105,8 +105,6 @@ endmacro(blt_add_doxygen_target)
 ##------------------------------------------------------------------------------
 macro(blt_add_sphinx_target sphinx_target_name )
 
-    MESSAGE(STATUS "Creating sphinx docs target ${sphinx_target_name}")
-    
     # configured documentation tools and intermediate build results
     set(SPHINX_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
 
