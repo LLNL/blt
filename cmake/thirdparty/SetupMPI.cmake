@@ -85,7 +85,6 @@ blt_register_library(NAME mpi
                      TREAT_INCLUDES_AS_SYSTEM ON
                      LIBRARIES ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES}
                      COMPILE_FLAGS "${MPI_C_COMPILE_FLAGS}"
-                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}"
-                     DEFINES USE_MPI)
+                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}")
 
 

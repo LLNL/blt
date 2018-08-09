@@ -56,8 +56,7 @@ if(ENABLE_OPENMP)
     # register openmp with blt
     blt_register_library(NAME openmp
                          COMPILE_FLAGS ${OpenMP_CXX_FLAGS} 
-                         LINK_FLAGS  ${OpenMP_CXX_FLAGS} 
-                         DEFINES USE_OPENMP)
+                         LINK_FLAGS    ${OpenMP_CXX_FLAGS} )
 endif()
 
 #####################################################
