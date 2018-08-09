@@ -41,7 +41,8 @@ install:
   
   # Install CMake 3.9
   ############################################################################
-  - ps: Start-FileDownload 'https://cmake.org/files/v3.9/cmake-3.9.6-win64-x64.msi'
+  #- ps: Start-FileDownload 'https://cmake.org/files/v3.9/cmake-3.9.6-win64-x64.msi'
+  - ps: Start-FileDownload 'http://portal.nersc.gov/project/visit/cmake/cmake-3.9.6-win64-x64.msi'
   - cmake-3.9.6-win64-x64.msi /passive
   - set PATH=C:\Program Files\CMake\bin;%PATH%
   - cmake --version
@@ -64,7 +65,7 @@ before_build:
 
 build_script:
   #########################################################
-  #########################################################  
+  #########################################################
   # blt-test
   #########################################################
   #########################################################

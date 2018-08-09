@@ -299,7 +299,6 @@ endmacro(blt_register_library)
 ##                  DEPENDS_ON [dep1 ...] 
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
-##                  HEADERS_OUTPUT_SUBDIR [dir]
 ##                  SHARED [TRUE | FALSE]
 ##                  CLEAR_PREFIX [TRUE | FALSE]
 ##                  FOLDER [name]
@@ -310,11 +309,6 @@ endmacro(blt_register_library)
 ## whether the library will be build as shared or static. The optional boolean
 ## SHARED argument can be used to override this choice.
 ##
-## If given a HEADERS argument and ENABLE_COPY_HEADERS is ON, it first copies
-## the headers into the out-of-source build directory under the
-## include/<HEADERS_OUTPUT_SUBDIR>. Because of this HEADERS_OUTPUT_SUBDIR must
-## be a relative path.
-## 
 ## The INCLUDES argument allows you to define what include directories are
 ## needed by any target that is dependent on this library.  These will
 ## be inherited by CMake's target dependency rules.
@@ -421,34 +415,8 @@ macro(blt_add_library)
         set_source_files_properties(${_build_headers} PROPERTIES HEADER_FILE_ONLY ON)
 
         add_library( ${arg_NAME} INTERFACE )
-        if ( ENABLE_COPY_HEADERS )
-            target_sources( ${arg_NAME} INTERFACE
-                        $<BUILD_INTERFACE:${_build_headers}>
-                        $<INSTALL_INTERFACE:${_install_headers}>)
-
-            target_include_directories(${arg_NAME} INTERFACE
-                        $<BUILD_INTERFACE:${HEADER_INCLUDES_DIRECTORY}>
-                        $<INSTALL_INTERFACE:include/${arg_HEADERS_OUTPUT_SUBDIR}>)
-        else()
-            target_sources( ${arg_NAME} INTERFACE
+        target_sources( ${arg_NAME} INTERFACE
                         $<BUILD_INTERFACE:${_build_headers}>)
-        endif()
-    endif()
-
-    # Handle copying headers
-    if ( arg_HEADERS AND ENABLE_COPY_HEADERS )
-        # Determine build location of headers
-        set(headers_build_dir ${HEADER_INCLUDES_DIRECTORY})
-        if (arg_HEADERS_OUTPUT_SUBDIR)
-            if (IS_ABSOLUTE ${arg_HEADERS_OUTPUT_SUBDIR})
-                message(FATAL_ERROR "blt_add_library must be called with a relative path for HEADERS_OUTPUT_SUBDIR")
-            endif()
-            set(headers_build_dir ${headers_build_dir}/${arg_HEADERS_OUTPUT_SUBDIR})
-        endif()
-
-        blt_copy_headers_target( NAME        ${arg_NAME}
-                                 HEADERS     ${arg_HEADERS}
-                                 DESTINATION ${headers_build_dir})
     endif()
 
     # Clear value of _have_fortran from previous calls
@@ -507,8 +475,8 @@ endmacro(blt_add_library)
 ##                     INCLUDES [dir1 [dir2 ...]]
 ##                     DEFINES [define1 [define2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
-##                     OUTPUT_DIR [dir])
-##                     FOLDER [name]
+##                     OUTPUT_DIR [dir]
+##                     FOLDER [name])
 ##
 ## Adds an executable target, called <name>.
 ##
@@ -569,18 +537,34 @@ macro(blt_add_executable)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
         endif()
     endif()
-
+    list(FIND arg_DEPENDS_ON "cuda_runtime" check_for_cuda_rt)
+    if ( ${check_for_cuda_rt} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
+        if (CUDA_LINK_WITH_NVCC) 
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+        endif()
+    endif()
+    
     # CMake wants to load with C++ if any of the libraries are C++.
     # Force to load with Fortran if the first file is Fortran.
     list(GET arg_SOURCES 0 _first)
     get_source_file_property(_lang ${_first} LANGUAGE)
     if(_lang STREQUAL Fortran)
-        set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
+        if (NOT CUDA_LINK_WITH_NVCC)
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
+        endif()
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
        
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
+
+    if ( arg_INCLUDES )
+        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+    endif()
+
+    if ( arg_DEFINES )
+        target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+    endif()
 
     # when using shared libs on windows, all runtime targets
     # (dlls and exes) must live in the same dir
@@ -603,7 +587,7 @@ endmacro(blt_add_executable)
 ##------------------------------------------------------------------------------
 ## blt_add_test( NAME [name] COMMAND [command] NUM_MPI_TASKS [n] )
 ##
-## Adds a cmake test to the project.
+## Adds a CMake test to the project.
 ##
 ## NAME is used for the name that CTest reports with.
 ##
@@ -611,10 +595,12 @@ endmacro(blt_add_executable)
 ## have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
 ##
 ## NUM_MPI_TASKS indicates this is an MPI test and how many tasks to use. The
-## command line will use MPIEXEC and MPIXEC_NUMPROC_FLAG to create the mpi run
-## line.
-###
-## These should be defined in your host-config specific to your platform.
+## command line will use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND
+## to create the MPI run line.
+##
+## MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
+## be overwritten in your host-config specific to your platform. BLT_MPI_COMMAND_APPEND
+## is useful on machines that require extra arguments to MPIEXEC.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
@@ -661,9 +647,9 @@ macro(blt_add_test)
         set( arg_NUM_MPI_TASKS 1 )
     endif()
 
-    # Handle mpi
+    # Handle MPI
     if ( ${arg_NUM_MPI_TASKS} )
-        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${test_command} )
+        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${test_command} )
     endif()
 
     add_test(NAME ${arg_NAME}

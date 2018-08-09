@@ -19,10 +19,11 @@ set(ENABLE_FIND_MPI OFF CACHE BOOL "")
 set(MPI_HOME                 "/usr/tce/packages/spectrum-mpi/spectrum-mpi-2017.04.03-clang-coral-2018.04.17" CACHE PATH "")
 set(MPI_C_COMPILER           "${MPI_HOME}/bin/mpicc"   CACHE PATH "")
 set(MPI_CXX_COMPILER         "${MPI_HOME}/bin/mpicxx"  CACHE PATH "")
-set(MPI_Fortran_COMPILER     "${MPI_HOME}/bin/mpif90" CACHE PATH "")
+set(MPI_Fortran_COMPILER     "${MPI_HOME}/bin/mpif90"  CACHE PATH "")
 
-set(MPIEXEC              "mpirun" CACHE PATH "")
-set(MPIEXEC_NUMPROC_FLAG "-np" CACHE PATH "")
+set(MPIEXEC                "mpirun"  CACHE PATH "")
+set(MPIEXEC_NUMPROC_FLAG   "-np"     CACHE PATH "")
+set(BLT_MPI_COMMAND_APPEND "mpibind" CACHE PATH "")
 
 ###########################################################
 # clang-coral-2018.04.17 compilers

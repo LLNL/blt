@@ -60,7 +60,7 @@ endif()
 
 message(STATUS "MPI Executable:       ${MPIEXEC}")
 message(STATUS "MPI Num Proc Flag:    ${MPIEXEC_NUMPROC_FLAG}")
-
+message(STATUS "MPI Command Append:   ${BLT_MPI_COMMAND_APPEND}")
 
 if (ENABLE_FORTRAN)
     # Determine if we should use fortran mpif.h header or fortran mpi module
