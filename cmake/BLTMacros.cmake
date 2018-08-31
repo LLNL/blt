@@ -88,7 +88,13 @@ endmacro(blt_add_target_definitions)
 ##------------------------------------------------------------------------------
 ## blt_add_target_compile_flags (TO <target> FLAGS [FOO [BAR ...]])
 ##
-## Adds compiler flags to a target by appending to the target's existing flags.
+## Adds compiler flags to a target (library, executable or interface) by 
+## appending to the target's existing flags.
+##
+## The TO argument (required) specifies a cmake target.
+##
+## The FLAGS argument contains a list of compiler flags to add to the target. 
+## This macro will strip away leading and trailing whitespace from each flag.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_compile_flags)
 
@@ -100,17 +106,24 @@ macro(blt_add_target_compile_flags)
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
-    if(NOT "${arg_FLAGS}" STREQUAL "")
-        # get prev flags
-        get_target_property(_COMP_FLAGS ${arg_TO} COMPILE_FLAGS)
-        if(NOT _COMP_FLAGS)
-            set(_COMP_FLAGS "")
-        endif()
-        # append new flags
-        set(_COMP_FLAGS "${arg_FLAGS} ${_COMP_FLAGS}")
-        set_target_properties(${arg_TO}
-                              PROPERTIES COMPILE_FLAGS "${_COMP_FLAGS}" )
+    ## check that the passed in parameter TO is actually a target
+    if(NOT TARGET ${arg_TO})
+        message(FATAL_ERROR "Target ${arg_TO} passed to blt_add_target_compile_flags is not a valid cmake target")    
     endif()
+
+    ## only add the flag if it is not empty
+    string(STRIP "${arg_FLAGS}" _strippedFlags)
+    if(NOT "${_strippedFlags}" STREQUAL "")
+        get_property(_targetType TARGET ${arg_TO} PROPERTY TYPE)
+        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+            target_compile_options(${arg_TO} INTERFACE ${_strippedFlags})
+        else()
+            target_compile_options(${arg_TO} PUBLIC ${_strippedFlags})
+        endif()        
+    endif()
+
+    unset(_targetType)
+    unset(_strippedFlags)
 
 endmacro(blt_add_target_compile_flags)
 
