@@ -120,11 +120,11 @@ endmacro(blt_add_target_compile_flags)
 ##
 ## Sets the folder property of cmake target <target> to <folder>.
 ##
-## This feature is only available when blt's ENABLE_FOLDERS option is ON and 
+## This feature is only available when blt's ENABLE_FOLDERS option is ON and
 ## in cmake generators that support folders (but is safe to call regardless
 ## of the generator or value of ENABLE_FOLDERS).
 ##
-## Note: Do not use this macro on header-only (INTERFACE) library targets, since 
+## Note: Do not use this macro on header-only (INTERFACE) library targets, since
 ## this will generate a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_set_target_folder)
@@ -226,7 +226,7 @@ endmacro(blt_add_target_link_flags)
 macro(blt_register_library)
 
     set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
-    set(multiValueArgs INCLUDES 
+    set(multiValueArgs INCLUDES
                        DEPENDS_ON
                        FORTRAN_MODULES
                        LIBRARIES
@@ -298,7 +298,7 @@ endmacro(blt_register_library)
 ## blt_add_library( NAME <libname>
 ##                  SOURCES [source1 [source2 ...]]
 ##                  HEADERS [header1 [header2 ...]]
-##                  DEPENDS_ON [dep1 ...] 
+##                  DEPENDS_ON [dep1 ...]
 ##                  OUTPUT_NAME [name]
 ##                  OUTPUT_DIR [dir]
 ##                  HEADERS_OUTPUT_SUBDIR [dir]
@@ -315,16 +315,16 @@ endmacro(blt_register_library)
 ## the headers into the out-of-source build directory under the
 ## include/<HEADERS_OUTPUT_SUBDIR>. Because of this HEADERS_OUTPUT_SUBDIR must
 ## be a relative path.
-## 
-## If given a DEPENDS_ON argument, it will add the necessary includes and 
-## libraries if they are already registered with blt_register_library.  If 
+##
+## If given a DEPENDS_ON argument, it will add the necessary includes and
+## libraries if they are already registered with blt_register_library.  If
 ## not it will add them as a CMake target dependency.
 ##
 ## In addition, this macro will add the associated dependencies to the given
 ## library target. Specifically, it will add the dependency for the CMake target
 ## and for copying the headers for that target as well.
 ##
-## The OUTPUT_DIR is used to control the build output directory of this 
+## The OUTPUT_DIR is used to control the build output directory of this
 ## library. This is used to overwrite the default lib directory.
 ##
 ## OUTPUT_NAME is the name of the output file; the default is NAME.
@@ -333,8 +333,8 @@ endmacro(blt_register_library)
 ##
 ## FOLDER is an optional keyword to organize the target into a folder in an IDE.
 ## This is available when ENABLE_FOLDERS is ON and when the cmake generator
-## supports this feature and will otherwise be ignored. 
-## Note: Do not use with header-only (INTERFACE)libraries, as this will generate 
+## supports this feature and will otherwise be ignored.
+## Note: Do not use with header-only (INTERFACE)libraries, as this will generate
 ## a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
@@ -347,10 +347,11 @@ macro(blt_add_library)
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if ( arg_SOURCES )
+        list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+        list(FIND arg_DEPENDS_ON "hip" check_for_hip)
         #
         #  CUDA support
         #
-        list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
         if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
 
             blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
@@ -360,6 +361,19 @@ macro(blt_add_library)
                 cuda_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
             else()
                 cuda_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
+            endif()
+        #
+        #  HIP support
+        #
+        elseif ( ${check_for_hip} GREATER -1)
+
+            blt_setup_hip_source_properties(BUILD_TARGET ${arg_NAME}
+                                             TARGET_SOURCES ${arg_SOURCES})
+
+            if ( arg_SHARED OR ENABLE_SHARED_LIBS )
+                hip_add_library( ${arg_NAME} ${arg_SOURCES} SHARED )
+            else()
+                hip_add_library( ${arg_NAME} ${arg_SOURCES} STATIC )
             endif()
         elseif ( arg_SHARED OR ENABLE_SHARED_LIBS )
             add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
@@ -468,14 +482,14 @@ endmacro(blt_add_library)
 ##
 ## Adds an executable target, called <name>.
 ##
-## If given a DEPENDS_ON argument, it will add the necessary includes and 
+## If given a DEPENDS_ON argument, it will add the necessary includes and
 ## libraries if they are already registered with blt_register_library.  If
 ## not it will add them as a cmake target dependency.
 ##
-## The OUTPUT_DIR is used to control the build output directory of this 
+## The OUTPUT_DIR is used to control the build output directory of this
 ## executable. This is used to overwrite the default bin directory.
 ##
-## If the first entry in SOURCES is a Fortran source file, the fortran linker 
+## If the first entry in SOURCES is a Fortran source file, the fortran linker
 ## is used. (via setting the CMake target property LINKER_LANGUAGE to Fortran )
 ##
 ## FOLDER is an optional keyword to organize the target into a folder in an IDE.
@@ -498,14 +512,22 @@ macro(blt_add_executable)
     endif()
 
 
+    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
+    list(FIND arg_DEPENDS_ON "hip" check_for_hip)
     #
     #  cuda support
     #
-    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
     if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
                                          TARGET_SOURCES ${arg_SOURCES})
         cuda_add_executable( ${arg_NAME} ${arg_SOURCES} )
+    #
+    #  hip support
+    #
+    elseif( ${check_for_hip} GREATER -1 AND NOT ENABLE_CLANG_HIP)
+        blt_setup_hip_source_properties(BUILD_TARGET ${arg_NAME}
+                                         TARGET_SOURCES ${arg_SOURCES})
+        hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
     else()
         add_executable( ${arg_NAME} ${arg_SOURCES} )
     endif()
@@ -518,7 +540,7 @@ macro(blt_add_executable)
         set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
-       
+
     blt_setup_target(NAME ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} )
 
@@ -584,7 +606,7 @@ macro(blt_add_test)
         set(test_executable ${arg_NAME})
         get_target_property(test_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
     endif()
-    
+
     # Append the test_directory to the test argument, accounting for multi-config generators
     if(NOT CMAKE_CONFIGURATION_TYPES)
         set(test_command ${test_directory}/${arg_COMMAND} )
@@ -594,8 +616,8 @@ macro(blt_add_test)
         set(test_command ${arg_COMMAND})
     endif()
 
-    # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, 
-    # ensure NUM_MPI_TASKS is at least one. This invokes the test 
+    # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set,
+    # ensure NUM_MPI_TASKS is at least one. This invokes the test
     # through MPIEXEC.
     if ( ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC AND NOT arg_NUM_MPI_TASKS )
         set( arg_NUM_MPI_TASKS 1 )
@@ -607,7 +629,7 @@ macro(blt_add_test)
     endif()
 
     add_test(NAME ${arg_NAME}
-             COMMAND ${test_command} 
+             COMMAND ${test_command}
              )
 
 endmacro(blt_add_test)
@@ -620,7 +642,7 @@ endmacro(blt_add_test)
 ##
 ## NAME is used for the name that CTest reports and should include the string 'benchmark'.
 ##
-## COMMAND is the command line that will be used to run the test and can include arguments.  
+## COMMAND is the command line that will be used to run the test and can include arguments.
 ## This will have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
 ##
 ## The underlying executable (added with blt_add_executable) should include gbenchmark
@@ -628,7 +650,7 @@ endmacro(blt_add_test)
 ##
 ##  Example
 ##    blt_add_executable(NAME component_benchmark ... DEPENDS gbenchmark)
-##    blt_add_benchmark( 
+##    blt_add_benchmark(
 ##          NAME component_benchmark
 ##          COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json"
 ##          )
@@ -638,7 +660,7 @@ macro(blt_add_benchmark)
    if(ENABLE_BENCHMARKS)
 
       set(options)
-      set(singleValueArgs NAME)      
+      set(singleValueArgs NAME)
       set(multiValueArgs COMMAND)
 
       ## parse the arguments to the macro
@@ -655,7 +677,7 @@ macro(blt_add_benchmark)
 
       # Generate command
       if ( NOT TARGET ${arg_NAME} )
-          # Handle case of running multiple tests against one executable, 
+          # Handle case of running multiple tests against one executable,
           # the NAME will not be the target
           list(GET arg_COMMAND 0 executable)
           get_target_property(runtime_output_directory ${executable} RUNTIME_OUTPUT_DIRECTORY )
@@ -666,11 +688,11 @@ macro(blt_add_benchmark)
 
       # Note: No MPI handling for now.  If desired, see how this is handled in blt_add_test macro
 
-      # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
+      # The 'CONFIGURATIONS Benchmark' line excludes benchmarks
       # from the general list of tests
       add_test( NAME ${arg_NAME}
                 COMMAND ${test_command}
-                CONFIGURATIONS Benchmark   
+                CONFIGURATIONS Benchmark
                 )
 
       add_dependencies(run_benchmarks ${arg_NAME})
@@ -679,7 +701,7 @@ macro(blt_add_benchmark)
 endmacro(blt_add_benchmark)
 
 ##------------------------------------------------------------------------------
-## blt_append_custom_compiler_flag( 
+## blt_append_custom_compiler_flag(
 ##                    FLAGS_VAR  flagsVar       (required)
 ##                    DEFAULT    defaultFlag    (optional)
 ##                    GNU        gnuFlag        (optional)
@@ -694,7 +716,7 @@ endmacro(blt_add_benchmark)
 ##
 ## If a custom flag is given for the current compiler, we use that.
 ## Otherwise, we will use the DEFAULT flag (if present)
-## When using the Intel toolchain within visual studio, we use the 
+## When using the Intel toolchain within visual studio, we use the
 ## MSVC_INTEL flag, when provided, with a fallback to the MSVC flag.
 ##------------------------------------------------------------------------------
 macro(blt_append_custom_compiler_flag)
@@ -712,7 +734,7 @@ macro(blt_append_custom_compiler_flag)
       message( FATAL_ERROR "append_custom_compiler_flag macro requires FLAGS_VAR keyword and argument." )
    endif()
 
-   # Set the desired flags based on the compiler family   
+   # Set the desired flags based on the compiler family
    if( DEFINED arg_CLANG AND COMPILER_FAMILY_IS_CLANG )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_CLANG} " )
    elseif( DEFINED arg_XL AND COMPILER_FAMILY_IS_XL )
@@ -727,7 +749,7 @@ macro(blt_append_custom_compiler_flag)
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_MSVC} " )
    elseif( DEFINED arg_DEFAULT )
       set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_DEFAULT} ")
-   endif()   
+   endif()
 
 endmacro(blt_append_custom_compiler_flag)
 
@@ -739,7 +761,7 @@ endmacro(blt_append_custom_compiler_flag)
 ##                     PATHS [path1 [path2 ...]] )
 ##
 ## This command is used to find a list of libraries.
-## 
+##
 ## If the libraries are found the results are appended to the given FOUND_LIBS variable name.
 ##
 ## NAMES lists the names of the libraries that will be searched for in the given PATHS.

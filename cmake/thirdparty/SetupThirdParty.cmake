@@ -71,6 +71,14 @@ if (ENABLE_CUDA)
 endif()
 
 ################################
+# HIP
+################################
+message(STATUS "HIP Support is ${ENABLE_HIP}")
+if (ENABLE_HIP)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake)
+endif()
+
+################################
 # Documentation Packages
 ################################
 if (DOXYGEN_EXECUTABLE)

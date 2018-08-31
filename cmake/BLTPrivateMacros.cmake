@@ -50,8 +50,8 @@ include(CMakeParseArguments)
 ##
 ## Adds a custom "copy_headers" target for the given project
 ##
-## Adds a custom target, blt_copy_headers_[NAME], for the given project. 
-## The role of this target is to copy the given list of headers, [HEADERS], to 
+## Adds a custom target, blt_copy_headers_[NAME], for the given project.
+## The role of this target is to copy the given list of headers, [HEADERS], to
 ## the destination directory [DESTINATION].
 ##
 ## This macro is used to copy the header of each component in to the build
@@ -64,9 +64,9 @@ macro(blt_copy_headers_target)
     set(multiValueArgs HEADERS)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
-                        
+
     # Make all headers paths absolute
     set(temp_list "")
     foreach(header ${arg_HEADERS})
@@ -102,9 +102,9 @@ macro(blt_setup_target)
     set(multiValueArgs DEPENDS_ON)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
-                        
+
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
@@ -168,7 +168,7 @@ macro(blt_setup_target)
         if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
             if(NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}"
                     STREQUAL "BLT_NO_COMPILE_FLAGS" )
-                blt_add_target_compile_flags(TO ${arg_NAME} 
+                blt_add_target_compile_flags(TO ${arg_NAME}
                                              FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
             endif()
         endif()
@@ -200,7 +200,7 @@ macro(blt_setup_cuda_source_properties)
     set(multiValueArgs TARGET_SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -209,7 +209,7 @@ macro(blt_setup_cuda_source_properties)
         message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_cuda_source_properties' macro")
     endif()
 
-    
+
     if ( NOT DEFINED arg_TARGET_SOURCES )
         message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
     endif()
@@ -239,6 +239,55 @@ macro(blt_setup_cuda_source_properties)
 
 endmacro(blt_setup_cuda_source_properties)
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_source_properties)
+
+    set(options)
+    set(singleValueArgs BUILD_TARGET)
+    set(multiValueArgs TARGET_SOURCES)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+
+    if ( NOT DEFINED arg_BUILD_TARGET )
+        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_hip_source_properties' macro")
+    endif()
+
+
+    if ( NOT DEFINED arg_TARGET_SOURCES )
+        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_hip_source_properties' macro")
+    endif()
+
+
+    foreach (_file ${arg_TARGET_SOURCES})
+        if (${_file} MATCHES "\\.(f|F)\\*")
+            set(_non_hip_sources ${_non_hip_sources} ${_file})
+        else()
+            set(_hip_sources ${_hip_sources} ${_file})
+        endif()
+    endforeach()
+
+    set_source_files_properties( ${_hip_sources}
+                                 PROPERTIES
+                                 HIP_SOURCE_PROPERTY_FORMAT OBJ)
+
+    set_source_files_properties( ${_non_hip_sources}
+                                 PROPERTIES
+                                 HIP_SOURCE_PROPERTY_FORMAT False)
+
+    #
+    # for debugging, or if we add verbose BLT output
+    #
+    ##message(STATUS "target '${arg_BUILD_TARGET}' HIP Sources: ${_hip_sources}")
+    ##message(STATUS "target '${arg_BUILD_TARGET}' non-HIP Sources: ${_non_hip_sources}")
+
+endmacro(blt_setup_hip_source_properties)
+
 
 ##------------------------------------------------------------------------------
 ## update_project_sources( TARGET_SOURCES <sources> )
@@ -250,7 +299,7 @@ macro(blt_update_project_sources)
     set(multiValueArgs TARGET_SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
