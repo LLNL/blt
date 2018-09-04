@@ -99,7 +99,7 @@ if(ENABLE_TESTS)
         
         blt_append_custom_compiler_flag( FLAGS_VAR gtest_extra_flags
                                          DEFAULT " " 
-                                         MSVC  "/wd4251 /wd4275" )
+                                         MSVC  "/wd4251" "/wd4275" )
 
         set (INSTALL_GMOCK OFF CACHE BOOL "")
         set (INSTALL_GTEST OFF CACHE BOOL "")
