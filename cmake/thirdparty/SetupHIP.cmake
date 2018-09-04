@@ -21,13 +21,11 @@ endif ()
 # through a hip compiler (nvcc)
 blt_register_library(NAME hip
                      INCLUDES ${HIP_INCLUDE_DIRS}
-                     LIBRARIES ${HIP_LIBRARIES}
-                     DEFINES USE_HIP)
+                     LIBRARIES ${HIP_LIBRARIES})
 
 # depend on 'hip_runtime', if you only need to use hip
 # headers or link to hip libs, but don't need to run your source
 # through a hip compiler (hipcc)
 blt_register_library(NAME hip_runtime
                      INCLUDES ${HIP_INCLUDE_DIRS}
-                     LIBRARIES ${HIP_LIBRARIES}
-                     DEFINES USE_HIP)
+                     LIBRARIES ${HIP_LIBRARIES})
