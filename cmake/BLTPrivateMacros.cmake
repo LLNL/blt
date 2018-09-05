@@ -48,7 +48,7 @@ include(CMakeParseArguments)
 ##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()
 ##
-## Checks if target already exists in CMake project and errors out with given 
+## Checks if target already exists in CMake project and errors out with given
 ## error_msg.
 ##-----------------------------------------------------------------------------
 function(blt_error_if_target_exists target_name error_msg)
@@ -77,9 +77,9 @@ macro(blt_find_executable)
     set(multiValueArgs  EXECUTABLES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
-                        
+
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_find_executable' macro" )
@@ -124,9 +124,9 @@ macro(blt_setup_target)
     set(multiValueArgs DEPENDS_ON)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
-                        
+
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
@@ -186,7 +186,7 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
-            blt_add_target_compile_flags(TO ${arg_NAME} 
+            blt_add_target_compile_flags(TO ${arg_NAME}
                                          FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
@@ -209,7 +209,7 @@ macro(blt_setup_cuda_source_properties)
     set(multiValueArgs TARGET_SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -252,7 +252,7 @@ macro(blt_split_source_list_by_language)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -263,12 +263,13 @@ macro(blt_split_source_list_by_language)
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
         get_filename_component(_ext ${_file} EXT)
+        string(TOLOWER ${_ext} _ext_lower)
 
-        if(${_ext} IN_LIST BLT_C_FILE_EXTS)
+        if(${_ext_lower} IN_LIST BLT_C_FILE_EXTS)
             if (DEFINED arg_C_LIST)
                 list(APPEND ${arg_C_LIST} ${_file})
             endif()
-        elseif(${_ext} IN_LIST BLT_Fortran_FILE_EXTS)
+        elseif(${_ext_lower} IN_LIST BLT_Fortran_FILE_EXTS)
             if (DEFINED arg_Fortran_LIST)
                 list(APPEND ${arg_Fortran_LIST} ${_file})
             endif()
@@ -290,7 +291,7 @@ macro(blt_update_project_sources)
     set(multiValueArgs TARGET_SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
