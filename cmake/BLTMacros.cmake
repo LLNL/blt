@@ -1081,7 +1081,7 @@ macro(blt_combine_static_libraries)
                      target_link_libraries( ${arg_NAME} PUBLIC ${interface_link_lib} )
                 endif ()
 
-            elseif( ${interface_link_lib} MATCHES ".so" )
+            elseif( ${interface_link_lib} MATCHES ".so" OR ${interface_link_lib} MATCHES ".dll" )
 #                message( "    ${interface_link_lib} is a .so" )
                 target_link_libraries( ${arg_NAME} PUBLIC ${interface_link_lib} )
             endif()            
