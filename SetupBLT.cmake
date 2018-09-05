@@ -167,7 +167,7 @@ if (NOT BLT_LOADED)
     # Global variables needed by BLT
     #
     ################################
-    set(BLT_C_FILE_EXTS ".C" ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh" ".inl" ".cu"
+    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".C" ".H" ".cc" ".hh" ".inl" ".cu"
                CACHE LIST "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
                CACHE LIST "List of known file extensions used for Fortran sources")
