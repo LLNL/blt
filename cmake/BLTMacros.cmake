@@ -227,6 +227,7 @@ endmacro(blt_add_target_link_flags)
 ## discovering it on your system or building it yourself inside your project.
 ##
 ## Output variables (name = "foo"):
+##  BLT_FOO_IS_REGISTERED_LIBRARY
 ##  BLT_FOO_DEPENDS_ON
 ##  BLT_FOO_INCLUDES
 ##  BLT_FOO_TREAT_INCLUDES_AS_SYSTEM
@@ -252,6 +253,8 @@ macro(blt_register_library)
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     string(TOUPPER ${arg_NAME} uppercase_name)
+
+    set(BLT_${uppercase_name}_IS_REGISTERED_LIBRARY TRUE CACHE BOOL "" FORCE)
 
     if( arg_DEPENDS_ON )
         set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE LIST "" FORCE)
