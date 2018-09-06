@@ -1021,7 +1021,7 @@ macro(blt_print_target_properties)
 
     set(_is_blt_registered_target FALSE)
     string(TOUPPER ${arg_TARGET} _target_upper)
-    if(BLT_${_target_upper}_INCLUDES)
+    if(BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         set(_is_blt_registered_target TRUE)
         message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a blt_registered target")
     endif()
