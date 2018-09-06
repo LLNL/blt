@@ -184,3 +184,10 @@ if(ENABLE_GTEST)
     endif()
 
 endif() # endif ENABLE_GTEST
+
+message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
+message(STATUS "")
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
+    blt_print_target_properties(TARGET ${_target})
+endforeach()
+
