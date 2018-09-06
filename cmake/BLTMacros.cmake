@@ -1036,21 +1036,15 @@ macro(blt_print_target_properties)
         execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE _property_list)
         string(REGEX REPLACE ";" "\\\\;" _property_list "${_property_list}")
         string(REGEX REPLACE "\n" ";" _property_list "${_property_list}")
-        list(FILTER _property_list EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
+        blt_filter_list(TO _property_list REGEX "^LOCATION$|^LOCATION_|_LOCATION$" OPERATION "exclude")
         list(REMOVE_DUPLICATES _property_list)   
 
         ## For interface targets, filter against whitelist of valid properties
         get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
         if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
-            set(_interface_property_list)
-            foreach(prop ${_property_list})
-                if(prop MATCHES "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$")
-                    list(APPEND _interface_property_list ${prop})
-                endif()
-            endforeach()
-
-            set(_property_list ${_interface_property_list})
-            unset(_interface_property_list)
+            blt_filter_list(TO _property_list
+                            REGEX "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$"
+                            OPERATION "include")
         endif()
 
         ## Print all such properties that have been SET
@@ -1066,8 +1060,8 @@ macro(blt_print_target_properties)
         unset(_propval)
     endif()
 
+    ## Additionally, output variables generated via blt_register_target of the form "BLT_<target>_*"
     if(_is_blt_registered_target)
-        ## Additionally, output variables generated via blt_register_target of the form "BLT_<target>_*"
         set(_target_prefix "BLT_${_target_upper}_")
 
         ## Filter to get variables of the form BLT_<target>_ and print
