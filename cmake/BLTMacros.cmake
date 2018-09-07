@@ -1078,7 +1078,9 @@ macro(blt_combine_static_libraries)
                      target_link_libraries( ${arg_NAME} PUBLIC ${interface_link_lib} )
                 endif ()
 
-            elseif( ${interface_link_lib} MATCHES ".so" OR ${interface_link_lib} MATCHES ".dll" )
+            elseif( ${interface_link_lib} MATCHES ".so" OR 
+                    ${interface_link_lib} MATCHES ".dll" OR 
+                    ${interface_link_lib} MATCHES ".dylib" )
                 # Add any shared libraries that were added by file name
                 target_link_libraries( ${arg_NAME} PUBLIC ${interface_link_lib} )
             endif()            
