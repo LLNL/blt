@@ -57,6 +57,9 @@ include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 ##   (2) A condition to check by passing IF <bool>
 ##   (3) The list of elements to append by passing ELEMENTS [<element>...]
 ##
+## Note, the argument passed to the IF option has to be a single boolean value
+## and cannot be a boolean expression since CMake cannot evaluate those inline.
+##
 ## Usage Example:
 ##
 ##  set(mylist A B)
