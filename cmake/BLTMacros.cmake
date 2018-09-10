@@ -44,6 +44,55 @@
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
 ##------------------------------------------------------------------------------
+## blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
+##
+## Appends elements to a list if the specified bool evaluates to true.
+##
+## This macro is essentially a wrapper around CMake's `list(APPEND ...)`
+## command which allows inlining a conditional check within the same call
+## for clarity and convenience.
+##
+## This macro requires specifying:
+##   (1) The target list to append to by passing TO <list>
+##   (2) A condition to check by passing IF <bool>
+##   (3) The list of elements to append by passing ELEMENTS [<element>...]
+##
+## Note, the argument passed to the IF option has to be a single boolean value
+## and cannot be a boolean expression since CMake cannot evaluate those inline.
+##
+## Usage Example:
+##
+##  set(mylist A B)
+##  blt_list_append( TO mylist ELEMENTS C IF ${ENABLE_C} )
+##
+##------------------------------------------------------------------------------
+macro(blt_list_append)
+
+    set(options)
+    set(singleValueArgs TO IF)
+    set(multiValueArgs ELEMENTS )
+
+    # parse macro arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+     # sanity checks
+    if( NOT DEFINED arg_TO )
+        message(FATAL_ERROR "blt_list_append() requires a TO <list> argument")
+    endif()
+
+    if ( NOT DEFINED arg_ELEMENTS )
+         message(FATAL_ERROR "blt_list_append() requires ELEMENTS to be specified" )
+    endif()
+
+    # append if
+    if ( ${arg_IF} )
+        list( APPEND ${arg_TO} ${arg_ELEMENTS} )
+    endif()
+
+endmacro(blt_list_append)
+
+##------------------------------------------------------------------------------
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
