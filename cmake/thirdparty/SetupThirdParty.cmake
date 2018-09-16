@@ -102,10 +102,13 @@ blt_find_executable(NAME        Valgrind
                     EXECUTABLES valgrind)
 
 ################################
-# linting via Uncrustify
+# linting
 ################################
 blt_find_executable(NAME        Uncrustify
                     EXECUTABLES uncrustify)
+
+blt_find_executable(NAME        AStyle
+                    EXECUTABLES astyle)
 
 ################################
 # Static analysis via Cppcheck

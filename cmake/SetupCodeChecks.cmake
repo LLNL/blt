@@ -57,6 +57,16 @@ if(UNCRUSTIFY_FOUND)
     add_dependencies(style uncrustify_style)
 endif()
 
+if(ASTYLE_FOUND)
+    # targets for verifying formatting
+    add_custom_target(astyle_check)
+    add_dependencies(check astyle_check)
+
+    # targets for modifying formatting
+    add_custom_target(astyle_style)
+    add_dependencies(style astyle_style)
+endif()
+
 if(CPPCHECK_FOUND)
     add_custom_target(cppcheck_check)
     add_dependencies(check cppcheck_check)
@@ -66,7 +76,8 @@ endif()
 ##------------------------------------------------------------------------------
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
-##                      UNCRUSTIFY_CFG_FILE <path to uncrustify config file>)
+##                      UNCRUSTIFY_CFG_FILE <path to uncrustify config file>
+##                      ASTYLE_CFG_FILE     <path to astyle config file>)
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
 ## filters based on file extensions.
@@ -77,16 +88,23 @@ endif()
 ## Sources are filtered based on file extensions for use in these code checks.  If you need
 ## additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
 ##
-## UNCRUSTIFY_CFG_FILE is the configuration file for Uncrustify. If UNCRUSTIFY_EXECUTABLE
-## is defined, found, and UNCRUSTIFY_CFG_FILE is provided it will create both check and
-## style function for the given C/C++ files.
+## This macro supports formatting with either Uncrustify or AStyle (but not both) using
+## the following parameters:
+##
+## * UNCRUSTIFY_CFG_FILE is the configuration file for Uncrustify. If UNCRUSTIFY_EXECUTABLE
+##   is defined, found, and UNCRUSTIFY_CFG_FILE is provided it will create both check and
+##   style function for the given C/C++ files.
+##
+## * ASTYLE_CFG_FILE is the configuration file for AStyle. If ASTYLE_EXECUTABLE
+##   is defined, found, and ASTYLE_CFG_FILE is provided it will create both check and
+##   style function for the given C/C++ files.
 ##
 ##------------------------------------------------------------------------------
 
 macro(blt_add_code_checks)
 
     set(options )
-    set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE)
+    set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE ASTYLE_CFG_FILE)
     set(multiValueArgs SOURCES)
 
     cmake_parse_arguments(arg
@@ -121,25 +139,52 @@ macro(blt_add_code_checks)
                                       C_LIST       _c_sources
                                       Fortran_LIST _f_sources)
 
+    # Check that at most one formatting config file was supplied
+    if (DEFINED arg_UNCRUSTIFY_CFG_FILE AND DEFINED arg_ASTYLE_CFG_FILE)
+        message(FATAL_ERROR 
+          "blt_add_code_checks macro does not support multiple "
+          "style config parameters within the same invocation. "
+          "Both UNCRUSTIFY_CFG_FILE and ASTYLE_CFG_FILE were supplied.")
+    endif()
+
     # Add code checks
     set(_error_msg "blt_add_code_checks tried to create an already existing target with given PREFIX: ${arg_PREFIX}. ")
     if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
-        set(_uc_check_target_name ${arg_PREFIX}_uncrustify_check)
-        blt_error_if_target_exists(${_uc_check_target_name} ${_error_msg})
-        set(_uc_style_target_name ${arg_PREFIX}_uncrustify_style)
-        blt_error_if_target_exists(${_uc_style_target_name} ${_error_msg})
+        set(_check_target_name ${arg_PREFIX}_uncrustify_check)
+        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
+        set(_style_target_name ${arg_PREFIX}_uncrustify_style)
+        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
 
-        blt_add_uncrustify_target( NAME              ${_uc_check_target_name}
+        blt_add_uncrustify_target( NAME              ${_check_target_name}
                                    MODIFY_FILES      FALSE
                                    CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                    SRC_FILES         ${_c_sources} )
 
-        blt_add_uncrustify_target( NAME              ${_uc_style_target_name}
+        blt_add_uncrustify_target( NAME              ${_style_target_name}
                                    MODIFY_FILES      TRUE
                                    CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                    SRC_FILES         ${_c_sources} )
+    endif()
+
+    if (ASTYLE_FOUND AND DEFINED arg_ASTYLE_CFG_FILE)
+        set(_check_target_name ${arg_PREFIX}_astyle_check)
+        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
+        set(_style_target_name ${arg_PREFIX}_astyle_style)
+        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
+
+        blt_add_astyle_target( NAME              ${_check_target_name}
+                               MODIFY_FILES      FALSE
+                               CFG_FILE          ${arg_ASTYLE_CFG_FILE} 
+                               WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                               SRC_FILES         ${_c_sources} )
+
+        blt_add_astyle_target( NAME              ${_style_target_name}
+                               MODIFY_FILES      TRUE
+                               CFG_FILE          ${arg_ASTYLE_CFG_FILE} 
+                               WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                               SRC_FILES         ${_c_sources} )
     endif()
 
     if (CPPCHECK_FOUND)
@@ -226,19 +271,20 @@ endmacro(blt_add_cppcheck_target)
 ## MODIFY_FILES, if set to TRUE, modifies the files in place and adds the created target to
 ## the style target.  Otherwise the files are not modified and the created target is added
 ## to the check target.
+## Note: Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
 ##
 ## CFG_FILE defines the uncrustify settings.
 ##
-## PREPEND_FLAGS are additional flags given to added to the front of the uncrustify flags.
+## PREPEND_FLAGS are additional flags added to the front of the uncrustify flags.
 ##
-## APPEND_FLAGS are additional flags given to added to the end of the uncrustify flags.
+## APPEND_FLAGS are additional flags added to the end of the uncrustify flags.
 ##
-## COMMENT is prepended to the commented outputted by CMake.
+## COMMENT is prepended to CMake's output for this target.
 ##
-## WORKING_DIRECTORY is the directory that uncrustify will be ran.  It defaults to the directory
-## where this macro is called.
+## WORKING_DIRECTORY is the directory in which uncrustify will be run.  It defaults 
+## to the directory where this macro is called.
 ##
-## SRC_FILES is a list of source files that uncrustify will be ran on.
+## SRC_FILES is a list of source files to style/check with uncrustify.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_add_uncrustify_target)
@@ -294,3 +340,89 @@ macro(blt_add_uncrustify_target)
     endif()
 
 endmacro(blt_add_uncrustify_target)
+
+##------------------------------------------------------------------------------
+## blt_add_astyle_target( NAME              <Created Target Name>
+##                        MODIFY_FILES      [TRUE | FALSE (default)]
+##                        CFG_FILE          <AStyle Configuration File> 
+##                        PREPEND_FLAGS     <Additional Flags to AStyle>
+##                        APPEND_FLAGS      <Additional Flags to AStyle>
+##                        COMMENT           <Additional Comment for Target Invocation>
+##                        WORKING_DIRECTORY <Working Directory>
+##                        SRC_FILES         [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running astyle over the given SRC_FILES.
+##
+## MODIFY_FILES, if set to TRUE, modifies the files in place and adds the created target to
+## the style target. Otherwise the files are not modified and the created target is added
+## to the check target.  
+## Note: Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.
+##
+## CFG_FILE defines the astyle settings.
+##
+## PREPEND_FLAGS are additional flags added to the front of the astyle flags.
+##
+## APPEND_FLAGS are additional flags added to the end of the astyle flags.
+##
+## COMMENT is prepended to CMake's output for this target.
+##
+## WORKING_DIRECTORY is the directory in which astyle will be run. It defaults to 
+## the directory where this macro is called.
+##
+## SRC_FILES is a list of source files to style/check with astyle.
+##
+##------------------------------------------------------------------------------
+macro(blt_add_astyle_target)
+
+## parse the arguments to the macro
+set(options)
+set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
+set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+
+cmake_parse_arguments(arg
+    "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+# Check required parameters
+if(NOT DEFINED arg_NAME)
+    message(FATAL_ERROR "blt_add_astyle_target requires a NAME parameter")
+endif()
+
+if(NOT DEFINED arg_CFG_FILE)
+    message(FATAL_ERROR "blt_add_astyle_target requires a CFG_FILE parameter")
+endif()
+
+if(NOT DEFINED arg_SRC_FILES)
+    message(FATAL_ERROR "blt_add_astyle_target requires a SRC_FILES parameter")
+endif()
+
+if(NOT DEFINED arg_MODIFY_FILES)
+    set(arg_MODIFY_FILES FALSE)
+endif()
+
+if(DEFINED arg_WORKING_DIRECTORY)
+    set(_wd ${arg_WORKING_DIRECTORY})
+else()
+    set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+if(${arg_MODIFY_FILES})
+    set(MODIFY_FILES_FLAG --suffix=none)
+else()
+    set(MODIFY_FILES_FLAG --formatted --dry-run)
+endif()
+
+add_custom_target(${arg_NAME}
+        COMMAND ${ASTYLE_EXECUTABLE} ${arg_PREPEND_FLAGS}
+            --options=${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+        WORKING_DIRECTORY ${_wd} 
+        VERBATIM
+        COMMENT "${arg_COMMENT}Running AStyle source code formatting checks.")
+    
+# hook our new target into the proper dependency chain
+if(${arg_MODIFY_FILES})
+    add_dependencies(astyle_style ${arg_NAME})
+else()
+    add_dependencies(astyle_check ${arg_NAME})
+endif()
+
+endmacro(blt_add_astyle_target)
