@@ -54,12 +54,19 @@ if(ENABLE_OPENMP)
     message(STATUS "OpenMP CXX Flags: ${OpenMP_CXX_FLAGS}")
     
     # register openmp with blt
-    blt_register_library(NAME openmp
-                         COMPILE_FLAGS
-                         $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${OpenMP_CXX_FLAGS}> 
-                         $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}> 
-                         LINK_FLAGS ${OpenMP_CXX_FLAGS}
-                         )
+    if(ENABLE_CUDA)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${OpenMP_CXX_FLAGS}> 
+                             $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    else()
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    endif()
 endif()
 
 #####################################################
