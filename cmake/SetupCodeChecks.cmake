@@ -297,7 +297,7 @@ macro(blt_add_uncrustify_target)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Check required parameters
+    # Check/Set required parameters
     if(NOT DEFINED arg_NAME)
         message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
     endif()
@@ -320,23 +320,43 @@ macro(blt_add_uncrustify_target)
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
+    set(_generate_target TRUE)
+
     if(${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG "--no-backup")
     else()
         set(MODIFY_FILES_FLAG "--check")
+
+        # Check the version -- output is of the form "uncrustify X.Y.Z"
+        execute_process(
+            COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
+            OUTPUT_VARIABLE _version_str
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+        string(REGEX MATCH "([0-9]+(\\.)?)+$" _uncrustify_version ${_version_str})
+        
+        # Skip 'check' target if version is not high enough 
+        if(_uncrustify_version VERSION_LESS 0.61)
+            set(_generate_target FALSE)
+            message(WARNING "blt_add_uncrustify_target requires uncrustify v0.61 or greater "
+                            " for style check targets. "
+                            " Current uncrustify executable: '${UNCRUSTIFY_EXECUTABLE}' "
+                            " Current uncrustify version is: ${_uncrustify_version}."    )
+        endif()        
     endif()
 
-    add_custom_target(${arg_NAME}
-            COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_PREPEND_FLAGS}
-                -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
-            WORKING_DIRECTORY ${_wd} 
-            COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
-        
-    # hook our new target into the proper dependency chain
-    if(${arg_MODIFY_FILES})
-        add_dependencies(uncrustify_style ${arg_NAME})
-    else()
-        add_dependencies(uncrustify_check ${arg_NAME})
+    if(_generate_target)
+        add_custom_target(${arg_NAME}
+                COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                    -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+                WORKING_DIRECTORY ${_wd} 
+                COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
+            
+        # hook our new target into the proper dependency chain
+        if(${arg_MODIFY_FILES})
+            add_dependencies(uncrustify_style ${arg_NAME})
+        else()
+            add_dependencies(uncrustify_check ${arg_NAME})
+        endif()
     endif()
 
 endmacro(blt_add_uncrustify_target)
@@ -374,55 +394,75 @@ endmacro(blt_add_uncrustify_target)
 ##------------------------------------------------------------------------------
 macro(blt_add_astyle_target)
 
-## parse the arguments to the macro
-set(options)
-set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
-set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
 
-cmake_parse_arguments(arg
-    "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-# Check required parameters
-if(NOT DEFINED arg_NAME)
-    message(FATAL_ERROR "blt_add_astyle_target requires a NAME parameter")
-endif()
+    # Check/Set required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_astyle_target requires a NAME parameter")
+    endif()
 
-if(NOT DEFINED arg_CFG_FILE)
-    message(FATAL_ERROR "blt_add_astyle_target requires a CFG_FILE parameter")
-endif()
+    if(NOT DEFINED arg_CFG_FILE)
+        message(FATAL_ERROR "blt_add_astyle_target requires a CFG_FILE parameter")
+    endif()
 
-if(NOT DEFINED arg_SRC_FILES)
-    message(FATAL_ERROR "blt_add_astyle_target requires a SRC_FILES parameter")
-endif()
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_astyle_target requires a SRC_FILES parameter")
+    endif()
 
-if(NOT DEFINED arg_MODIFY_FILES)
-    set(arg_MODIFY_FILES FALSE)
-endif()
+    if(NOT DEFINED arg_MODIFY_FILES)
+        set(arg_MODIFY_FILES FALSE)
+    endif()
 
-if(DEFINED arg_WORKING_DIRECTORY)
-    set(_wd ${arg_WORKING_DIRECTORY})
-else()
-    set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
 
-if(${arg_MODIFY_FILES})
-    set(MODIFY_FILES_FLAG --suffix=none)
-else()
-    set(MODIFY_FILES_FLAG --formatted --dry-run)
-endif()
+    set(_generate_target TRUE)
 
-add_custom_target(${arg_NAME}
-        COMMAND ${ASTYLE_EXECUTABLE} ${arg_PREPEND_FLAGS}
-            --options=${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
-        WORKING_DIRECTORY ${_wd} 
-        VERBATIM
-        COMMENT "${arg_COMMENT}Running AStyle source code formatting checks.")
-    
-# hook our new target into the proper dependency chain
-if(${arg_MODIFY_FILES})
-    add_dependencies(astyle_style ${arg_NAME})
-else()
-    add_dependencies(astyle_check ${arg_NAME})
-endif()
+    if(${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG --suffix=none)
+    else()
+        set(MODIFY_FILES_FLAG --dry-run)
 
+        # Check the version -- output is of the form "Artistic Style Version X.Y.Z"
+        execute_process(
+            COMMAND ${ASTYLE_EXECUTABLE} --version
+            OUTPUT_VARIABLE _version_str
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+        string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
+        
+        # Skip 'check' target if version is not high enough 
+        if(_astyle_version VERSION_LESS 2.05)
+            set(_generate_target FALSE)
+            message(WARNING "blt_add_astyle_target requires AStyle v2.05 or greater "
+                            " for style check targets. "
+                            " Current AStyle executable: '${ASTYLE_EXECUTABLE}' "
+                            " Current AStyle version is: ${_astyle_version}."    )
+        endif()
+    endif()
+
+    if(_generate_target)
+        add_custom_target(${arg_NAME}
+                COMMAND ${ASTYLE_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                        --options=${arg_CFG_FILE} --formatted 
+                        ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+                WORKING_DIRECTORY ${_wd} 
+                VERBATIM
+                COMMENT "${arg_COMMENT}Running AStyle source code formatting checks.")
+        
+        # hook our new target into the proper dependency chain
+        if(${arg_MODIFY_FILES})
+            add_dependencies(astyle_style ${arg_NAME})
+        else()
+            add_dependencies(astyle_check ${arg_NAME})
+        endif()
+    endif()
 endmacro(blt_add_astyle_target)
