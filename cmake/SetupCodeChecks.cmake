@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -450,15 +450,23 @@ macro(blt_add_astyle_target)
     endif()
 
     if(_generate_target)
-        add_custom_target(${arg_NAME}
-                COMMAND ${ASTYLE_EXECUTABLE} ${arg_PREPEND_FLAGS}
-                        --options=${arg_CFG_FILE} --formatted 
-                        ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
-                WORKING_DIRECTORY ${_wd} 
-                VERBATIM
-                COMMENT "${arg_COMMENT}Running AStyle source code formatting checks.")
+
+        # AStyle doesn't report failure when there are files that require formatting.
+        # Fix this with a wrapper script that parses the output.
+        set(wrapped_astyle_script ${CMAKE_CURRENT_BINARY_DIR}/WrapAstyle_${arg_NAME}.cmake)
+
+        configure_file(
+            ${BLT_ROOT_DIR}/cmake/WrapAstyle.cmake.in
+            ${wrapped_astyle_script}
+            @ONLY )
+
+        add_custom_target(
+            ${arg_NAME}
+            COMMAND ${CMAKE_COMMAND} -P ${wrapped_astyle_script}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running AStyle source code formatting checks.")
         
-        # hook our new target into the proper dependency chain
+        # Hook our new target into the proper dependency chain
         if(${arg_MODIFY_FILES})
             add_dependencies(astyle_style ${arg_NAME})
         else()
