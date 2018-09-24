@@ -72,6 +72,16 @@ if(CPPCHECK_FOUND)
     add_dependencies(check cppcheck_check)
 endif()
 
+# Code check targets should only be run on demand
+foreach(target 
+        check uncrustify_check astyle_check cppcheck_check
+        style uncrustify_style astyle_style )
+    if(TARGET ${target})
+        set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    endif()
+endforeach()
+
 
 ##------------------------------------------------------------------------------
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
@@ -253,6 +263,9 @@ macro(blt_add_cppcheck_target)
     # hook our new target into the proper dependency chain
     add_dependencies(cppcheck_check ${arg_NAME})
 
+    # Code check targets should only be run on demand
+    set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+    set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 endmacro(blt_add_cppcheck_target)
 
 
@@ -357,6 +370,10 @@ macro(blt_add_uncrustify_target)
         else()
             add_dependencies(uncrustify_check ${arg_NAME})
         endif()
+
+        # Code formatting targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
 
 endmacro(blt_add_uncrustify_target)
@@ -472,5 +489,9 @@ macro(blt_add_astyle_target)
         else()
             add_dependencies(astyle_check ${arg_NAME})
         endif()
+
+        # Code formatting targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
 endmacro(blt_add_astyle_target)
