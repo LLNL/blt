@@ -58,6 +58,7 @@ option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
 option(ENABLE_GIT          "Enables Git support" ON)
 option(ENABLE_SPHINX       "Enables Sphinx support" ON)
 option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
+option(ENABLE_ASTYLE       "Enables AStyle support" ON)
 option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
 
 
