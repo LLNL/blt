@@ -951,6 +951,8 @@ endmacro(blt_find_libraries)
 ## These values are defaulted to the appropriate values for CMAKE_HOST_APPLE and 
 ## CMAKE_HOST_UNIX.
 ##
+## Note: This macro does not currently work for Windows
+##
 ##------------------------------------------------------------------------------
 macro(blt_combine_static_libraries)
 
@@ -981,7 +983,9 @@ macro(blt_combine_static_libraries)
         elseif( CMAKE_HOST_UNIX )
             set( _link_prepend "-Wl,--whole-archive" )
         elseif( CMAKE_HOST_WIN32 )
-            set( _link_prepend "-WHOLEARCHIVE:" )
+            # This used to work. Needs to be fixed
+            # set( _link_prepend "-WHOLEARCHIVE:" )
+            message(FATAL_ERROR "blt_combine_static_libraries does not support ${CMAKE_HOST_SYSTEM}")
         else()
             message(FATAL_ERROR "blt_combine_static_libraries does not support ${CMAKE_HOST_SYSTEM}")
         endif()
