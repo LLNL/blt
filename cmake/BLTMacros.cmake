@@ -951,6 +951,8 @@ endmacro(blt_find_libraries)
 ## These values are defaulted to the appropriate values for CMAKE_HOST_APPLE and 
 ## CMAKE_HOST_UNIX.
 ##
+## Note: This macro does not currently work for Windows
+##
 ##------------------------------------------------------------------------------
 macro(blt_combine_static_libraries)
 
@@ -974,21 +976,23 @@ macro(blt_combine_static_libraries)
         message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) called with no given source libraries")
     endif()
     
+    # Default linker flags if not given
     if( NOT arg_LINK_PREPEND )
         if( CMAKE_HOST_APPLE )
             set( _link_prepend "-Wl,-force_load" )
         elseif( CMAKE_HOST_UNIX )
             set( _link_prepend "-Wl,--whole-archive" )
         elseif( CMAKE_HOST_WIN32 )
-            set( _link_prepend "-WHOLEARCHIVE:" )
+            # This used to work. Needs to be fixed
+            # set( _link_prepend "-WHOLEARCHIVE:" )
+            message(FATAL_ERROR "blt_combine_static_libraries does not support ${CMAKE_HOST_SYSTEM}")
         else()
             message(FATAL_ERROR "blt_combine_static_libraries does not support ${CMAKE_HOST_SYSTEM}")
         endif()
     else()
         set( _link_prepend ${arg_LINK_PREPEND})
     endif()
-    
-    
+
     if( NOT arg_LINK_POSTPEND )
         if( CMAKE_HOST_APPLE )
             set( _link_postpend "" )
@@ -1003,6 +1007,7 @@ macro(blt_combine_static_libraries)
         set( _link_postpend ${arg_LINK_POSTPEND})
     endif()
     
+    # Create link line that has all the libraries to combine on it
     set( libLinkLine "" )
     foreach( lib ${arg_SOURCE_LIBS} )
         if( CMAKE_HOST_UNIX )
@@ -1012,8 +1017,7 @@ macro(blt_combine_static_libraries)
         endif()
     endforeach()
 
-    message( "libLinkLine = ${libLinkLine}" )
-    
+    # Decide if the created library is static or shared
     if( ${arg_LIB_TYPE} STREQUAL "STATIC" )
         set( _lib_type STATIC )
     elseif( ${arg_LIB_TYPE} STREQUAL "SHARED" ) 
@@ -1022,14 +1026,96 @@ macro(blt_combine_static_libraries)
         message(FATAL_ERROR "blt_combine_static_libraries(NAME ${arg_NAME} ...) LIB_TYPE must be SHARED OR STATIC")
     endif()
     
-    add_library ( ${arg_NAME} ${_lib_type} ${BLT_ROOT_DIR}/tests/internal/src/combine_static_library_test/dummy.cpp)
+    # Create new library with empty source file
+    add_library( ${arg_NAME} ${_lib_type}
+                 ${BLT_ROOT_DIR}/tests/internal/src/combine_static_library_test/dummy.cpp)
+
+    # Add the combined link line flag
     target_link_libraries( ${arg_NAME} PRIVATE ${libLinkLine})
-    blt_register_library( NAME ${arg_NAME}
-                          DEPENDS_ON ${arg_SOURCE_LIBS}
-                          LIBRARIES ${arg_NAME}
-                         )
+
+    # Add the includes that should be inherited from themselves and their dependencies
+    set( interface_include_directories "" )
+    set( interface_system_include_directories "" )
+    foreach( source_lib ${arg_SOURCE_LIBS} )
+    
+        get_target_property( source_lib_system_include_directories 
+                             ${source_lib} 
+                             INTERFACE_SYSTEM_INCLUDE_DIRECTORIES )
+
+        if( source_lib_system_include_directories )
+            list( APPEND interface_system_include_directories
+                         ${source_lib_system_include_directories} )
+        endif()
+
+        get_target_property( source_lib_include_directories 
+                             ${source_lib} 
+                             INTERFACE_INCLUDE_DIRECTORIES )
+        
+        if( source_lib_include_directories )
+            list( APPEND interface_include_directories ${source_lib_include_directories} )
+        endif()
+
+        # Get all includes from the dependencies of the libraries to be combined
+        get_target_property( interface_link_libs ${source_lib} INTERFACE_LINK_LIBRARIES )        
+        foreach( interface_link_lib ${interface_link_libs} )
+            # Filter out non-CMake targets
+            if( TARGET ${interface_link_lib} )
+                get_target_property( interface_link_lib_include_dir 
+                                     ${interface_link_lib} 
+                                     INTERFACE_INCLUDE_DIRECTORIES )
+                                     
+                if( interface_link_lib_include_dir )
+                    list( APPEND interface_include_directories ${interface_link_lib_include_dir} )
+                endif()
+
+                get_target_property( interface_link_lib_system_include_dir 
+                                     ${interface_link_lib} 
+                                     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES )
+                                     
+                if( interface_link_lib_system_include_dir )
+                    list( APPEND interface_system_include_directories
+                                 ${interface_link_lib_system_include_dir} )
+                endif()
+
+                get_target_property( target_type ${interface_link_lib}  TYPE )
+                if( target_type STREQUAL "SHARED_LIBRARY" )
+                     target_link_libraries( ${arg_NAME} PUBLIC ${interface_link_lib} )
+                endif ()
+
+            elseif( ${interface_link_lib} MATCHES ".so" OR 
+                    ${interface_link_lib} MATCHES ".dll" OR 
+                    ${interface_link_lib} MATCHES ".dylib" )
+                # Add any shared libraries that were added by file name
+                target_link_libraries( ${arg_NAME} PUBLIC ${interface_link_lib} )
+            endif()            
+        endforeach()
+    endforeach()
+    
+    # Remove duplicates from the includes
+    list( REMOVE_DUPLICATES interface_include_directories )
+    list( REMOVE_DUPLICATES interface_system_include_directories )
+
+    # Remove any system includes from the regular includes
+    foreach( include_dir ${interface_system_include_directories} )
+        if( ${include_dir} IN_LIST interface_include_directories )
+            list( REMOVE_ITEM interface_include_directories ${include_dir} )
+        endif()
+    endforeach()
+
+    target_include_directories( ${arg_NAME} INTERFACE
+                                ${interface_include_directories} )
+
+    target_include_directories( ${arg_NAME} SYSTEM INTERFACE
+                                ${interface_system_include_directories} )
 
     unset( libLinkLine )
+    unset( interface_include_directories )
+    unset( interface_system_include_directories )
+    unset( interface_link_lib_include_dir )
+    unset( source_lib_include_directories )
+    unset( _lib_type )
+    unset( _link_prepend )
+    unset( _link_postpend )
 endmacro(blt_combine_static_libraries)
 
 
