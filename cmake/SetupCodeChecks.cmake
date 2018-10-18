@@ -345,7 +345,7 @@ macro(blt_add_uncrustify_target)
             COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
             OUTPUT_VARIABLE _version_str
             OUTPUT_STRIP_TRAILING_WHITESPACE )
-        string(REGEX MATCH "([0-9]+(\\.)?)+$" _uncrustify_version ${_version_str})
+        string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?$" _uncrustify_version ${_version_str})
         
         # Skip 'check' target if version is not high enough 
         if(_uncrustify_version VERSION_LESS 0.61)
