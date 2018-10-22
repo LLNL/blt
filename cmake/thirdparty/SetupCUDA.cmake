@@ -45,7 +45,21 @@
 ################################
 set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
 
+
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
+  if ( NOT CMAKE_CUDA_HOST_COMPILER )
+    if ( CMAKE_CXX_COMPILER )
+      set ( CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
+    else ()
+      set ( CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
+    endif ()
+  endif ()
+  message(STATUS "CMAKE_CUDA_HOST_COMPILER:      ${CMAKE_CUDA_HOST_COMPILER}")
+endif ()
+
+
 enable_language(CUDA)
+
 
 ############################################################
 # Map Legacy FindCUDA variables to native cmake variables

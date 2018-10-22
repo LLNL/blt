@@ -53,7 +53,7 @@ if(NOT WIN32)
 
     blt_add_executable( NAME blt_combine_static_libraries_shared_smoke
                     SOURCES blt_combine_static_libraries_shared_smoke.cpp
-                    DEPENDS_ON FooStatic gtest
+                    DEPENDS_ON FooShared gtest
                   )
 
     blt_add_test( NAME blt_combine_static_libraries_shared_smoke

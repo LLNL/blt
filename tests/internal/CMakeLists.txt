@@ -115,8 +115,9 @@ if(ENABLE_GTEST)
     blt_add_test(NAME t_header_only_smoke
                  COMMAND t_header_only_smoke)
 
-
-    add_subdirectory( src/combine_static_library_test )
+    if ( NOT CMAKE_HOST_WIN32 )
+        add_subdirectory( src/combine_static_library_test )
+    endif ()
 
     ####################
     # Git Macros test
