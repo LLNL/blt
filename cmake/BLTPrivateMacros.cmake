@@ -231,6 +231,12 @@ macro(blt_setup_cuda_source_properties)
                                  PROPERTIES
                                  LANGUAGE CUDA)
 
+    if (CUDA_SEPARABLE_COMPILATION)
+        set_source_files_properties( ${_cuda_sources}
+                                     PROPERTIES
+                                     CUDA_SEPARABLE_COMPILATION ON)
+    endif()
+
     #
     # for debugging, or if we add verbose BLT output
     #
