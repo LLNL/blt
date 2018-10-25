@@ -44,21 +44,6 @@
 # Setup compiler options
 ############################
 
-#################################################
-# OpenMP
-# (OpenMP support is provided by the compiler)
-#################################################
-message(STATUS "OpenMP Support is ${ENABLE_OPENMP}")
-if(ENABLE_OPENMP)
-    find_package(OpenMP REQUIRED)
-    message(STATUS "OpenMP CXX Flags: ${OpenMP_CXX_FLAGS}")
-    
-    # register openmp with blt
-    blt_register_library(NAME openmp
-                         COMPILE_FLAGS ${OpenMP_CXX_FLAGS} 
-                         LINK_FLAGS    ${OpenMP_CXX_FLAGS} )
-endif()
-
 #####################################################
 # Set some variables to simplify determining compiler
 # Compiler string list from: 
@@ -118,6 +103,45 @@ else()
 endif()
 
 
+#################################################
+# OpenMP
+# (OpenMP support is provided by the compiler)
+#################################################
+message(STATUS "OpenMP Support is ${ENABLE_OPENMP}")
+if(ENABLE_OPENMP)
+    find_package(OpenMP REQUIRED)
+    message(STATUS "OpenMP CXX Flags: ${OpenMP_CXX_FLAGS}")
+    
+    # register openmp with blt
+    if(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_CUDA AND ENABLE_FORTRAN)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:${OpenMP_CXX_FLAGS}> 
+                             $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}>
+                             $<$<COMPILE_LANGUAGE:Fortran>:${OpenMP_Fortran_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    elseif(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_CUDA)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${OpenMP_CXX_FLAGS}> 
+                             $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    elseif(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_FORTRAN)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<NOT:$<COMPILE_LANGUAGE:Fortran>>:${OpenMP_CXX_FLAGS}>
+                             $<$<COMPILE_LANGUAGE:Fortran>:${OpenMP_Fortran_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    else()
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    endif()
+endif()
 
 
 ################################################
