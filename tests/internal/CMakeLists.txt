@@ -183,6 +183,32 @@ if(ENABLE_GTEST)
     if (ENABLE_CUDA)
         add_subdirectory(src/test_cuda_device_call_from_kernel)
     endif()
+    
+    ########################################################
+    # Tests blt_add_target_definitions macro
+    # Four variants of a test with a list of two definitions
+    ########################################################
+    set(_variant_1 A=1 B)         # neither use '-D'
+    set(_variant_2 -DA=1 -DB)     # both uses '-D'
+    set(_variant_3 "A=1;-DB")     # list passed in as string
+    set(_variant_4 " " "-DA=1;B") # list can contain empty strings
+    foreach(i RANGE 1 4)
+        set(_casename "_variant_${i}")
+        set(_testname "t_example_compile_definitions_test${_casename}")
+
+        blt_add_executable( 
+            NAME ${_testname}
+            SOURCES src/t_example_compile_definitions.cpp 
+            DEPENDS_ON gtest)
+
+        blt_add_target_definitions(
+            TO ${_testname}
+            TARGET_DEFINITIONS ${${_casename}})
+
+        blt_add_test( 
+            NAME ${_testname}
+            COMMAND ${_testname})
+    endforeach()
 
 endif() # endif ENABLE_GTEST
 
