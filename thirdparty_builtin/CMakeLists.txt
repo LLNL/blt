@@ -45,17 +45,18 @@ set(_blt_tpl_targets) # tracks names of enabled tpl targets
 if(ENABLE_TESTS)
     include(CTest)
 
+    # Note: Users can pass extra compiler flags to gtest 
+    #       with the 'gtest_extra_flags' variable and extra 
+    #       compile definitions with the 'gtest_defines' variable.
+
     if(WIN32 AND BUILD_SHARED_LIBS)
-        add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
         list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
     endif()
 
     # Explicitly enable/disable death tests
     if(ENABLE_GTEST_DEATH_TESTS)
-        add_definitions(-DGTEST_HAS_DEATH_TEST=1)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=1")
     else()
-        add_definitions(-DGTEST_HAS_DEATH_TEST=0)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=0")
     endif()
 
@@ -84,7 +85,7 @@ if(ENABLE_TESTS)
     
     #
     # Guard of googletest w/ ENABLE_GTEST
-    # In BTL ENABLE_GTEST is also required when using ENABLE_GMOCK
+    # In BLT, ENABLE_GTEST is also required when using ENABLE_GMOCK
     #
     
     if(ENABLE_GTEST)
@@ -120,6 +121,8 @@ if(ENABLE_TESTS)
                              DEFINES  ${gtest_defines}
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
+                             
+        blt_add_target_definitions(TO gtest TARGET_DEFINITIONS ${gtest_defines})
 
         list(APPEND _blt_tpl_targets gtest gtest_main)
 
