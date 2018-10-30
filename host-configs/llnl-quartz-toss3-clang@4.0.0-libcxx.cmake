@@ -1,16 +1,26 @@
-###########################################################
+###############################################################################
+# Copyright (c) 2018, Lawrence Livermore National Security, LLC.
+#
+# Produced at the Lawrence Livermore National Laboratory
+#
+# LLNL-CODE-725085
+#
+# All rights reserved.
+#
+# This file is part of BLT.
+#
+# For additional details, please also read BLT/LICENSE.
+#
+#------------------------------------------------------------------------------
 # Example host-config file for the quartz cluster at LLNL
-###########################################################
+#------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
 #  C,C++, & Fortran compilers + MPI
-# 
-###########################################################
-
-###########################################################
+#------------------------------------------------------------------------------
 # clang-4.0.0 / gfortran@4.9.3 compilers
 # Uses clang's 'libc++' instead of 'libstdc++'
-###########################################################
+###############################################################################
 
 set(CLANG_HOME "/usr/tce/packages/clang/clang-4.0.0")
 set(GNU_HOME "/usr/tce/packages/gcc/gcc-4.9.3")
@@ -27,17 +37,17 @@ set(ENABLE_FORTRAN ON CACHE BOOL "")
 # fortran compiler
 set(CMAKE_Fortran_COMPILER "${GNU_HOME}/bin/gfortran" CACHE PATH "")
 
-###########################################################
+#------------------------------------------------------------------------------
 # Extra flags
-###########################################################
+#------------------------------------------------------------------------------
 
 # Use clang's libc++ instead of libstdc++
 set(BLT_CXX_FLAGS "-stdlib=libc++" CACHE STRING "")
 set(gtest_defines "-DGTEST_HAS_CXXABI_H_=0" CACHE STRING "")
 
-###########################################################
+#------------------------------------------------------------------------------
 # MPI Support
-###########################################################
+#------------------------------------------------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")
 
 set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.2-clang-4.0.0" CACHE PATH "")
