@@ -143,7 +143,7 @@ macro(blt_add_target_definitions)
     endif()
 
     unset(_targetType)
-    unset(_strippedFlags)
+    unset(_strippedDefs)
 
 endmacro(blt_add_target_definitions)
 
