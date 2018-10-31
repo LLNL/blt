@@ -49,8 +49,11 @@ if(ENABLE_TESTS)
     #       with the 'gtest_extra_flags' variable and extra 
     #       compile definitions with the 'gtest_defines' variable.
 
+
+    # The following flag should be added to gtest's dependents, 
+    # but not to gtest in shared Windows builds
     if(WIN32 AND BUILD_SHARED_LIBS)
-        list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
+        list(APPEND gtest_export_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
     endif()
 
     # Explicitly enable/disable death tests
@@ -118,7 +121,7 @@ if(ENABLE_TESTS)
                              INCLUDES ${gtest_SOURCE_DIR}/include
                              LIBRARIES gtest_main gtest ${gtest_extra_libs}
                              COMPILE_FLAGS ${gtest_extra_flags}
-                             DEFINES  ${gtest_defines}
+                             DEFINES  ${gtest_defines} ${gtest_export_defines}
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
                              
