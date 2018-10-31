@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -107,8 +107,14 @@ endmacro(blt_list_append)
 ## The supplied target must be added via add_executable() or add_library() or
 ## with the corresponding blt_add_executable() and blt_add_library() macros.
 ##
-## Note, the list of target definitions *SHOULD NOT* include the "-D" flag. This
-## flag is added internally by cmake.
+## Note, the target definitions can either include or omit the "-D" characters. 
+## E.g. the following are all valid ways to add two compile definitions 
+## (A=1 and B) to target 'foo'
+##
+##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS A=1 B)
+##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS -DA=1 -DB)
+##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS "A=1;-DB")
+##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS " " -DA=1;B")
 ##------------------------------------------------------------------------------
 macro(blt_add_target_definitions)
 
@@ -120,16 +126,24 @@ macro(blt_add_target_definitions)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    get_target_property(defs ${arg_TO} COMPILE_DEFINITIONS)
-    if (defs MATCHES "NOTFOUND")
-        set(defs "")
+    ## check that the passed in parameter TO is actually a target
+    if(NOT TARGET ${arg_TO})
+        message(FATAL_ERROR "Target ${arg_TO} passed to blt_add_target_definitions is not a valid cmake target")    
     endif()
 
-    foreach (def ${defs} ${arg_TARGET_DEFINITIONS})
-        list(APPEND deflist ${def})
-    endforeach()
+    ## only add the flag if it is not empty
+    string(STRIP "${arg_TARGET_DEFINITIONS}" _strippedDefs)
+    if(NOT "${_strippedDefs}" STREQUAL "")
+        get_property(_targetType TARGET ${arg_TO} PROPERTY TYPE)
+        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+            target_compile_definitions(${arg_TO} INTERFACE ${_strippedDefs})
+        else()
+            target_compile_definitions(${arg_TO} PUBLIC ${_strippedDefs})
+        endif()        
+    endif()
 
-    set_target_properties(${arg_TO} PROPERTIES COMPILE_DEFINITIONS "${deflist}")
+    unset(_targetType)
+    unset(_strippedDefs)
 
 endmacro(blt_add_target_definitions)
 
