@@ -80,9 +80,9 @@ endif()
 ################################
 # ROCM
 ################################
-message(STATUS "ROCM Support is ${ENABLE_ROCM}")
-if (ENABLE_ROCM)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
+message(STATUS "ROCM Support is ${ENABLE_HIP}")
+if (ENABLE_HIP)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake)
 endif()
 
 ################################

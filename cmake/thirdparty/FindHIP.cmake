@@ -575,5 +575,3 @@ macro(HIP_ADD_LIBRARY hip_target)
     add_library(${hip_target} ${_cmake_options} ${_generated_files} ${_sources})
     set_target_properties(${hip_target} PROPERTIES LINKER_LANGUAGE ${HIP_C_OR_CXX})
 endmacro()
-
-# vim: ts=4:sw=4:expandtab:smartindent

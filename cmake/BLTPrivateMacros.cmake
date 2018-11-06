@@ -245,6 +245,52 @@ macro(blt_setup_cuda_source_properties)
 
 endmacro(blt_setup_cuda_source_properties)
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_source_properties)
+
+    set(options)
+    set(singleValueArgs BUILD_TARGET)
+    set(multiValueArgs TARGET_SOURCES)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_BUILD_TARGET )
+        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_hip_source_properties' macro")
+    endif()
+
+    if ( NOT DEFINED arg_TARGET_SOURCES )
+        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_hip_source_properties' macro")
+    endif()
+
+    set(_hip_sources)
+    set(_non_hip_sources)
+    blt_split_source_list_by_language(SOURCES      ${arg_TARGET_SOURCES}
+                                      C_LIST       _hip_sources
+                                      Fortran_LIST _non_hip_sources)
+
+    set_source_files_properties( ${_hip_sources}
+                                 PROPERTIES
+                                 HIP_SOURCE_PROPERTY_FORMAT TRUE)
+
+    if (HIP_SEPARABLE_COMPILATION)
+        set_source_files_properties( ${_hip_sources}
+                                     PROPERTIES
+                                     HIP_SEPARABLE_COMPILATION ON)
+    endif()
+
+    #
+    # for debugging, or if we add verbose BLT output
+    #
+    ##message(STATUS "target '${arg_BUILD_TARGET}' HIP Sources: ${_hip_sources}")
+    ##message(STATUS "target '${arg_BUILD_TARGET}' non-HIP Sources: ${_non_hip_sources}")
+
+endmacro(blt_setup_hip_source_properties)
+
 
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
@@ -341,7 +387,7 @@ macro(blt_filter_list)
     set(multiValueArgs )
 
     # Parse arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments

@@ -80,11 +80,11 @@ option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
 mark_as_advanced(ENABLE_CLANG_CUDA)
 set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
 mark_as_advanced(BLT_CLANG_CUDA_ARCH)
-option(ENABLE_ROCM         "Enable ROCM support" OFF)
+option(ENABLE_HIP         "Enable HIP support" OFF)
 set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")
 
-# Options that control if Google Test, Google Mock, and Fruit are built 
-# and available for use. 
+# Options that control if Google Test, Google Mock, and Fruit are built
+# and available for use.
 #
 # If ENABLE_TESTS=OFF, no testing support is built and these option are ignored.
 #
@@ -115,8 +115,8 @@ option(ENABLE_WARNINGS_AS_ERRORS "Enables treating compiler warnings as errors o
 set(BLT_CXX_STD "c++11" CACHE STRING "Version of C++ standard")
 set_property(CACHE BLT_CXX_STD PROPERTY STRINGS c++98 c++11 c++14)
 
-if( NOT ( ( BLT_CXX_STD STREQUAL "c++98" ) 
-       OR ( BLT_CXX_STD STREQUAL "c++11" ) 
+if( NOT ( ( BLT_CXX_STD STREQUAL "c++98" )
+       OR ( BLT_CXX_STD STREQUAL "c++11" )
        OR ( BLT_CXX_STD STREQUAL "c++14" ) ) )
     message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
 Valid Options are ( c++98, c++11, c++14 )")
@@ -150,7 +150,7 @@ mark_as_advanced(
     ENABLE_FIND_MPI
     ENABLE_GTEST_DEATH_TESTS
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
-       
+
 if (DEFINED ENABLE_SHARED_LIBS)
     message(FATAL_ERROR "ENABLE_SHARED_LIBS is a deprecated BLT option."
                         "Use the standard CMake option, BUILD_SHARED_LIBS, instead.")
