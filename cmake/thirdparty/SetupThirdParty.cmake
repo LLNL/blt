@@ -78,9 +78,9 @@ if (ENABLE_CUDA)
 endif()
 
 ################################
-# ROCM
+# HIP
 ################################
-message(STATUS "ROCM Support is ${ENABLE_HIP}")
+message(STATUS "HIP Support is ${ENABLE_HIP}")
 if (ENABLE_HIP)
   include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake)
 endif()
