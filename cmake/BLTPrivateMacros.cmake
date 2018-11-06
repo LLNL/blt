@@ -48,29 +48,16 @@ include(CMakeParseArguments)
 ##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()
 ##
-## Checks if target already exists in CMake project and errors out with given
-## error_msg.
-##-----------------------------------------------------------------------------
-function(blt_error_if_target_exists target_name error_msg)
-    if (TARGET ${target_name})
-        message(FATAL_ERROR "${error_msg}Duplicate target name: ${target_name}")
-    endif()
-endfunction()
-
-
-################################################################################
-# blt_find_executable(NAME         <name of program to find>
-#                     EXECUTABLES  [exe1 [exe2 ...]])
-#
-# This macro attempts to find the given executable via either a previously defined
-# <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
-# if EXECUTABLES is left empty, then NAME is used.
-#
-# If successful the following variables will be defined:
-# <UPPERCASE_NAME>_FOUND
-# <UPPERCASE_NAME>_EXECUTABLE
-################################################################################
-macro(blt_find_executable)
+## Adds a custom "copy_headers" target for the given project
+##
+## Adds a custom target, blt_copy_headers_[NAME], for the given project. 
+## The role of this target is to copy the given list of headers, [HEADERS], to 
+## the destination directory [DESTINATION].
+##
+## This macro is used to copy the header of each component in to the build
+## space, under an "includes" directory.
+##------------------------------------------------------------------------------
+macro(blt_copy_headers_target)
 
     set(options)
     set(singleValueArgs NAME)
@@ -79,6 +66,13 @@ macro(blt_find_executable)
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
+                        
+    # Make all headers paths absolute
+    set(temp_list "")
+    foreach(header ${arg_HEADERS})
+        list(APPEND temp_list ${CMAKE_CURRENT_LIST_DIR}/${header})
+    endforeach()
+    set(arg_HEADERS ${temp_list})
 
     # Check arguments
     if ( NOT DEFINED arg_NAME )
@@ -186,8 +180,11 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
-            blt_add_target_compile_flags(TO ${arg_NAME}
-                                         FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
+            if(NOT "${BLT_${uppercase_dependency}_COMPILE_FLAGS}"
+                    STREQUAL "BLT_NO_COMPILE_FLAGS" )
+                blt_add_target_compile_flags(TO ${arg_NAME} 
+                                             FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
+            endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
@@ -217,6 +214,7 @@ macro(blt_setup_cuda_source_properties)
         message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_cuda_source_properties' macro")
     endif()
 
+    
     if ( NOT DEFINED arg_TARGET_SOURCES )
         message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
     endif()
@@ -244,52 +242,6 @@ macro(blt_setup_cuda_source_properties)
     ##message(STATUS "target '${arg_BUILD_TARGET}' non-CUDA Sources: ${_non_cuda_sources}")
 
 endmacro(blt_setup_cuda_source_properties)
-
-##------------------------------------------------------------------------------
-## blt_setup_hip_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
-##------------------------------------------------------------------------------
-macro(blt_setup_hip_source_properties)
-
-    set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs TARGET_SOURCES)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                            "${multiValueArgs}" ${ARGN} )
-
-    # Check arguments
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_hip_source_properties' macro")
-    endif()
-
-    if ( NOT DEFINED arg_TARGET_SOURCES )
-        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_hip_source_properties' macro")
-    endif()
-
-    set(_hip_sources)
-    set(_non_hip_sources)
-    blt_split_source_list_by_language(SOURCES      ${arg_TARGET_SOURCES}
-                                      C_LIST       _hip_sources
-                                      Fortran_LIST _non_hip_sources)
-
-    set_source_files_properties( ${_hip_sources}
-                                 PROPERTIES
-                                 HIP_SOURCE_PROPERTY_FORMAT TRUE)
-
-    if (HIP_SEPARABLE_COMPILATION)
-        set_source_files_properties( ${_hip_sources}
-                                     PROPERTIES
-                                     HIP_SEPARABLE_COMPILATION ON)
-    endif()
-
-    #
-    # for debugging, or if we add verbose BLT output
-    #
-    ##message(STATUS "target '${arg_BUILD_TARGET}' HIP Sources: ${_hip_sources}")
-    ##message(STATUS "target '${arg_BUILD_TARGET}' non-HIP Sources: ${_non_hip_sources}")
-
-endmacro(blt_setup_hip_source_properties)
 
 
 ##------------------------------------------------------------------------------

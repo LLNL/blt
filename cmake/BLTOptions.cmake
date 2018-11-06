@@ -150,6 +150,7 @@ mark_as_advanced(
     ENABLE_FIND_MPI
     ENABLE_GTEST_DEATH_TESTS
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
+       
 
 if (DEFINED ENABLE_SHARED_LIBS)
     message(FATAL_ERROR "ENABLE_SHARED_LIBS is a deprecated BLT option."
