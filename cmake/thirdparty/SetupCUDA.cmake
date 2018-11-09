@@ -46,8 +46,20 @@
 set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
 
 
+
+
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
+
+  get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
+
   if ( NOT CMAKE_CUDA_HOST_COMPILER )
+  
+    if("CUDA" IN_LIST LANGUAGES )
+      message( FATAL_ERROR 
+               "CUDA Enabled prior to setting CMAKE_CUDA_HOST_COMPILER. Please set \
+                CMAKE_CUDA_HOST_COMPILER prior to ENABLE_LANGUAGE(CUDA) or PROJECT(.. LANGUAGES CUDA) ")
+    endif()    
+  
     if ( CMAKE_CXX_COMPILER )
       set ( CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
     else ()
