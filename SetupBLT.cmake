@@ -61,6 +61,12 @@ if (NOT BLT_LOADED)
                             "out-of-source build in another directory.")
     endif()
 
+    #################################
+    # Show CMake info right out of the gate
+    ################################
+    message(STATUS "CMake Version: ${CMAKE_VERSION}")
+    message(STATUS "CMake Executable: ${CMAKE_COMMAND}")
+
     ################################
     # Setup build options and their default values
     ################################
