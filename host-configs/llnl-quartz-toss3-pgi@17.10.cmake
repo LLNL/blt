@@ -1,25 +1,30 @@
-###########################################################
-# Example host-config file for the quartz cluster at LLNL
-###########################################################
+#------------------------------------------------------------------------------
+# Copyright (c) 2018, Lawrence Livermore National Security, LLC.
 #
-# This file provides CMake with paths / details for:
-#  C,C++, & Fortran compilers
-# 
-###########################################################
+# Produced at the Lawrence Livermore National Laboratory
+#
+# LLNL-CODE-725085
+#
+# All rights reserved.
+#
+# This file is part of BLT.
+#
+# For additional details, please also read BLT/LICENSE.
+#------------------------------------------------------------------------------
+# Example pgi@17.10 host-config for LLNL toss3 machines
+#------------------------------------------------------------------------------
 
-###########################################################
-# pgi@17.10 compilers
-###########################################################
+set(PGI_HOME "/usr/tce/packages/pgi/pgi-17.10")
 
 # c compiler
-set(CMAKE_C_COMPILER "/usr/tce/packages/pgi/pgi-17.10/bin/pgcc" CACHE PATH "")
+set(CMAKE_C_COMPILER "${PGI_HOME}/bin/pgcc" CACHE PATH "")
 
 # cpp compiler
-set(CMAKE_CXX_COMPILER "/usr/tce/packages/pgi/pgi-17.10/bin/pgc++" CACHE PATH "")
+set(CMAKE_CXX_COMPILER "${PGI_HOME}/bin/pgc++" CACHE PATH "")
 
 # fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
 
 # fortran support
-set(CMAKE_Fortran_COMPILER "/usr/tce/packages/pgi/pgi-17.10/bin/pgfortran" CACHE PATH "")
+set(CMAKE_Fortran_COMPILER "${PGI_HOME}/bin/pgfortran" CACHE PATH "")
 
