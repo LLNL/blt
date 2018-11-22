@@ -46,7 +46,7 @@ set(BLT_MPI_COMMAND_APPEND "mpibind" CACHE PATH "")
 #------------------------------------------------------------------------------
 set(ENABLE_CUDA ON CACHE BOOL "")
 
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-9.2.64" CACHE PATH "")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-9.2.148" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
 
 set (CUDA_ARCH "sm_60" CACHE PATH "")
@@ -59,5 +59,7 @@ set (CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
 # on ray - can figure out your equivalant flags by doing mpicc -vvvv
 set (SPECTRUM_ROLLING "/usr/tce/packages/spectrum-mpi/ibm/spectrum-mpi-rolling-release")
 set (CMAKE_CUDA_LINK_FLAGS "-Xlinker -rpath -Xlinker ${SPECTRUM_ROLLING}/lib -Xlinker -rpath -Xlinker ${COMPILER_HOME}/ibm/lib:/usr/tce/packages/gcc/gcc-4.9.3/lib64 -L${SPECTRUM_ROLLING}/lib/ -lmpi_ibm" CACHE STRING "")
- 
- 
+
+# nvcc does not like gtest's 'pthreads' flag
+set(gtest_disable_pthreads ON CACHE BOOL "")
+
