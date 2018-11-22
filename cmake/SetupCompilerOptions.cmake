@@ -78,6 +78,11 @@ else()
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         set(C_COMPILER_FAMILY_IS_INTEL 1)
         message(STATUS "C Compiler family is Intel")
+
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+        set(C_COMPILER_FAMILY_IS_PGI 1)
+        message(STATUS "C Compiler family is PGI")
+
     else()
         message(STATUS "C Compiler family not set!!!")
     endif()
@@ -97,6 +102,11 @@ else()
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
         set(Fortran_COMPILER_FAMILY_IS_INTEL 1)
         message(STATUS "Fortran Compiler family is Intel")
+
+    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+        set(Fortran_COMPILER_FAMILY_IS_PGI 1)
+        message(STATUS "Fortran Compiler family is PGI")
+
     elseif(ENABLE_FORTRAN)
         message(STATUS "Fortran Compiler family not set!!!")
     endif()
