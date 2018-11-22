@@ -115,7 +115,21 @@ if(ENABLE_GTEST)
     blt_add_test(NAME t_header_only_smoke
                  COMMAND t_header_only_smoke)
 
-    if ( NOT CMAKE_HOST_WIN32 )
+    ####################################################
+    # Tests blt_combine_static_libs macro
+    # Note: Does not currently work on Windows or BGQ
+    ####################################################
+    set(_try_combine_static_libs ON)
+
+    if(CMAKE_HOST_WIN32)
+        set(_try_combine_static_libs OFF)
+    endif()
+
+    if ("$ENV{SYS_TYPE}" STREQUAL "bgqos_0")
+        set(_try_combine_static_libs OFF)
+    endif()
+
+    if ( ${_try_combine_static_libs} )
         add_subdirectory( src/combine_static_library_test )
     endif ()
 
