@@ -72,10 +72,21 @@ if(CPPCHECK_FOUND)
     add_dependencies(check cppcheck_check)
 endif()
 
+if(CLANGQUERY_FOUND)
+    # note: interactive_clang_query_check 
+    # is for the use of code developers who
+    # want to check specific attributes of
+    # specific targets, and does not make 
+    # sense as a dependency of check
+    add_custom_target(clang_query_check)
+    add_custom_target(interactive_clang_query_check)
+    add_dependencies(check clang_query_check)
+endif()
+
 # Code check targets should only be run on demand
 foreach(target 
         check uncrustify_check astyle_check cppcheck_check
-        style uncrustify_style astyle_style )
+        style uncrustify_style astyle_style clang_query_check interactive_clang_query_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
@@ -206,7 +217,125 @@ macro(blt_add_code_checks)
                                  SRC_FILES         ${_c_sources})
     endif()
 
+    if (CLANGQUERY_FOUND)
+        if(NOT BLT_CLANG_QUERY_CONFIGURED)
+          blt_configure_clang_query()
+        endif()
+
+        set(_clang_query_target_name ${arg_PREFIX}_clang_query_check)
+        blt_error_if_target_exists(${_clang_query_target_name} ${_error_msg})
+        blt_add_clang_query_target( NAME           ${_clang_query_target_name}
+                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                 SRC_FILES         ${_c_sources})
+    endif()
+
 endmacro(blt_add_code_checks)
+
+##-----------------------------------------------------------------------------
+## blt_configure_clang_query( CLANG_QUERY_DIR
+##                          )
+##
+## Configures the clang query helper script and finds clang query
+##
+##-----------------------------------------------------------------------------
+macro(blt_configure_clang_query)
+    if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
+      message(ERROR "Enabled Clang Query static analysis without setting CMAKE_EXPORT_COMPILE_COMMANDS, clang static analysis will likely fail")
+    endif()
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DEVELOPER_MODE)
+    set(multiValueArgs SRC_FILES)
+    configure_file(${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py.in ${CMAKE_CURRENT_BINARY_DIR}/clang-query-wrapper.py)
+    set(CLANG_QUERY_HELPER_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/clang-query-wrapper.py)
+    set(BLT_CLANG_QUERY_CONFIGURED ON)
+
+endmacro(blt_configure_clang_query)
+
+
+##-----------------------------------------------------------------------------
+## blt_add_clang_query_target( NAME             <Created Target Name>
+##                          WORKING_DIRECTORY   <Working Directory>
+##                          PREPEND_FLAGS       <additional flags for clang_query>
+##                          APPEND_FLAGS        <additional flags for clang_query>
+##                          COMMENT             <Additional Comment for Target Invocation>
+##                          SRC_FILES           [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
+##
+## PREPEND_FLAGS are additional flags given to added to the front of the clang_query flags.
+##
+## APPEND_FLAGS are additional flags given to added to the end of the clang_query flags.
+##
+## COMMENT is prepended to the commented outputted by CMake.
+##
+## WORKING_DIRECTORY is the directory that clang_query will be ran.  It defaults to the directory
+## where this macro is called.
+##
+## SRC_FILES is a list of source files that clang_query will be run on.
+##-----------------------------------------------------------------------------
+macro(blt_add_clang_query_target)
+
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DEVELOPER_MODE)
+    set(multiValueArgs SRC_FILES)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_clang_query_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_clang_query_target requires a SRC_FILES parameter")
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+   
+    set(interactive_target_name interactive_${arg_NAME})
+    # TODO: "FindPython" instead of just using Python
+    set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT})
+    add_custom_target(${arg_NAME}
+      COMMAND ${CLANG_QUERY_HELPER_COMMAND} ${arg_SRC_FILES}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
+
+    add_custom_target(${interactive_target_name}
+      COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i ${arg_SRC_FILES}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running clang_query source code static analysis checks.")
+    if(DEFINED arg_DEVELOPER_MODE)
+      if(arg_DEVELOPER_MODE)
+        foreach(constituent_source ${arg_SRC_FILES})
+          get_filename_component(constituent_source_file_name ${constituent_source} NAME)
+          string(REGEX REPLACE "." "_" constituent_source_target_name ${constituent_source_file_name})
+          add_custom_target(${constituent_source_target_name}
+            COMMAND ${ClangQuery} ${constituent_source}
+                  WORKING_DIRECTORY ${_wd}
+                  COMMENT "${arg_COMMENT} Running clang-query interpreter against ${constituent_source_target_name}")
+            set_property(TARGET ${constituent_source_target_name} PROPERTY EXCLUDE_FROM_ALL TRUE)
+            set_property(TARGET ${constituent_source_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+        endforeach()
+      endif()
+    endif() 
+    # hook our new target into the proper dependency chain
+    add_dependencies(clang_query_check ${arg_NAME})
+    add_dependencies(interactive_clang_query_check ${interactive_target_name})
+
+    # Code check targets should only be run on demand
+    set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_ALL TRUE)
+    set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+    set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+
+endmacro(blt_add_clang_query_target)
 
 
 ##-----------------------------------------------------------------------------
@@ -219,13 +348,13 @@ endmacro(blt_add_code_checks)
 ##
 ## Creates a new target with the given NAME for running cppcheck over the given SRC_FILES
 ##
-## PREPEND_FLAGS are additional flags given to added to the front of the uncrustify flags.
+## PREPEND_FLAGS are additional flags given to added to the front of the cppcheck flags.
 ##
-## APPEND_FLAGS are additional flags given to added to the end of the uncrustify flags.
+## APPEND_FLAGS are additional flags given to added to the end of the cppcheck flags.
 ##
 ## COMMENT is prepended to the commented outputted by CMake.
 ##
-## WORKING_DIRECTORY is the directory that uncrustify will be ran.  It defaults to the directory
+## WORKING_DIRECTORY is the directory that cppcheck will be ran.  It defaults to the directory
 ## where this macro is called.
 ##
 ## SRC_FILES is a list of source files that cppcheck will be run on.
@@ -242,11 +371,11 @@ macro(blt_add_cppcheck_target)
 
     # Check required parameters
     if(NOT DEFINED arg_NAME)
-        message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
+        message(FATAL_ERROR "blt_add_cppcheck_target requires a NAME parameter")
     endif()
 
     if(NOT DEFINED arg_SRC_FILES)
-        message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
+        message(FATAL_ERROR "blt_add_cppcheck_target requires a SRC_FILES parameter")
     endif()
 
     if(DEFINED arg_WORKING_DIRECTORY)
