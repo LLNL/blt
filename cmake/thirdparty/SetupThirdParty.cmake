@@ -104,6 +104,7 @@ blt_find_executable(NAME        Valgrind
 ################################
 # linting
 ################################
+
 blt_find_executable(NAME        Uncrustify
                     EXECUTABLES uncrustify)
 
@@ -115,3 +116,9 @@ blt_find_executable(NAME        AStyle
 ################################
 blt_find_executable(NAME        Cppcheck
                     EXECUTABLES cppcheck)
+
+################################
+# Static analysis via clang-query
+################################
+blt_find_executable(NAME        ClangQuery
+                    EXECUTABLES clang-query)

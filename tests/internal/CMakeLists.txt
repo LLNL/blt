@@ -232,3 +232,4 @@ foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
+add_subdirectory(src/static_analysis)
