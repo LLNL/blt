@@ -26,7 +26,7 @@ parser.add_argument("--checkers",action="store",help="List of checkers to always
 parser.add_argument("files",nargs="+",help="Files to query")
 args = parser.parse_args()
 interactive = args.interactive
-
+interpreter = False
 arg_checkers = args.checkers
 available_checkers = get_all_checkers()
 checker_files = []
@@ -34,9 +34,11 @@ if interactive:
   checker_string = os.getenv("checker")
   if checker_string is None:
     checker_files = get_all_checker_files(available_checkers)
-  else:
+  elif checker_string != "interpreter":
     environment_desired_checkers = checker_string.split(":")
-    arg_desired_checkers = arg_checkers.split(":")
+    arg_desired_checkers = []
+    if arg_checkers is not None:
+      arg_desired_checkers = arg_checkers.split(":")
     all_desired_checkers = arg_desired_checkers + environment_desired_checkers
     desired_checkers = [checker for checker in all_desired_checkers if len(checker)>0] # filter out the empty entries from unspecified sources
     unavailable_checkers = [checker for checker in desired_checkers if checker not in available_checkers]
@@ -44,10 +46,12 @@ if interactive:
       print("Error, request for checker(s) "+",".join(unavailable_checkers)+" which could not be found")
       sys.exit(1)
     checker_files = [available_checkers[checker] for checker in desired_checkers]
+  else:
+    interpreter=True
 else:
   checker_files = get_all_checker_files(available_checkers)
 
-if len(checker_files)==0:
+if len(checker_files)==0 and not interactive:
   print("No static analysis files found in static analysis directories, exiting.")
   sys.exit(1)
 
@@ -56,5 +60,8 @@ for file_name in checker_files:
 
 invocation+=" ".join(args.files)
 
-output = subprocess.check_output(invocation, shell=True)
-print(output)
+if not interpreter:
+  output = subprocess.check_output(invocation, shell=True)
+  print(output)
+else:
+  subprocess.call(invocation, shell=True, stdout=sys.stdout)
