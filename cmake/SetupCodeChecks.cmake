@@ -239,9 +239,7 @@ endmacro(blt_add_code_checks)
 ##
 ##-----------------------------------------------------------------------------
 macro(blt_configure_clang_query)
-    if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
-      message(ERROR "Enabled Clang Query static analysis without setting CMAKE_EXPORT_COMPILE_COMMANDS, clang static analysis will likely fail")
-    endif()
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     ## parse the arguments to the macro
     set(options)
     set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DEVELOPER_MODE)
