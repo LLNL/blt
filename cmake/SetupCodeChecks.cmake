@@ -301,10 +301,10 @@ macro(blt_add_clang_query_target)
     set(interactive_target_name interactive_${arg_NAME})
     # TODO: "FindPython" instead of just using Python
     set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT})
-    if(DEFINED CHECKERS)
-    STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${CHECKERS})
+    if(DEFINED arg_CHECKERS)
+    STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${arg_CHECKERS})
     add_custom_target(${arg_NAME}
-      COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i ${arg_SRC_FILES}
+      COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i --checkers=${CHECKER_ARG_STRING} ${arg_SRC_FILES}
             WORKING_DIRECTORY ${_wd}
             COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
     else() #DEFINED CHECKERS

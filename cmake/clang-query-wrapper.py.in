@@ -22,10 +22,11 @@ def get_all_checker_files(checker_dict):
 
 parser = argparse.ArgumentParser(description="Runs clang-query against a set of files")
 parser.add_argument("-i",action="store_true",help="Run in interactive mode (don't error on matches, don't run all matchers)",dest="interactive")
-parser.add_argument("--checkers",action="store_const",help="List of checkers to always run",dest="checkers",const="")
+parser.add_argument("--checkers",action="store",help="List of checkers to always run",dest="checkers")
 parser.add_argument("files",nargs="+",help="Files to query")
 args = parser.parse_args()
 interactive = args.interactive
+
 arg_checkers = args.checkers
 available_checkers = get_all_checkers()
 checker_files = []
@@ -35,7 +36,7 @@ if interactive:
     checker_files = get_all_checker_files(available_checkers)
   else:
     environment_desired_checkers = checker_string.split(":")
-    arg_desired_checkers = arg_checker.split(":")
+    arg_desired_checkers = arg_checkers.split(":")
     all_desired_checkers = arg_desired_checkers + environment_desired_checkers
     desired_checkers = [checker for checker in all_desired_checkers if len(checker)>0] # filter out the empty entries from unspecified sources
     unavailable_checkers = [checker for checker in desired_checkers if checker not in available_checkers]
