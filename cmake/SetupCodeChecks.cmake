@@ -218,10 +218,6 @@ macro(blt_add_code_checks)
     endif()
 
     if (CLANGQUERY_FOUND)
-        if(NOT BLT_CLANG_QUERY_CONFIGURED)
-          blt_configure_clang_query()
-        endif()
-
         set(_clang_query_target_name ${arg_PREFIX}_clang_query_check)
         blt_error_if_target_exists(${_clang_query_target_name} ${_error_msg})
         blt_add_clang_query_target( NAME           ${_clang_query_target_name}
@@ -257,6 +253,7 @@ endmacro(blt_configure_clang_query)
 ##                          PREPEND_FLAGS       <additional flags for clang_query>
 ##                          APPEND_FLAGS        <additional flags for clang_query>
 ##                          COMMENT             <Additional Comment for Target Invocation>
+##                          CHECKERS            <If specified, requires a specific set of checkers>
 ##                          SRC_FILES           [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
@@ -273,11 +270,15 @@ endmacro(blt_configure_clang_query)
 ## SRC_FILES is a list of source files that clang_query will be run on.
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
+    if(NOT BLT_CLANG_QUERY_CONFIGURED)
+      blt_configure_clang_query()
+    endif()
+
 
     ## parse the arguments to the macro
     set(options)
     set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DEVELOPER_MODE)
-    set(multiValueArgs SRC_FILES)
+    set(multiValueArgs SRC_FILES CHECKERS)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -300,29 +301,24 @@ macro(blt_add_clang_query_target)
     set(interactive_target_name interactive_${arg_NAME})
     # TODO: "FindPython" instead of just using Python
     set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT})
+    if(DEFINED CHECKERS)
+    STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${CHECKERS})
+    add_custom_target(${arg_NAME}
+      COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i ${arg_SRC_FILES}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
+    else() #DEFINED CHECKERS
     add_custom_target(${arg_NAME}
       COMMAND ${CLANG_QUERY_HELPER_COMMAND} ${arg_SRC_FILES}
             WORKING_DIRECTORY ${_wd}
             COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
+    endif()
 
     add_custom_target(${interactive_target_name}
       COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i ${arg_SRC_FILES}
             WORKING_DIRECTORY ${_wd}
             COMMENT "${arg_COMMENT}Running clang_query source code static analysis checks.")
-    if(DEFINED arg_DEVELOPER_MODE)
-      if(arg_DEVELOPER_MODE)
-        foreach(constituent_source ${arg_SRC_FILES})
-          get_filename_component(constituent_source_file_name ${constituent_source} NAME)
-          string(REGEX REPLACE "." "_" constituent_source_target_name ${constituent_source_file_name})
-          add_custom_target(${constituent_source_target_name}
-            COMMAND ${ClangQuery} ${constituent_source}
-                  WORKING_DIRECTORY ${_wd}
-                  COMMENT "${arg_COMMENT} Running clang-query interpreter against ${constituent_source_target_name}")
-            set_property(TARGET ${constituent_source_target_name} PROPERTY EXCLUDE_FROM_ALL TRUE)
-            set_property(TARGET ${constituent_source_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-        endforeach()
-      endif()
-    endif() 
+
     # hook our new target into the proper dependency chain
     add_dependencies(clang_query_check ${arg_NAME})
     add_dependencies(interactive_clang_query_check ${interactive_target_name})
