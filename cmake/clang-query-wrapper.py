@@ -1,11 +1,13 @@
 import sys,os,argparse
 import subprocess
+import re
 #credit: https://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
 
 
 
 parser = argparse.ArgumentParser(description="Runs clang-query against a set of files")
 parser.add_argument("-i",action="store_true",help="Run in interactive mode (don't error on matches, don't run all matchers)",dest="interactive")
+parser.add_argument("--die-on-match",action="store_true",help="Return an error code if matches are found",dest="die_on_match")
 parser.add_argument("--checkers",action="store",help="List of checkers to always run",dest="checkers")
 parser.add_argument("--clang-query",action="store",help="Location of clang-query executable",dest="query_executable")
 parser.add_argument("--compilation-database-path",action="store",help="Location of compilation database",dest="compilation_database_directory")
@@ -33,6 +35,7 @@ invocation = args.query_executable+" -p="+args.compilation_database_directory+" 
 interactive = args.interactive
 interpreter = False
 arg_checkers = args.checkers
+die_on_match = args.die_on_match
 available_checkers = get_all_checkers()
 checker_files = []
 if interactive:
@@ -67,5 +70,10 @@ invocation+=" ".join(args.files)
 if not interpreter:
   output = subprocess.check_output(invocation, shell=True)
   print(output)
+  if die_on_match:
+    if re.search("[1-9][0-9]* matche?s?.",output) is not None:
+      print("Code fails static analysis CI, exiting")
+      sys.exit(1)
 else:
   subprocess.call(invocation, shell=True, stdout=sys.stdout)
+sys.exit(0)

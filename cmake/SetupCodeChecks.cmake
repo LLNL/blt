@@ -233,6 +233,7 @@ endmacro(blt_add_code_checks)
 ##                          WORKING_DIRECTORY   <Working Directory>
 ##                          COMMENT             <Additional Comment for Target Invocation>
 ##                          CHECKERS            <If specified, requires a specific set of checkers>
+##                          DIE_ON_MATCH        <If true, matches stop the build>
 ##                          SRC_FILES           [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
@@ -256,7 +257,7 @@ macro(blt_add_clang_query_target)
 
     ## parse the arguments to the macro
     set(options)
-    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY)
+    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DIE_ON_MATCH)
     set(multiValueArgs SRC_FILES CHECKERS)
 
     cmake_parse_arguments(arg
@@ -280,7 +281,11 @@ macro(blt_add_clang_query_target)
     set(interactive_target_name interactive_${arg_NAME})
     # TODO: "FindPython" instead of just using Python
     set(CLANG_QUERY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py)
-    set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES} --compilation-database-path ${CMAKE_BINARY_DIR} )
+    set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES} --compilation-database-path ${CMAKE_BINARY_DIR})
+    if(arg_DIE_ON_MATCH)
+      message(STATUS "Lethal Static Analysis Mode On")
+      set(CLANG_QUERY_HELPER_COMMAND ${CLANG_QUERY_HELPER_COMMAND} --die-on-match)
+    endif()
     if(DEFINED arg_CHECKERS)
     STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${arg_CHECKERS})
     add_custom_target(${arg_NAME}
