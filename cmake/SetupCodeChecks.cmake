@@ -230,22 +230,21 @@ endmacro(blt_add_code_checks)
 ##-----------------------------------------------------------------------------
 ## blt_add_clang_query_target( NAME             <Created Target Name>
 ##                          WORKING_DIRECTORY   <Working Directory>
-##                          PREPEND_FLAGS       <additional flags for clang_query>
-##                          APPEND_FLAGS        <additional flags for clang_query>
 ##                          COMMENT             <Additional Comment for Target Invocation>
 ##                          CHECKERS            <If specified, requires a specific set of checkers>
 ##                          SRC_FILES           [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
 ##
-## PREPEND_FLAGS are additional flags given to added to the front of the clang_query flags.
-##
-## APPEND_FLAGS are additional flags given to added to the end of the clang_query flags.
-##
 ## COMMENT is prepended to the commented outputted by CMake.
 ##
 ## WORKING_DIRECTORY is the directory that clang_query will be ran.  It defaults to the directory
 ## where this macro is called.
+##
+## CHECKERS are the static analysis passes to specifically run on the target. Options
+##              (no value)          : run all available static analysis checks found
+##              (checker1:checker2) : run checker1 and checker2
+##              (interpreter)       : run the clang-query interpeter to interactively develop queries
 ##
 ## SRC_FILES is a list of source files that clang_query will be run on.
 ##-----------------------------------------------------------------------------
@@ -256,7 +255,7 @@ macro(blt_add_clang_query_target)
 
     ## parse the arguments to the macro
     set(options)
-    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DEVELOPER_MODE)
+    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY)
     set(multiValueArgs SRC_FILES CHECKERS)
 
     cmake_parse_arguments(arg
@@ -322,9 +321,9 @@ endmacro(blt_add_clang_query_target)
 ##
 ## Creates a new target with the given NAME for running cppcheck over the given SRC_FILES
 ##
-## PREPEND_FLAGS are additional flags given to added to the front of the cppcheck flags.
+## PREPEND_FLAGS are additional flags added to the front of the cppcheck flags.
 ##
-## APPEND_FLAGS are additional flags given to added to the end of the cppcheck flags.
+## APPEND_FLAGS are additional flags added to the end of the cppcheck flags.
 ##
 ## COMMENT is prepended to the commented outputted by CMake.
 ##

@@ -1,7 +1,7 @@
 #####################################
 # Test clang-query static analysis
 # Clang Query needs to be enabled, with appropriate Flags set up for building and running
-# on your current GPU architecture. 
+# your code
 #####################################
 
 set(BLT_CLANG_QUERY_CHECKER_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/static_analysis_passes)
