@@ -243,6 +243,9 @@ endmacro(blt_add_code_checks)
 ## WORKING_DIRECTORY is the directory that clang_query will be ran.  It defaults to the directory
 ## where this macro is called.
 ##
+## DIE_ON_MATCH This will make a match cause the build to fail, useful if you're using this in
+##              CI to enforce rules about your code
+##
 ## CHECKERS are the static analysis passes to specifically run on the target. Options
 ##              (no value)          : run all available static analysis checks found
 ##              (checker1:checker2) : run checker1 and checker2
@@ -252,8 +255,6 @@ endmacro(blt_add_code_checks)
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
   if(CLANGQUERY_FOUND)
-
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
     ## parse the arguments to the macro
     set(options)
