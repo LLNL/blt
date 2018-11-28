@@ -54,7 +54,6 @@ set(ENABLE_MPI ON CACHE BOOL "")
 #------------------------------------------------------------------------------
 set(ClangQuery_DIR ${CLANG_HOME}/bin)
 set(ENABLE_CLANGQUERY ON CACHE BOOL "")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "")
 
 set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.2-clang-6.0.0" CACHE PATH "")
 set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc"   CACHE PATH "")
