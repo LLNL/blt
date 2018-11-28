@@ -86,7 +86,8 @@ endif()
 # Code check targets should only be run on demand
 foreach(target 
         check uncrustify_check astyle_check cppcheck_check
-        style uncrustify_style astyle_style clang_query_check interactive_clang_query_check)
+        style uncrustify_style astyle_style 
+        clang_query_check interactive_clang_query_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
