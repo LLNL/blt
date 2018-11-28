@@ -1,10 +1,19 @@
 import sys,os,argparse
 import subprocess
 #credit: https://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
-invocation = "@CLANGQUERY_EXECUTABLE@ "
-checker_directories = "@BLT_CLANG_QUERY_CHECKER_DIRECTORIES@"
-compilation_database_directory = "@CMAKE_BINARY_DIR@"
-invocation += "-p="+compilation_database_directory+" "
+
+
+
+parser = argparse.ArgumentParser(description="Runs clang-query against a set of files")
+parser.add_argument("-i",action="store_true",help="Run in interactive mode (don't error on matches, don't run all matchers)",dest="interactive")
+parser.add_argument("--checkers",action="store",help="List of checkers to always run",dest="checkers")
+parser.add_argument("--clang-query",action="store",help="Location of clang-query executable",dest="query_executable")
+parser.add_argument("--compilation-database-path",action="store",help="Location of compilation database",dest="compilation_database_directory")
+parser.add_argument("--checker-directories",action="store",help="Directories in which checkers can be found",dest="checker_directories")
+parser.add_argument("files",nargs="+",help="Files to query")
+args = parser.parse_args()
+checker_directories = args.checker_directories
+
 if len(checker_directories)==0:
   print("No directories with checkers found")
   sys.exit(1)
@@ -20,12 +29,7 @@ def get_all_checkers():
 def get_all_checker_files(checker_dict):
   return [checker_dict[key] for key in checker_dict]
 
-
-parser = argparse.ArgumentParser(description="Runs clang-query against a set of files")
-parser.add_argument("-i",action="store_true",help="Run in interactive mode (don't error on matches, don't run all matchers)",dest="interactive")
-parser.add_argument("--checkers",action="store",help="List of checkers to always run",dest="checkers")
-parser.add_argument("files",nargs="+",help="Files to query")
-args = parser.parse_args()
+invocation = args.query_executable+" -p="+args.compilation_database_directory+" "
 interactive = args.interactive
 interpreter = False
 arg_checkers = args.checkers
@@ -60,7 +64,6 @@ for file_name in checker_files:
   invocation+="-f "+file_name+" "
 
 invocation+=" ".join(args.files)
-
 if not interpreter:
   output = subprocess.check_output(invocation, shell=True)
   print(output)

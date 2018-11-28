@@ -228,26 +228,6 @@ macro(blt_add_code_checks)
 endmacro(blt_add_code_checks)
 
 ##-----------------------------------------------------------------------------
-## blt_configure_clang_query( CLANG_QUERY_DIR
-##                          )
-##
-## Configures the clang query helper script and finds clang query
-##
-##-----------------------------------------------------------------------------
-macro(blt_configure_clang_query)
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-    ## parse the arguments to the macro
-    set(options)
-    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DEVELOPER_MODE)
-    set(multiValueArgs SRC_FILES)
-    configure_file(${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py.in ${CMAKE_CURRENT_BINARY_DIR}/clang-query-wrapper.py)
-    set(CLANG_QUERY_HELPER_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/clang-query-wrapper.py)
-    set(BLT_CLANG_QUERY_CONFIGURED ON)
-
-endmacro(blt_configure_clang_query)
-
-
-##-----------------------------------------------------------------------------
 ## blt_add_clang_query_target( NAME             <Created Target Name>
 ##                          WORKING_DIRECTORY   <Working Directory>
 ##                          PREPEND_FLAGS       <additional flags for clang_query>
@@ -271,10 +251,8 @@ endmacro(blt_configure_clang_query)
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
   if(CLANGQUERY_FOUND)
-    if(NOT BLT_CLANG_QUERY_CONFIGURED)
-      blt_configure_clang_query()
-    endif()
 
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
     ## parse the arguments to the macro
     set(options)
@@ -301,13 +279,14 @@ macro(blt_add_clang_query_target)
    
     set(interactive_target_name interactive_${arg_NAME})
     # TODO: "FindPython" instead of just using Python
-    set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT})
+    set(CLANG_QUERY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py)
+    set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES} --compilation-database-path ${CMAKE_BINARY_DIR} )
     if(DEFINED arg_CHECKERS)
     STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${arg_CHECKERS})
     add_custom_target(${arg_NAME}
       COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i --checkers=${CHECKER_ARG_STRING} ${arg_SRC_FILES}
             WORKING_DIRECTORY ${_wd}
-            COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
+            COMMENT "${arg_COMMENT}Running specified clang_query source code static analysis checks.")
     else() #DEFINED CHECKERS
     add_custom_target(${arg_NAME}
       COMMAND ${CLANG_QUERY_HELPER_COMMAND} ${arg_SRC_FILES}
