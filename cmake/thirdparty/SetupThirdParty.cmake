@@ -120,5 +120,7 @@ blt_find_executable(NAME        Cppcheck
 ################################
 # Static analysis via clang-query
 ################################
+if(CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "Ninja")
 blt_find_executable(NAME        ClangQuery
                     EXECUTABLES clang-query)
+endif()
