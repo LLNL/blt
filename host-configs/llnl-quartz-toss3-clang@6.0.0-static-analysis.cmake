@@ -45,15 +45,15 @@ set(BLT_CXX_FLAGS "-stdlib=libc++" CACHE STRING "")
 set(gtest_defines "-DGTEST_HAS_CXXABI_H_=0" CACHE STRING "")
 
 #------------------------------------------------------------------------------
-# MPI Support
-#------------------------------------------------------------------------------
-set(ENABLE_MPI ON CACHE BOOL "")
-
-#------------------------------------------------------------------------------
 # Static Analysis Support
 #------------------------------------------------------------------------------
 set(ClangQuery_DIR ${CLANG_HOME}/bin)
 set(ENABLE_CLANGQUERY ON CACHE BOOL "")
+
+#------------------------------------------------------------------------------
+# MPI Support
+#------------------------------------------------------------------------------
+set(ENABLE_MPI ON CACHE BOOL "")
 
 set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.2-clang-6.0.0" CACHE PATH "")
 set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc"   CACHE PATH "")
