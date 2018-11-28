@@ -4,6 +4,7 @@ import subprocess
 invocation = "@CLANGQUERY_EXECUTABLE@ "
 checker_directories = "@BLT_CLANG_QUERY_CHECKER_DIRECTORIES@"
 compilation_database_directory = "@CMAKE_BINARY_DIR@"
+invocation += "-p="+compilation_database_directory+" "
 if len(checker_directories)==0:
   print("No directories with checkers found")
   sys.exit(1)
