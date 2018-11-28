@@ -270,6 +270,7 @@ endmacro(blt_configure_clang_query)
 ## SRC_FILES is a list of source files that clang_query will be run on.
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
+  if(CLANGQUERY_FOUND)
     if(NOT BLT_CLANG_QUERY_CONFIGURED)
       blt_configure_clang_query()
     endif()
@@ -328,7 +329,7 @@ macro(blt_add_clang_query_target)
     set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
     set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-
+  endif()
 endmacro(blt_add_clang_query_target)
 
 
