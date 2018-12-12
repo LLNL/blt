@@ -254,66 +254,67 @@ endmacro(blt_add_code_checks)
 ## SRC_FILES is a list of source files that clang_query will be run on.
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
-  if(CLANGQUERY_FOUND)
+    if(CLANGQUERY_FOUND)
 
-    ## parse the arguments to the macro
-    set(options)
-    set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DIE_ON_MATCH)
-    set(multiValueArgs SRC_FILES CHECKERS)
+        ## parse the arguments to the macro
+        set(options)
+        set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DIE_ON_MATCH)
+        set(multiValueArgs SRC_FILES CHECKERS)
 
-    cmake_parse_arguments(arg
-        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+        cmake_parse_arguments(arg
+            "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Check required parameters
-    if(NOT DEFINED arg_NAME)
-        message(FATAL_ERROR "blt_add_clang_query_target requires a NAME parameter")
-    endif()
+        # Check required parameters
+        if(NOT DEFINED arg_NAME)
+             message(FATAL_ERROR "blt_add_clang_query_target requires a NAME parameter")
+        endif()
 
-    if(NOT DEFINED arg_SRC_FILES)
-        message(FATAL_ERROR "blt_add_clang_query_target requires a SRC_FILES parameter")
-    endif()
+        if(NOT DEFINED arg_SRC_FILES)
+            message(FATAL_ERROR "blt_add_clang_query_target requires a SRC_FILES parameter")
+        endif()
 
-    if(DEFINED arg_WORKING_DIRECTORY)
-        set(_wd ${arg_WORKING_DIRECTORY})
-    else()
-        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
-    endif()
+        if(DEFINED arg_WORKING_DIRECTORY)
+            set(_wd ${arg_WORKING_DIRECTORY})
+        else()
+            set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+        endif()
    
-    set(interactive_target_name interactive_${arg_NAME})
-    # TODO: "FindPython" instead of just using Python
-    set(CLANG_QUERY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py)
-    set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES} --compilation-database-path ${CMAKE_BINARY_DIR})
-    if(arg_DIE_ON_MATCH)
-      set(CLANG_QUERY_HELPER_COMMAND ${CLANG_QUERY_HELPER_COMMAND} --die-on-match)
+        set(interactive_target_name interactive_${arg_NAME})
+        set(CLANG_QUERY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py)
+        set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES} --compilation-database-path ${CMAKE_BINARY_DIR})
+
+        if(arg_DIE_ON_MATCH)
+            set(CLANG_QUERY_HELPER_COMMAND ${CLANG_QUERY_HELPER_COMMAND} --die-on-match)
+        endif()
+
+        if(DEFINED arg_CHECKERS)
+            STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${arg_CHECKERS})
+            add_custom_target(${arg_NAME}
+              COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i --checkers=${CHECKER_ARG_STRING} ${arg_SRC_FILES}
+                    WORKING_DIRECTORY ${_wd}
+                    COMMENT "${arg_COMMENT}Running specified clang_query source code static analysis checks.")
+        else() #DEFINED CHECKERS
+            add_custom_target(${arg_NAME}
+              COMMAND ${CLANG_QUERY_HELPER_COMMAND} ${arg_SRC_FILES}
+                    WORKING_DIRECTORY ${_wd}
+                    COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
+        endif()
+
+        add_custom_target(${interactive_target_name}
+          COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i ${arg_SRC_FILES}
+                WORKING_DIRECTORY ${_wd}
+                COMMENT "${arg_COMMENT}Running clang_query source code static analysis checks.")
+
+        # hook our new target into the proper dependency chain
+        add_dependencies(clang_query_check ${arg_NAME})
+        add_dependencies(interactive_clang_query_check ${interactive_target_name})
+
+        # Code check targets should only be run on demand
+        set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
-    if(DEFINED arg_CHECKERS)
-    STRING(REGEX REPLACE " " ":" CHECKER_ARG_STRING ${arg_CHECKERS})
-    add_custom_target(${arg_NAME}
-      COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i --checkers=${CHECKER_ARG_STRING} ${arg_SRC_FILES}
-            WORKING_DIRECTORY ${_wd}
-            COMMENT "${arg_COMMENT}Running specified clang_query source code static analysis checks.")
-    else() #DEFINED CHECKERS
-    add_custom_target(${arg_NAME}
-      COMMAND ${CLANG_QUERY_HELPER_COMMAND} ${arg_SRC_FILES}
-            WORKING_DIRECTORY ${_wd}
-            COMMENT "${arg_COMMENT}Running all clang_query source code static analysis checks.")
-    endif()
-
-    add_custom_target(${interactive_target_name}
-      COMMAND ${CLANG_QUERY_HELPER_COMMAND} -i ${arg_SRC_FILES}
-            WORKING_DIRECTORY ${_wd}
-            COMMENT "${arg_COMMENT}Running clang_query source code static analysis checks.")
-
-    # hook our new target into the proper dependency chain
-    add_dependencies(clang_query_check ${arg_NAME})
-    add_dependencies(interactive_clang_query_check ${interactive_target_name})
-
-    # Code check targets should only be run on demand
-    set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_ALL TRUE)
-    set_property(TARGET ${interactive_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-    set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
-    set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-  endif()
 endmacro(blt_add_clang_query_target)
 
 
