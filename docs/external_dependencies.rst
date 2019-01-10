@@ -48,12 +48,13 @@ One key goal for BLT is to simplify the use of external dependencies when buildi
 To accomplish this BLT provides a ``DEPENDS_ON`` option for the
 ``blt_add_library`` and ``blt_add_executable`` macros that supports both CMake targets and external dependencies registered using the ``blt_register_library`` macro.
 
-The ``blt_register_library`` macro allows you to expose any external dependency,
-including any additional includes, libraries, compile flags, link flags, defines, etc that are required to use the dependency via a single name.
+The ``blt_register_library`` macro allows you to reuse all information needed
+for an external dependency under a single name.  This includes any include
+directories, libraries, compile flags, link flags, defines, etc.  You can also
+hide any warnings created by their headers by setting the
+``TREAT_INCLUDES_AS_SYSTEM`` argument.
 
-For example, instead adding the include directories, libraries, and other information
-necessary to use an external dependency *axom* directly to your CMake target,
-if *axom* was registered with ``blt_register_library``, you can simply use:
+For example, to find and register the external dependency *axom* as a BLT registered library, you can simply use:
 
 .. code:: cmake
 
@@ -83,7 +84,7 @@ BLT also supports using ``blt_register_library`` to provide additional options f
    The named target can be added to the ``DEPENDS_ON`` argument of other BLT macros, like ``blt_add_library`` and ``blt_add_executable``.  
 
 
-You have already seen one use of ``DEPENDS_ON`` of a BLT
+You have already seen one use of ``DEPENDS_ON`` for a BLT
 registered dependency in test_1:  ``gtest``
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
