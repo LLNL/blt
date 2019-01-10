@@ -140,7 +140,7 @@ To add this test to the build system, we first generate a test executable:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 45-50
+   :lines: 46-48
 
 Note that this test executable depends on two targets: ``calc_pi`` and ``gtest``.
 
@@ -148,7 +148,7 @@ We then register this executable as a test:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 52-53
+   :lines: 50-51
 
 .. Hide these for now until we bring into an example
 .. .. note::
