@@ -27,7 +27,7 @@ init:
   - git config --global core.autocrlf input
   # set git user info 
   - git config --global user.email "bltdev@llnl.gov"
-  - git config --global user.name "BLT Robot"  
+  - git config --global user.name "BLT Robot"
 
 install:
   # Install MS-MPI
