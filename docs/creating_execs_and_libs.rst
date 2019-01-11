@@ -72,7 +72,7 @@ You can create this project yourself or you can run the already provided ``tutor
 For ease of use, we have combined many examples into this one CMake project.  After running
 the following commands, you will create the executable ``<build dir>/bin/example_1``:
 
-.. code:: bash
+.. code-block:: bash
 
     cd <BLT repository/docs/tutorial/calc_pi
     mkdir build

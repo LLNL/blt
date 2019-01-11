@@ -56,7 +56,7 @@ hide any warnings created by their headers by setting the
 
 For example, to find and register the external dependency *axom* as a BLT registered library, you can simply use:
 
-.. code:: cmake
+.. code-block:: cmake
 
     # FindAxom.cmake takes in AXOM_DIR, which is a installed Axom build and
     # sets variables AXOM_INCLUDES, AXOM_LIBRARIES
@@ -179,7 +179,7 @@ Building and testing on Surface
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Surface:
 
-.. code:: bash
+.. code-block:: bash
     
     # load new cmake b/c default on surface is too old
     use cmake-3.5.2
@@ -191,7 +191,7 @@ Here is how you can use the host-config file to configure a build of the ``calc_
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) to run the unit tests that are using MPI and CUDA:
 
-.. code:: console
+.. code-block:: console
 
   bash-4.1$ salloc -A <valid bank>
   bash-4.1$ make   
@@ -227,7 +227,7 @@ Building and testing on Ray
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
 enabled on the blue_os Ray cluster:
 
-.. code:: bash
+.. code-block:: bash
     
     # load new cmake b/c default on ray is too old
     ml cmake
@@ -239,7 +239,7 @@ enabled on the blue_os Ray cluster:
 
 And here is how to build and test the code on Ray:
 
-.. code:: console
+.. code-block:: console
 
   bash-4.2$ bsub -Is -n20 -G <valid group> bash
   bash-4.2$ make

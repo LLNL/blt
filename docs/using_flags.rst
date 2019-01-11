@@ -64,7 +64,7 @@ which allows users to easily place a compiler dependent flag into a CMake variab
 
 Here is an example for setting the appropriate flag to treat warnings as errors:
 
-.. code:: cmake
+.. code-block:: cmake
 
     blt_append_custom_compiler_flag(
       FLAGS_VAR BLT_WARNINGS_AS_ERRORS_FLAG
@@ -81,14 +81,14 @@ BLT also provides a simple macro to add compiler flags to a target.
 You can append the above compiler flag to an already defined executable, 
 such as ``example_1`` with the following line:
 
-.. code:: cmake
+.. code-block:: cmake
 
     blt_add_target_compile_flags(TO example_1
                                  FLAGS BLT_WARNINGS_AS_ERRORS_FLAG )
 
 Here is another example to disable warnings about unknown OpenMP pragmas in the code:
 
-.. code:: cmake
+.. code-block:: cmake
 
     # Flag for disabling warnings about omp pragmas in the code
     blt_append_custom_compiler_flag(
