@@ -190,7 +190,7 @@ Returning to our running example (see  :ref:`AddTarget`),
 let's add a simple test for the ``calc_pi`` library, 
 which has a single function with signature:
 
-  .. code:: cpp
+  .. code-block:: cpp
 
    double calc_pi(int num_intervals);
 
@@ -232,7 +232,7 @@ Running tests and examples
 
 To run the tests, type the following command in the build directory:
 
-.. code:: bash
+.. code-block:: bash
 
   $ make test 
 
