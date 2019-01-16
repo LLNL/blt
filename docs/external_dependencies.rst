@@ -141,8 +141,9 @@ CUDA Example
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation over the integration intervals.
 
+To enable CUDA, we set ``ENABLE_CUDA``, ``CMAKE_CUDA_COMPILER``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Also before enabling the CUDA language in CMake, you need to set ``CMAKE_CUDA_HOST_COMPILER`` in CMake 3.9+ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable for you and enable the CUDA language.
 
-To enable CUDA, we set ``ENABLE_CUDA``, ``CUDA_BIN_DIR``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Here is a snippet with these settings for LLNL's Surface Cluster:
+Here is a snippet with these settings for LLNL's Surface Cluster:
 
 .. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
@@ -154,10 +155,24 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
    :language: cmake
    :lines: 82-100
 
+The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, 
+along with adding the normal CUDA library and headers to your library or executable,
+it also tells BLT that this target's C/CXX/CUDA source files need to be compiled via
+``nvcc`` or ``cuda-clang``. If this is not a requirement, you can use the dependency
+``cuda_runtime`` which also adds the CUDA runtime library and headers but will not
+compile each source file with ``nvcc``.
 
-The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, in that 
-it also tells BLT that this target includes CUDA code that needs to be compiled via ``nvcc`` or ``cuda-clang``. The ``cuda_runtime`` dependency handles the
-linking of the CUDA runtime.  
+Some other useful CUDA flags are:
+
+.. code-block:: cmake
+
+    # Enable separable compilation of all CUDA files for given target or all following targets
+    set(CUDA_SEPARABLE_COMPILIATION ON CACHE BOOL “”)
+    set(CUDA_ARCH “sm_60” CACHE STRING “”)
+    set(CMAKE_CUDA_FLAGS “-restrict –arch ${CUDA_ARCH} –std=c++11” CACHE STRING “”)
+    set(CMAKE_CUDA_LINK_FLAGS “-Xlinker –rpath –Xlinker /path/to/mpi” CACHE STRING “”)
+    # Needed when you have CUDA decorations exposed in libraries
+    set(CUDA_LINK_WITH_NVCC ON CACHE BOOL “”)
 
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
