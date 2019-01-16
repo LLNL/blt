@@ -237,12 +237,6 @@ macro(blt_setup_cuda_source_properties)
                                      CUDA_SEPARABLE_COMPILATION ON)
     endif()
 
-    #
-    # for debugging, or if we add verbose BLT output
-    #
-    ##message(STATUS "target '${arg_BUILD_TARGET}' CUDA Sources: ${_cuda_sources}")
-    ##message(STATUS "target '${arg_BUILD_TARGET}' non-CUDA Sources: ${_non_cuda_sources}")
-
 endmacro(blt_setup_cuda_source_properties)
 
 
