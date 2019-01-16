@@ -44,6 +44,7 @@
 # Sanity Checks
 ################################
 
+# Rare case of two flags being incompatible
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     if (NOT CMAKE_SKIP_BUILD_RPATH AND CUDA_LINK_WITH_NVCC)
         message( FATAL_ERROR
@@ -53,6 +54,8 @@ if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     endif()
 endif()
 
+# CUDA_HOST_COMPILER was changed in 3.9.0 to CMAKE_CUDA_HOST_COMPILER and
+# needs to be set prior to enabling the CUDA language
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
     if ( NOT CMAKE_CUDA_HOST_COMPILER )
@@ -143,8 +146,11 @@ if (ENABLE_CLANG_CUDA)
 endif()
 
 # depend on 'cuda', if you need to use cuda
-# headers, link to cuda libs, and need to run your source
-# through a cuda compiler (nvcc)
+# headers, link to cuda libs, and need to compile your
+# source files with the cuda compiler (nvcc) instead of
+# leaving it to the default source file language.
+# This logic is handled in the blt_add_library/executable
+# macros
 blt_register_library(NAME cuda
                      COMPILE_FLAGS ${_cuda_compile_flags}
                      INCLUDES ${CUDA_INCLUDE_DIRS}
@@ -154,6 +160,8 @@ blt_register_library(NAME cuda
 # CUDA language.  This causes your source files to use 
 # the regular C/CXX compiler. This is separate from 
 # linking with nvcc.
+# This logic is handled in the blt_add_library/executable
+# macros
 blt_register_library(NAME cuda_runtime
                      INCLUDES ${CUDA_INCLUDE_DIRS}
                      LIBRARIES ${CUDA_LIBRARIES})
