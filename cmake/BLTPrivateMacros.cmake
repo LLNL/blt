@@ -217,11 +217,11 @@ macro(blt_setup_cuda_target)
 
     # Check arguments
     if ( NOT DEFINED arg_NAME )
-        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_cuda_sproperties' macro")
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_cuda_target' macro")
     endif()
 
     if ( NOT DEFINED arg_SOURCES )
-        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_cuda_properties' macro")
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_cuda_target' macro")
     endif()
 
     # Determine if cuda or cuda_runtime are in DEPENDS_ON
