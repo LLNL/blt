@@ -182,7 +182,7 @@ script:
   - CMAKE_OPTS="${CMAKE_OPTS} -DTEST_GIT_MACROS=ON"
   # configure with cmake
   - cmake  ${CMAKE_OPTS} ../blt-test
-  # build, link, and triumph 
+  # build, link, and test 
   - make
   - env CTEST_OUTPUT_ON_FAILURE=1 make test
   - make install
