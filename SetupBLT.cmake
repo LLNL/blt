@@ -102,6 +102,12 @@ if (NOT BLT_LOADED)
         set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     endif()
 
+
+    ################################
+    # Enable cmake compilation database feature
+    ################################
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
     ################################
     # Macros
     ################################

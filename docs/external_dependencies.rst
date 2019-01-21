@@ -48,18 +48,27 @@ One key goal for BLT is to simplify the use of external dependencies when buildi
 To accomplish this BLT provides a ``DEPENDS_ON`` option for the
 ``blt_add_library`` and ``blt_add_executable`` macros that supports both CMake targets and external dependencies registered using the ``blt_register_library`` macro.
 
-The ``blt_register_library`` macro allows you to expose any external dependency,
-including any additional includes, libraries, compile flags, link flags, defines, etc that are required to use the dependency via a single name.
+The ``blt_register_library`` macro allows you to reuse all information needed
+for an external dependency under a single name.  This includes any include
+directories, libraries, compile flags, link flags, defines, etc.  You can also
+hide any warnings created by their headers by setting the
+``TREAT_INCLUDES_AS_SYSTEM`` argument.
 
-For example, instead adding the include directories and libraries necessary to use a dependency *zzz* directly to your CMake executable target, if  *zzz* was
-registered with ``blt_register_library``, you can simply use 
+For example, to find and register the external dependency *axom* as a BLT registered library, you can simply use:
 
-.. code:: cmake
+.. code-block:: cmake
 
-    DEPENDS_ON zzz
-    
-In the ``blt_add_executable`` call for your executable.
-  
+    # FindAxom.cmake takes in AXOM_DIR, which is a installed Axom build and
+    # sets variables AXOM_INCLUDES, AXOM_LIBRARIES
+    include(FindAxom.cmake)
+    blt_register_library(NAME      axom
+                         TREAT_INCLUDES_AS_SYSTEM ON
+                         DEFINES   HAVE_AXOM=1
+                         INCLUDES  ${AXOM_INCLUDES}
+                         LIBRARIES ${AXOM_LIBRARIES})
+
+Then *axom* is available to be used in the DEPENDS_ON list in the following
+``blt_add_executable`` or ``blt_add_library`` calls.
 
 This is especially helpful for external libraries that are not built with CMake
 and don't provide CMake friendly imported targets. Our ultimate goal is to use ``blt_register_library`` to import all external dependencies as first-class imported CMake targets to take full advanced of CMake's dependency lattice. 
@@ -71,16 +80,16 @@ BLT also supports using ``blt_register_library`` to provide additional options f
 .. admonition:: blt_register_library
    :class: hint
 
-   A macro to register external libraries and dependencies with blt.
-   The named target can be added to the ``DEPENDS_ON`` argument of other blt macros, like ``blt_add_library`` and ``blt_add_executable``.  
+   A macro to register external libraries and dependencies with BLT.
+   The named target can be added to the ``DEPENDS_ON`` argument of other BLT macros, like ``blt_add_library`` and ``blt_add_executable``.  
 
 
-You have already seen one use of ``DEPENDS_ON`` of a blt
+You have already seen one use of ``DEPENDS_ON`` for a BLT
 registered dependency in test_1:  ``gtest``
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 45-51
+   :lines: 46-51
 
 
 ``gtest`` is the name for the google test dependency in BLT registered via ``blt_register_library``.
@@ -96,7 +105,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
    :lines: 25-33
 
@@ -105,7 +114,7 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 55-72
+   :lines: 59-74
 
 
 For MPI unit tests, you also need to specify the number of MPI Tasks
@@ -113,7 +122,7 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test`` macro.
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 73-75
+   :lines: 71-73
 
 
 
@@ -132,37 +141,52 @@ CUDA Example
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation over the integration intervals.
 
+To enable CUDA, we set ``ENABLE_CUDA``, ``CMAKE_CUDA_COMPILER``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Also before enabling the CUDA language in CMake, you need to set ``CMAKE_CUDA_HOST_COMPILER`` in CMake 3.9+ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable for you and enable the CUDA language.
 
-To enable CUDA, we set ``ENABLE_CUDA``, ``CUDA_BIN_DIR``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Here is a snippet with these settings for LLNL's Surface Cluster:
+Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :language: cmake
-   :lines: 36-42
+   :lines: 39-44
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
    :language: cmake
-   :lines: 78-97
+   :lines: 82-100
 
+The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, 
+along with adding the normal CUDA library and headers to your library or executable,
+it also tells BLT that this target's C/CXX/CUDA source files need to be compiled via
+``nvcc`` or ``cuda-clang``. If this is not a requirement, you can use the dependency
+``cuda_runtime`` which also adds the CUDA runtime library and headers but will not
+compile each source file with ``nvcc``.
 
-The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, in that 
-it also tells BLT that this target includes CUDA code that needs to be compiled via ``nvcc`` or ``cuda-clang``. The ``cuda_runtime`` dependency handles the
-linking of the CUDA runtime.  
+Some other useful CUDA flags are:
+
+.. code-block:: cmake
+
+    # Enable separable compilation of all CUDA files for given target or all following targets
+    set(CUDA_SEPARABLE_COMPILIATION ON CACHE BOOL “”)
+    set(CUDA_ARCH “sm_60” CACHE STRING “”)
+    set(CMAKE_CUDA_FLAGS “-restrict –arch ${CUDA_ARCH} –std=c++11” CACHE STRING “”)
+    set(CMAKE_CUDA_LINK_FLAGS “-Xlinker –rpath –Xlinker /path/to/mpi” CACHE STRING “”)
+    # Needed when you have CUDA decorations exposed in libraries
+    set(CUDA_LINK_WITH_NVCC ON CACHE BOOL “”)
 
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
-:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <tutorial/host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
+:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
 
-:download:`llnl-ray-blue_os-gcc@4.9.3.cmake <tutorial/host-configs/llnl-ray-blue_os-gcc@4.9.3.cmake>`
+:download:`llnl-ray-blue_os-gcc@4.9.3.cmake <../host-configs/llnl-ray-blue_os-clang-coral@2018.05.23.cmake>`
 
-:download:`llnl-quartz-toss3-gcc@4.9.3.cmake <tutorial/host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
+:download:`llnl-quartz-toss3-gcc@4.9.3.cmake <../host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
 
 Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
 
-:download:`llnl-naples-darwin-10.11-clang@7.3.0.cmake  <tutorial/host-configs/llnl-naples-darwin-10.11-clang@7.3.0.cmake>`
+:download:`llnl-naples-darwin-10.11-clang@7.3.0.cmake  <../host-configs/llnl-naples-darwin-10.11-clang@7.3.0.cmake>`
 
 
 Building and testing on Surface
@@ -170,7 +194,7 @@ Building and testing on Surface
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Surface:
 
-.. code:: bash
+.. code-block:: bash
     
     # load new cmake b/c default on surface is too old
     use cmake-3.5.2
@@ -182,7 +206,7 @@ Here is how you can use the host-config file to configure a build of the ``calc_
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) to run the unit tests that are using MPI and CUDA:
 
-.. code:: console
+.. code-block:: console
 
   bash-4.1$ salloc -A <valid bank>
   bash-4.1$ make   
@@ -218,7 +242,7 @@ Building and testing on Ray
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
 enabled on the blue_os Ray cluster:
 
-.. code:: bash
+.. code-block:: bash
     
     # load new cmake b/c default on ray is too old
     ml cmake
@@ -230,14 +254,14 @@ enabled on the blue_os Ray cluster:
 
 And here is how to build and test the code on Ray:
 
-.. code:: console
+.. code-block:: console
 
   bash-4.2$ bsub -Is -n20 -G <valid group> bash
   bash-4.2$ make
   bash-4.2$ make test
   
   Running tests...
-  Test project /g/g15/weiss27/projects/blt/docs/tutorial/calc_pi/build
+  Test project projects/blt/docs/tutorial/calc_pi/build
       Start 1: test_1
   1/7 Test #1: test_1 ...........................   Passed    0.01 sec
       Start 2: test_2

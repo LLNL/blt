@@ -67,7 +67,7 @@ https://cmake.org/cmake/help/v3.10/command/file.html?highlight=glob#file
 
 ``CMAKE_PARSE_ARGUMENTS`` allows Macros or Functions to support options. Options are enabled by passing them by name when calling a Macro or Function. Because of this, wrapping an existing Macro or Function in a way that passes through options requires if tests and multiple copies of the call. For example:
 
-.. code:: cmake
+.. code-block:: cmake
 
   if(OPTION)
       my_function(arg1 arg2 arg3 OPTION)
@@ -79,7 +79,7 @@ Adding more options compounds the logic to achieve these type of calls.
 
 To simplify calling logic, we recommend using an argument instead of an option.
 
-.. code:: cmake
+.. code-block:: cmake
 
   if(OPTION)
       set(arg4_value ON)
@@ -113,7 +113,7 @@ This allows CMake to do the right thing based on ``CMAKE_INSTALL_PREFIX``, and a
 
 Here is an example that installs a target and its headers:
 
-.. code:: cmake
+.. code-block:: cmake
 
   ##################################
   # Install Targets for example lib

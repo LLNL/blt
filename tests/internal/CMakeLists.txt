@@ -231,4 +231,6 @@ message(STATUS "")
 foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
-
+if(ENABLE_CLANGQUERY)
+  add_subdirectory(src/static_analysis)
+endif()

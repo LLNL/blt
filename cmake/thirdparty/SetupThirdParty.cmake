@@ -107,6 +107,7 @@ blt_find_executable(NAME        Valgrind
 ################################
 # linting
 ################################
+
 blt_find_executable(NAME        Uncrustify
                     EXECUTABLES uncrustify)
 
@@ -118,3 +119,11 @@ blt_find_executable(NAME        AStyle
 ################################
 blt_find_executable(NAME        Cppcheck
                     EXECUTABLES cppcheck)
+
+################################
+# Static analysis via clang-query
+################################
+if(CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "Ninja")
+    blt_find_executable(NAME        ClangQuery
+                        EXECUTABLES clang-query)
+endif()
