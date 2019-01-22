@@ -59,10 +59,10 @@ There are two standard choices for including the BLT source in your repository:
 2. Copy BLT into a subdirectory in your repository
 
 
-Add BLT as a git submodule
+BLT as a Git Submodule
 --------------------------
 
-This example adds BLT as a submodule. It then commits and pushes the changes to your repository.
+This example adds BLT as a submodule, commits, and pushes the changes to your repository.
 
 .. code-block:: bash
 
@@ -70,24 +70,6 @@ This example adds BLT as a submodule. It then commits and pushes the changes to 
     git submodule add https://github.com/LLNL/blt.git blt
     git commit -m "Adding BLT"
     git push
-
-At this point, enabling BLT in your CMake project is trivial.  Just include the
-following code in your base ``CMakeLists.txt`` after your ``project()`` call.
-
-The following gives a meaningful error if CMake can't find BLT and then brings in BLT.
-
-.. code-block:: cmake
-
-    if (NOT EXISTS ${PROJECT_SOURCE_DIR}/blt/SetupBLT.cmake)
-        message(FATAL_ERROR 
-            "The BLT submodule is not present. "
-            "Run the following two commands in your git repository: \n"
-            "    git submodule init \n "
-            "    git submodule update" )
-    endif()
-
-    include(blt/SetupBLT.cmake)
-
 
 Copy BLT into your repository
 -----------------------------
@@ -117,25 +99,22 @@ line in your base ``CMakeLists.txt`` after your ``project()`` call.
 
 This enables all of BLT's features in your project. 
 
+However if your project is likely to be used by other projects.  The following
+is recommended:
 
-Include BLT via BLT_SOURCE_DIR
---------------------------------
-
-Some projects want BLT to live outside of their project.  This is usually to share
-one instance of BLT between many dependent projects.
-
-You can also include BLT from a directory outside of your source tree using ``BLT_SOURCE_DIR``.
-
-To support this in your ``CMakeLists.txt`` file, add:
-
-.. literalinclude:: tutorial/blank_project/CMakeLists.txt
+.. literalinclude:: blank_project/CMakeLists.txt
    :language: cmake
-   :lines: 19
+   :lines: 14-32
+
+This is a robust way of setting up BLT and supports an optional external BLT source
+directory. This allows the use of a common BLT across large projects. There are some
+helpful error messages for if the BLT submodule is missing and the commands to solve it. 
 
 .. note::
   Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
   our tutorial is part of the blt repository and we want this project to be 
   automatically tested by just a single check-out of our repository.
+
 
 
 Running CMake
@@ -171,9 +150,10 @@ Here is the entire CMakeLists.txt file for ``blank_project``:
 .. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
 
+BLT also enforces some best practices for building, such as not allowing
+in-source builds.  This means that BLT prevents you from generating a
+project configuration directly in your project. 
 
-BLT also enforces some best practices for building, such as not allowing in-source builds.  
-This means that BLT prevents you from generating a project configuration directly in your project. 
 For example if you run the following commands:
 
 .. code-block:: bash
@@ -203,9 +183,9 @@ To correctly run cmake, create a build directory and run cmake from there:
     cd build
     cmake -DBLT_SOURCE_DIR=../../.. ..
 
-This will generate a configured ``Makefile`` in your build directory to build ``blank_project``.  
-The generated makefile includes gtest and several built-in BLT *smoke* tests,
-depending on the features that you have enabled in your build.  
+This will generate a configured ``Makefile`` in your build directory to build
+``blank_project``.  The generated makefile includes gtest and several built-in
+BLT *smoke* tests, depending on the features that you have enabled in your build.  
 
 To build the project, use the following command:
 
