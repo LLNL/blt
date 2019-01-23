@@ -102,7 +102,7 @@ This enables all of BLT's features in your project.
 However if your project is likely to be used by other projects.  The following
 is recommended:
 
-.. literalinclude:: blank_project/CMakeLists.txt
+.. literalinclude:: tutorial/blank_project/CMakeLists.txt
    :language: cmake
    :lines: 14-32
 
