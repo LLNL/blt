@@ -447,32 +447,23 @@ macro(blt_add_library)
     endif()
 
     if ( arg_SOURCES )
-        #
-        #  CUDA support
-        #
-        list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-        if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
-
-            blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
-                                             TARGET_SOURCES ${arg_SOURCES})
-
-        endif()
         if ( ${_build_shared_library} )
             add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
         else()
             add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
         endif()
-        if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
-           set_target_properties( ${arg_NAME} PROPERTIES LANGUAGE CUDA)
-           if ( ${_build_shared_library})
-               set_target_properties( ${arg_NAME} PROPERTIES CMAKE_CUDA_CREATE_STATIC_LIBRARY ON)
-           else()
-               set_target_properties( ${arg_NAME} PROPERTIES CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
-           endif()
-           if (CUDA_SEPARABLE_COMPILATION)
-              set_target_properties( ${arg_NAME} PROPERTIES
-                                                 CUDA_SEPARABLE_COMPILATION ON)
-           endif()
+
+        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+            if ( ${_build_shared_library} )
+                set(_target_type "shared")
+            else()
+                set(_target_type "static")
+            endif()
+            blt_setup_cuda_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON}
+                LIBRARY_TYPE ${_target_type})
         endif()
     else()
         #
@@ -598,29 +589,13 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    #
-    #  cuda support
-    #
-    list(FIND arg_DEPENDS_ON "cuda" check_for_cuda)
-    if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
-        blt_setup_cuda_source_properties(BUILD_TARGET ${arg_NAME}
-                                         TARGET_SOURCES ${arg_SOURCES})
-    endif()
     add_executable( ${arg_NAME} ${arg_SOURCES} )
-    if ( ${check_for_cuda} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
-        if (CUDA_SEPARABLE_COMPILATION)
-           set_target_properties( ${arg_NAME} PROPERTIES
-                                              CUDA_SEPARABLE_COMPILATION ON)
-        endif()
-        if (CUDA_LINK_WITH_NVCC) 
-            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
-        endif()
-    endif()
-    list(FIND arg_DEPENDS_ON "cuda_runtime" check_for_cuda_rt)
-    if ( ${check_for_cuda_rt} GREATER -1 AND NOT ENABLE_CLANG_CUDA)
-        if (CUDA_LINK_WITH_NVCC) 
-            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
-        endif()
+
+    if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+        blt_setup_cuda_target(
+            NAME         ${arg_NAME}
+            SOURCES      ${arg_SOURCES}
+            DEPENDS_ON   ${arg_DEPENDS_ON})
     endif()
     
     # CMake wants to load with C++ if any of the libraries are C++.

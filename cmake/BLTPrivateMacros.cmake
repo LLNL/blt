@@ -200,50 +200,79 @@ macro(blt_setup_target)
 endmacro(blt_setup_target)
 
 ##------------------------------------------------------------------------------
-## blt_setup_cuda_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
+## blt_setup_cuda_target(NAME <name of target>
+##                       SOURCES <list of sources>
+##                       DEPENDS_ON <list of dependencies>
+##                       LIBRARY_TYPE <static or shared, blank for executables>)
 ##------------------------------------------------------------------------------
-macro(blt_setup_cuda_source_properties)
+macro(blt_setup_cuda_target)
 
     set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs TARGET_SOURCES)
+    set(singleValueArgs NAME LIBRARY_TYPE)
+    set(multiValueArgs SOURCES DEPENDS_ON)
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_cuda_source_properties' macro")
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_cuda_target' macro")
     endif()
 
-    if ( NOT DEFINED arg_TARGET_SOURCES )
-        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_cuda_target' macro")
     endif()
 
-    set(_cuda_sources)
-    set(_non_cuda_sources)
-    blt_split_source_list_by_language(SOURCES      ${arg_TARGET_SOURCES}
-                                      C_LIST       _cuda_sources
-                                      Fortran_LIST _non_cuda_sources)
-
-    set_source_files_properties( ${_cuda_sources}
-                                 PROPERTIES
-                                 LANGUAGE CUDA)
-
-    if (CUDA_SEPARABLE_COMPILATION)
-        set_source_files_properties( ${_cuda_sources}
-                                     PROPERTIES
-                                     CUDA_SEPARABLE_COMPILATION ON)
+    # Determine if cuda or cuda_runtime are in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "cuda" _cuda_index)
+    set(_depends_on_cuda FALSE)
+    if(${_cuda_index} GREATER -1)
+        set(_depends_on_cuda TRUE)
+    endif()
+    list(FIND arg_DEPENDS_ON "cuda_runtime" _cuda_runtime_index)
+    set(_depends_on_cuda_runtime FALSE)
+    if(${_cuda_index} GREATER -1)
+        set(_depends_on_cuda_runtime TRUE)
     endif()
 
-    #
-    # for debugging, or if we add verbose BLT output
-    #
-    ##message(STATUS "target '${arg_BUILD_TARGET}' CUDA Sources: ${_cuda_sources}")
-    ##message(STATUS "target '${arg_BUILD_TARGET}' non-CUDA Sources: ${_non_cuda_sources}")
+    if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
+        if (CUDA_LINK_WITH_NVCC) 
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+        endif()
+    endif()
 
-endmacro(blt_setup_cuda_source_properties)
+    if (${_depends_on_cuda})
+        # if cuda is in depends_on, flag each file's language as CUDA
+        # instead of leaving it up to CMake to decide
+        # Note: we don't do this when depending on just 'cuda_runtime'
+        set(_cuda_sources)
+        set(_non_cuda_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _cuda_sources
+                                          Fortran_LIST _non_cuda_sources)
+
+        set_source_files_properties( ${_cuda_sources} PROPERTIES
+                                     LANGUAGE CUDA)
+
+        if (CUDA_SEPARABLE_COMPILATION)
+            set_source_files_properties( ${_cuda_sources} PROPERTIES
+                                         CUDA_SEPARABLE_COMPILATION ON)
+            set_target_properties( ${arg_NAME} PROPERTIES
+                                   CUDA_SEPARABLE_COMPILATION ON)
+        endif()
+
+        if (DEFINED arg_LIBRARY_TYPE)
+            if (${arg_LIBRARY_TYPE} STREQUAL "static")
+                set_target_properties( ${arg_NAME} PROPERTIES
+                                       CMAKE_CUDA_CREATE_STATIC_LIBRARY ON)
+            else(${arg_LIBRARY_TYPE} STREQUAL "shared")
+                set_target_properties( ${arg_NAME} PROPERTIES
+                                       CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
+            endif()
+        endif()
+    endif()
+endmacro(blt_setup_cuda_target)
 
 
 ##------------------------------------------------------------------------------
