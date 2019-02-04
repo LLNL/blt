@@ -354,7 +354,7 @@ message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected")
 ##################################################################
 
 blt_append_custom_compiler_flag(
-    FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_FLAG
+   FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_C_FLAG
      DEFAULT    "-Wall -Wextra"
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
@@ -371,9 +371,34 @@ blt_append_custom_compiler_flag(
      )
 
 blt_append_custom_compiler_flag(
-    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_FLAG
+    FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_CXX_FLAG
+     DEFAULT    "-Wall -Wextra"
+     CLANG      "-Wall -Wextra" 
+                       # Additional  possibilities for clang include: 
+                       #       "-Wdocumentation -Wdeprecated -Weverything"
+     HCC        "-Wall" 
+     PGI        "-Minform=warn"
+     MSVC       "/W4"
+                       # Additional  possibilities for visual studio include:
+                       # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
+     XL         " "    # qinfo=<grp> produces additional messages on XL
+                       # qflag=<x>:<x> defines min severity level to produce messages on XL
+                       #     where x is i info, w warning, e error, s severe; default is: 
+                       # (default is  qflag=i:i)
+     )
+
+blt_append_custom_compiler_flag(
+    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_CXX_FLAG
      DEFAULT  "-Werror"
      MSVC     "/WX"
+     XL       "-qhalt=w"
+     )
+
+blt_append_custom_compiler_flag(
+    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_C_FLAG
+     DEFAULT  "-Werror"
+     MSVC     "/WX"
+     PGI      " "
      XL       "-qhalt=w"
      )
 
@@ -397,17 +422,16 @@ set(langFlags "CMAKE_C_FLAGS" "CMAKE_CXX_FLAGS")
 if (ENABLE_ALL_WARNINGS)
     message(STATUS  "Enabling all compiler warnings on all targets.")
 
-    foreach(flagVar ${langFlags})
-        set(${flagVar} "${${flagVar}} ${BLT_ENABLE_ALL_WARNINGS_FLAG}") 
-    endforeach()
+
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_ENABLE_ALL_WARNINGS_CXX_FLAG}")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_ENABLE_ALL_WARNINGS_C_FLAG}")
 endif()
 
 if (ENABLE_WARNINGS_AS_ERRORS)
     message(STATUS  "Enabling treatment of warnings as errors on all targets.")
 
-    foreach(flagVar ${langFlags})   
-        set(${flagVar} "${${flagVar}} ${BLT_WARNINGS_AS_ERRORS_FLAG}") 
-    endforeach()
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_WARNINGS_AS_ERRORS_CXX_FLAG}")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_WARNINGS_AS_ERRORS_C_FLAG}")
 endif()
 
 ################################
