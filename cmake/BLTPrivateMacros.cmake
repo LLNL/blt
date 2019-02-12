@@ -232,7 +232,7 @@ macro(blt_setup_cuda_target)
     endif()
     list(FIND arg_DEPENDS_ON "cuda_runtime" _cuda_runtime_index)
     set(_depends_on_cuda_runtime FALSE)
-    if(${_cuda_index} GREATER -1)
+    if(${_cuda_runtime_index} GREATER -1)
         set(_depends_on_cuda_runtime TRUE)
     endif()
 
