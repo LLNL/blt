@@ -445,7 +445,7 @@ macro(blt_add_uncrustify_target)
     set(_generate_target TRUE)
 
     if(${arg_MODIFY_FILES})
-        set(MODIFY_FILES_FLAG "--no-backup")
+        set(MODIFY_FILES_FLAG --replace;--no-backup)
     else()
         set(MODIFY_FILES_FLAG "--check")
 
