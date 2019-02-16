@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -41,7 +41,10 @@
 ###############################################################################
 
 if (NOT BLT_LOADED)
-    set (BLT_LOADED True)
+    set(BLT_VERSION "0.2.0")
+    message(STATUS "BLT Version: ${BLT_VERSION}")
+
+    set(BLT_LOADED True)
     mark_as_advanced(BLT_LOADED)
 
     set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
