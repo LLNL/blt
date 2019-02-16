@@ -41,7 +41,8 @@
 ###############################################################################
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.2.0")
+    set(BLT_VERSION "0.2.0" CACHE STRING "")
+    mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
     set(BLT_LOADED True)
