@@ -115,12 +115,14 @@ endmacro(blt_find_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
+## blt_setup_target( NAME       [name] 
+##                   DEPENDS_ON [dep1 ...] 
+##                   OBJECT     [TRUE | FALSE])
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
 
     set(options)
-    set(singleValueArgs NAME)
+    set(singleValueArgs NAME OBJECT)
     set(multiValueArgs DEPENDS_ON)
 
     # Parse the arguments
@@ -152,6 +154,12 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
+        if ( NOT ${arg_OBJECT} )
+            if ( BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+                target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
+            endif()
+        endif()
+
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
             if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
                 target_include_directories( ${arg_NAME} SYSTEM PUBLIC
@@ -167,17 +175,19 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
-            # This prevents cmake from adding -l<library name> to the
-            # command line for BLT registered libraries which are not
-            # actual CMake targets
-            if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
-                    STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_LIBRARIES} )
+        if ( NOT ${arg_OBJECT} )
+            if (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+                # This prevents cmake from adding -l<library name> to the
+                # command line for BLT registered libraries which are not
+                # actual CMake targets
+                if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
+                        STREQUAL "BLT_NO_LIBRARIES" )
+                    target_link_libraries( ${arg_NAME} PUBLIC
+                        ${BLT_${uppercase_dependency}_LIBRARIES} )
+                endif()
+            else()
+                target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
             endif()
-        else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
@@ -190,7 +200,7 @@ macro(blt_setup_target)
                                          FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT ${arg_OBJECT} AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
@@ -203,7 +213,7 @@ endmacro(blt_setup_target)
 ## blt_setup_cuda_target(NAME <name of target>
 ##                       SOURCES <list of sources>
 ##                       DEPENDS_ON <list of dependencies>
-##                       LIBRARY_TYPE <static or shared, blank for executables>)
+##                       LIBRARY_TYPE <STATIC, SHARED, OBJECT, or blank for executables>)
 ##------------------------------------------------------------------------------
 macro(blt_setup_cuda_target)
 
@@ -266,7 +276,7 @@ macro(blt_setup_cuda_target)
             if (${arg_LIBRARY_TYPE} STREQUAL "static")
                 set_target_properties( ${arg_NAME} PROPERTIES
                                        CMAKE_CUDA_CREATE_STATIC_LIBRARY ON)
-            else(${arg_LIBRARY_TYPE} STREQUAL "shared")
+            else()
                 set_target_properties( ${arg_NAME} PROPERTIES
                                        CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
             endif()

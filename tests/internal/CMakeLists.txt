@@ -44,7 +44,6 @@
 # BLT Internal Testing Project
 ################################
 
-################################
 cmake_minimum_required(VERSION 3.1)
 
 project(blt-example LANGUAGES C CXX)
@@ -231,6 +230,9 @@ message(STATUS "")
 foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
+
+add_subdirectory(src/object_library_test)
+
 if(ENABLE_CLANGQUERY)
   add_subdirectory(src/static_analysis)
 endif()
