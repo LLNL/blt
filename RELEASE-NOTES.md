@@ -5,7 +5,7 @@ in this file.
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-The Axom project release numbers follow [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The project release numbers follow [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## 0.2.0 - Release date 2019-02-15
 
