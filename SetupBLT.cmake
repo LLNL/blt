@@ -69,7 +69,17 @@ if (NOT BLT_LOADED)
     # Show CMake info right out of the gate
     ################################
     message(STATUS "CMake Version: ${CMAKE_VERSION}")
+
+    if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+        message("*************************************")
+        message("* Unsupported version of CMake detected.")
+        message("* BLT requires CMake 3.8 or above.")
+        message("* Some BLT features may not work.")
+        message("*************************************")
+    endif()
+
     message(STATUS "CMake Executable: ${CMAKE_COMMAND}")
+
 
     ################################
     # Setup build options and their default values

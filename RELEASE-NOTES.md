@@ -11,6 +11,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Release notes...
+- Explicitly check for CMake 3.8+ for required CMake features (Not fatal error)
 - Object library support through blt_add_library(... OBJECT TRUE ...)
 - Now reporting BLT version through CMake cache variable BLT_VERSION
 - Output CMake version and executable used during CMake step
