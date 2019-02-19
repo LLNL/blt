@@ -50,6 +50,10 @@ BLT is composition of CMake macros and several widely used open source tools ass
 BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
 It is developed on github under LLNL's github organization: https://github.com/llnl/blt
 
+.. note::
+  BLT officially supports CMake 3.8 and above.  However we only print a warning if you
+  are below our this version.  Some features may or may not work. Use at your own risk.
+
 
 BLT at a Glance
 ~~~~~~~~~~~~~~~~~~
