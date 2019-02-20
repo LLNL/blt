@@ -154,10 +154,8 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
-        if ( NOT ${arg_OBJECT} )
-            if ( BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-                target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
-            endif()
+        if ( NOT arg_OBJECT AND BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+            target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
@@ -175,7 +173,7 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( NOT ${arg_OBJECT} )
+        if ( NOT arg_OBJECT )
             if (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
                 # This prevents cmake from adding -l<library name> to the
                 # command line for BLT registered libraries which are not
@@ -200,7 +198,7 @@ macro(blt_setup_target)
                                          FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( NOT ${arg_OBJECT} AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT arg_OBJECT AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
