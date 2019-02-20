@@ -44,7 +44,7 @@
 # ROCM
 ################################
 
-if (ENABLE_ROCM)
+if (ENABLE_HCC)
     set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
     find_package(ROCm REQUIRED)
 
@@ -67,10 +67,10 @@ endif()
 
 # register ROCM with blt
 blt_register_library(NAME rocm
-                     INCLUDES ${ROCM_CXX_INCLUDE_PATH}  
-                     LIBRARIES ${ROCM_CXX_LIBRARIES}  
+                     INCLUDES ${ROCM_CXX_INCLUDE_PATH}
+                     LIBRARIES ${ROCM_CXX_LIBRARIES}
                      COMPILE_FLAGS ${ROCM_CXX_COMPILE_FLAGS}
-                     LINK_FLAGS    ${ROCM_CXX_LINK_FLAGS} 
+                     LINK_FLAGS    ${ROCM_CXX_LINK_FLAGS}
                      DEFINES USE_ROCM)
 
 

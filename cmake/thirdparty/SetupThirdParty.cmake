@@ -89,6 +89,14 @@ if (ENABLE_HIP)
 endif()
 
 ################################
+# HCC
+################################
+message(STATUS "HCC Support is ${ENABLE_HCC}")
+if (ENABLE_HCC)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
+endif()
+
+################################
 # Documentation Packages
 ################################
 if (ENABLE_DOXYGEN)
