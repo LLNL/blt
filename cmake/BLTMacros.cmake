@@ -447,15 +447,6 @@ macro(blt_add_library)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # Default values
-    if(NOT DEFINED arg_OBJECT)
-       set(arg_OBJECT FALSE)
-    endif()
-
-    if(NOT DEFINED arg_SHARED)
-       set(arg_SHARED FALSE)
-    endif()
-
     # sanity checks
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "blt_add_library() must be called with argument NAME <name>")
@@ -465,13 +456,17 @@ macro(blt_add_library)
         message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) called with no given sources or headers")
     endif()
 
-    if (arg_OBJECT)
-        if (arg_SHARED)
-            message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) cannot be called with both OBJECT and SHARED set to TRUE.")
-        endif()
+    if (DEFINED arg_OBJECT)
+        if (${arg_OBJECT})
+            if (DEFINED arg_SHARED)
+                if(${arg_SHARED})
+                    message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) cannot be called with both OBJECT and SHARED set to TRUE.")
+                endif()
+            endif()
 
-        if (NOT arg_SOURCES)
-            message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) cannot create an object library with no sources.")
+            if (NOT arg_SOURCES)
+                message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) cannot create an object library with no sources.")
+            endif()
         endif()
     endif()
 
@@ -483,15 +478,15 @@ macro(blt_add_library)
             set(_build_shared_library ${arg_SHARED})
         endif()
 
-        if ( ${_build_shared_library} )
-            set(_lib_type "SHARED")
-        elseif ( ${arg_OBJECT} )
+        if ( ${arg_OBJECT} )
             set(_lib_type "OBJECT")
             blt_register_library( NAME       ${arg_NAME}
                                   DEPENDS_ON ${arg_DEPENDS_ON}
                                   INCLUDES   ${arg_INCLUDES}
                                   OBJECT     TRUE
                                   DEFINES    ${arg_DEFINES} )
+        elseif ( ${_build_shared_library} )
+            set(_lib_type "SHARED")
         else()
             set(_lib_type "STATIC")
         endif()
