@@ -132,3 +132,14 @@ Object libraries are a collection of object files that are not linked or archive
 a library.  They are used in other libraries or executables through the ``DEPENDS_ON``
 argument.  This is generally useful for combining smaller libraries into a larger library
 without the linker removing unused symbols in the larger library.
+
+.. code-block:: cmake
+
+    blt_add_library(NAME    myObjectLibrary
+                    SOURCES source1.cpp
+                    HEADERS header1.cpp
+                    OBJECT  TRUE)
+
+    blt_add_exectuble(NAME       helloWorld
+                      SOURCES    main.cpp
+                      DEPENDS_ON myObjectLibrary)
