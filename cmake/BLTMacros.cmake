@@ -289,6 +289,9 @@ endmacro(blt_add_target_link_flags)
 ## This does not actually build the library.  This is strictly to ease use after
 ## discovering it on your system or building it yourself inside your project.
 ##
+## Note: The OBJECT parameter is for internal BLT support for object libraries
+## and is not for users.  Object libraries are created using blt_add_library().
+##
 ## Output variables (name = "foo"):
 ##  BLT_FOO_IS_REGISTERED_LIBRARY
 ##  BLT_FOO_IS_OBJECT_LIBRARY
