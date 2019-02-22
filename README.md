@@ -11,6 +11,11 @@ User Tutorial
 
 https://software.llnl.gov/blt
 
+Questions
+---------
+
+Any questions can be sent to blt-dev@llnl.gov.
+
 Authors
 -------
 
