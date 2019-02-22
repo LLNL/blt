@@ -4,3 +4,5 @@ We welcome contributions to BLT. To do so please submit a pull request through o
 BLT github page at https://github.com/LLNL/blt.
 
 All contributions to BLT must be made under the BSD License.
+
+Any questions can be sent to blt-dev@llnl.gov.
