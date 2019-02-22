@@ -1,16 +1,8 @@
-###############################################################################
-# Copyright (c) 2018, Lawrence Livermore National Security, LLC.
-#
-# Produced at the Lawrence Livermore National Laboratory
-#
-# LLNL-CODE-725085
-#
-# All rights reserved.
-#
-# This file is part of BLT.
-#
-# For additional details, please also read BLT/LICENSE.
-#
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# 
+# SPDX-License-Identifier: (BSD-3-Clause)
+
 #------------------------------------------------------------------------------
 # Example host-config file for the quartz cluster at LLNL
 #------------------------------------------------------------------------------
@@ -20,7 +12,6 @@
 #------------------------------------------------------------------------------
 # clang-4.0.0 / gfortran@4.9.3 compilers
 # Uses clang's 'libc++' instead of 'libstdc++'
-###############################################################################
 
 set(CLANG_HOME "/usr/tce/packages/clang/clang-4.0.0")
 set(GNU_HOME "/usr/tce/packages/gcc/gcc-4.9.3")
