@@ -55,6 +55,26 @@ that can be run directly or as a ``make`` target.
 
 In this section, we give a brief overview of GTest and discuss how to add unit tests using the ``blt_add_test`` macro.
 
+
+Configuring tests within BLT
+----------------------------
+
+Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on by default. 
+
+For additional configuration granularity, BLT provides configuration options 
+for the individual built-in unit testing libraries.  The following additional options are available
+when ``ENABLE_TESTS`` is on:
+
+``ENABLE_GTEST``
+  Option to enable gtest (default: ``ON``).
+``ENABLE_GMOCK``
+  Option to control gmock (default: ``OFF``).
+  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
+  regardless of the value of ``ENABLE_GTEST``. 
+``ENABLE_FRUIT``
+  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
+
+
 Google Test (C++/C Tests)
 --------------------------
 
@@ -256,25 +276,4 @@ are working, for example.
       Run tests in parallel, E.g. ``-j 16`` will run tests using 16 processors
     -VV
       (Very verbose) Dump test output to stdout
-
-
-Configuring tests within BLT
-----------------------------
-
-Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on by default. 
-
-For additional configuration granularity, BLT provides configuration options 
-for the individual built-in unit testing libraries.  The following additional options are available
-when ``ENABLE_TESTS`` is on:
-
-``ENABLE_GTEST``
-  Option to enable gtest (default: ``ON``).
-``ENABLE_GMOCK``
-  Option to control gmock (default: ``OFF``).
-  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
-  regardless of the value of ``ENABLE_GTEST``. 
-``ENABLE_FRUIT``
-  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
-
-
 

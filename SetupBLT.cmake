@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -41,7 +41,11 @@
 ###############################################################################
 
 if (NOT BLT_LOADED)
-    set (BLT_LOADED True)
+    set(BLT_VERSION "0.2.0" CACHE STRING "")
+    mark_as_advanced(BLT_VERSION)
+    message(STATUS "BLT Version: ${BLT_VERSION}")
+
+    set(BLT_LOADED True)
     mark_as_advanced(BLT_LOADED)
 
     set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
@@ -66,7 +70,17 @@ if (NOT BLT_LOADED)
     # Show CMake info right out of the gate
     ################################
     message(STATUS "CMake Version: ${CMAKE_VERSION}")
+
+    if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+        message("*************************************")
+        message("* Unsupported version of CMake detected.")
+        message("* BLT requires CMake 3.8 or above.")
+        message("* Some BLT features may not work.")
+        message("*************************************")
+    endif()
+
     message(STATUS "CMake Executable: ${CMAKE_COMMAND}")
+
 
     ################################
     # Setup build options and their default values

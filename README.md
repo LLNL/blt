@@ -1,4 +1,4 @@
-BLT v0.1
+BLT v0.2
 ========
 
 [![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
@@ -29,7 +29,7 @@ Developers include:
 Release
 -------
 
-Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
 
 Produced at the Lawrence Livermore National Laboratory.
 

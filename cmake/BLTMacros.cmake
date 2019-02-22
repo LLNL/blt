@@ -289,8 +289,12 @@ endmacro(blt_add_target_link_flags)
 ## This does not actually build the library.  This is strictly to ease use after
 ## discovering it on your system or building it yourself inside your project.
 ##
+## Note: The OBJECT parameter is for internal BLT support for object libraries
+## and is not for users.  Object libraries are created using blt_add_library().
+##
 ## Output variables (name = "foo"):
 ##  BLT_FOO_IS_REGISTERED_LIBRARY
+##  BLT_FOO_IS_OBJECT_LIBRARY
 ##  BLT_FOO_DEPENDS_ON
 ##  BLT_FOO_INCLUDES
 ##  BLT_FOO_TREAT_INCLUDES_AS_SYSTEM
@@ -302,7 +306,7 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
-    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
+    set(singleValueArgs NAME OBJECT TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
                        DEPENDS_ON
                        FORTRAN_MODULES
@@ -328,6 +332,13 @@ macro(blt_register_library)
         set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE LIST "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
     endif()
+
+    if( ${arg_OBJECT} )
+        set(BLT_${uppercase_name}_IS_OBJECT_LIBRARY ON CACHE BOOL "" FORCE)
+    else()
+        set(BLT_${uppercase_name}_IS_OBJECT_LIBRARY OFF CACHE BOOL "" FORCE)
+    endif()
+    mark_as_advanced(BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
 
     if( ${arg_TREAT_INCLUDES_AS_SYSTEM} )
         set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM ON CACHE BOOL "" FORCE)
@@ -370,23 +381,32 @@ endmacro(blt_register_library)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_library( NAME <libname>
-##                  SOURCES [source1 [source2 ...]]
-##                  HEADERS [header1 [header2 ...]]
-##                  INCLUDES [dir1 [dir2 ...]]
-##                  DEFINES [define1 [define2 ...]]
-##                  DEPENDS_ON [dep1 ...] 
-##                  OUTPUT_NAME [name]
-##                  OUTPUT_DIR [dir]
-##                  SHARED [TRUE | FALSE]
+## blt_add_library( NAME         <libname>
+##                  SOURCES      [source1 [source2 ...]]
+##                  HEADERS      [header1 [header2 ...]]
+##                  INCLUDES     [dir1 [dir2 ...]]
+##                  DEFINES      [define1 [define2 ...]]
+##                  DEPENDS_ON   [dep1 ...] 
+##                  OUTPUT_NAME  [name]
+##                  OUTPUT_DIR   [dir]
+##                  SHARED       [TRUE | FALSE]
+##                  OBJECT       [TRUE | FALSE]
 ##                  CLEAR_PREFIX [TRUE | FALSE]
-##                  FOLDER [name]
+##                  FOLDER       [name]
 ##                 )
 ##
 ## Adds a library target, called <libname>, to be built from the given sources.
 ## This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
 ## whether the library will be build as shared or static. The optional boolean
 ## SHARED argument can be used to override this choice.
+##
+## The OBJECT argument creates a CMake object library. Basically it is a collection
+## of compiled source files that are not archived or linked. Unlike regular CMake
+## object libraries you do not have to use the $<TARGET_OBJECTS:<libname>> syntax,
+## you can just use <libname>.
+##    Note: Object libraries do not follow CMake's transitivity rules until 3.13.
+##          BLT will add the various information provided in this macro in the order
+##          you provide them to help.
 ##
 ## The INCLUDES argument allows you to define what include directories are
 ## needed by any target that is dependent on this library.  These will
@@ -417,13 +437,13 @@ endmacro(blt_register_library)
 ## FOLDER is an optional keyword to organize the target into a folder in an IDE.
 ## This is available when ENABLE_FOLDERS is ON and when the cmake generator
 ## supports this feature and will otherwise be ignored. 
-## Note: Do not use with header-only (INTERFACE)libraries, as this will generate 
-## a cmake configuration error.
+##    Note: Do not use with header-only (INTERFACE)libraries, as this will generate 
+##          a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
     set(options)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED CLEAR_PREFIX FOLDER)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED OBJECT CLEAR_PREFIX FOLDER)
     set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
@@ -439,31 +459,45 @@ macro(blt_add_library)
         message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) called with no given sources or headers")
     endif()
 
-    # Determine whether to build as a shared library. Default to global variable unless
-    # SHARED parameter is specified
-    set(_build_shared_library ${BUILD_SHARED_LIBS})
-    if( DEFINED arg_SHARED )
-        set(_build_shared_library ${arg_SHARED})
+    if (DEFINED arg_OBJECT AND arg_OBJECT)
+        if (DEFINED arg_SHARED AND arg_SHARED)
+                message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) cannot be called with both OBJECT and SHARED set to TRUE.")
+        endif()
+
+        if (NOT arg_SOURCES)
+            message(FATAL_ERROR "blt_add_library(NAME ${arg_NAME} ...) cannot create an object library with no sources.")
+        endif()
     endif()
 
     if ( arg_SOURCES )
-        if ( ${_build_shared_library} )
-            add_library( ${arg_NAME} SHARED ${arg_SOURCES} ${arg_HEADERS} )
-        else()
-            add_library( ${arg_NAME} STATIC ${arg_SOURCES} ${arg_HEADERS} )
+        # Determine type of library to build. STATIC by default and OBJECT takes
+        # precedence over global BUILD_SHARED_LIBS variable.
+        set(_build_shared_library ${BUILD_SHARED_LIBS})
+        if( DEFINED arg_SHARED )
+            set(_build_shared_library ${arg_SHARED})
         endif()
 
+        if ( ${arg_OBJECT} )
+            set(_lib_type "OBJECT")
+            blt_register_library( NAME       ${arg_NAME}
+                                  DEPENDS_ON ${arg_DEPENDS_ON}
+                                  INCLUDES   ${arg_INCLUDES}
+                                  OBJECT     TRUE
+                                  DEFINES    ${arg_DEFINES} )
+        elseif ( ${_build_shared_library} )
+            set(_lib_type "SHARED")
+        else()
+            set(_lib_type "STATIC")
+        endif()
+
+        add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
+
         if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-            if ( ${_build_shared_library} )
-                set(_target_type "shared")
-            else()
-                set(_target_type "static")
-            endif()
             blt_setup_cuda_target(
                 NAME         ${arg_NAME}
                 SOURCES      ${arg_SOURCES}
                 DEPENDS_ON   ${arg_DEPENDS_ON}
-                LIBRARY_TYPE ${_target_type})
+                LIBRARY_TYPE ${_lib_type})
         endif()
     else()
         #
@@ -504,8 +538,9 @@ macro(blt_add_library)
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
-    blt_setup_target( NAME ${arg_NAME}
-                      DEPENDS_ON ${arg_DEPENDS_ON} )
+    blt_setup_target( NAME       ${arg_NAME}
+                      DEPENDS_ON ${arg_DEPENDS_ON} 
+                      OBJECT     ${arg_OBJECT})
 
     if ( arg_INCLUDES )
         target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
@@ -609,8 +644,9 @@ macro(blt_add_executable)
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
        
-    blt_setup_target(NAME ${arg_NAME}
-                     DEPENDS_ON ${arg_DEPENDS_ON} )
+    blt_setup_target(NAME       ${arg_NAME}
+                     DEPENDS_ON ${arg_DEPENDS_ON} 
+                     OBJECT     FALSE)
 
     if ( arg_INCLUDES )
         target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
