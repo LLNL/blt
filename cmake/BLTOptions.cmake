@@ -58,6 +58,7 @@ option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
 option(ENABLE_GIT          "Enables Git support" ON)
 option(ENABLE_SPHINX       "Enables Sphinx support" ON)
 option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
+option(ENABLE_ASTYLE       "Enables AStyle support" ON)
 option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
 
 
@@ -70,7 +71,6 @@ if(_languages MATCHES "Fortran")
 else()
     set(_fortran_already_enabled FALSE)
 endif()
-option(ENABLE_COPY_HEADERS "Copy headers to build directory" OFF)
 option(ENABLE_FORTRAN      "Enables Fortran compiler support" ${_fortran_already_enabled})
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
@@ -88,7 +88,8 @@ set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating
 #
 # If ENABLE_TESTS=OFF, no testing support is built and these option are ignored.
 #
-# Google Mock requires and always builds Google Test, so ENABLE_GMOCK=ON implies ENABLE_GTEST=ON.
+# Google Mock requires and always builds Google Test, so ENABLE_GMOCK=ON
+# implies ENABLE_GTEST=ON.
 #
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 if(_languages MATCHES "CXX")

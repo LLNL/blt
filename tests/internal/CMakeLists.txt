@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -44,7 +44,6 @@
 # BLT Internal Testing Project
 ################################
 
-################################
 cmake_minimum_required(VERSION 3.1)
 
 project(blt-example LANGUAGES C CXX)
@@ -115,8 +114,23 @@ if(ENABLE_GTEST)
     blt_add_test(NAME t_header_only_smoke
                  COMMAND t_header_only_smoke)
 
+    ####################################################
+    # Tests blt_combine_static_libs macro
+    # Note: Does not currently work on Windows or BGQ
+    ####################################################
+    set(_try_combine_static_libs ON)
 
-    add_subdirectory( src/combine_static_library_test )
+    if(CMAKE_HOST_WIN32)
+        set(_try_combine_static_libs OFF)
+    endif()
+
+    if ("$ENV{SYS_TYPE}" STREQUAL "bgqos_0")
+        set(_try_combine_static_libs OFF)
+    endif()
+
+    if ( ${_try_combine_static_libs} )
+        add_subdirectory( src/combine_static_library_test )
+    endif ()
 
     ####################
     # Git Macros test
@@ -182,5 +196,43 @@ if(ENABLE_GTEST)
     if (ENABLE_CUDA)
         add_subdirectory(src/test_cuda_device_call_from_kernel)
     endif()
+    
+    ########################################################
+    # Tests blt_add_target_definitions macro
+    # Four variants of a test with a list of two definitions
+    ########################################################
+    set(_variant_1 A=1 B)         # neither use '-D'
+    set(_variant_2 -DA=1 -DB)     # both uses '-D'
+    set(_variant_3 "A=1;-DB")     # list passed in as string
+    set(_variant_4 " " "-DA=1;B") # list can contain empty strings
+    foreach(i RANGE 1 4)
+        set(_casename "_variant_${i}")
+        set(_testname "t_example_compile_definitions_test${_casename}")
+
+        blt_add_executable( 
+            NAME ${_testname}
+            SOURCES src/t_example_compile_definitions.cpp 
+            DEPENDS_ON gtest)
+
+        blt_add_target_definitions(
+            TO ${_testname}
+            TARGET_DEFINITIONS ${${_casename}})
+
+        blt_add_test( 
+            NAME ${_testname}
+            COMMAND ${_testname})
+    endforeach()
 
 endif() # endif ENABLE_GTEST
+
+message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
+message(STATUS "")
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
+    blt_print_target_properties(TARGET ${_target})
+endforeach()
+
+add_subdirectory(src/object_library_test)
+
+if(ENABLE_CLANGQUERY)
+  add_subdirectory(src/static_analysis)
+endif()

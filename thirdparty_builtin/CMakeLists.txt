@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2018, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -45,17 +45,21 @@ set(_blt_tpl_targets) # tracks names of enabled tpl targets
 if(ENABLE_TESTS)
     include(CTest)
 
+    # Note: Users can pass extra compiler flags to gtest 
+    #       with the 'gtest_extra_flags' variable and extra 
+    #       compile definitions with the 'gtest_defines' variable.
+
+
+    # The following flag should be added to gtest's dependents, 
+    # but not to gtest in shared Windows builds
     if(WIN32 AND BUILD_SHARED_LIBS)
-        add_definitions(-DGTEST_CREATE_SHARED_LIBRARY=1)
-        list(APPEND gtest_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
+        list(APPEND gtest_export_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
     endif()
 
     # Explicitly enable/disable death tests
     if(ENABLE_GTEST_DEATH_TESTS)
-        add_definitions(-DGTEST_HAS_DEATH_TEST=1)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=1")
     else()
-        add_definitions(-DGTEST_HAS_DEATH_TEST=0)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=0")
     endif()
 
@@ -84,7 +88,7 @@ if(ENABLE_TESTS)
     
     #
     # Guard of googletest w/ ENABLE_GTEST
-    # In BTL ENABLE_GTEST is also required when using ENABLE_GMOCK
+    # In BLT, ENABLE_GTEST is also required when using ENABLE_GMOCK
     #
     
     if(ENABLE_GTEST)
@@ -99,10 +103,10 @@ if(ENABLE_TESTS)
         
         blt_append_custom_compiler_flag( FLAGS_VAR gtest_extra_flags
                                          DEFAULT " " 
-                                         MSVC  "/wd4251 /wd4275" )
+                                         MSVC  "/wd4251" "/wd4275" )
 
-        set (INSTALL_GMOCK OFF)
-        set (INSTALL_GTEST OFF)
+        set (INSTALL_GMOCK OFF CACHE BOOL "")
+        set (INSTALL_GTEST OFF CACHE BOOL "")
                 
         # Enable builtin google test 
         add_subdirectory(googletest-master-2018-02-01
@@ -117,9 +121,11 @@ if(ENABLE_TESTS)
                              INCLUDES ${gtest_SOURCE_DIR}/include
                              LIBRARIES gtest_main gtest ${gtest_extra_libs}
                              COMPILE_FLAGS ${gtest_extra_flags}
-                             DEFINES  ${gtest_defines}
+                             DEFINES  ${gtest_defines} ${gtest_export_defines}
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
+                             
+        blt_add_target_definitions(TO gtest TARGET_DEFINITIONS ${gtest_defines})
 
         list(APPEND _blt_tpl_targets gtest gtest_main)
 

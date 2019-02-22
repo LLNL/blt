@@ -44,22 +44,6 @@
 # Setup compiler options
 ############################
 
-#################################################
-# OpenMP
-# (OpenMP support is provided by the compiler)
-#################################################
-message(STATUS "OpenMP Support is ${ENABLE_OPENMP}")
-if(ENABLE_OPENMP)
-    find_package(OpenMP REQUIRED)
-    message(STATUS "OpenMP CXX Flags: ${OpenMP_CXX_FLAGS}")
-    
-    # register openmp with blt
-    blt_register_library(NAME openmp
-                         COMPILE_FLAGS ${OpenMP_CXX_FLAGS} 
-                         LINK_FLAGS  ${OpenMP_CXX_FLAGS} 
-                         DEFINES USE_OPENMP)
-endif()
-
 #####################################################
 # Set some variables to simplify determining compiler
 # Compiler string list from: 
@@ -94,6 +78,11 @@ else()
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         set(C_COMPILER_FAMILY_IS_INTEL 1)
         message(STATUS "C Compiler family is Intel")
+
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+        set(C_COMPILER_FAMILY_IS_PGI 1)
+        message(STATUS "C Compiler family is PGI")
+
     else()
         message(STATUS "C Compiler family not set!!!")
     endif()
@@ -113,12 +102,65 @@ else()
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
         set(Fortran_COMPILER_FAMILY_IS_INTEL 1)
         message(STATUS "Fortran Compiler family is Intel")
+
+    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+        set(Fortran_COMPILER_FAMILY_IS_PGI 1)
+        message(STATUS "Fortran Compiler family is PGI")
+
     elseif(ENABLE_FORTRAN)
         message(STATUS "Fortran Compiler family not set!!!")
     endif()
 endif()
 
 
+#################################################
+# OpenMP
+# (OpenMP support is provided by the compiler)
+#################################################
+message(STATUS "OpenMP Support is ${ENABLE_OPENMP}")
+if(ENABLE_OPENMP)
+    find_package(OpenMP REQUIRED)
+    message(STATUS "OpenMP CXX Flags: ${OpenMP_CXX_FLAGS}")
+
+    # avoid generator expressions if possible, as generator expressions can be 
+    # passed as flags to downstream projects that might not be using the same
+    # languages. See https://github.com/LLNL/blt/issues/205
+    if (ENABLE_FORTRAN AND NOT OpenMP_CXX_FLAGS STREQUAL OpenMP_Fortran_FLAGS)
+       set(ESCAPE_FORTRAN ON)
+    else()
+       set(ESCAPE_FORTRAN OFF)
+    endif()
+
+    # register openmp with blt
+    if(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_CUDA AND ESCAPE_FORTRAN)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<COMPILE_LANGUAGE:Fortran>>>:${OpenMP_CXX_FLAGS}> 
+                             $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}>
+                             $<$<COMPILE_LANGUAGE:Fortran>:${OpenMP_Fortran_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    elseif(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_CUDA)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${OpenMP_CXX_FLAGS}> 
+                             $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    elseif(NOT COMPILER_FAMILY_IS_MSVC AND ESCAPE_FORTRAN)
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS
+                             $<$<NOT:$<COMPILE_LANGUAGE:Fortran>>:${OpenMP_CXX_FLAGS}>
+                             $<$<COMPILE_LANGUAGE:Fortran>:${OpenMP_Fortran_FLAGS}> 
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    else()
+        blt_register_library(NAME openmp
+                             COMPILE_FLAGS ${OpenMP_CXX_FLAGS}
+                             LINK_FLAGS ${OpenMP_CXX_FLAGS}
+                             )
+    endif()
+endif()
 
 
 ################################################
@@ -190,7 +232,7 @@ if (ENABLE_CUDA)
    # --expt-extended-lambda is being used so cmake can get past the compiler check, 
    # but the CMAKE_CUDA_STANDARD stuff adds another definition in which breaks things. 
    # So we rip it out here, but it ends up being inserted in the final build rule by cmake. 
-   if (${CMAKE_CUDA_FLAGS})
+   if (CMAKE_CUDA_FLAGS)
       STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
    endif()
 endif()
@@ -312,7 +354,7 @@ message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected")
 ##################################################################
 
 blt_append_custom_compiler_flag(
-    FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_FLAG
+   FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_C_FLAG
      DEFAULT    "-Wall -Wextra"
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
@@ -329,9 +371,34 @@ blt_append_custom_compiler_flag(
      )
 
 blt_append_custom_compiler_flag(
-    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_FLAG
+    FLAGS_VAR BLT_ENABLE_ALL_WARNINGS_CXX_FLAG
+     DEFAULT    "-Wall -Wextra"
+     CLANG      "-Wall -Wextra" 
+                       # Additional  possibilities for clang include: 
+                       #       "-Wdocumentation -Wdeprecated -Weverything"
+     HCC        "-Wall" 
+     PGI        "-Minform=warn"
+     MSVC       "/W4"
+                       # Additional  possibilities for visual studio include:
+                       # "/Wall /wd4619 /wd4668 /wd4820 /wd4571 /wd4710"
+     XL         " "    # qinfo=<grp> produces additional messages on XL
+                       # qflag=<x>:<x> defines min severity level to produce messages on XL
+                       #     where x is i info, w warning, e error, s severe; default is: 
+                       # (default is  qflag=i:i)
+     )
+
+blt_append_custom_compiler_flag(
+    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_CXX_FLAG
      DEFAULT  "-Werror"
      MSVC     "/WX"
+     XL       "-qhalt=w"
+     )
+
+blt_append_custom_compiler_flag(
+    FLAGS_VAR BLT_WARNINGS_AS_ERRORS_C_FLAG
+     DEFAULT  "-Werror"
+     MSVC     "/WX"
+     PGI      " "
      XL       "-qhalt=w"
      )
 
@@ -355,17 +422,16 @@ set(langFlags "CMAKE_C_FLAGS" "CMAKE_CXX_FLAGS")
 if (ENABLE_ALL_WARNINGS)
     message(STATUS  "Enabling all compiler warnings on all targets.")
 
-    foreach(flagVar ${langFlags})
-        set(${flagVar} "${${flagVar}} ${BLT_ENABLE_ALL_WARNINGS_FLAG}") 
-    endforeach()
+
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_ENABLE_ALL_WARNINGS_CXX_FLAG}")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_ENABLE_ALL_WARNINGS_C_FLAG}")
 endif()
 
 if (ENABLE_WARNINGS_AS_ERRORS)
     message(STATUS  "Enabling treatment of warnings as errors on all targets.")
 
-    foreach(flagVar ${langFlags})   
-        set(${flagVar} "${${flagVar}} ${BLT_WARNINGS_AS_ERRORS_FLAG}") 
-    endforeach()
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_WARNINGS_AS_ERRORS_CXX_FLAG}")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_WARNINGS_AS_ERRORS_C_FLAG}")
 endif()
 
 ################################

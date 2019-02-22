@@ -51,29 +51,7 @@ env:
     - TRAVIS_HOME=`pwd`/..
     - TRAVIS_TPLS_DIR=${TRAVIS_HOME}/tpls
   matrix:
-    # gcc w/ cmake 3.3.1
-    - CMAKE_MAJOR=3.3
-      CMAKE_MINOR=1
-      BLT_CC=gcc-4.9
-      BLT_CXX=g++-4.9
-      BLT_FC=gfortran-4.9
-      BLT_FORTRAN=ON
-      BLT_OPENMP=ON
-      BLT_GTEST=ON
-      BLT_FRUIT=ON
-      BLT_GMOCK=OFF
-    # gcc w/ cmake 3.4.1
-    - CMAKE_MAJOR=3.4
-      CMAKE_MINOR=1
-      BLT_CC=gcc-4.9
-      BLT_CXX=g++-4.9
-      BLT_FC=gfortran-4.9
-      BLT_FORTRAN=ON
-      BLT_OPENMP=ON
-      BLT_GTEST=ON
-      BLT_FRUIT=ON
-      BLT_GMOCK=OFF
-    # gcc w/ cmake 3.8.0
+    # gcc w/ cmake 3.8.0, gmock off
     - CMAKE_MAJOR=3.8
       CMAKE_MINOR=0
       BLT_CC=gcc-4.9
@@ -84,7 +62,7 @@ env:
       BLT_GTEST=ON
       BLT_FRUIT=ON
       BLT_GMOCK=OFF
-    # gcc w/ cmake 3.8.0, gmock on
+    # gcc w/ cmake 3.8.0, all on
     - CMAKE_MAJOR=3.8
       CMAKE_MINOR=0
       BLT_CC=gcc-4.9
@@ -104,6 +82,28 @@ env:
       BLT_FORTRAN=ON
       BLT_GTEST=OFF
       BLT_FRUIT=OFF
+    # gcc w/ cmake 3.9.6, all on
+    - CMAKE_MAJOR=3.9
+      CMAKE_MINOR=6
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
+      BLT_GMOCK=ON
+    # gcc w/ cmake 3.11.4, all on
+    - CMAKE_MAJOR=3.11
+      CMAKE_MINOR=4
+      BLT_CC=gcc-4.9
+      BLT_CXX=g++-4.9
+      BLT_FC=gfortran-4.9
+      BLT_FORTRAN=ON
+      BLT_OPENMP=ON
+      BLT_GTEST=ON
+      BLT_FRUIT=ON
+      BLT_GMOCK=ON
 addons:
   apt:
     sources:
@@ -115,6 +115,11 @@ addons:
        - mpich2
        - libmpich2-dev
 before_install:
+  # workaround apt related for error:
+  # Err:6 http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty InRelease
+  # The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 1E9377A2BA9EF27F
+  - sudo apt update -o Acquire::Retries=100 -o Acquire::http::Timeout="60" -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true
+
   # download the ver of cmake we want to test
   - wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_MAJOR}/cmake-${CMAKE_MAJOR}.${CMAKE_MINOR}-Linux-x86_64.sh
 install:
@@ -124,7 +129,7 @@ install:
   - export PATH=${TRAVIS_TPLS_DIR}/cmake/bin:$PATH
 script:
   # set git user info     
-  - git config --global user.email "blt-dev@llnl.gov" 
+  - git config --global user.email "blt-dev@llnl.gov"
   - git config --global user.name  "BLT Robot"
   - BLT_SOURCE_DIR=${TRAVIS_BUILD_DIR}
   - cmake --version
@@ -177,7 +182,7 @@ script:
   - CMAKE_OPTS="${CMAKE_OPTS} -DTEST_GIT_MACROS=ON"
   # configure with cmake
   - cmake  ${CMAKE_OPTS} ../blt-test
-  # build, link, and triumph 
+  # build, link, and test 
   - make
   - env CTEST_OUTPUT_ON_FAILURE=1 make test
   - make install

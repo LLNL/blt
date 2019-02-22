@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
 #
 # Produced at the Lawrence Livermore National Laboratory
 #
@@ -41,7 +41,11 @@
 ###############################################################################
 
 if (NOT BLT_LOADED)
-    set (BLT_LOADED True)
+    set(BLT_VERSION "0.2.0" CACHE STRING "")
+    mark_as_advanced(BLT_VERSION)
+    message(STATUS "BLT Version: ${BLT_VERSION}")
+
+    set(BLT_LOADED True)
     mark_as_advanced(BLT_LOADED)
 
     set( BLT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "" FORCE )
@@ -56,10 +60,27 @@ if (NOT BLT_LOADED)
     ################################
     # Fail if someone tries to config an in-source build.
     if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-        message(FATAL_ERROR "In-source builds are not supported. Please remove "
-                            "CMakeCache.txt from the 'src' dir and configure an "
-                            "out-of-source build in another directory.")
+        message(FATAL_ERROR "In-source builds are not supported. Please remove the "
+                            "CMakeFiles directory and CMakeCache.txt from the 'src' "
+                            "dir and configure an out-of-source build in another "
+                            "directory.")
     endif()
+
+    #################################
+    # Show CMake info right out of the gate
+    ################################
+    message(STATUS "CMake Version: ${CMAKE_VERSION}")
+
+    if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+        message("*************************************")
+        message("* Unsupported version of CMake detected.")
+        message("* BLT requires CMake 3.8 or above.")
+        message("* Some BLT features may not work.")
+        message("*************************************")
+    endif()
+
+    message(STATUS "CMake Executable: ${CMAKE_COMMAND}")
+
 
     ################################
     # Setup build options and their default values
@@ -96,6 +117,12 @@ if (NOT BLT_LOADED)
         set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     endif()
 
+
+    ################################
+    # Enable cmake compilation database feature
+    ################################
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
     ################################
     # Macros
     ################################
@@ -126,20 +153,6 @@ if (NOT BLT_LOADED)
     ################################
     # Standard Build Layout
     ################################
-
-    # Defines the layout of the build directory. Namely,
-    # it indicates the location where the various header files should go,
-    # where to store libraries (static or shared), the location of the
-    # bin directory for all executables and the location for fortran modules.
-
-    # Set the path where all the headers will be stored
-    if ( ENABLE_COPY_HEADERS )
-        set(HEADER_INCLUDES_DIRECTORY
-            ${PROJECT_BINARY_DIR}/include/
-            CACHE PATH
-            "Directory where all headers will go in the build tree")
-        include_directories(${HEADER_INCLUDES_DIRECTORY})
-    endif()
 
     # Set the path where all the libraries will be stored
     set(LIBRARY_OUTPUT_PATH
@@ -181,7 +194,7 @@ if (NOT BLT_LOADED)
     # Global variables needed by BLT
     #
     ################################
-    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".c" ".h" ".hh" ".inl" ".cu"
+    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".cc" ".hh" ".inl" ".cu"
                CACHE LIST "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
                CACHE LIST "List of known file extensions used for Fortran sources")

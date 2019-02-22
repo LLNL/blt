@@ -72,7 +72,7 @@ You can create this project yourself or you can run the already provided ``tutor
 For ease of use, we have combined many examples into this one CMake project.  After running
 the following commands, you will create the executable ``<build dir>/bin/example_1``:
 
-.. code:: bash
+.. code-block:: bash
 
     cd <BLT repository/docs/tutorial/calc_pi
     mkdir build
@@ -101,7 +101,7 @@ First, we create the library with the following BLT code:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 36-38
+   :lines: 34-36
 
 Just like before, this creates a CMake library target that will get built to ``<build dir>/lib/libcalc_pi.a``.
 
@@ -109,7 +109,7 @@ Next, we create an executable named ``example_2`` and link in the previously cre
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
    :language: cmake
-   :lines: 41-43
+   :lines: 39-41
 
 The ``DEPENDS_ON`` parameter properly links the previously defined library into this executable without any
 more work or CMake function calls.
@@ -124,3 +124,22 @@ more work or CMake function calls.
    library and the output directory.  It defaults to building a static library unless you override it with
    ``SHARED`` or with the global CMake option ``BUILD_SHARED_LIBS``.
 
+Object Libraries
+----------------
+
+BLT has simplified the use of CMake object libraries through the ``blt_add_library`` macro.
+Object libraries are a collection of object files that are not linked or archived into
+a library.  They are used in other libraries or executables through the ``DEPENDS_ON``
+argument.  This is generally useful for combining smaller libraries into a larger library
+without the linker removing unused symbols in the larger library.
+
+.. code-block:: cmake
+
+    blt_add_library(NAME    myObjectLibrary
+                    SOURCES source1.cpp
+                    HEADERS header1.cpp
+                    OBJECT  TRUE)
+
+    blt_add_exectuble(NAME       helloWorld
+                      SOURCES    main.cpp
+                      DEPENDS_ON myObjectLibrary)

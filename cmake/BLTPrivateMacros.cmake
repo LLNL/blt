@@ -45,58 +45,10 @@ include(CMakeParseArguments)
 ## Internal BLT CMake Macros
 
 
-##------------------------------------------------------------------------------
-## blt_copy_headers_target( NAME [name] HEADERS [hdr1 ...] DESTINATION [destination] )
-##
-## Adds a custom "copy_headers" target for the given project
-##
-## Adds a custom target, blt_copy_headers_[NAME], for the given project. 
-## The role of this target is to copy the given list of headers, [HEADERS], to 
-## the destination directory [DESTINATION].
-##
-## This macro is used to copy the header of each component in to the build
-## space, under an "includes" directory.
-##------------------------------------------------------------------------------
-macro(blt_copy_headers_target)
-
-    set(options)
-    set(singleValueArgs NAME DESTINATION)
-    set(multiValueArgs HEADERS)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
-                        "${multiValueArgs}" ${ARGN} )
-                        
-    # Make all headers paths absolute
-    set(temp_list "")
-    foreach(header ${arg_HEADERS})
-        list(APPEND temp_list ${CMAKE_CURRENT_LIST_DIR}/${header})
-    endforeach()
-    set(arg_HEADERS ${temp_list})
-
-    add_custom_target(blt_copy_headers_${arg_NAME}
-        COMMAND ${CMAKE_COMMAND}
-                 -DOUTPUT_DIRECTORY=${arg_DESTINATION}
-                 -DLIBHEADERS="${arg_HEADERS}"
-                 -P ${BLT_ROOT_DIR}/cmake/copy_headers.cmake
-
-        DEPENDS
-            ${arg_HEADERS}
-
-        WORKING_DIRECTORY
-            ${PROJECT_SOURCE_DIR}
-
-        COMMENT
-            "copy headers ${arg_NAME}"
-        )
-
-endmacro(blt_copy_headers_target)
-
-
 ##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()
 ##
-## Checks if target already exists in CMake project and errors out with given 
+## Checks if target already exists in CMake project and errors out with given
 ## error_msg.
 ##-----------------------------------------------------------------------------
 function(blt_error_if_target_exists target_name error_msg)
@@ -125,9 +77,9 @@ macro(blt_find_executable)
     set(multiValueArgs  EXECUTABLES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
-                        
+
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_find_executable' macro" )
@@ -163,26 +115,23 @@ endmacro(blt_find_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
+## blt_setup_target( NAME       [name] 
+##                   DEPENDS_ON [dep1 ...] 
+##                   OBJECT     [TRUE | FALSE])
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
 
     set(options)
-    set(singleValueArgs NAME)
+    set(singleValueArgs NAME OBJECT)
     set(multiValueArgs DEPENDS_ON)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
-                        
+
     # Check arguments
     if ( NOT DEFINED arg_NAME )
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
-    endif()
-
-    # Add it's own copy headers target
-    if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${arg_NAME}")
-        add_dependencies( ${arg_NAME} "blt_copy_headers_${arg_NAME}")
     endif()
 
     # Expand dependency list
@@ -205,6 +154,10 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
+        if ( NOT arg_OBJECT AND BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+            target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
+        endif()
+
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
             if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
                 target_include_directories( ${arg_NAME} SYSTEM PUBLIC
@@ -220,17 +173,19 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
-            # This prevents cmake from adding -l<library name> to the
-            # command line for BLT registered libraries which are not
-            # actual CMake targets
-            if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
-                    STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_LIBRARIES} )
+        if ( NOT arg_OBJECT )
+            if (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+                # This prevents cmake from adding -l<library name> to the
+                # command line for BLT registered libraries which are not
+                # actual CMake targets
+                if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
+                        STREQUAL "BLT_NO_LIBRARIES" )
+                    target_link_libraries( ${arg_NAME} PUBLIC
+                        ${BLT_${uppercase_dependency}_LIBRARIES} )
+                endif()
+            else()
+                target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
             endif()
-        else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
@@ -239,17 +194,13 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
-            blt_add_target_compile_flags(TO ${arg_NAME} 
+            blt_add_target_compile_flags(TO ${arg_NAME}
                                          FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT arg_OBJECT AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
-        endif()
-
-        if (ENABLE_COPY_HEADERS AND TARGET "blt_copy_headers_${dependency}")
-            add_dependencies( ${arg_NAME} "blt_copy_headers_${dependency}")
         endif()
 
     endforeach()
@@ -257,44 +208,79 @@ macro(blt_setup_target)
 endmacro(blt_setup_target)
 
 ##------------------------------------------------------------------------------
-## blt_setup_cuda_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
+## blt_setup_cuda_target(NAME <name of target>
+##                       SOURCES <list of sources>
+##                       DEPENDS_ON <list of dependencies>
+##                       LIBRARY_TYPE <STATIC, SHARED, OBJECT, or blank for executables>)
 ##------------------------------------------------------------------------------
-macro(blt_setup_cuda_source_properties)
+macro(blt_setup_cuda_target)
 
     set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs TARGET_SOURCES)
+    set(singleValueArgs NAME LIBRARY_TYPE)
+    set(multiValueArgs SOURCES DEPENDS_ON)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_cuda_source_properties' macro")
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_cuda_target' macro")
     endif()
 
-    if ( NOT DEFINED arg_TARGET_SOURCES )
-        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_cuda_source_properties' macro")
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_cuda_target' macro")
     endif()
 
-    set(_cuda_sources)
-    set(_non_cuda_sources)
-    blt_split_source_list_by_language(SOURCES      ${arg_TARGET_SOURCES}
-                                      C_LIST       _cuda_sources
-                                      Fortran_LIST _non_cuda_sources)
+    # Determine if cuda or cuda_runtime are in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "cuda" _cuda_index)
+    set(_depends_on_cuda FALSE)
+    if(${_cuda_index} GREATER -1)
+        set(_depends_on_cuda TRUE)
+    endif()
+    list(FIND arg_DEPENDS_ON "cuda_runtime" _cuda_runtime_index)
+    set(_depends_on_cuda_runtime FALSE)
+    if(${_cuda_runtime_index} GREATER -1)
+        set(_depends_on_cuda_runtime TRUE)
+    endif()
 
-    set_source_files_properties( ${_cuda_sources}
-                                 PROPERTIES
-                                 LANGUAGE CUDA)
+    if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
+        if (CUDA_LINK_WITH_NVCC) 
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+        endif()
+    endif()
 
-    #
-    # for debugging, or if we add verbose BLT output
-    #
-    ##message(STATUS "target '${arg_BUILD_TARGET}' CUDA Sources: ${_cuda_sources}")
-    ##message(STATUS "target '${arg_BUILD_TARGET}' non-CUDA Sources: ${_non_cuda_sources}")
+    if (${_depends_on_cuda})
+        # if cuda is in depends_on, flag each file's language as CUDA
+        # instead of leaving it up to CMake to decide
+        # Note: we don't do this when depending on just 'cuda_runtime'
+        set(_cuda_sources)
+        set(_non_cuda_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _cuda_sources
+                                          Fortran_LIST _non_cuda_sources)
 
-endmacro(blt_setup_cuda_source_properties)
+        set_source_files_properties( ${_cuda_sources} PROPERTIES
+                                     LANGUAGE CUDA)
+
+        if (CUDA_SEPARABLE_COMPILATION)
+            set_source_files_properties( ${_cuda_sources} PROPERTIES
+                                         CUDA_SEPARABLE_COMPILATION ON)
+            set_target_properties( ${arg_NAME} PROPERTIES
+                                   CUDA_SEPARABLE_COMPILATION ON)
+        endif()
+
+        if (DEFINED arg_LIBRARY_TYPE)
+            if (${arg_LIBRARY_TYPE} STREQUAL "static")
+                set_target_properties( ${arg_NAME} PROPERTIES
+                                       CMAKE_CUDA_CREATE_STATIC_LIBRARY ON)
+            else()
+                set_target_properties( ${arg_NAME} PROPERTIES
+                                       CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
+            endif()
+        endif()
+    endif()
+endmacro(blt_setup_cuda_target)
 
 
 ##------------------------------------------------------------------------------
@@ -309,7 +295,7 @@ macro(blt_split_source_list_by_language)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -320,12 +306,13 @@ macro(blt_split_source_list_by_language)
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
         get_filename_component(_ext ${_file} EXT)
+        string(TOLOWER ${_ext} _ext_lower)
 
-        if(${_ext} IN_LIST BLT_C_FILE_EXTS)
+        if(${_ext_lower} IN_LIST BLT_C_FILE_EXTS)
             if (DEFINED arg_C_LIST)
                 list(APPEND ${arg_C_LIST} ${_file})
             endif()
-        elseif(${_ext} IN_LIST BLT_Fortran_FILE_EXTS)
+        elseif(${_ext_lower} IN_LIST BLT_Fortran_FILE_EXTS)
             if (DEFINED arg_Fortran_LIST)
                 list(APPEND ${arg_Fortran_LIST} ${_file})
             endif()
@@ -347,7 +334,7 @@ macro(blt_update_project_sources)
     set(multiValueArgs TARGET_SOURCES)
 
     # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -370,3 +357,71 @@ macro(blt_update_project_sources)
     mark_as_advanced("${PROJECT_NAME}_ALL_SOURCES")
 
 endmacro(blt_update_project_sources)
+
+##------------------------------------------------------------------------------
+## blt_filter_list( TO <list_var> REGEX <string> OPERATION <string> )
+##
+## This macro provides the same functionality as cmake's list(FILTER )
+## which is only available in cmake-3.6+.
+##
+## The TO argument (required) is the name of a list variable.
+## The REGEX argument (required) is a string containing a regex.
+## The OPERATION argument (required) is a string that defines the macro's operation.
+## Supported values are "include" and "exclude"
+##
+## The filter is applied to the input list, which is modified in place.
+##------------------------------------------------------------------------------
+macro(blt_filter_list)
+
+    set(options )
+    set(singleValueArgs TO REGEX OPERATION)
+    set(multiValueArgs )
+
+    # Parse arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if( NOT DEFINED arg_TO )
+        message(FATAL_ERROR "blt_filter_list macro requires a TO <list> argument")
+    endif()
+
+    if( NOT DEFINED arg_REGEX )
+        message(FATAL_ERROR "blt_filter_list macro requires a REGEX <string> argument")
+    endif()
+
+    # Ensure OPERATION argument is provided with value "include" or "exclude"
+    set(_exclude)
+    if( NOT DEFINED arg_OPERATION )
+        message(FATAL_ERROR "blt_filter_list macro requires a OPERATION <string> argument")
+    elseif(NOT arg_OPERATION MATCHES "^(include|exclude)$")
+        message(FATAL_ERROR "blt_filter_list macro's OPERATION argument must be either 'include' or 'exclude'")
+    else()
+        if(${arg_OPERATION} MATCHES "exclude")
+            set(_exclude TRUE)
+        else()
+            set(_exclude FALSE)
+        endif()
+    endif()
+
+    # Filter the list
+    set(_resultList)
+    foreach(elem ${${arg_TO}})
+        if(elem MATCHES ${arg_REGEX})
+            if(NOT ${_exclude})
+                list(APPEND _resultList ${elem})
+            endif()
+        else()
+            if(${_exclude})
+                list(APPEND _resultList ${elem})
+            endif()
+        endif()
+    endforeach()
+
+    # Copy result back to input list variable
+    set(${arg_TO} ${_resultList})
+
+    unset(_exclude)
+    unset(_resultList)
+endmacro(blt_filter_list)
+

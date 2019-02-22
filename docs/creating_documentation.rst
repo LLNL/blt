@@ -59,7 +59,7 @@ CMake variables ``SPHINX_EXECUTABLE`` and ``DOXYGEN_EXECUTABLE`` .
 
 Here is an example of setting ``sphinx-build`` and ``doxygen`` paths in a host-config file:
 
-.. code:: cmake
+.. code-block:: cmake
    
    set(SPHINX_EXECUTABLE "/usr/bin/sphinx-build" CACHE PATH "")
 
@@ -143,7 +143,7 @@ Building the Calc Pi Example Documentation
 
 Here is an example of building both the calc_pi Sphinx and Doxygen docs using the ``docs`` CMake target:
 
-.. code:: console
+.. code-block:: console
 
    cd build-calc-pi
    make docs
