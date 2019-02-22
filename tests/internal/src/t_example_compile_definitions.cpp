@@ -1,17 +1,8 @@
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Copyright (c) 2018, Lawrence Livermore National Security, LLC.
-//
-// Produced at the Lawrence Livermore National Laboratory
-//
-// LLNL-CODE-725085
-//
-// All rights reserved.
-//
-// This file is part of BLT.
-//
-// For additional details, please also read BLT/LICENSE.
-//
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+// Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+// other BLT Project Developers. See the top-level COPYRIGHT file for details
+// 
+// SPDX-License-Identifier: (BSD-3-Clause)
+
 #include "gtest/gtest.h"
 
 //------------------------------------------------------------------------------
