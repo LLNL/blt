@@ -1209,3 +1209,68 @@ macro(blt_print_target_properties)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties)
 
+
+##------------------------------------------------------------------------------
+## blt_setup_library( NAME     <name>
+##                    PATH     <path to installed TPL>
+##                    VERSION  <version>
+##                    REQUIRED [TRUE (default) | FALSE ])
+##
+## This macro is used to find and setup the named third-party library using
+## BLT's setup modules located in:
+##       <BLT Root>/setup_tpl_modules/<lowercase NAME>.cmake.
+## 
+## PATH in which to search for named TPL. No system paths will be searched.
+##
+## VERSION is not always required but if differences in versions of a library then it will
+## be handled inside of the setup module.
+##
+## If REQUIRED is set to TRUE, BLT will produce an error message if the TPL is not
+## found. The default value is TRUE.
+##
+## Required output from all setup modules:
+##
+## <UPPERCASE NAME>_FOUND
+## <lowercase name> (BLT registered target)
+##------------------------------------------------------------------------------
+macro(blt_setup_library)
+
+    set(options )
+    set(singleValueArgs NAME PATH VERSION REQUIRED )
+    set(multiValueArgs )
+
+    # parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # check for required arguments
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "NAME is a required parameter for the blt_setup_library macro")
+    endif()
+
+    if(NOT DEFINED arg_PATH)
+        message(FATAL_ERROR "PATH is a required parameter for the blt_setup_library macro")
+    endif()
+
+    # Uppercase and lowercase the name to be used later
+    string(TOUPPER ${arg_NAME} _uppercase_name)
+    string(TOLOWER ${arg_NAME} _lowercase_name)
+
+    # Check that we have a setup tpl module
+    set(_setup_module_dir "${BLT_ROOT_DIR}/setup_tpl_modules")
+    set(_setup_module     "${_setup_module_dir}/${_lowercase_name}.cmake")
+    if(EXISTS ${_setup_module})
+        include(${_setup_module})
+        if(${arg_REQUIRED} AND NOT ${_uppercase_name}_FOUND)
+            message(FATAL_ERROR "Required Third-party Library could not be found.\n"
+                                "NAME: ${arg_NAME}\n"
+                                "PATH: ${arg_PATH}\n"
+                                "FILE: ${_setup_module}\n")
+        endif()
+    else()
+        message(FATAL_ERROR "Could not find BLT Setup TPL Module file.\n"
+                            "NAME: ${arg_NAME}\n"
+                            "FILE: ${_setup_module}\n")
+    endif()
+
+endmacro(blt_setup_library)
