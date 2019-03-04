@@ -26,6 +26,10 @@ if(ENABLE_TESTS)
         list(APPEND gtest_defines "-DGTEST_HAS_DEATH_TEST=0")
     endif()
 
+    if(gtest_disable_pthreads)
+      list(APPEND gtest_defines "-DGTEST_HAS_PTHREAD=0")
+    endif()
+
     #
     # Use BLT's ENABLE_GMOCK option to set the build options for 
     # gtest's cmake project
