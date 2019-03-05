@@ -220,7 +220,7 @@ macro(blt_add_target_link_flags)
         # append new flag
         set(_LINK_FLAGS "${arg_FLAGS} ${_LINK_FLAGS}")
         set_target_properties(${arg_TO}
-                              PROPERTIES LINK_FLAGS "${_LINK_FLAGS}" )
+                              PROPERTIES LINK_FLAGS ${_LINK_FLAGS} )
     endif()
 
 endmacro(blt_add_target_link_flags)
