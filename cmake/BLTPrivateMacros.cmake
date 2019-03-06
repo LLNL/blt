@@ -131,6 +131,14 @@ macro(blt_setup_target)
             endif()
         endif()
 
+        if ( arg_OBJECT AND TARGET ${dependency})
+            # Object libraries can't call target_link_libraries
+            # which would normally inherit this property
+            get_target_property(_interface_includes
+                                ${dependency} INTERFACE_INCLUDE_DIRECTORIES)
+            target_include_directories( ${arg_NAME} PUBLIC ${_interface_includes})
+        endif()
+
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
             target_include_directories( ${arg_NAME} PUBLIC
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )

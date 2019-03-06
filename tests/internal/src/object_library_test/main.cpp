@@ -10,7 +10,7 @@
 int main()
 {
     int number = object_number();
-    if(number == 3) {
+    if(number == 6) {
         std::cout << number
                   << " was correctly returned from object and base library."
                   << std::endl;
@@ -20,7 +20,7 @@ int main()
               << number
               << " was returned from object and base library."
               << std::endl
-              << "3 was the correct number."
+              << "6 was the correct number."
               << std::endl;
     return 1;
 }

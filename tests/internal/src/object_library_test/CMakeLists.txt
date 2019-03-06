@@ -9,10 +9,13 @@
 #
 ###############################################################################
 
-blt_add_library( NAME    base_object
-                 SOURCES base_object.cpp
-                 HEADERS base_object.hpp
-                 OBJECT  TRUE)
+add_subdirectory(inherited_base)
+
+blt_add_library( NAME       base_object
+                 SOURCES    base_object.cpp
+                 HEADERS    base_object.hpp
+                 DEPENDS_ON inherited_base
+                 OBJECT     TRUE)
 
 blt_add_library( NAME       object
                  SOURCES    object.cpp

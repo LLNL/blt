@@ -1,0 +1,9 @@
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# 
+# SPDX-License-Identifier: (BSD-3-Clause)
+
+blt_add_library( NAME    inherited_base
+                 SOURCES inherited_base.cpp
+                 HEADERS inherited_base.hpp)
+target_include_directories(inherited_base PUBLIC ${CMAKE_CURRENT_LIST_DIR})
