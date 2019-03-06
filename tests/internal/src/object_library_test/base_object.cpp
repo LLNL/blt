@@ -8,5 +8,10 @@
 
 int base_number()
 {
+#ifdef INHERITED_FLAG
     return inherited_number() + 2;
+#else
+    // should not get here
+    return 0;
+#endif
 }
