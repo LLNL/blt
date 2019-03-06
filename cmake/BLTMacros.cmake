@@ -221,7 +221,7 @@ macro(blt_add_target_link_flags)
         endif()
         # append new flag
         set(_LINK_FLAGS "${arg_FLAGS} ${_LINK_FLAGS}")
-        # LINK_FLAGS property _must_ be a string
+        # Convert _LINK_FLAGS from a CMake ;-list to a string
         string (REPLACE ";" " " _LINK_FLAGS_STR "${_LINK_FLAGS}")
         set_target_properties(${arg_TO}
                               PROPERTIES LINK_FLAGS "${_LINK_FLAGS_STR}")
