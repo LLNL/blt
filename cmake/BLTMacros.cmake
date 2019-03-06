@@ -200,6 +200,8 @@ endmacro(blt_set_target_folder)
 ## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
+##
+## The flags argument contains a list of linker flags to add to the target.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_link_flags)
 
@@ -219,8 +221,10 @@ macro(blt_add_target_link_flags)
         endif()
         # append new flag
         set(_LINK_FLAGS "${arg_FLAGS} ${_LINK_FLAGS}")
+        # LINK_FLAGS property _must_ be a string
+        string (REPLACE ";" " " _LINK_FLAGS_STR "${_LINK_FLAGS}")
         set_target_properties(${arg_TO}
-                              PROPERTIES LINK_FLAGS ${_LINK_FLAGS} )
+                              PROPERTIES LINK_FLAGS "${_LINK_FLAGS_STR}")
     endif()
 
 endmacro(blt_add_target_link_flags)
