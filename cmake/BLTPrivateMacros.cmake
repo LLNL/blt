@@ -97,7 +97,8 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
-    # CMake fixed object transitivity in CMake 3.12
+    # Work around for CMake not supporting object libraries in target_link_libraries 
+    # until CMake 3.12
     set(_old_object_library_support TRUE)
     if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0" )
         set(_old_object_library_support FALSE)
@@ -138,7 +139,7 @@ macro(blt_setup_target)
         endif()
 
         if ( _old_object_library_support AND arg_OBJECT AND TARGET ${dependency})
-            # In CMake versions less than 3.12 object libraries can't call
+            # In CMake versions less than 3.12, object libraries can't call
             # target_link_libraries which would normally inherit these properties
             get_target_property(_interface_includes
                                 ${dependency} INTERFACE_INCLUDE_DIRECTORIES)
