@@ -1,44 +1,7 @@
-.. ###############################################################################
-.. # Copyright (c) 2017, Lawrence Livermore National Security, LLC.
-.. #
-.. # Produced at the Lawrence Livermore National Laboratory
-.. #
-.. # LLNL-CODE-725085
-.. #
-.. # All rights reserved.
-.. #
-.. # This file is part of BLT.
-.. #
-.. # For additional details, please also read BLT/LICENSE.
-.. #
-.. # Redistribution and use in source and binary forms, with or without
-.. # modification, are permitted provided that the following conditions are met:
-.. #
-.. # * Redistributions of source code must retain the above copyright notice,
-.. #   this list of conditions and the disclaimer below.
-.. #
-.. # * Redistributions in binary form must reproduce the above copyright notice,
-.. #   this list of conditions and the disclaimer (as noted below) in the
-.. #   documentation and/or other materials provided with the distribution.
-.. #
-.. # * Neither the name of the LLNS/LLNL nor the names of its contributors may
-.. #   be used to endorse or promote products derived from this software without
-.. #   specific prior written permission.
-.. #
-.. # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-.. # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-.. # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-.. # ARE DISCLAIMED. IN NO EVENT SHALL LAWRENCE LIVERMORE NATIONAL SECURITY,
-.. # LLC, THE U.S. DEPARTMENT OF ENERGY OR CONTRIBUTORS BE LIABLE FOR ANY
-.. # DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-.. # DAMAGES  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-.. # OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-.. # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-.. # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-.. # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-.. # POSSIBILITY OF SUCH DAMAGE.
-.. #
-.. ###############################################################################
+.. # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+.. # other BLT Project Developers. See the top-level COPYRIGHT file for details
+.. # 
+.. # SPDX-License-Identifier: (BSD-3-Clause)
 
 .. _UnitTesting:
 
@@ -54,6 +17,26 @@ Each gtest or FRUIT file may contain multiple tests and is compiled into its own
 that can be run directly or as a ``make`` target. 
 
 In this section, we give a brief overview of GTest and discuss how to add unit tests using the ``blt_add_test`` macro.
+
+
+Configuring tests within BLT
+----------------------------
+
+Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on by default. 
+
+For additional configuration granularity, BLT provides configuration options 
+for the individual built-in unit testing libraries.  The following additional options are available
+when ``ENABLE_TESTS`` is on:
+
+``ENABLE_GTEST``
+  Option to enable gtest (default: ``ON``).
+``ENABLE_GMOCK``
+  Option to control gmock (default: ``OFF``).
+  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
+  regardless of the value of ``ENABLE_GTEST``. 
+``ENABLE_FRUIT``
+  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
+
 
 Google Test (C++/C Tests)
 --------------------------
@@ -256,25 +239,4 @@ are working, for example.
       Run tests in parallel, E.g. ``-j 16`` will run tests using 16 processors
     -VV
       (Very verbose) Dump test output to stdout
-
-
-Configuring tests within BLT
-----------------------------
-
-Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on by default. 
-
-For additional configuration granularity, BLT provides configuration options 
-for the individual built-in unit testing libraries.  The following additional options are available
-when ``ENABLE_TESTS`` is on:
-
-``ENABLE_GTEST``
-  Option to enable gtest (default: ``ON``).
-``ENABLE_GMOCK``
-  Option to control gmock (default: ``OFF``).
-  Since gmock requires gtest, gtest is also enabled whenever ``ENABLE_GMOCK`` is true, 
-  regardless of the value of ``ENABLE_GTEST``. 
-``ENABLE_FRUIT``
-  Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
-
-
 

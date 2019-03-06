@@ -1,44 +1,7 @@
-###############################################################################
-# Copyright (c) 2017, Lawrence Livermore National Security, LLC.
-#
-# Produced at the Lawrence Livermore National Laboratory
-#
-# LLNL-CODE-725085
-#
-# All rights reserved.
-#
-# This file is part of BLT.
-#
-# For additional details, please also read BLT/LICENSE.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# * Redistributions of source code must retain the above copyright notice,
-#   this list of conditions and the disclaimer below.
-#
-# * Redistributions in binary form must reproduce the above copyright notice,
-#   this list of conditions and the disclaimer (as noted below) in the
-#   documentation and/or other materials provided with the distribution.
-#
-# * Neither the name of the LLNS/LLNL nor the names of its contributors may
-#   be used to endorse or promote products derived from this software without
-#   specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL LAWRENCE LIVERMORE NATIONAL SECURITY,
-# LLC, THE U.S. DEPARTMENT OF ENERGY OR CONTRIBUTORS BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-###############################################################################
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# 
+# SPDX-License-Identifier: (BSD-3-Clause)
 ###############################################################################
 # Copyright (c) 2018,2019 Advanced Micro Devices, Inc.
 ###############################################################################
@@ -118,12 +81,14 @@ endmacro(blt_find_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_setup_target( NAME [name] DEPENDS_ON [dep1 ...] )
+## blt_setup_target( NAME       [name] 
+##                   DEPENDS_ON [dep1 ...] 
+##                   OBJECT     [TRUE | FALSE])
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
 
     set(options)
-    set(singleValueArgs NAME)
+    set(singleValueArgs NAME OBJECT)
     set(multiValueArgs DEPENDS_ON)
 
     # Parse the arguments
@@ -155,6 +120,10 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
+        if ( NOT arg_OBJECT AND BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+            target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
+        endif()
+
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
             if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
                 target_include_directories( ${arg_NAME} SYSTEM PUBLIC
@@ -170,17 +139,19 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_LIBRARIES)
-            # This prevents cmake from adding -l<library name> to the
-            # command line for BLT registered libraries which are not
-            # actual CMake targets
-            if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
-                    STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_LIBRARIES} )
+        if ( NOT arg_OBJECT )
+            if (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+                # This prevents cmake from adding -l<library name> to the
+                # command line for BLT registered libraries which are not
+                # actual CMake targets
+                if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
+                        STREQUAL "BLT_NO_LIBRARIES" )
+                    target_link_libraries( ${arg_NAME} PUBLIC
+                        ${BLT_${uppercase_dependency}_LIBRARIES} )
+                endif()
+            else()
+                target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
             endif()
-        else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
@@ -193,7 +164,7 @@ macro(blt_setup_target)
                                          FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT arg_OBJECT AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
@@ -206,7 +177,7 @@ endmacro(blt_setup_target)
 ## blt_setup_cuda_target(NAME <name of target>
 ##                       SOURCES <list of sources>
 ##                       DEPENDS_ON <list of dependencies>
-##                       LIBRARY_TYPE <static or shared, blank for executables>)
+##                       LIBRARY_TYPE <STATIC, SHARED, OBJECT, or blank for executables>)
 ##------------------------------------------------------------------------------
 macro(blt_setup_cuda_target)
 
@@ -240,7 +211,7 @@ macro(blt_setup_cuda_target)
     endif()
 
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
-        if (CUDA_LINK_WITH_NVCC)
+        if (CUDA_LINK_WITH_NVCC) 
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
         endif()
     endif()
@@ -269,7 +240,7 @@ macro(blt_setup_cuda_target)
             if (${arg_LIBRARY_TYPE} STREQUAL "static")
                 set_target_properties( ${arg_NAME} PROPERTIES
                                        CMAKE_CUDA_CREATE_STATIC_LIBRARY ON)
-            else(${arg_LIBRARY_TYPE} STREQUAL "shared")
+            else()
                 set_target_properties( ${arg_NAME} PROPERTIES
                                        CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
             endif()
@@ -419,7 +390,7 @@ macro(blt_filter_list)
     set(multiValueArgs )
 
     # Parse arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments

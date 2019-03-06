@@ -3,15 +3,10 @@
 // 
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#ifndef BLT_HEADER_ONLY_HPP
-#define BLT_HEADER_ONLY_HPP
+#include "base_object.hpp"
+#include "object.hpp"
 
-namespace blt {
-
-inline bool ReturnTrue() {
-    return true;
+int object_number()
+{
+    return 1 + base_number();
 }
-
-} // end of namespace blt
-
-#endif

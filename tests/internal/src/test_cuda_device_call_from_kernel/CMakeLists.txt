@@ -1,3 +1,8 @@
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# 
+# SPDX-License-Identifier: (BSD-3-Clause)
+
 #####################################
 # Test CUDA virtual device method call from kernels across library boundary
 # CUDA needs to be enabled, with appropriate Flags set up for building and running

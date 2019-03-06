@@ -1,14 +1,7 @@
-##
-## Copyright (c) 2016, Lawrence Livermore National Security, LLC.
-##
-## Produced at the Lawrence Livermore National Laboratory.
-##
-## LLNL-CODE-689114
-##
-## All rights reserved.
-##
-## For release details and restrictions, please see RAJA/LICENSE.
-##
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# 
+# SPDX-License-Identifier: (BSD-3-Clause)
 
 # The CMake command line to use this host config file must have certain
 # defines enabled.  Here is an example script for an out-of-place build of the
