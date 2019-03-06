@@ -372,9 +372,9 @@ endmacro(blt_register_library)
 ## of compiled source files that are not archived or linked. Unlike regular CMake
 ## object libraries you do not have to use the $<TARGET_OBJECTS:<libname>> syntax,
 ## you can just use <libname>.
-##    Note: Object libraries do not follow CMake's transitivity rules until 3.13.
-##          BLT will add the various information provided in this macro in the order
-##          you provide them to help.
+##    Note: Object libraries do not follow CMake's transitivity rules until 3.12.
+##          BLT will add the various information provided in this macro and its
+##          dependencies in the order you provide them to help.
 ##
 ## The INCLUDES argument allows you to define what include directories are
 ## needed by any target that is dependent on this library.  These will
