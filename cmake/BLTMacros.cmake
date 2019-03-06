@@ -201,7 +201,9 @@ endmacro(blt_set_target_folder)
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
 ##
-## The flags argument contains a list of linker flags to add to the target.
+## The flags argument contains a ;-list of linker flags to add to the target.
+## This list is converted to a string internally and any ; characters will be
+## removed.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_link_flags)
 
