@@ -97,6 +97,12 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
+    # CMake fix object transitivity
+    set(_old_object_library_support TRUE)
+    if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0" )
+        set(_old_object_library_support FALSE)
+    endif()
+
     # Expand dependency list
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
     foreach( i RANGE 50 )
@@ -131,12 +137,27 @@ macro(blt_setup_target)
             endif()
         endif()
 
-        if ( arg_OBJECT AND TARGET ${dependency})
+        if ( _old_object_library_support AND arg_OBJECT AND TARGET ${dependency})
             # Object libraries can't call target_link_libraries
-            # which would normally inherit this property
+            # which would normally inherit these properties
             get_target_property(_interface_includes
                                 ${dependency} INTERFACE_INCLUDE_DIRECTORIES)
-            target_include_directories( ${arg_NAME} PUBLIC ${_interface_includes})
+            if ( _interface_includes )
+                target_include_directories( ${arg_NAME} PUBLIC ${_interface_includes})
+            endif()
+
+            get_target_property(_interface_system_includes
+                                ${dependency} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+            if ( _interface_system_includes )
+                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                                            ${_interface_system_includes})
+            endif()
+
+            get_target_property(_interface_defines
+                                ${dependency} INTERFACE_COMPILE_DEFINITIONS)
+            if ( _interface_defines )
+                target_compile_definitions( ${arg_NAME} PUBLIC ${_interface_defines})
+            endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
@@ -144,7 +165,7 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( NOT arg_OBJECT )
+        if ( NOT arg_OBJECT OR NOT _old_object_library_support)
             if (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
                 # This prevents cmake from adding -l<library name> to the
                 # command line for BLT registered libraries which are not
