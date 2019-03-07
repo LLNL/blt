@@ -35,7 +35,7 @@ macro(blt_add_doxygen_target doxygen_target_name)
     add_custom_target(${doxygen_target_name}
                      ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                     COMMENT "Generating API documentation with Doxygen" VERBATIM)
+                     COMMENT "Generating API documentation with Doxygen for ${doxygen_target_name} target" VERBATIM)
 
     add_dependencies(doxygen_docs ${doxygen_target_name})
 
