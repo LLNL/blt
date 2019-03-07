@@ -87,7 +87,7 @@ macro(blt_add_sphinx_target sphinx_target_name )
                           -d "${SPHINX_CACHE_DIR}"
                           "${CMAKE_CURRENT_SOURCE_DIR}"
                           "${SPHINX_HTML_DIR}"
-                          COMMENT "Building HTML documentation with Sphinx"
+                          COMMENT "Building HTML documentation with Sphinx for ${sphinx_target_name} target"
                           DEPENDS ${deps})
     elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in")
         
@@ -103,7 +103,7 @@ macro(blt_add_sphinx_target sphinx_target_name )
                           -d "${SPHINX_CACHE_DIR}"
                           "${CMAKE_CURRENT_SOURCE_DIR}"
                           "${SPHINX_HTML_DIR}"
-                          COMMENT "Building HTML documentation with Sphinx"
+                          COMMENT "Building HTML documentation with Sphinx for ${sphinx_target_name} target"
                           DEPENDS ${deps})
     else()
         message(FATAL_ERROR "Failed to find sphinx 'conf.py' or 'conf.py.in' in ${CMAKE_CURRENT_SOURCE_DIR}")
