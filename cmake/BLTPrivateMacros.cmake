@@ -170,7 +170,7 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if (BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY)
+        if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             # This makes sure we don't fall into the last case for old
             # object library support
             if (NOT _old_object_library_support)
