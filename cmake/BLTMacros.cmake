@@ -2,9 +2,6 @@
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
-###############################################################################
-# Copyright (c) 2018,2019 Advanced Micro Devices, Inc.
-###############################################################
 
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
@@ -455,26 +452,22 @@ macro(blt_add_library)
             set(_lib_type "STATIC")
         endif()
 
-	list(FIND arg_DEPENDS_ON "hip" check_for_hip)
-        if ( ${check_for_hip} GREATER -1)
-            blt_setup_hip_source_properties(BUILD_TARGET ${arg_NAME}
-                                            TARGET_SOURCES ${arg_SOURCES})
-            hip_add_library( ${arg_NAME} ${arg_SOURCES} ${_lib_type} )
-            if (${_lib_type} EQUAL "STATIC")
-                set_target_properties( ${arg_NAME} PROPERTIES CMAKE_HIP_CREATE_STATIC_LIBRARY ON)
-            else()
-                set_target_properties( ${arg_NAME} PROPERTIES CMAKE_HIP_CREATE_STATIC_LIBRARY OFF)
-            endif()
-	else()
-	    add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
-	endif()
+        if (ENABLE_HIP)
+            blt_add_hip_library(NAME         ${arg_NAME}
+                                SOURCES      ${arg_SOURCES}
+                                HEADERS      ${arg_HEADERS}
+                                DEPENDS_ON   ${arg_DEPENDS_ON}
+                                LIBRARY_TYPE ${_lib_type} )
+        else()
+            add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
 
-        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-            blt_setup_cuda_target(
-                NAME         ${arg_NAME}
-                SOURCES      ${arg_SOURCES}
-                DEPENDS_ON   ${arg_DEPENDS_ON}
-                LIBRARY_TYPE ${_lib_type})
+            if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+                blt_setup_cuda_target(
+                    NAME         ${arg_NAME}
+                    SOURCES      ${arg_SOURCES}
+                    DEPENDS_ON   ${arg_DEPENDS_ON}
+                    LIBRARY_TYPE ${_lib_type})
+            endif()
         endif()
     else()
         #
@@ -601,26 +594,19 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    list(FIND arg_DEPENDS_ON "hip" check_for_hip)
-    if ( ${check_for_hip} GREATER -1)
-        blt_setup_hip_source_properties(BUILD_TARGET ${arg_NAME}
-                                         TARGET_SOURCES ${arg_SOURCES})
-        hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
-
-    if (HIP_SEPARABLE_COMPILATION)
-           set_target_properties( ${arg_NAME} PROPERTIES
-                                              HIP_SEPARABLE_COMPILATION ON)
-        endif()
+    if (ENABLE_HIP)
+        blt_add_hip_executable(NAME         ${arg_NAME}
+                               SOURCES      ${arg_SOURCES}
+                               DEPENDS_ON   ${arg_DEPENDS_ON})
     else()
         add_executable( ${arg_NAME} ${arg_SOURCES} )
-    endif()
 
-
-    if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-        blt_setup_cuda_target(
-            NAME         ${arg_NAME}
-            SOURCES      ${arg_SOURCES}
-            DEPENDS_ON   ${arg_DEPENDS_ON})
+        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+            blt_setup_cuda_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON})
+        endif()
     endif()
     
     # CMake wants to load with C++ if any of the libraries are C++.

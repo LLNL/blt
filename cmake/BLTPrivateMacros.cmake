@@ -2,9 +2,6 @@
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
-###############################################################################
-# Copyright (c) 2018,2019 Advanced Micro Devices, Inc.
-###############################################################################
 
 include(CMakeParseArguments)
 
@@ -248,52 +245,121 @@ macro(blt_setup_cuda_target)
     endif()
 endmacro(blt_setup_cuda_target)
 
-#------------------------------------------------------------------------------
-## blt_setup_hip_source_properties(BUILD_TARGET TARGET_SOURCES <sources>)
 ##------------------------------------------------------------------------------
-macro(blt_setup_hip_source_properties)
+## blt_add_hip_library(NAME         <libname>
+##                     SOURCES      [source1 [source2 ...]]
+##                     HEADERS      [header1 [header2 ...]]
+##                     DEPENDS_ON   [dep1 ...]
+##                     LIBRARY_TYPE <STATIC, SHARED, OBJECT, or blank for executables>
+##------------------------------------------------------------------------------
+macro(blt_add_hip_library)
 
     set(options)
-    set(singleValueArgs BUILD_TARGET)
-    set(multiValueArgs TARGET_SOURCES)
+    set(singleValueArgs NAME LIBRARY_TYPE)
+    set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
-    if ( NOT DEFINED arg_BUILD_TARGET )
-        message( FATAL_ERROR "Must provide a BUILD_TARGET argument to the 'blt_setup_hip_source_properties' macro")
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_add_hip_library' macro")
     endif()
 
-
-    if ( NOT DEFINED arg_TARGET_SOURCES )
-        message( FATAL_ERROR "Must provide TARGET_SOURCES to the 'blt_setup_hip_source_properties' macro")
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_add_hip_library' macro")
     endif()
 
-    set(_hip_sources)
-    set(_non_hip_sources)
-    blt_split_source_list_by_language(SOURCES      ${arg_TARGET_SOURCES}
-                                      C_LIST       _hip_sources
-                                      Fortran_LIST _non_hip_sources)
+    # Determine if hip or hip_runtime are in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "hip" _hip_index)
+    set(_depends_on_hip FALSE)
+    if(${_hip_index} GREATER -1)
+        set(_depends_on_hip TRUE)
+    endif()
+    list(FIND arg_DEPENDS_ON "hip_runtime" _hip_runtime_index)
+    set(_depends_on_hip_runtime FALSE)
+    if(${_hip_runtime_index} GREATER -1)
+        set(_depends_on_hip_runtime TRUE)
+    endif()
 
-    set_source_files_properties( ${_hip_sources}
-                                 PROPERTIES
-                                 HIP_SOURCE_PROPERTY_FORMAT TRUE)
+    if (${_depends_on_hip})
+        # if hip is in depends_on, flag each file's language as HIP
+        # instead of leaving it up to CMake to decide
+        # Note: we don't do this when depending on just 'hip_runtime'
+        set(_hip_sources)
+        set(_non_hip_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _hip_sources
+                                          Fortran_LIST _non_hip_sources)
 
-    if (HIP_SEPARABLE_COMPILATION)
         set_source_files_properties( ${_hip_sources}
                                      PROPERTIES
-                                     HIP_SEPARABLE_COMPILATION ON)
+                                     HIP_SOURCE_PROPERTY_FORMAT TRUE)
+
+        hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
+    else()
+        add_library( ${arg_NAME} ${arg_LIBRARY_TYPE} ${arg_SOURCES} ${arg_HEADERS} )
     endif()
 
-    #
-    # for debugging, or if we add verbose BLT output
-    #
-    ##message(STATUS "target '${arg_BUILD_TARGET}' HIP Sources: ${_hip_sources}")
-    ##message(STATUS "target '${arg_BUILD_TARGET}' non-HIP Sources: ${_non_hip_sources}")
+endmacro(blt_add_hip_library)
 
-endmacro(blt_setup_hip_source_properties)
+##------------------------------------------------------------------------------
+## blt_add_hip_executable(NAME         <libname>
+##                        SOURCES      [source1 [source2 ...]]
+##                        DEPENDS_ON   [dep1 ...]
+##------------------------------------------------------------------------------
+macro(blt_add_hip_executable)
+
+    set(options)
+    set(singleValueArgs NAME)
+    set(multiValueArgs SOURCES DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_add_hip_executable' macro")
+    endif()
+
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_add_hip_executable' macro")
+    endif()
+
+    # Determine if hip or hip_runtime are in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "hip" _hip_index)
+    set(_depends_on_hip FALSE)
+    if(${_hip_index} GREATER -1)
+        set(_depends_on_hip TRUE)
+    endif()
+    list(FIND arg_DEPENDS_ON "hip_runtime" _hip_runtime_index)
+    set(_depends_on_hip_runtime FALSE)
+    if(${_hip_runtime_index} GREATER -1)
+        set(_depends_on_hip_runtime TRUE)
+    endif()
+
+    if (${_depends_on_hip})
+        # if hip is in depends_on, flag each file's language as HIP
+        # instead of leaving it up to CMake to decide
+        # Note: we don't do this when depending on just 'hip_runtime'
+        set(_hip_sources)
+        set(_non_hip_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _hip_sources
+                                          Fortran_LIST _non_hip_sources)
+
+        set_source_files_properties( ${_hip_sources}
+                                     PROPERTIES
+                                     HIP_SOURCE_PROPERTY_FORMAT TRUE)
+
+        hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
+    else()
+        add_executable( ${arg_NAME} ${arg_SOURCES} )
+    endif()
+
+endmacro(blt_add_hip_executable)
 
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
