@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------
 ///
-/// file: blt_rocm_runtime_smoke.cpp
+/// file: blt_hcc_runtime_smoke.cpp
 ///
 //-----------------------------------------------------------------------------
 
@@ -26,8 +26,8 @@ int main()
    std::cout << "Found " << accv.size() << " accelerators."  << std::endl;
    std::cout << std::endl;
 
-   int idefault  = 0;
-   for(int i=0; i< accv.size();i++)
+   unsigned long idefault  = 0;
+   for(unsigned long i=0; i< accv.size();i++)
    {
       accelerator a = accv[i];
       std::cout << "Accelerator " << i << ": " ;

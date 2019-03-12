@@ -17,16 +17,28 @@ message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 #message(STATUS "HIP Include Path: ${HIP_INCLUDE_DIRS}")
 #message(STATUS "HIP Libraries:    ${HIP_LIBRARIES}")
 
+if(${HIP_PLATFORM} STREQUAL "hcc")
+	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_HCC__")
+elseif(${HIP_PLATFORM} STREQUAL "nvcc")
+	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_NVCC__")
+endif()
+set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/hcc/include")
+set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-D${HIP_RUNTIME_DEFINE};-Wno-unused-parameter")
+# set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
+# set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
+
 # depend on 'hip', if you need to use hip
 # headers, link to hip libs, and need to run your source
 # through a hip compiler (hipcc)
-blt_register_library(NAME hip
-                     INCLUDES ${HIP_INCLUDE_DIRS}
+blt_register_library(NAME      hip
+                     INCLUDES  ${HIP_INCLUDE_DIRS}
                      LIBRARIES ${HIP_LIBRARIES})
 
 # depend on 'hip_runtime', if you only need to use hip
 # headers or link to hip libs, but don't need to run your source
 # through a hip compiler (hipcc)
-blt_register_library(NAME hip_runtime
-                     INCLUDES ${HIP_INCLUDE_DIRS}
-                     LIBRARIES ${HIP_LIBRARIES})
+blt_register_library(NAME          hip_runtime
+                     INCLUDES      ${HIP_RUNTIME_INCLUDE_DIRS}
+                     DEFINES       ${HIP_RUNTIME_DEFINES}
+                     COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
+                     LIBRARIES     ${HIP_RUNTIME_LIBRARIES})
