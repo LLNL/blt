@@ -250,7 +250,7 @@ endmacro(blt_setup_cuda_target)
 ##                     SOURCES      [source1 [source2 ...]]
 ##                     HEADERS      [header1 [header2 ...]]
 ##                     DEPENDS_ON   [dep1 ...]
-##                     LIBRARY_TYPE <STATIC, SHARED, OBJECT, or blank for executables>
+##                     LIBRARY_TYPE <STATIC, SHARED, or OBJECT>
 ##------------------------------------------------------------------------------
 macro(blt_add_hip_library)
 

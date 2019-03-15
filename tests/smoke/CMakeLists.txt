@@ -122,7 +122,7 @@ if (ENABLE_CUDA)
 endif()
 
 ################
-#  ROCM test
+#  HCC test
 ################
 if (ENABLE_HCC)
     blt_add_executable(NAME blt_hcc_smoke
