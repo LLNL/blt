@@ -53,7 +53,7 @@ endif()
 ################################
 message(STATUS "HCC Support is ${ENABLE_HCC}")
 if (ENABLE_HCC)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHCC.cmake)
 endif()
 
 ################################
