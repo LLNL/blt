@@ -3,15 +3,9 @@
 // 
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "base_object.hpp"
 #include "inherited_base.hpp"
 
-int base_number()
+int inherited_number()
 {
-#ifdef INHERITED_FLAG
-    return inherited_number() + 2;
-#else
-    // should not get here
-    return 0;
-#endif
+    return 3;
 }

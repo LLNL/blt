@@ -97,6 +97,13 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
+    # Work around for CMake not supporting object libraries in target_link_libraries 
+    # until CMake 3.12
+    set(_old_object_library_support TRUE)
+    if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0" )
+        set(_old_object_library_support FALSE)
+    endif()
+
     # Expand dependency list
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
     foreach( i RANGE 50 )
@@ -131,24 +138,55 @@ macro(blt_setup_target)
             endif()
         endif()
 
+        # Handle inherited information for object libraries in CMake versions
+        # less than 3.12, because target_link_libraries can't be called
+        # which would normally inheriting these properties
+        if ( _old_object_library_support)
+            if ( (arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+                 AND TARGET ${dependency} )
+                get_target_property(_interface_system_includes
+                                    ${dependency} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+                if ( _interface_system_includes )
+                    target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                                                ${_interface_system_includes})
+                endif()
+
+                get_target_property(_interface_includes
+                                    ${dependency} INTERFACE_INCLUDE_DIRECTORIES)
+                if ( _interface_includes )
+                    target_include_directories( ${arg_NAME} PUBLIC ${_interface_includes})
+                endif()
+
+                get_target_property(_interface_defines
+                                    ${dependency} INTERFACE_COMPILE_DEFINITIONS)
+                if ( _interface_defines )
+                    target_compile_definitions( ${arg_NAME} PUBLIC ${_interface_defines})
+                endif()
+            endif()
+        endif()
+
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
             target_include_directories( ${arg_NAME} PUBLIC
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( NOT arg_OBJECT )
-            if (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
-                # This prevents cmake from adding -l<library name> to the
-                # command line for BLT registered libraries which are not
-                # actual CMake targets
-                if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
-                        STREQUAL "BLT_NO_LIBRARIES" )
-                    target_link_libraries( ${arg_NAME} PUBLIC
-                        ${BLT_${uppercase_dependency}_LIBRARIES} )
-                endif()
-            else()
+        if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+            # This makes sure we don't fall into the last case for old
+            # object library support
+            if (NOT _old_object_library_support)
                 target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
             endif()
+        elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+            # This prevents cmake from adding -l<library name> to the
+            # command line for BLT registered libraries which are not
+            # actual CMake targets
+            if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
+                    STREQUAL "BLT_NO_LIBRARIES" )
+                target_link_libraries( ${arg_NAME} PUBLIC
+                    ${BLT_${uppercase_dependency}_LIBRARIES} )
+            endif()
+        else()
+            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
