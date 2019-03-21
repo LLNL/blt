@@ -77,20 +77,10 @@ macro(blt_add_sphinx_target sphinx_target_name )
     # HTML output directory
     set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 
-    # support both direct use of a conf.py file and a cmake config-d 
-    # sphinx input file (conf.py.in)
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py")
-        add_custom_target(${sphinx_target_name}
-                          ${SPHINX_EXECUTABLE}
-                          -q -b html
-                          #-W disable warn on error for now, while our sphinx env is still in flux
-                          -d "${SPHINX_CACHE_DIR}"
-                          "${CMAKE_CURRENT_SOURCE_DIR}"
-                          "${SPHINX_HTML_DIR}"
-                          COMMENT "Building HTML documentation with Sphinx for ${sphinx_target_name} target"
-                          DEPENDS ${deps})
-    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in")
-        
+    # support both direct use of a conf.py file and a cmake-configured
+    # sphinx input file (conf.py.in). The cmake-configured input file is
+    # preferred when both exist.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in")
         configure_file("${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
                        "${SPHINX_BUILD_DIR}/conf.py"
                        @ONLY)
@@ -100,6 +90,16 @@ macro(blt_add_sphinx_target sphinx_target_name )
                           -q -b html
                           #-W disable warn on error for now, while our sphinx env is still in flux
                           -c "${SPHINX_BUILD_DIR}"
+                          -d "${SPHINX_CACHE_DIR}"
+                          "${CMAKE_CURRENT_SOURCE_DIR}"
+                          "${SPHINX_HTML_DIR}"
+                          COMMENT "Building HTML documentation with Sphinx for ${sphinx_target_name} target"
+                          DEPENDS ${deps})
+    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py")
+        add_custom_target(${sphinx_target_name}
+                          ${SPHINX_EXECUTABLE}
+                          -q -b html
+                          #-W disable warn on error for now, while our sphinx env is still in flux
                           -d "${SPHINX_CACHE_DIR}"
                           "${CMAKE_CURRENT_SOURCE_DIR}"
                           "${SPHINX_HTML_DIR}"
