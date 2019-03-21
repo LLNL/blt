@@ -77,11 +77,10 @@ macro(blt_add_sphinx_target sphinx_target_name )
     # HTML output directory
     set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 
-    # support both direct use of a conf.py file and a cmake config-d
-    # sphinx input file (conf.py.in). The cmake config-d input file is
+    # support both direct use of a conf.py file and a cmake-configured
+    # sphinx input file (conf.py.in). The cmake-configured input file is
     # preferred when both exist.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in")
-
         configure_file("${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
                        "${SPHINX_BUILD_DIR}/conf.py"
                        @ONLY)
