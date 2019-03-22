@@ -283,36 +283,34 @@ SET( CMAKE_CXX_EXTENSIONS OFF )
 SET( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 if (BLT_CXX_STD)
-
-if( BLT_CXX_STD STREQUAL c++98 ) 
-    set(CMAKE_CXX_STANDARD 98)
-elseif( BLT_CXX_STD STREQUAL c++11 )
-    set(CMAKE_CXX_STANDARD 11)
-    if (ENABLE_CUDA)
-       set(CMAKE_CUDA_STANDARD 11)
+    if( BLT_CXX_STD STREQUAL c++98 ) 
+        set(CMAKE_CXX_STANDARD 98)
+    elseif( BLT_CXX_STD STREQUAL c++11 )
+        set(CMAKE_CXX_STANDARD 11)
+        if (ENABLE_CUDA)
+           set(CMAKE_CUDA_STANDARD 11)
+        endif()
+        blt_append_custom_compiler_flag(
+            FLAGS_VAR CMAKE_CXX_FLAGS
+            DEFAULT " "
+            XL "-std=c++11"
+            PGI "--c++11")
+    elseif( BLT_CXX_STD STREQUAL c++14)
+        set(CMAKE_CXX_STANDARD 14)
+        if (ENABLE_CUDA)
+           set(CMAKE_CUDA_STANDARD 14)
+        endif()
+        blt_append_custom_compiler_flag(
+            FLAGS_VAR CMAKE_CXX_FLAGS
+            DEFAULT " "
+            XL "-std=c++1y"
+            PGI "--c++14")
+    else()
+        message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
+        Valid Options are ( c++98, c++11, c++14 )")
     endif()
-    blt_append_custom_compiler_flag(
-        FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT " "
-        XL "-std=c++11"
-        PGI "--c++11")
-elseif( BLT_CXX_STD STREQUAL c++14)
-    set(CMAKE_CXX_STANDARD 14)
-    if (ENABLE_CUDA)
-       set(CMAKE_CUDA_STANDARD 14)
-    endif()
-    blt_append_custom_compiler_flag(
-        FLAGS_VAR CMAKE_CXX_FLAGS
-        DEFAULT " "
-        XL "-std=c++1y"
-        PGI "--c++14")
-else()
-    message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
-    Valid Options are ( c++98, c++11, c++14 )")
-endif()
 
-message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected") 
-
+    message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected") 
 endif()
 
 
