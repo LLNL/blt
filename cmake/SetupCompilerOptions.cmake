@@ -282,6 +282,8 @@ endif()
 SET( CMAKE_CXX_EXTENSIONS OFF )
 SET( CMAKE_CXX_STANDARD_REQUIRED ON )
 
+if (BLT_CXX_STD)
+
 if( BLT_CXX_STD STREQUAL c++98 ) 
     set(CMAKE_CXX_STANDARD 98)
 elseif( BLT_CXX_STD STREQUAL c++11 )
@@ -310,6 +312,8 @@ else()
 endif()
 
 message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected") 
+
+endif()
 
 
 ##################################################################

@@ -75,12 +75,13 @@ endif()
 option(ENABLE_ALL_WARNINGS       "Enables all compiler warnings on all build targets" ON)
 option(ENABLE_WARNINGS_AS_ERRORS "Enables treating compiler warnings as errors on all build targets" OFF)
 
-set(BLT_CXX_STD "c++11" CACHE STRING "Version of C++ standard")
+set(BLT_CXX_STD "" CACHE STRING "Version of C++ standard")
 set_property(CACHE BLT_CXX_STD PROPERTY STRINGS c++98 c++11 c++14)
 
-if( NOT ( ( BLT_CXX_STD STREQUAL "c++98" ) 
-       OR ( BLT_CXX_STD STREQUAL "c++11" ) 
-       OR ( BLT_CXX_STD STREQUAL "c++14" ) ) )
+if( BLT_CXX_STD AND (
+  NOT ( ( BLT_CXX_STD STREQUAL "c++98" ) 
+     OR ( BLT_CXX_STD STREQUAL "c++11" ) 
+     OR ( BLT_CXX_STD STREQUAL "c++14" ) ) ) )
     message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD.
 Valid Options are ( c++98, c++11, c++14 )")
 endif()
