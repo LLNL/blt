@@ -78,6 +78,57 @@ endmacro(blt_find_executable)
 
 
 ##------------------------------------------------------------------------------
+## blt_inherit_target_info( TO       <target>
+##                          FROM     <target>)
+##
+##  The purpose of this macro is if you want to grab all the inheritable info
+##  from the FROM target but don't want to make the TO target depend on it.
+##  Which is useful if you don't want to export the FROM target.
+##
+##------------------------------------------------------------------------------
+macro(blt_inherit_target_info)
+    set(options)
+    set(singleValueArgs TO FROM)
+    set(multiValueArgs)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                        "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_TO )
+        message( FATAL_ERROR "Must provide a TO argument to the 'blt_inherit_target' macro" )
+    endif()
+
+    if ( NOT DEFINED arg_FROM )
+        message( FATAL_ERROR "Must provide a FROM argument to the 'blt_inherit_target' macro" )
+    endif()
+
+    get_target_property(_interface_system_includes
+                        ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+    if ( _interface_system_includes )
+        blt_add_target_includes(TO       ${arg_TO}
+                                INCLUDES ${_interface_system_includes}
+                                SYSTEM   TRUE)
+    endif()
+
+    get_target_property(_interface_includes
+                        ${arg_FROM} INTERFACE_INCLUDE_DIRECTORIES)
+    if ( _interface_includes )
+        blt_add_target_includes(TO       ${arg_TO}
+                                INCLUDES ${_interface_includes})
+    endif()
+
+    get_target_property(_interface_defines
+                        ${arg_FROM} INTERFACE_COMPILE_DEFINITIONS)
+    if ( _interface_defines )
+        target_compile_definitions( ${arg_TO} PUBLIC ${_interface_defines})
+    endif()
+
+endmacro(blt_inherit_target_info)
+
+
+##------------------------------------------------------------------------------
 ## blt_setup_target( NAME       [name] 
 ##                   DEPENDS_ON [dep1 ...] 
 ##                   OBJECT     [TRUE | FALSE])
@@ -129,52 +180,25 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
-                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
-                    ${BLT_${uppercase_dependency}_INCLUDES} )
-            else()
-                target_include_directories( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_INCLUDES} )
-            endif()
-        endif()
-
-        # Handle inherited information for object libraries in CMake versions
-        # less than 3.12, because target_link_libraries can't be called
-        # which would normally inheriting these properties
-        if ( _old_object_library_support)
-            if ( (arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-                 AND TARGET ${dependency} )
-                get_target_property(_interface_system_includes
-                                    ${dependency} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-                if ( _interface_system_includes )
-                    target_include_directories( ${arg_NAME} SYSTEM PUBLIC
-                                                ${_interface_system_includes})
-                endif()
-
-                get_target_property(_interface_includes
-                                    ${dependency} INTERFACE_INCLUDE_DIRECTORIES)
-                if ( _interface_includes )
-                    target_include_directories( ${arg_NAME} PUBLIC ${_interface_includes})
-                endif()
-
-                get_target_property(_interface_defines
-                                    ${dependency} INTERFACE_COMPILE_DEFINITIONS)
-                if ( _interface_defines )
-                    target_compile_definitions( ${arg_NAME} PUBLIC ${_interface_defines})
-                endif()
-            endif()
+            blt_add_target_includes(TO       ${arg_NAME}
+                                    INCLUDES ${BLT_${uppercase_dependency}_INCLUDES}
+                                    SYSTEM   ${BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM})
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
-            target_include_directories( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
+            blt_add_target_includes(TO       ${arg_NAME}
+                                    INCLUDES ${BLT_${uppercase_dependency}_FORTRAN_MODULES})
         endif()
 
         if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-            # This makes sure we don't fall into the last case for old
-            # object library support
+            # We want object libraries to be private but inherit the vital
+            # target info otherwise you have to install the object files
+            # associated with the object library which noone wants.
+            if ( TARGET ${dependency} )
+                blt_inherit_target_info(TO ${arg_NAME} FROM ${dependency})
+            endif()
             if (NOT _old_object_library_support)
-                target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
+                target_link_libraries( ${arg_NAME} PRIVATE ${dependency} )
             endif()
         elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the

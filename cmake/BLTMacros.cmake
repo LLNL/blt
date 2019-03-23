@@ -59,7 +59,7 @@ endmacro(blt_list_append)
 ##
 ## Adds pre-processor definitions to the given target.
 ##
-## Adds pre-processor definitions to a particular. This macro provides very
+## Adds pre-processor definitions to a particular target. This macro provides very
 ## similar functionality to cmake's native "add_definitions" command, but,
 ## it provides more fine-grained scoping for the compile definitions on a
 ## per target basis. Given a list of definitions, e.g., FOO and BAR, this macro
@@ -151,6 +151,63 @@ macro(blt_add_target_compile_flags)
     unset(_strippedFlags)
 
 endmacro(blt_add_target_compile_flags)
+
+
+##------------------------------------------------------------------------------
+## blt_add_target_includes(TO       <target>
+##                         INCLUDES [PATH1 [PATH2 ...]]
+##                         SYSTEM   <TRUE|FALSE (default)>)
+##
+## Adds includes to the given target.
+##
+## Adds pre-processor definitions to a particular. This macro provides very
+## similar functionality to cmake's native "target_include_directories" but
+## filters out duplicate includes.
+##
+## The supplied target must be added via add_executable() or add_library() or
+## with the corresponding blt_add_executable() and blt_add_library() macros.
+##
+## SYSTEM informs the compiler to treat this library's include paths
+## as system headers.  Only some compilers support this. This is useful if the headers
+## generate warnings you want to not have them reported in your build. This defaults
+## to FALSE.
+## 
+##------------------------------------------------------------------------------
+macro(blt_add_target_includes)
+
+    set(options)
+    set(singleValueArgs TO SYSTEM)
+    set(multiValueArgs INCLUDES)
+
+    # Parse the arguments to the macro
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    ## check that the passed in parameter TO is actually a target
+    if(NOT TARGET ${arg_TO})
+        message(FATAL_ERROR "Target ${arg_TO} passed to blt_add_target_includes is not a valid cmake target")    
+    endif()
+
+    ## only add the include if it not already there
+    if (${arg_SYSTEM})
+        get_target_property(_to_includes
+                            ${arg_TO} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+        foreach(_include ${arg_INCLUDES})
+            if (NOT ${_include} IN_LIST _to_includes)
+                target_include_directories( ${arg_TO} SYSTEM PUBLIC ${_include})
+            endif()
+        endforeach()
+    else()
+        get_target_property(_to_includes
+                            ${arg_TO} INTERFACE_INCLUDE_DIRECTORIES)
+        foreach(_include ${arg_INCLUDES})
+            if (NOT ${_include} IN_LIST _to_includes)
+                target_include_directories( ${arg_TO} PUBLIC ${_include})
+            endif()
+        endforeach()
+    endif()
+
+endmacro(blt_add_target_includes)
 
 
 ##------------------------------------------------------------------------------

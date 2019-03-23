@@ -16,12 +16,15 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Now reporting BLT version through CMake cache variable BLT_VERSION
 - Output CMake version and executable used during CMake step
 - Clang-query support now added (Thanks David Poliakoff)
+- Added blt_add_target_includes macro
 
 ### Removed
 
 ### Deprecated
 
 ### Changed
+- Object libraries are no longer marked PUBLIC but will pass inherited information
+  because why would anyone ever want to install/export a bunch of object files.
 
 ### Fixed
 - Incorrect use of cuda vs cuda_runtime targets
