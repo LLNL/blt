@@ -41,11 +41,19 @@ if (ENABLE_CUDA)
 endif()
 
 ################################
-# ROCM
+# HIP
 ################################
-message(STATUS "ROCM Support is ${ENABLE_ROCM}")
-if (ENABLE_ROCM)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupROCm.cmake)
+message(STATUS "HIP Support is ${ENABLE_HIP}")
+if (ENABLE_HIP)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake)
+endif()
+
+################################
+# HCC
+################################
+message(STATUS "HCC Support is ${ENABLE_HCC}")
+if (ENABLE_HCC)
+  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHCC.cmake)
 endif()
 
 ################################

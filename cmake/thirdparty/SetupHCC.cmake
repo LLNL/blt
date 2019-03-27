@@ -7,7 +7,7 @@
 # ROCM
 ################################
 
-if (ENABLE_ROCM)
+if (ENABLE_HCC)
     set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
     find_package(ROCm REQUIRED)
 
