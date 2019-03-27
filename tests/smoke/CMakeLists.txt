@@ -122,27 +122,50 @@ if (ENABLE_CUDA)
 endif()
 
 ################
-#  ROCM test
+#  HCC test
 ################
-if (ENABLE_ROCM)
-    blt_add_executable(NAME blt_rocm_smoke
-                       SOURCES blt_rocm_smoke.cpp
+if (ENABLE_HCC)
+    blt_add_executable(NAME blt_hcc_smoke
+                       SOURCES blt_hcc_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
                        DEPENDS_ON rocm
                        FOLDER blt/tests )
 
-    blt_add_test(NAME blt_rocm_smoke
-                 COMMAND blt_rocm_smoke)
+    blt_add_test(NAME blt_hcc_smoke
+                 COMMAND blt_hcc_smoke)
 
-    blt_add_executable(NAME blt_rocm_runtime_smoke
-                       SOURCES blt_rocm_runtime_smoke.cpp
+    blt_add_executable(NAME blt_hcc_runtime_smoke
+                       SOURCES blt_hcc_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
                        DEPENDS_ON rocm
                        FOLDER blt/tests )
 
-    blt_add_test(NAME blt_rocm_runtime_smoke
-                 COMMAND blt_rocm_runtime_smoke)
+    blt_add_test(NAME blt_hcc_runtime_smoke
+                 COMMAND blt_hcc_runtime_smoke)
 
 
 endif()
 
+################
+#  HIP test
+################
+if (ENABLE_HIP)
+    blt_add_executable(NAME blt_hip_smoke
+                       SOURCES blt_hip_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                       DEPENDS_ON hip
+                       FOLDER blt/tests )
+
+    blt_add_test(NAME blt_hip_smoke
+                 COMMAND blt_hip_smoke)
+
+    blt_add_executable(NAME blt_hip_runtime_smoke
+                       SOURCES blt_hip_runtime_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                       DEPENDS_ON hip_runtime
+                       FOLDER blt/tests )
+
+    blt_add_test(NAME blt_hip_runtime_smoke
+                 COMMAND blt_hip_runtime_smoke)
+
+endif()

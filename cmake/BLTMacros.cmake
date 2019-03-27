@@ -458,14 +458,22 @@ macro(blt_add_library)
             set(_lib_type "STATIC")
         endif()
 
-        add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
+        if (ENABLE_HIP)
+            blt_add_hip_library(NAME         ${arg_NAME}
+                                SOURCES      ${arg_SOURCES}
+                                HEADERS      ${arg_HEADERS}
+                                DEPENDS_ON   ${arg_DEPENDS_ON}
+                                LIBRARY_TYPE ${_lib_type} )
+        else()
+            add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
 
-        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-            blt_setup_cuda_target(
-                NAME         ${arg_NAME}
-                SOURCES      ${arg_SOURCES}
-                DEPENDS_ON   ${arg_DEPENDS_ON}
-                LIBRARY_TYPE ${_lib_type})
+            if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+                blt_setup_cuda_target(
+                    NAME         ${arg_NAME}
+                    SOURCES      ${arg_SOURCES}
+                    DEPENDS_ON   ${arg_DEPENDS_ON}
+                    LIBRARY_TYPE ${_lib_type})
+            endif()
         endif()
     else()
         #
@@ -592,13 +600,19 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    add_executable( ${arg_NAME} ${arg_SOURCES} )
+    if (ENABLE_HIP)
+        blt_add_hip_executable(NAME         ${arg_NAME}
+                               SOURCES      ${arg_SOURCES}
+                               DEPENDS_ON   ${arg_DEPENDS_ON})
+    else()
+        add_executable( ${arg_NAME} ${arg_SOURCES} )
 
-    if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-        blt_setup_cuda_target(
-            NAME         ${arg_NAME}
-            SOURCES      ${arg_SOURCES}
-            DEPENDS_ON   ${arg_DEPENDS_ON})
+        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+            blt_setup_cuda_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON})
+        endif()
     endif()
     
     # CMake wants to load with C++ if any of the libraries are C++.

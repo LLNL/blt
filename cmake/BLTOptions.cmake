@@ -43,7 +43,8 @@ option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
 mark_as_advanced(ENABLE_CLANG_CUDA)
 set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
 mark_as_advanced(BLT_CLANG_CUDA_ARCH)
-option(ENABLE_ROCM         "Enable ROCM support" OFF)
+option(ENABLE_HIP         "Enable HIP support" OFF)
+option(ENABLE_HCC         "Enable HCC support" OFF)
 set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")
 
 # Options that control if Google Test, Google Mock, and Fruit are built 
