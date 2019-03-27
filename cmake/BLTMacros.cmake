@@ -54,6 +54,7 @@ macro(blt_list_append)
 
 endmacro(blt_list_append)
 
+
 ##------------------------------------------------------------------------------
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
@@ -154,63 +155,6 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_target_includes(TO       <target>
-##                         INCLUDES [PATH1 [PATH2 ...]]
-##                         SYSTEM   <TRUE|FALSE (default)>)
-##
-## Adds includes to the given target.
-##
-## Adds pre-processor definitions to a particular. This macro provides very
-## similar functionality to cmake's native "target_include_directories" but
-## filters out duplicate includes.
-##
-## The supplied target must be added via add_executable() or add_library() or
-## with the corresponding blt_add_executable() and blt_add_library() macros.
-##
-## SYSTEM informs the compiler to treat this library's include paths
-## as system headers.  Only some compilers support this. This is useful if the headers
-## generate warnings you want to not have them reported in your build. This defaults
-## to FALSE.
-## 
-##------------------------------------------------------------------------------
-macro(blt_add_target_includes)
-
-    set(options)
-    set(singleValueArgs TO SYSTEM)
-    set(multiValueArgs INCLUDES)
-
-    # Parse the arguments to the macro
-    cmake_parse_arguments(arg
-        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    ## check that the passed in parameter TO is actually a target
-    if(NOT TARGET ${arg_TO})
-        message(FATAL_ERROR "Target ${arg_TO} passed to blt_add_target_includes is not a valid cmake target")    
-    endif()
-
-    ## only add the include if it not already there
-    if (${arg_SYSTEM})
-        get_target_property(_to_includes
-                            ${arg_TO} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-        foreach(_include ${arg_INCLUDES})
-            if (NOT ${_include} IN_LIST _to_includes)
-                target_include_directories( ${arg_TO} SYSTEM PUBLIC ${_include})
-            endif()
-        endforeach()
-    else()
-        get_target_property(_to_includes
-                            ${arg_TO} INTERFACE_INCLUDE_DIRECTORIES)
-        foreach(_include ${arg_INCLUDES})
-            if (NOT ${_include} IN_LIST _to_includes)
-                target_include_directories( ${arg_TO} PUBLIC ${_include})
-            endif()
-        endforeach()
-    endif()
-
-endmacro(blt_add_target_includes)
-
-
-##------------------------------------------------------------------------------
 ## blt_set_target_folder (TARGET <target> FOLDER <folder>)
 ##
 ## Sets the folder property of cmake target <target> to <folder>.
@@ -287,6 +231,7 @@ macro(blt_add_target_link_flags)
     endif()
 
 endmacro(blt_add_target_link_flags)
+
 
 ##------------------------------------------------------------------------------
 ## blt_register_library( NAME <libname>
@@ -605,7 +550,14 @@ macro(blt_add_library)
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
 
+    if ( arg_SOURCES )
+        # Don't clean header-only libraries because you would have to handle
+        # the white-list of properties that are allowed
+        blt_clean_target(TARGET ${arg_NAME})
+    endif()
+
 endmacro(blt_add_library)
+
 
 ##------------------------------------------------------------------------------
 ## blt_add_executable( NAME <name>
@@ -709,6 +661,8 @@ macro(blt_add_executable)
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
+
+    blt_clean_target(TARGET ${arg_NAME})
 
 endmacro(blt_add_executable)
 
@@ -854,6 +808,7 @@ macro(blt_add_benchmark)
    endif()
 
 endmacro(blt_add_benchmark)
+
 
 ##------------------------------------------------------------------------------
 ## blt_append_custom_compiler_flag( 
@@ -1187,7 +1142,6 @@ macro(blt_combine_static_libraries)
 endmacro(blt_combine_static_libraries)
 
 
-
 ##------------------------------------------------------------------------------
 ## blt_print_target_properties (TARGET <target> )
 ##
@@ -1285,4 +1239,3 @@ macro(blt_print_target_properties)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties)
-

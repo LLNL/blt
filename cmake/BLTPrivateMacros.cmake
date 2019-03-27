@@ -21,18 +21,18 @@ function(blt_error_if_target_exists target_name error_msg)
 endfunction()
 
 
-################################################################################
-# blt_find_executable(NAME         <name of program to find>
-#                     EXECUTABLES  [exe1 [exe2 ...]])
-#
-# This macro attempts to find the given executable via either a previously defined
-# <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
-# if EXECUTABLES is left empty, then NAME is used.
-#
-# If successful the following variables will be defined:
-# <UPPERCASE_NAME>_FOUND
-# <UPPERCASE_NAME>_EXECUTABLE
-################################################################################
+##-----------------------------------------------------------------------------
+## blt_find_executable(NAME         <name of program to find>
+##                     EXECUTABLES  [exe1 [exe2 ...]])
+##
+## This macro attempts to find the given executable via either a previously defined
+## <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
+## if EXECUTABLES is left empty, then NAME is used.
+##
+## If successful the following variables will be defined:
+## <UPPERCASE_NAME>_FOUND
+## <UPPERCASE_NAME>_EXECUTABLE
+##-----------------------------------------------------------------------------
 macro(blt_find_executable)
 
     set(options)
@@ -79,12 +79,22 @@ endmacro(blt_find_executable)
 
 ##------------------------------------------------------------------------------
 ## blt_inherit_target_info( TO       <target>
-##                          FROM     <target>)
+##                          FROM     <target>
+##                          OBJECT   [TRUE|FALSE])
 ##
 ##  The purpose of this macro is if you want to grab all the inheritable info
 ##  from the FROM target but don't want to make the TO target depend on it.
 ##  Which is useful if you don't want to export the FROM target.
 ##
+##  The OBJECT parameter is because object libraries can only inherit certain
+##  properties.
+##
+##  This inherits the following properties:
+##    INTERFACE_COMPILE_DEFINITIONS
+##    INTERFACE_INCLUDE_DIRECTORIES
+##    INTERFACE_LINK_DIRECTORIES
+##    INTERFACE_LINK_LIBRARIES
+##    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
 ##------------------------------------------------------------------------------
 macro(blt_inherit_target_info)
     set(options)
@@ -107,22 +117,33 @@ macro(blt_inherit_target_info)
     get_target_property(_interface_system_includes
                         ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
     if ( _interface_system_includes )
-        blt_add_target_includes(TO       ${arg_TO}
-                                INCLUDES ${_interface_system_includes}
-                                SYSTEM   TRUE)
+        target_include_directories(${arg_TO} SYSTEM PUBLIC ${_interface_system_includes})
     endif()
 
     get_target_property(_interface_includes
                         ${arg_FROM} INTERFACE_INCLUDE_DIRECTORIES)
     if ( _interface_includes )
-        blt_add_target_includes(TO       ${arg_TO}
-                                INCLUDES ${_interface_includes})
+        target_include_directories(${arg_TO} PUBLIC ${_interface_includes})
     endif()
 
     get_target_property(_interface_defines
                         ${arg_FROM} INTERFACE_COMPILE_DEFINITIONS)
     if ( _interface_defines )
         target_compile_definitions( ${arg_TO} PUBLIC ${_interface_defines})
+    endif()
+
+    if ( NOT arg_OBJECT )
+        get_target_property(_interface_link_directories
+                            ${arg_FROM} INTERFACE_LINK_DIRECTORIES)
+        if ( _interface_link_directories )
+            target_link_directories( ${arg_TO} PUBLIC ${_interface_link_directories})
+        endif()
+
+        get_target_property(_interface_link_libraries
+                            ${arg_FROM} INTERFACE_LINK_LIBRARIES)
+        if ( _interface_link_libraries )
+            target_link_libraries( ${arg_TO} PUBLIC ${_interface_link_libraries})
+        endif()
     endif()
 
 endmacro(blt_inherit_target_info)
@@ -180,14 +201,18 @@ macro(blt_setup_target)
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            blt_add_target_includes(TO       ${arg_NAME}
-                                    INCLUDES ${BLT_${uppercase_dependency}_INCLUDES}
-                                    SYSTEM   ${BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM})
+            if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
+                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                    ${BLT_${uppercase_dependency}_INCLUDES} )
+            else()
+                target_include_directories( ${arg_NAME} PUBLIC
+                    ${BLT_${uppercase_dependency}_INCLUDES} )
+            endif()
         endif()
 
         if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
-            blt_add_target_includes(TO       ${arg_NAME}
-                                    INCLUDES ${BLT_${uppercase_dependency}_FORTRAN_MODULES})
+            target_include_directories( ${arg_NAME} PUBLIC
+                ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
         if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
@@ -195,7 +220,9 @@ macro(blt_setup_target)
             # target info otherwise you have to install the object files
             # associated with the object library which noone wants.
             if ( TARGET ${dependency} )
-                blt_inherit_target_info(TO ${arg_NAME} FROM ${dependency})
+                blt_inherit_target_info(TO     ${arg_NAME}
+                                        FROM   ${dependency}
+                                        OBJECT TRUE)
             endif()
             if (NOT _old_object_library_support)
                 target_link_libraries( ${arg_NAME} PRIVATE ${dependency} )
@@ -231,6 +258,7 @@ macro(blt_setup_target)
     endforeach()
 
 endmacro(blt_setup_target)
+
 
 ##------------------------------------------------------------------------------
 ## blt_setup_cuda_target(NAME <name of target>
@@ -498,6 +526,7 @@ macro(blt_update_project_sources)
 
 endmacro(blt_update_project_sources)
 
+
 ##------------------------------------------------------------------------------
 ## blt_filter_list( TO <list_var> REGEX <string> OPERATION <string> )
 ##
@@ -565,3 +594,36 @@ macro(blt_filter_list)
     unset(_resultList)
 endmacro(blt_filter_list)
 
+
+##------------------------------------------------------------------------------
+## blt_clean_target( TARGET <target name> )
+##
+## This macro removes duplicates in a small subset of target properties that are
+## safe to do so.
+##------------------------------------------------------------------------------
+macro(blt_clean_target)
+
+    set(options )
+    set(singleValueArgs TARGET)
+    set(multiValueArgs )
+
+    # Parse arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Properties to remove duplicates from
+    set(_dup_properties
+        INCLUDE_DIRECTORIES
+        INTERFACE_COMPILE_DEFINITIONS
+        INTERFACE_INCLUDE_DIRECTORIES
+        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+
+    foreach(_prop ${_dup_properties})
+        get_target_property(_values ${arg_TARGET} ${_prop})
+        if ( _values )
+            list(REMOVE_DUPLICATES _values)
+            set_property(TARGET ${arg_TARGET} PROPERTY ${_prop} ${_values})
+        endif()
+    endforeach()
+
+endmacro(blt_clean_target)
