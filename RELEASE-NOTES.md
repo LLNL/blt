@@ -7,6 +7,13 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 The project release numbers follow [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- BLT_CXX_STD is no longer defined to "c++11" by default. If undefined, BLT will
+  not try and add any C++ standard flags.
+
 ## 0.2.0 - Release date 2019-02-15
 
 ### Added
