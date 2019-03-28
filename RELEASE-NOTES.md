@@ -29,7 +29,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Deprecated
 
 ### Changed
-- Object libraries are no longer call target_link_libraries() but will pass inherited information
+- Object libraries no longer call target_link_libraries() but will pass inherited information
   because why would anyone ever want to install/export a bunch of object files.
 - Remove duplicates of select target properties at the end of blt_add_library and
   blt_add_executable. (include directories and compile defines)
