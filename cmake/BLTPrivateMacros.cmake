@@ -169,13 +169,6 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
-    # Work around for CMake not supporting object libraries in target_link_libraries 
-    # until CMake 3.12
-    set(_old_object_library_support TRUE)
-    if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0" )
-        set(_old_object_library_support FALSE)
-    endif()
-
     # Expand dependency list
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
     foreach( i RANGE 50 )
@@ -216,16 +209,13 @@ macro(blt_setup_target)
         endif()
 
         if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-            # We want object libraries to be private but inherit the vital
-            # target info otherwise you have to install the object files
-            # associated with the object library which noone wants.
+            # We want object libraries to inherit the vital info but not call
+            # target_link_libraries() otherwise you have to install the object
+            # files associated with the object library which noone wants.
             if ( TARGET ${dependency} )
                 blt_inherit_target_info(TO     ${arg_NAME}
                                         FROM   ${dependency}
                                         OBJECT TRUE)
-            endif()
-            if (NOT _old_object_library_support)
-                target_link_libraries( ${arg_NAME} PRIVATE ${dependency} )
             endif()
         elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the
