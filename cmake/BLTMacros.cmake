@@ -54,12 +54,13 @@ macro(blt_list_append)
 
 endmacro(blt_list_append)
 
+
 ##------------------------------------------------------------------------------
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
 ##
-## Adds pre-processor definitions to a particular. This macro provides very
+## Adds pre-processor definitions to a particular target. This macro provides very
 ## similar functionality to cmake's native "add_definitions" command, but,
 ## it provides more fine-grained scoping for the compile definitions on a
 ## per target basis. Given a list of definitions, e.g., FOO and BAR, this macro
@@ -230,6 +231,7 @@ macro(blt_add_target_link_flags)
     endif()
 
 endmacro(blt_add_target_link_flags)
+
 
 ##------------------------------------------------------------------------------
 ## blt_register_library( NAME <libname>
@@ -548,7 +550,14 @@ macro(blt_add_library)
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
 
+    if ( arg_SOURCES )
+        # Don't clean header-only libraries because you would have to handle
+        # the white-list of properties that are allowed
+        blt_clean_target(TARGET ${arg_NAME})
+    endif()
+
 endmacro(blt_add_library)
+
 
 ##------------------------------------------------------------------------------
 ## blt_add_executable( NAME <name>
@@ -652,6 +661,8 @@ macro(blt_add_executable)
     endif()
 
     blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
+
+    blt_clean_target(TARGET ${arg_NAME})
 
 endmacro(blt_add_executable)
 
@@ -797,6 +808,7 @@ macro(blt_add_benchmark)
    endif()
 
 endmacro(blt_add_benchmark)
+
 
 ##------------------------------------------------------------------------------
 ## blt_append_custom_compiler_flag( 
@@ -1130,7 +1142,6 @@ macro(blt_combine_static_libraries)
 endmacro(blt_combine_static_libraries)
 
 
-
 ##------------------------------------------------------------------------------
 ## blt_print_target_properties (TARGET <target> )
 ##
@@ -1228,4 +1239,3 @@ macro(blt_print_target_properties)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties)
-
