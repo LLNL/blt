@@ -48,7 +48,7 @@ macro(blt_list_append)
     endif()
 
     # append if
-    if ( ${arg_IF} )
+    if ( (${arg_IF}) OR (NOT DEFINED arg_IF) )
         list( APPEND ${arg_TO} ${arg_ELEMENTS} )
     endif()
 
