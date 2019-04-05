@@ -21,6 +21,8 @@ set(CMAKE_CXX_COMPILER "${COMPILER_HOME}/bin/clang++" CACHE PATH "")
 
 set(ENABLE_FORTRAN OFF CACHE BOOL "")
 
+set(BLT_CXX_STD "c++11" CACHE STRING "")
+
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
