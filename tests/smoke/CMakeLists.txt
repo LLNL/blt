@@ -118,7 +118,16 @@ if (ENABLE_CUDA)
     blt_add_test(NAME blt_cuda_runtime_smoke
                  COMMAND blt_cuda_runtime_smoke)
 
+    if (ENABLE_OPENMP)
+        blt_add_executable(NAME blt_cuda_openmp_smoke
+                           SOURCES blt_cuda_openmp_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
+                           DEPENDS_ON cuda openmp
+                           FOLDER blt/tests )
 
+        blt_add_test(NAME blt_cuda_openmp_smoke
+                     COMMAND blt_cuda_openmp_smoke)
+    endif()
 endif()
 
 ################
