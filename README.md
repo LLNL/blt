@@ -1,8 +1,11 @@
+# <img src="https://cdn.rawgit.com/LLNL/blt/develop/share/blt/logo/blt_logo.png" width="128" valign="middle" alt="BLT"/>
+
 BLT v0.2
 ========
 
 [![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
 [![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j/branch/master?svg=true)](https://ci.appveyor.com/project/cyrush/blt/branch/master)
+[![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=latest)](https://llnl-blt.readthedocs.io/en/develop/?badge=latest)
 
 A streamlined CMake build system foundation for developing HPC software
 
@@ -22,9 +25,9 @@ Authors
 Developers include:
 
  * Chris White (white238@llnl.gov)
+ * Kenneth Weiss (kweiss@llnl.gov)
  * Cyrus Harrison (harrison37@llnl.gov)
  * George Zagaris (zagaris2@llnl.gov)
- * Kenneth Weiss (kweiss@llnl.gov)
  * Lee Taylor (taylor16@llnl.gov)
  * Aaron Black (black27@llnl.gov)
  * David A. Beckingsale (beckingsale1@llnl.gov)
