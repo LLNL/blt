@@ -18,10 +18,6 @@ endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
-if(WIN32 AND BUILD_SHARED_LIBS)
-    add_definitions("-DWIN32_SHARED_LIBS")
-endif()
-
 ###############################################################################
 # Example 1: Creating a simple executable.
 ###############################################################################
@@ -35,19 +31,22 @@ blt_add_library( NAME    calc_pi
                  HEADERS calc_pi.hpp calc_pi_exports.h
                  SOURCES calc_pi.cpp )
 
+if(WIN32 AND BUILD_SHARED_LIBS)
+    target_compile_definitions(calc_pi PUBLIC WIN32_SHARED_LIBS)
+endif()
 
-blt_add_executable( NAME example_2
-                    SOURCES example_2.cpp 
+blt_add_executable( NAME       example_2
+                    SOURCES    example_2.cpp 
                     DEPENDS_ON calc_pi)
 
 ###############################################################################
 # Test 1: Creating an executable using gtest, using the executable via ctest.
 ###############################################################################
-blt_add_executable( NAME test_1
-                    SOURCES test_1.cpp 
+blt_add_executable( NAME      test_1
+                    SOURCES    test_1.cpp 
                     DEPENDS_ON calc_pi gtest)
 
-blt_add_test( NAME test_1 
+blt_add_test( NAME    test_1 
               COMMAND test_1)
 
 ###############################################################################
@@ -58,11 +57,14 @@ blt_add_test( NAME test_1
 ###############################################################################
 if(MPI_FOUND)
 
-    blt_add_library( NAME calc_pi_mpi
-                     HEADERS calc_pi_mpi.hpp calc_pi_mpi_exports.h
-                     SOURCES calc_pi_mpi.cpp 
+    blt_add_library( NAME       calc_pi_mpi
+                     HEADERS    calc_pi_mpi.hpp calc_pi_mpi_exports.h
+                     SOURCES    calc_pi_mpi.cpp 
                      DEPENDS_ON mpi)
 
+    if(WIN32 AND BUILD_SHARED_LIBS)
+        target_compile_definitions(calc_pi_mpi PUBLIC WIN32_SHARED_LIBS)
+    endif()
 
     blt_add_executable( NAME test_2
                         SOURCES test_2.cpp 
@@ -84,17 +86,22 @@ if(CUDA_FOUND)
     # avoid warnings about sm_20 deprecated
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30)
 	
-    blt_add_library( NAME calc_pi_cuda
-                     HEADERS calc_pi_cuda.hpp calc_pi_cuda_exports.h
-                     SOURCES calc_pi_cuda.cpp 
+    blt_add_library( NAME       calc_pi_cuda
+                     HEADERS    calc_pi_cuda.hpp calc_pi_cuda_exports.h
+                     SOURCES    calc_pi_cuda.cpp 
                      DEPENDS_ON cuda)
 
+    if(WIN32 AND BUILD_SHARED_LIBS)
+        target_compile_definitions(calc_pi_cuda PUBLIC WIN32_SHARED_LIBS)
+    endif()
 
-    blt_add_executable( NAME test_3
-                        SOURCES test_3.cpp 
+
+
+    blt_add_executable( NAME       test_3
+                        SOURCES    test_3.cpp 
                         DEPENDS_ON calc_pi calc_pi_cuda gtest cuda_runtime)
 
-    blt_add_test( NAME test_3
+    blt_add_test( NAME    test_3
                   COMMAND test_3)
 endif()
 
