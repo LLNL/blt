@@ -21,11 +21,6 @@ endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
-if(WIN32 AND BUILD_SHARED_LIBS)
-    add_definitions("-DWIN32_SHARED_LIBS")
-endif()
-
-
 ################################
 # Project options
 ################################
@@ -42,6 +37,10 @@ blt_add_library( NAME example
                  SOURCES "src/Example.cpp"
                  HEADERS "src/Example.hpp"
                  )
+
+if(WIN32 AND BUILD_SHARED_LIBS)
+    target_compile_definitions(example PUBLIC WIN32_SHARED_LIBS)
+endif()
 
 if(ENABLE_GTEST)
     ################################
