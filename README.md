@@ -1,4 +1,4 @@
-# <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/> BLT v0.2
+# <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/> v0.2
 
 [![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
 [![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j/branch/master?svg=true)](https://ci.appveyor.com/project/cyrush/blt/branch/master)
@@ -9,7 +9,7 @@ A streamlined CMake build system foundation for developing HPC software
 User Tutorial
 ---------------------
 
-https://software.llnl.gov/blt
+https://llnl-blt.readthedocs.io/en/latest/
 
 Questions
 ---------

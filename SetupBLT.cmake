@@ -51,11 +51,19 @@ if (NOT BLT_LOADED)
     include(${BLT_ROOT_DIR}/cmake/BLTOptions.cmake)
 
     ################################
-    # CMP0057 New is required by blt_setup_target()
-    # in order to support the IN_LIST if() operator
+    # CMake Policies
     ################################
+    # Support IN_LIST operator for if()
     if(POLICY CMP0057)
         cmake_policy(SET CMP0057 NEW)
+    endif()
+
+    # Turns relative target_sources() paths to absolute
+    # Policy added in 3.13+
+    # NOTE: this will be deprecated eventually but NEW causes
+    #  problems in header only libraries
+    if(POLICY CMP0076)
+        cmake_policy(SET CMP0076 OLD)
     endif()
 
     ################################

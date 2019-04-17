@@ -7,6 +7,17 @@
 # MPI
 ################################
 
+# Handle CMake changing MPIEXEC to MPIEXEC_EXECUTABLE
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
+    if (NOT MPIEXEC_EXECUTABLE AND MPIEXEC)
+        set(MPIEXEC_EXECUTABLE ${MPIEXEC} CACHE PATH "" FORCE)
+    endif()
+else()
+    if (MPIEXEC_EXECUTABLE AND NOT MPIEXEC)
+        set(MPIEXEC ${MPIEXEC_EXECUTABLE} CACHE PATH "" FORCE)
+    endif()
+endif()
+
 if (ENABLE_FIND_MPI)
     find_package(MPI REQUIRED)
 
@@ -21,7 +32,11 @@ if (ENABLE_FIND_MPI)
     message(STATUS "MPI CXX Libraries:     ${MPI_CXX_LIBRARIES}")
 endif()
 
-message(STATUS "MPI Executable:       ${MPIEXEC}")
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
+    message(STATUS "MPI Executable:       ${MPIEXEC_EXECUTABLE}")
+else()
+    message(STATUS "MPI Executable:       ${MPIEXEC}")
+endif()
 message(STATUS "MPI Num Proc Flag:    ${MPIEXEC_NUMPROC_FLAG}")
 message(STATUS "MPI Command Append:   ${BLT_MPI_COMMAND_APPEND}")
 
