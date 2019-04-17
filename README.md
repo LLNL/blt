@@ -1,4 +1,4 @@
-# <img src="https://cdn.rawgit.com/LLNL/blt/master/share/blt/logo/blt_logo.png" width="128" valign="middle" alt="BLT"/> BLT v0.2
+# <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/> BLT v0.2
 
 [![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
 [![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j/branch/master?svg=true)](https://ci.appveyor.com/project/cyrush/blt/branch/master)
