@@ -70,11 +70,13 @@ endif()
 # OpenMP test
 ################
 if (ENABLE_OPENMP)
+    # _blt_tutorial_openmp_executable_start
     blt_add_executable(NAME blt_openmp_smoke 
                        SOURCES blt_openmp_smoke.cpp 
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
                        DEPENDS_ON openmp
                        FOLDER blt/tests )
+    # _blt_tutorial_openmp_executable_end
 
     blt_add_test(NAME blt_openmp_smoke
                  COMMAND blt_openmp_smoke)
@@ -118,7 +120,16 @@ if (ENABLE_CUDA)
     blt_add_test(NAME blt_cuda_runtime_smoke
                  COMMAND blt_cuda_runtime_smoke)
 
+    if (ENABLE_OPENMP)
+        blt_add_executable(NAME blt_cuda_openmp_smoke
+                           SOURCES blt_cuda_openmp_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
+                           DEPENDS_ON cuda openmp
+                           FOLDER blt/tests )
 
+        blt_add_test(NAME blt_cuda_openmp_smoke
+                     COMMAND blt_cuda_openmp_smoke)
+    endif()
 endif()
 
 ################
