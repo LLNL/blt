@@ -137,11 +137,39 @@ Some other useful CUDA flags are:
     # Needed when you have CUDA decorations exposed in libraries
     set(CUDA_LINK_WITH_NVCC ON CACHE BOOL “”)
 
+
+OpenMP
+~~~~~~
+
+To enable OpenMP, set ``ENABLE_OPENMP`` in your host-config file or before loading
+``SetupBLT.cmake``.  Once OpenMP is enabled, simply add ``openmp`` to your library
+executable's ``DEPENDS_ON`` list.
+
+Here is an example of how to add an OpenMP enabled executable:
+
+   .. literalinclude:: ../tests/smoke/CMakeLists.txt
+     :start-after: _blt_tutorial_openmp_executable_start
+     :end-before:  _blt_tutorial_openmp_executable_end
+     :language: cmake
+
+.. note::
+  While we have tried to ensure that BLT chooses the correct compile and link flags for
+  OpenMP, there are several niche cases where the default options are insufficient.
+  For example, linking with NVCC requires to link in the OpenMP libraries directly instead
+  of relying on the compile and link flags returned by CMake's FindOpenMP package.  An
+  example of this is in ``host-configs/llnl-ray-blue_os-clang-coral@2018.08.08.cmake``. 
+  We provide two variables to override BLT's OpenMP flag logic: ``BLT_OPENMP_COMPILE_FLAGS``
+  and ``BLT_OPENMP_LINK_FLAGS``.
+
+
+Example Host-configs
+~~~~~~~~~~~~~~~~~~~~
+
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
 :download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
 
-:download:`llnl-ray-blue_os-gcc@4.9.3.cmake <../host-configs/llnl-ray-blue_os-clang-coral@2018.05.23.cmake>`
+:download:`llnl-ray-blue_os-clang-coral@2018.08.08.cmake <../host-configs/llnl-ray-blue_os-clang-coral@2018.08.08.cmake>`
 
 :download:`llnl-quartz-toss3-gcc@4.9.3.cmake <../host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
 

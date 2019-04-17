@@ -70,11 +70,13 @@ endif()
 # OpenMP test
 ################
 if (ENABLE_OPENMP)
+    # _blt_tutorial_openmp_executable_start
     blt_add_executable(NAME blt_openmp_smoke 
                        SOURCES blt_openmp_smoke.cpp 
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
                        DEPENDS_ON openmp
                        FOLDER blt/tests )
+    # _blt_tutorial_openmp_executable_end
 
     blt_add_test(NAME blt_openmp_smoke
                  COMMAND blt_openmp_smoke)
