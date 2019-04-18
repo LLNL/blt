@@ -13,6 +13,12 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 - BLT_CXX_STD is no longer defined to "c++11" by default. If undefined, BLT will
   not try and add any C++ standard flags.
+- Handle FindMPI variable MPIEXEC changed to MPIEXEC_EXECUTABLE in CMake 3.10+.
+  This now works regardless of which the user defines or what CMake returns.
+- Handle CMake target property LINK_FLAGS changed to LINK_OPTIONS in CMake 3.13+.
+  blt_add_target_link_flags() handles this under the covers and converts the 
+  users strings to a list (3.13+) or list to a string (<3.13).  New property supports
+  generator expressions so thats a plus.
 
 ## 0.2.0 - Release date 2019-02-15
 
