@@ -58,10 +58,10 @@ if (NOT BLT_LOADED)
         cmake_policy(SET CMP0057 NEW)
     endif()
 
-    # Turns relative target_sources() paths to absolute
+    # New turns relative target_sources() paths to absolute
     # Policy added in 3.13+
     # NOTE: this will be deprecated eventually but NEW causes
-    #  problems in header only libraries
+    #  problems in header only libraries, OLD keeps current behavior
     if(POLICY CMP0076)
         cmake_policy(SET CMP0076 OLD)
     endif()
