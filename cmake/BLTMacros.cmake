@@ -537,7 +537,12 @@ macro(blt_add_library)
                       OBJECT     ${arg_OBJECT})
 
     if ( arg_INCLUDES )
-        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+        if (NOT arg_SOURCES )
+            # Header only
+            target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
+        else()
+            target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+        endif()
     endif()
 
     if ( arg_DEFINES )
