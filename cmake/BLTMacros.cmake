@@ -47,10 +47,22 @@ macro(blt_list_append)
          message(FATAL_ERROR "blt_list_append() requires ELEMENTS to be specified" )
     endif()
 
+    # determine if we should add the elements to the list
+    set(_shouldAdd FALSE )
+    set(_listVar "${ARGN}")         # convert macro arguments to list variable
+    if("IF" IN_LIST _listVar)
+        set(_shouldAdd ${arg_IF})   # use IF condition, when present
+    else()
+        set(_shouldAdd TRUE)        # otherwise, always add the elements
+    endif()
+
     # append if
-    if ( (${arg_IF}) OR (NOT DEFINED arg_IF) )
+    if ( ${_shouldAdd} )
         list( APPEND ${arg_TO} ${arg_ELEMENTS} )
     endif()
+
+    unset(_shouldAdd)
+    unset(_listVar)
 
 endmacro(blt_list_append)
 
