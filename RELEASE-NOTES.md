@@ -19,6 +19,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   blt_add_target_link_flags() handles this under the covers and converts the 
   users strings to a list (3.13+) or list to a string (<3.13).  New property supports
   generator expressions so thats a plus.
+- Improved how all BLT MPI information is being merged together and reported to users.
 
 ## 0.2.0 - Release date 2019-02-15
 

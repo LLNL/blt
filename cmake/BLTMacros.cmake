@@ -214,8 +214,9 @@ endmacro(blt_set_target_folder)
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
 ##
-## The flags argument contains a ;-list of linker flags to add to the target.
-## In CMake versions prior to 3.13, this list is converted to a string internally
+## The FLAGS argument expects a ; delimited list of linker flags to add to the target.
+## 
+## Note: In CMake versions prior to 3.13, this list is converted to a string internally
 ## and any ; characters will be removed.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_link_flags)
@@ -233,9 +234,6 @@ macro(blt_add_target_link_flags)
             # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
             # This now supports generator expressions but expects a list
             # not a string
-
-            # Convert from a string to a CMake ;-list
-            string (REPLACE " " ";" _link_flags_list "${arg_FLAGS}")
             set_property(TARGET ${arg_TO} APPEND PROPERTY LINK_OPTIONS ${_link_flags_list})
         else()
             get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
