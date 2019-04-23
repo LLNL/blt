@@ -54,6 +54,7 @@ if (NOT BLT_LOADED)
     # CMake Policies
     ################################
     # Support IN_LIST operator for if()
+    # Policy added in 3.3+
     if(POLICY CMP0057)
         cmake_policy(SET CMP0057 NEW)
     endif()
