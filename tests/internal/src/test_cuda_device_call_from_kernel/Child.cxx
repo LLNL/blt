@@ -43,5 +43,5 @@ __host__ __device__ double Child::Evaluate(const double ain, const double bin, c
    cc = (cin-m_c);
    e = sqrt(bb*bb+cc*cc);
 
-   return 0.0;
+   return e;
 }
