@@ -323,15 +323,15 @@ blt_append_custom_compiler_flag(
 #
 
 if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
-    foreach(flag_var
-            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-            CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-            CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-        if(${flag_var} MATCHES "/MD")
-            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-        endif(${flag_var} MATCHES "/MD")
-    endforeach(flag_var)
+  foreach(_lang C CXX)
+    foreach(_flag
+            FLAGS FLAGS_DEBUG FLAGS_RELEASE
+            FLAGS_MINSIZEREL FLAGS_RELWITHDEBINFO)
+      if(${CMAKE_${_lang}_${_flag}} MATCHES "/MD")
+            string(REGEX REPLACE "/MD" "/MT" ${CMAKE_${_lang}_${_flag} "${${CMAKE_${_lang}_${_flag}}}")
+      endif(${CMAKE_${_lang}_${flag}} MATCHES "/MD")
+    endforeach(_flag)
+  endforeach(_lang)
 endif()
 
 set(langFlags "CMAKE_C_FLAGS" "CMAKE_CXX_FLAGS")
