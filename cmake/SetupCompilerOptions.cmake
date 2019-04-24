@@ -328,7 +328,7 @@ if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
             FLAGS FLAGS_DEBUG FLAGS_RELEASE
             FLAGS_MINSIZEREL FLAGS_RELWITHDEBINFO)
       if(${CMAKE_${_lang}_${_flag}} MATCHES "/MD")
-            string(REGEX REPLACE "/MD" "/MT" ${CMAKE_${_lang}_${_flag} "${${CMAKE_${_lang}_${_flag}}}")
+            string(REGEX REPLACE "/MD" "/MT" ${CMAKE_${_lang}_${_flag}} "${${CMAKE_${_lang}_${_flag}}}")
       endif(${CMAKE_${_lang}_${flag}} MATCHES "/MD")
     endforeach(_flag)
   endforeach(_lang)
