@@ -47,10 +47,22 @@ macro(blt_list_append)
          message(FATAL_ERROR "blt_list_append() requires ELEMENTS to be specified" )
     endif()
 
+    # determine if we should add the elements to the list
+    set(_shouldAdd FALSE )
+    set(_listVar "${ARGN}")         # convert macro arguments to list variable
+    if("IF" IN_LIST _listVar)
+        set(_shouldAdd ${arg_IF})   # use IF condition, when present
+    else()
+        set(_shouldAdd TRUE)        # otherwise, always add the elements
+    endif()
+
     # append if
-    if ( (${arg_IF}) OR (NOT DEFINED arg_IF) )
+    if ( ${_shouldAdd} )
         list( APPEND ${arg_TO} ${arg_ELEMENTS} )
     endif()
+
+    unset(_shouldAdd)
+    unset(_listVar)
 
 endmacro(blt_list_append)
 
@@ -202,9 +214,10 @@ endmacro(blt_set_target_folder)
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
 ##
-## The flags argument contains a ;-list of linker flags to add to the target.
-## This list is converted to a string internally and any ; characters will be
-## removed.
+## The FLAGS argument expects a ; delimited list of linker flags to add to the target.
+## 
+## Note: In CMake versions prior to 3.13, this list is converted to a string internally
+## and any ; characters will be removed.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_link_flags)
 
@@ -217,17 +230,23 @@ macro(blt_add_target_link_flags)
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
     if(NOT "${arg_FLAGS}" STREQUAL "")
-        # get prev flags
-        get_target_property(_LINK_FLAGS ${arg_TO} LINK_FLAGS)
-        if(NOT _LINK_FLAGS)
-            set(_LINK_FLAGS "")
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+            # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
+            # This now supports generator expressions but expects a list
+            # not a string
+            set_property(TARGET ${arg_TO} APPEND PROPERTY LINK_OPTIONS ${_link_flags_list})
+        else()
+            get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
+            if(NOT _link_flags)
+                set(_link_flags "")
+            endif()
+            set(_link_flags "${arg_FLAGS} ${_link_flags}")
+
+            # Convert from a CMake ;-list to a string
+            string (REPLACE ";" " " _link_flags_str "${_link_flags}")
+            set_target_properties(${arg_TO}
+                                  PROPERTIES LINK_FLAGS "${_link_flags_str}")
         endif()
-        # append new flag
-        set(_LINK_FLAGS "${arg_FLAGS} ${_LINK_FLAGS}")
-        # Convert _LINK_FLAGS from a CMake ;-list to a string
-        string (REPLACE ";" " " _LINK_FLAGS_STR "${_LINK_FLAGS}")
-        set_target_properties(${arg_TO}
-                              PROPERTIES LINK_FLAGS "${_LINK_FLAGS_STR}")
     endif()
 
 endmacro(blt_add_target_link_flags)
@@ -482,14 +501,9 @@ macro(blt_add_library)
         #  Header-only library support
         #
         foreach (_file ${arg_HEADERS})
-            get_filename_component(_name ${_file} NAME)
-            get_filename_component(_absolute ${_file} ABSOLUTE)
-
             # Determine build location of headers
-            set(_build_headers ${_build_headers} ${_absolute})
-
-            # Determine install location of headers
-            set(_install_headers ${_install_headers} include/${arg_HEADERS_OUTPUT_SUBDIR}/${_name})
+            get_filename_component(_absolute ${_file} ABSOLUTE)
+            list(APPEND _build_headers ${_absolute})
         endforeach()
 
         #Note: This only works if both libraries are handled in the same directory,
@@ -521,7 +535,12 @@ macro(blt_add_library)
                       OBJECT     ${arg_OBJECT})
 
     if ( arg_INCLUDES )
-        target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+        if (NOT arg_SOURCES )
+            # Header only
+            target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
+        else()
+            target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
+        endif()
     endif()
 
     if ( arg_DEFINES )
@@ -732,12 +751,18 @@ macro(blt_add_test)
 
     # Handle MPI
     if ( ${arg_NUM_MPI_TASKS} )
-        set(test_command ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${test_command} )
+        # Handle CMake changing MPIEXEC to MPIEXEC_EXECUTABLE
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
+            set(_mpiexec ${MPIEXEC_EXECUTABLE})
+        else()
+            set(_mpiexec ${MPIEXEC})
+        endif()
+
+        set(test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${test_command} )
     endif()
 
     add_test(NAME ${arg_NAME}
-             COMMAND ${test_command} 
-             )
+             COMMAND ${test_command} )
 
 endmacro(blt_add_test)
 
