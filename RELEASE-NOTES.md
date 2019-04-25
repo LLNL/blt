@@ -9,6 +9,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## Unreleased
 
+### Added
+- Added support for C++17. Note: Neither XL or CMake's CUDA_STANDARD does not support
+  C++17 (A BLT fatal error will occur).
+
 ### Changed
 
 - BLT_CXX_STD is no longer defined to "c++11" by default. If undefined, BLT will
