@@ -35,7 +35,7 @@ if (ENABLE_COVERAGE)
     ######################################
     # Setup Code Coverage Report Targets
     ######################################
-    include(blt/cmake/SetupCodeCoverageReports.cmake)
+    include(${BLT_ROOT_DIR}/cmake/SetupCodeCoverageReports.cmake)
     
 endif()
 
