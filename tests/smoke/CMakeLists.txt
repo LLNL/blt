@@ -95,7 +95,7 @@ if (ENABLE_MPI)
 
     blt_add_test(NAME blt_mpi_smoke
                  COMMAND blt_mpi_smoke
-                 NUM_MPI_TASKS 2)
+                 NUM_MPI_TASKS 4)
 endif()
 
 ################
