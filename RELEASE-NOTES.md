@@ -24,6 +24,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   users strings to a list (3.13+) or list to a string (<3.13).  New property supports
   generator expressions so thats a plus.
 - Improved how all BLT MPI information is being merged together and reported to users.
+- Increased number of ranks in `blt_mpi_smoke` test to catch regression.
 
 ## 0.2.0 - Release date 2019-02-15
 
