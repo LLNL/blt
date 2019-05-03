@@ -4,7 +4,8 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j/branch/master?svg=true)](https://ci.appveyor.com/project/cyrush/blt/branch/master)
 [![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=latest)](https://llnl-blt.readthedocs.io/en/latest/?badge=latest)
 
-BLT is a streamlined `CMake <https://cmake.org/>`_-based foundation for building, linking and testing HPC software.
+BLT is a streamlined [CMake](https://cmake.org)-based foundation for 
+<b>b</b>uilding, <b>l</b>inking and <b>t</b>esting HPC software.
 
 BLT makes is easy to get up and running on a wide range of compilers (gcc, clang, intel, XL, Visual Studio), 
 operating systems (Linux, Mac, Windows) and HPC technologies (MPI, OpenMP, CUDA, HIP).
@@ -18,7 +19,7 @@ BLT is easy to pull into in your existing or new CMake-based project using a sin
   include(path/to/blt/SetupBLT.cmake)
   ```
 
-For more information, please check our user documentation and tutorial at https://llnl-blt.readthedocs.io/en/latest/
+For more information, please check our [user documentation and tutorial](https://llnl-blt.readthedocs.io).
 
 Questions
 ---------
@@ -40,23 +41,21 @@ Developers include:
  * Richard Hornung (hornung1@llnl.gov)
  * Randolph Settgast (settgast1@llnl.gov)
 
-Please see the `BLT Contributors Page <https://github.com/LLNL/BLT/graphs/contributors>`_ for the full list of project contributors.
+Please see the [BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors) for the full list of project contributors.
 
 Projects using this library
 ---------------------------
 
- * `Ascent <https://github.com/Alpine-DAV/ascent>`_: A flyweight in-situ visualization and analysis runtime for multi-physics HPC simulations
- * `Axom <https://github.com/LLNL/axom>`_: Software infrastructure for the development of multi-physics applications and computational tools
- * `CHAI <https://github.com/LLNL/CHAI>`_: Copy-hiding array abstraction to automatically migrate data between memory spaces
- * `Conduit <https://github.com/LLNL/conduit>`_: Simplified data exchange for HPC simulations
- * `RAJA <https://github.com/LLNL/raja>`_: Performance portability layer for HPC
- * `Umpire <https://github.com/LLNL/Umpire>`_: Application-focused API for memory management on NUMA and GPU architectures
- * `VTK-h <https://github.com/Alpine-DAV/vtk-h>`_: Scientific visualization algorithms for emerging processor architectures
+ * [Ascent](https://github.com/Alpine-DAV/ascent): A flyweight in-situ visualization and analysis runtime for multi-physics HPC simulations
+ * [Axom](https://github.com/LLNL/axom): Software infrastructure for the development of multi-physics applications and computational tools
+ * [CHAI](https://github.com/LLNL/CHAI): Copy-hiding array abstraction to automatically migrate data between memory spaces
+ * [Conduit](https://github.com/LLNL/conduit): Simplified data exchange for HPC simulations
+ * [RAJA](https://github.com/LLNL/raja): Performance portability layer for HPC
+ * [Umpire](https://github.com/LLNL/Umpire): Application-focused API for memory management on NUMA and GPU architectures
+ * [VTK-h](https://github.com/Alpine-DAV/vtk-h): Scientific visualization algorithms for emerging processor architectures
 
-If you would like to add a library to this list, please let us know 
-via `email <mailto:blt-dev@llnl.gov>`_
-or by submitting an `issue <https://github.com/LLNL/blt/issues>`_ 
-or `pull-request <https://github.com/LLNL/blt/pulls>`_.
+If you would like to add a library to this list, please let us know via [email](mailto:blt-dev@llnl.gov)
+or by submitting an [issue](https://github.com/LLNL/blt/issues) or [pull-request](https://github.com/LLNL/blt/pulls).
 
 Release
 -------
@@ -72,4 +71,4 @@ Unlimited Open Source - BSD Distribution
 Additional license and copyright information can be found in the following files:
  * [LICENSE](./LICENSE)
  * [COPYRIGHT](./COPYRIGHT) 
-
+ 
