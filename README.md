@@ -5,7 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=latest)](https://llnl-blt.readthedocs.io/en/latest/?badge=latest)
 
 BLT is a streamlined [CMake](https://cmake.org)-based foundation for 
-<b>B</b>uilding, <b>L</b>inking and <b>T</b>esting large-scale high peformance computing (HPC) applications.
+<b>B</b>uilding, <b>L</b>inking and <b>T</b>esting large-scale high performance computing (HPC) applications.
 
 BLT makes it easy to get up and running on a wide range of HPC compilers, 
 operating systems and technologies:
