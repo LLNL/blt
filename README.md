@@ -5,15 +5,43 @@
 [![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=latest)](https://llnl-blt.readthedocs.io/en/latest/?badge=latest)
 
 BLT is a streamlined [CMake](https://cmake.org)-based foundation for 
-<b>b</b>uilding, <b>l</b>inking and <b>t</b>esting HPC software.
+<b>B</b>uilding, <b>L</b>inking and <b>T</b>esting large-scale high peformance computing (HPC) applications.
 
-BLT makes is easy to get up and running on a wide range of compilers (gcc, clang, intel, XL, Visual Studio), 
-operating systems (Linux, Mac, Windows) and HPC technologies (MPI, OpenMP, CUDA, HIP).
+BLT makes it easy to get up and running on a wide range of HPC compilers, 
+operating systems and technologies:
+ * Compiler families:
+      [gcc](https://gcc.gnu.org), 
+      [clang](https://clang.llvm.org), 
+      [Intel](https://software.intel.com/en-us/compilers), 
+      [XL](https://www.ibm.com/us-en/marketplace/ibm-c-and-c-plus-plus-compiler-family), 
+      [Visual Studio](https://visualstudio.microsoft.com/vs/features/cplusplus)
+ * Operating systems: 
+      Linux, 
+      Mac OS, 
+      Windows
+ * HPC programming models:
+      [MPI](https://www.mpi-forum.org/), 
+      [OpenMP](https://www.openmp.org/), 
+      [CUDA](https://developer.nvidia.com/cuda-zone), 
+      [HIP](https://gpuopen.com/compute-product/hip-convert-cuda-to-portable-c-code)
+ * Unit testing and benchmarking (built-in):
+      [Google Test (gtest and gmock)](https://github.com/google/googletest),
+      [FRUIT](https://sourceforge.net/projects/fortranxunit),
+      [gbenchmark](https://github.com/google/benchmark)
+ * Documentation:
+      [Doxygen](http://www.doxygen.nl/), 
+      [Sphinx](http://www.sphinx-doc.org)
+ * Code style and health:
+      [Uncrustify](http://uncrustify.sourceforge.net), 
+      [AStyle](http://astyle.sourceforge.net/), 
+      [Cppcheck](http://cppcheck.sourceforge.net/)
+      [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html)
+ 
 
 Getting started
 ---------------
 
-BLT is easy to pull into in your existing or new CMake-based project using a single CMake `include()` command:
+BLT is easy to pull into an existing or new CMake-based project using a single CMake `include()` command:
 
   ```cmake
   include(path/to/blt/SetupBLT.cmake)
@@ -61,11 +89,12 @@ Release
 -------
 
 Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
+
 Produced at the Lawrence Livermore National Laboratory.
 
 All rights reserved.
 
-Unlimited Open Source - BSD Distribution
+Unlimited Open Source - BSD 3-clause Distribution
 `LLNL-CODE-725085`  `OCEC-17-023`
 
 Additional license and copyright information can be found in the following files:
