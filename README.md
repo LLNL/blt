@@ -33,8 +33,8 @@ operating systems and technologies:
       [Sphinx](http://www.sphinx-doc.org)
  * Code style and health:
       [Uncrustify](http://uncrustify.sourceforge.net), 
-      [AStyle](http://astyle.sourceforge.net/), 
-      [Cppcheck](http://cppcheck.sourceforge.net/)
+      [AStyle](http://astyle.sourceforge.net), 
+      [Cppcheck](http://cppcheck.sourceforge.net),
       [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html)
  
 
