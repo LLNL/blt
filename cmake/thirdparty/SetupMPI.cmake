@@ -18,10 +18,12 @@ else()
     endif()
 endif()
 
-set(_mpi_compile_flags)
-set(_mpi_includes)
-set(_mpi_libraries)
-set(_mpi_link_flags)
+set(_mpi_compile_flags )
+set(_mpi_includes )
+set(_mpi_libraries )
+set(_mpi_link_flags )
+
+message(STATUS "Enable FindMPI:  ${ENABLE_FIND_MPI}")
 
 if (ENABLE_FIND_MPI)
     find_package(MPI REQUIRED)
@@ -67,8 +69,24 @@ if (ENABLE_FIND_MPI)
     list(REMOVE_DUPLICATES _mpi_libraries)
 endif()
 
+# Allow users to override CMake's FindMPI
+if (BLT_MPI_COMPILE_FLAGS)
+    set(_mpi_compile_flags ${BLT_MPI_COMPILE_FLAGS})
+endif()
+if (BLT_MPI_INCLUDES)
+    set(_mpi_includes ${BLT_MPI_INCLUDES})
+endif()
+if (BLT_MPI_LIBRARIES)
+    set(_mpi_libraries ${BLT_MPI_LIBRARIES})
+endif()
+if (BLT_MPI_LINK_FLAGS)
+    set(_mpi_link_flags ${BLT_MPI_LINK_FLAGS})
+endif()
+
+
+# Output all MPI information
 message(STATUS "BLT MPI Compile Flags:  ${_mpi_compile_flags}")
-message(STATUS "BLT MPI Include Paths:   ${_mpi_includes}")
+message(STATUS "BLT MPI Include Paths:  ${_mpi_includes}")
 message(STATUS "BLT MPI Libraries:      ${_mpi_libraries}")
 message(STATUS "BLT MPI Link Flags:     ${_mpi_link_flags}")
 
@@ -84,7 +102,7 @@ if (ENABLE_FORTRAN)
     # Determine if we should use fortran mpif.h header or fortran mpi module
     find_path(mpif_path
         NAMES "mpif.h"
-        PATHS ${MPI_Fortran_INCLUDE_PATH}
+        PATHS ${_mpi_includes}
         NO_DEFAULT_PATH
         )
     

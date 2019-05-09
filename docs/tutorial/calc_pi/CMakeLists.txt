@@ -1,5 +1,4 @@
 ###############################################################################
-# ****** WARNING - CHANGES IN THIS FILE NEED TO BE REFLECTED IN SPHINX DOCS
 # BLT Tutorial Example: Calc Pi.
 #
 ###############################################################################
@@ -21,33 +20,43 @@ include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 ###############################################################################
 # Example 1: Creating a simple executable.
 ###############################################################################
-blt_add_executable( NAME example_1
+# _blt_tutorial_example_executable_start
+blt_add_executable( NAME    example_1
                     SOURCES example_1.cpp )
+# _blt_tutorial_example_executable_end
 
 ###############################################################################
 # Example 2: Creating a library and an executable using our library.
 ###############################################################################
+# _blt_tutorial_calcpi_library_start
 blt_add_library( NAME    calc_pi
                  HEADERS calc_pi.hpp calc_pi_exports.h
                  SOURCES calc_pi.cpp )
+# _blt_tutorial_calcpi_library_end
 
 if(WIN32 AND BUILD_SHARED_LIBS)
     target_compile_definitions(calc_pi PUBLIC WIN32_SHARED_LIBS)
 endif()
 
+# _blt_tutorial_calcpi_example2_start 
 blt_add_executable( NAME       example_2
                     SOURCES    example_2.cpp 
                     DEPENDS_ON calc_pi)
+# _blt_tutorial_calcpi_example2_end
 
 ###############################################################################
 # Test 1: Creating an executable using gtest, using the executable via ctest.
 ###############################################################################
-blt_add_executable( NAME      test_1
+# _blt_tutorial_calcpi_test1_executable_start
+blt_add_executable( NAME       test_1
                     SOURCES    test_1.cpp 
                     DEPENDS_ON calc_pi gtest)
+# _blt_tutorial_calcpi_test1_executable_end
 
+# _blt_tutorial_calcpi_test1_test_start
 blt_add_test( NAME    test_1 
               COMMAND test_1)
+# _blt_tutorial_calcpi_test1_test_start
 
 ###############################################################################
 #
@@ -56,7 +65,7 @@ blt_add_test( NAME    test_1
 #
 ###############################################################################
 if(MPI_FOUND)
-
+# _blt_tutorial_calcpi_test2_executable_start
     blt_add_library( NAME       calc_pi_mpi
                      HEADERS    calc_pi_mpi.hpp calc_pi_mpi_exports.h
                      SOURCES    calc_pi_mpi.cpp 
@@ -66,13 +75,16 @@ if(MPI_FOUND)
         target_compile_definitions(calc_pi_mpi PUBLIC WIN32_SHARED_LIBS)
     endif()
 
-    blt_add_executable( NAME test_2
-                        SOURCES test_2.cpp 
+    blt_add_executable( NAME       test_2
+                        SOURCES    test_2.cpp 
                         DEPENDS_ON calc_pi calc_pi_mpi gtest)
+# _blt_tutorial_calcpi_test2_executable_end
 
-    blt_add_test( NAME test_2 
-                  COMMAND test_2
+# _blt_tutorial_calcpi_test2_test_start
+    blt_add_test( NAME          test_2 
+                  COMMAND       test_2
                   NUM_MPI_TASKS 2) # number of mpi tasks to use
+# _blt_tutorial_calcpi_test2_test_end
 endif()
 
 ###############################################################################
@@ -82,7 +94,7 @@ endif()
 #
 ###############################################################################
 if(CUDA_FOUND)
-
+# _blt_tutorial_calcpi_cuda_start
     # avoid warnings about sm_20 deprecated
     set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30)
 	
@@ -103,6 +115,7 @@ if(CUDA_FOUND)
 
     blt_add_test( NAME    test_3
                   COMMAND test_3)
+# _blt_tutorial_calcpi_cuda_end
 endif()
 
 

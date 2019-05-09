@@ -9,24 +9,27 @@ Unit Testing
 ============
 
 BLT has a built-in copy of the 
-`Google Test framework (gtest) <https://github.com/google/googletest>`_ for C and C++ unit tests and the 
-`Fortran Unit Test Framework (FRUIT) <https://sourceforge.net/projects/fortranxunit/>`_ for Fortran unit tests. 
+`Google Test framework (gtest) <https://github.com/google/googletest>`_ for C
+and C++ unit tests and the 
+`Fortran Unit Test Framework (FRUIT) <https://sourceforge.net/projects/fortranxunit/>`_
+for Fortran unit tests.
 
+Each Google Test or FRUIT file may contain multiple tests and is compiled into
+its own executable that can be run directly or as a ``make`` target. 
 
-Each gtest or FRUIT file may contain multiple tests and is compiled into its own executable 
-that can be run directly or as a ``make`` target. 
-
-In this section, we give a brief overview of GTest and discuss how to add unit tests using the ``blt_add_test`` macro.
+In this section, we give a brief overview of GTest and discuss how to add unit
+tests using the ``blt_add_test`` macro.
 
 
 Configuring tests within BLT
 ----------------------------
 
-Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on by default. 
+Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on
+by default. 
 
 For additional configuration granularity, BLT provides configuration options 
-for the individual built-in unit testing libraries.  The following additional options are available
-when ``ENABLE_TESTS`` is on:
+for the individual built-in unit testing libraries.  The following additional
+options are available when ``ENABLE_TESTS`` is on:
 
 ``ENABLE_GTEST``
   Option to enable gtest (default: ``ON``).
@@ -81,9 +84,10 @@ pre-/post-processing operations. A ``main()`` routine provided in a test
 file should be placed at the end of the file in which it resides.
 
 
-Note that Google test is initialized before ``MPI_Init()`` is called. 
+Note that Google Test is initialized before ``MPI_Init()`` is called. 
 
-Other Google Test features, such as *fixtures* and *mock* objects (gmock) may be used as well. 
+Other Google Test features, such as *fixtures* and *mock* objects (gmock) may
+be used as well. 
 
 See the `Google Test Primer <https://github.com/google/googletest/blob/master/googletest/docs/Primer.md>`_ 
 for a discussion of Google Test concepts, how to use them, and a listing of 
@@ -159,8 +163,9 @@ Adding a BLT unit test
 ----------------------
 
 After writing a unit test, we add it to the project's build system 
-by first generating an executable for the test using the ``blt_add_executable()`` macro.
-We then register the test using the ``blt_add_test()`` macro.
+by first generating an executable for the test using the
+``blt_add_executable()`` macro. We then register the test using the
+``blt_add_test()`` macro.
 
 .. admonition:: blt_add_test
    :class: hint
@@ -182,22 +187,25 @@ and compares the result to :math:`\pi`, within a given tolerance (``1e-6``).
 Here is the test code:
 
 .. literalinclude:: tutorial/calc_pi/test_1.cpp
+   :start-after: _blt_tutorial_calpi_test1_start
+   :end-before:  _blt_tutorial_calpi_test1_end
    :language: cpp
-   :lines: 11-19
 
 To add this test to the build system, we first generate a test executable:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :start-after: _blt_tutorial_calcpi_test1_executable_start
+   :end-before:  _blt_tutorial_calcpi_test1_executable_end
    :language: cmake
-   :lines: 46-48
 
 Note that this test executable depends on two targets: ``calc_pi`` and ``gtest``.
 
 We then register this executable as a test:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+   :start-after: _blt_tutorial_calcpi_test1_test_start
+   :end-before:  _blt_tutorial_calcpi_test1_test_end
    :language: cmake
-   :lines: 50-51
 
 .. Hide these for now until we bring into an example
 .. .. note::
@@ -229,7 +237,8 @@ you are modifying or adding code and need to understand how unit test details
 are working, for example.
 
 .. note:: 
-    You can pass arguments to ctest via the ``TEST_ARGS`` parameter, e.g. ``make test TEST_ARGS="..."``
+    You can pass arguments to ctest via the ``TEST_ARGS`` parameter, e.g.
+    ``make test TEST_ARGS="..."``
     Useful arguments include:
     
     -R

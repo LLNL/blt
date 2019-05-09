@@ -36,7 +36,7 @@ TEST(calc_pi_mpi, compare_mpi_serial)
     ASSERT_NEAR(calc_pi(1000),calc_pi_mpi(1000),1e-12);
 }
 
-
+// _blt_tutorial_calcpi_test2_main_start
 // main driver that allows using mpi w/ google test
 int main(int argc, char * argv[])
 {
@@ -52,4 +52,4 @@ int main(int argc, char * argv[])
 
     return result;
 }
-
+//_blt_tutorial_calcpi_test2_main_end
