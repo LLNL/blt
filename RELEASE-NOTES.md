@@ -12,6 +12,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Added
 - Added support for C++17. Note: Neither XL or CMake's CUDA_STANDARD does not support
   C++17 (A BLT fatal error will occur).
+- Added ability to override all MPI variables: BLT_MPI_COMPILE_FLAGS,
+  BLT_MPI_INCLUDES, BLT_MPI_LIBRARIES, and BLT_MPI_LINK_FLAGS
 
 ### Changed
 

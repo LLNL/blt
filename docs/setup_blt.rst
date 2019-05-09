@@ -7,14 +7,16 @@ Setup BLT in your CMake Project
 =================================
 
 BLT is easy to include in your CMake project whether it is an existing project or
-you are starting from scratch. You simply pull it into your project using a CMake ``include()`` command.
+you are starting from scratch. You simply pull it into your project using a CMake
+``include()`` command.
 
 .. code-block:: cmake
 
     include(path/to/blt/SetupBLT.cmake)
 
 You can include the BLT source in your repository or pass the location 
-of BLT at CMake configure time through the optional ``BLT_SOURCE_DIR`` CMake variable. 
+of BLT at CMake configure time through the optional ``BLT_SOURCE_DIR``
+CMake variable. 
 
 There are two standard choices for including the BLT source in your repository:
 
@@ -66,12 +68,14 @@ However if your project is likely to be used by other projects.  The following
 is recommended:
 
 .. literalinclude:: tutorial/blank_project/CMakeLists.txt
+   :start-after: _blt_tutorial_include_blt_start
+   :end-before:  _blt_tutorial_include_blt_end
    :language: cmake
-   :lines: 14-32
 
 This is a robust way of setting up BLT and supports an optional external BLT source
 directory. This allows the use of a common BLT across large projects. There are some
-helpful error messages for if the BLT submodule is missing and the commands to solve it. 
+helpful error messages for if the BLT submodule is missing and the commands to solve
+it. 
 
 .. note::
   Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
@@ -105,8 +109,8 @@ If you are using BLT outside of your project pass the location of BLT as follows
 Example: blank_project
 ----------------------
 
-The ``blank_project`` example is provided to show you some of BLT's built-in features.
-It demonstrates the bare minimum required for testing purposes.
+The ``blank_project`` example is provided to show you some of BLT's built-in
+features. It demonstrates the bare minimum required for testing purposes.
 
 Here is the entire CMakeLists.txt file for ``blank_project``:
 
@@ -182,16 +186,18 @@ If everything went correctly, you should have the following output:
 
     Total Test time (real) =   0.10 sec
 
-Note that the default options for ``blank_project`` only include a single test ``blt_gtest_smoke``.
-As we will see later on, BLT includes additional smoke tests that are activated when BLT is configured 
-with other options enabled, like Fortran, MPI, OpenMP and Cuda. 
+Note that the default options for ``blank_project`` only include a single test
+``blt_gtest_smoke``. As we will see later on, BLT includes additional smoke
+tests that are activated when BLT is configured with other options enabled,
+like Fortran, MPI, OpenMP, and Cuda. 
 
 Host-configs
 ------------
 
 To capture (and revision control) build options, third party library paths, etc.,
-we recommend using CMake's initial-cache file mechanism. 
-This feature allows you to pass a file to CMake that provides variables to bootstrap the configuration process. 
+we recommend using CMake's initial-cache file mechanism. This feature allows you
+to pass a file to CMake that provides variables to bootstrap the configuration
+process. 
 
 You can pass initial-cache files to cmake via the ``-C`` command line option.
 
@@ -200,20 +206,22 @@ You can pass initial-cache files to cmake via the ``-C`` command line option.
     cmake -C config_file.cmake
 
 
-We call these initial-cache files ``host-config`` files since we typically create a file for each platform
-or specific hosts, if necessary. 
+We call these initial-cache files ``host-config`` files since we typically create
+a file for each platform or specific hosts, if necessary. 
 
-
-These files use standard CMake commands. CMake ``set()`` commands need to specify ``CACHE`` as follows:
+These files use standard CMake commands. CMake ``set()`` commands need to specify
+``CACHE`` as follows:
 
 .. code-block:: cmake
 
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
-Here is a snippet from a host-config file that specifies compiler details for using gcc 4.9.3 on LLNL's surface cluster. 
+Here is a snippet from a host-config file that specifies compiler details for
+using gcc 4.9.3 on LLNL's surface cluster. 
 
 .. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :start-after: _blt_tutorial_surface_compiler_config_start
+   :end-before:  _blt_tutorial_surface_compiler_config_end
    :language: cmake
-   :lines: 9-23
 
 

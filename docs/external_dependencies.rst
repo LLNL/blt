@@ -51,12 +51,15 @@ You have already seen one use of ``DEPENDS_ON`` for a BLT
 registered dependency in test_1:  ``gtest``
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+   :start-after: _blt_tutorial_calcpi_test1_executable_start
+   :end-before:  _blt_tutorial_calcpi_test1_executable_end
    :language: cmake
-   :lines: 46-51
 
 
-``gtest`` is the name for the google test dependency in BLT registered via ``blt_register_library``.
-Even though google test is built-in and uses CMake, ``blt_register_library`` allows us to easily set defines needed by all dependent targets.
+``gtest`` is the name for the Google Test dependency in BLT registered via 
+``blt_register_library``. Even though Google Test is built-in and uses CMake,
+``blt_register_library`` allows us to easily set defines needed by all dependent
+targets.
 
 
 MPI Example
@@ -69,33 +72,46 @@ which uses MPI to parallelize the calculation over the integration intervals.
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
 
 .. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :start-after: _blt_tutorial_surface_mpi_config_start
+   :end-before:  _blt_tutorial_surface_mpi_config_end
    :language: cmake
-   :lines: 25-33
 
 
 Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+   :start-after: _blt_tutorial_calcpi_test2_executable_start
+   :end-before:  _blt_tutorial_calcpi_test2_executable_end
    :language: cmake
-   :lines: 59-74
 
 
 For MPI unit tests, you also need to specify the number of MPI Tasks
 to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test`` macro.
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+   :start-after: _blt_tutorial_calcpi_test2_test_start
+   :end-before:  _blt_tutorial_calcpi_test2_test_end
    :language: cmake
-   :lines: 71-73
 
 
-
-As mentioned in :ref:`UnitTesting`, google test provides a default ``main()`` driver
-that will execute all unit tests defined in the source. To test MPI code we need to create a main that initializes and finalizes MPI in addition to google test. ``test_2.cpp`` provides an example driver for MPI with google test.
-
+As mentioned in :ref:`UnitTesting`, google test provides a default ``main()``
+driver that will execute all unit tests defined in the source. To test MPI code,
+we need to create a main that initializes and finalizes MPI in addition to Google
+Test. ``test_2.cpp`` provides an example driver for MPI with Google Test.
 
 .. literalinclude:: tutorial/calc_pi/test_2.cpp
+   :start-after: _blt_tutorial_calcpi_test2_main_start
+   :end-before:  _blt_tutorial_calcpi_test2_main_end
    :language: cpp
-   :lines: 40-54
+
+.. note::
+  While we have tried to ensure that BLT chooses the correct setup information
+  for MPI, but there are several niche cases where the default behavior is
+  insufficient. We have provided several available override variables:
+  BLT_MPI_COMPILE_FLAGS, BLT_MPI_INCLUDES, BLT_MPI_LIBRARIES, and BLT_MPI_LINK_FLAGS.
+  BLT also has the variable ENABLE_FIND_MPI which turns off all CMake's FindMPI
+  logic and then uses the MPI wrapper directly when you provide them as the default
+  compilers.
 
 
 CUDA Example
@@ -104,19 +120,26 @@ CUDA Example
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation over the integration intervals.
 
-To enable CUDA, we set ``ENABLE_CUDA``, ``CMAKE_CUDA_COMPILER``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Also before enabling the CUDA language in CMake, you need to set ``CMAKE_CUDA_HOST_COMPILER`` in CMake 3.9+ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable for you and enable the CUDA language.
+To enable CUDA, we set ``ENABLE_CUDA``, ``CMAKE_CUDA_COMPILER``, and
+``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Also before enabling the
+CUDA language in CMake, you need to set ``CMAKE_CUDA_HOST_COMPILER`` in CMake 3.9+
+or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call 
+``enable_language(CUDA)``, BLT will set the appropriate host compiler variable
+for you and enable the CUDA language.
 
 Here is a snippet with these settings for LLNL's Surface Cluster:
 
 .. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+   :start-after: _blt_tutorial_surface_cuda_config_start
+   :end-before:  _blt_tutorial_surface_cuda_config_end
    :language: cmake
-   :lines: 39-44
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
 .. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+   :start-after: _blt_tutorial_calcpi_cuda_start
+   :end-before:  _blt_tutorial_calcpi_cuda_end
    :language: cmake
-   :lines: 82-100
 
 The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, 
 along with adding the normal CUDA library and headers to your library or executable,
@@ -271,5 +294,3 @@ And here is how to build and test the code on Ray:
   100% tests passed, 0 tests failed out of 7
   
   Total Test time (real) =   2.47 sec  
-
-
