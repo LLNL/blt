@@ -106,7 +106,7 @@ Test. ``test_2.cpp`` provides an example driver for MPI with Google Test.
 
 .. note::
   While we have tried to ensure that BLT chooses the correct setup information
-  for MPI, but there are several niche cases where the default behavior is
+  for MPI, there are several niche cases where the default behavior is
   insufficient. We have provided several available override variables:
   BLT_MPI_COMPILE_FLAGS, BLT_MPI_INCLUDES, BLT_MPI_LIBRARIES, and BLT_MPI_LINK_FLAGS.
   BLT also has the variable ENABLE_FIND_MPI which turns off all CMake's FindMPI
