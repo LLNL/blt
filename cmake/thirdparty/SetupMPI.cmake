@@ -7,7 +7,9 @@
 # MPI
 ################################
 
-# Handle CMake changing FindMPI variables
+# CMake changed the output variables that we use from Find(MPI)
+# in 3.10+.  This toggles the variables based on the CMake version
+# the user is running.
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
     if (NOT MPIEXEC_EXECUTABLE AND MPIEXEC)
         set(MPIEXEC_EXECUTABLE ${MPIEXEC} CACHE PATH "" FORCE)
