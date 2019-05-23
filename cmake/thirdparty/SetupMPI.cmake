@@ -7,15 +7,23 @@
 # MPI
 ################################
 
-# Handle CMake changing MPIEXEC to MPIEXEC_EXECUTABLE
+# CMake changed some of the output variables that we use from Find(MPI)
+# in 3.10+.  This toggles the variables based on the CMake version
+# the user is running.
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
     if (NOT MPIEXEC_EXECUTABLE AND MPIEXEC)
         set(MPIEXEC_EXECUTABLE ${MPIEXEC} CACHE PATH "" FORCE)
     endif()
+
+    set(_mpi_includes_suffix "INCLUDE_DIRS")
+    set(_mpi_compile_flags_suffix "COMPILE_OPTIONS")
 else()
     if (MPIEXEC_EXECUTABLE AND NOT MPIEXEC)
         set(MPIEXEC ${MPIEXEC_EXECUTABLE} CACHE PATH "" FORCE)
     endif()
+
+    set(_mpi_includes_suffix "INCLUDE_PATH")
+    set(_mpi_compile_flags_suffix "COMPILE_FLAGS")
 endif()
 
 set(_mpi_compile_flags )
@@ -32,22 +40,25 @@ if (ENABLE_FIND_MPI)
     # Merge found MPI info and remove duplication
     #-------------------
     # Compile flags
-    list(APPEND _mpi_compile_flags ${MPI_C_COMPILE_FLAGS})
-    if (NOT "${MPI_C_COMPILE_FLAGS}" STREQUAL "${MPI_CXX_COMPILE_FLAGS}")
-        list(APPEND _mpi_compile_flags ${MPI_CXX_LINK_FLAGS})
+    list(APPEND _mpi_compile_flags ${MPI_C_${_mpi_compile_flags_suffix}})
+    if (NOT "${MPI_C_${_mpi_compile_flags_suffix}}" STREQUAL
+             "${MPI_CXX_${_mpi_compile_flags_suffix}}")
+        list(APPEND _mpi_compile_flags ${MPI_CXX_${_mpi_compile_flags_suffix}})
     endif()
     if (ENABLE_FORTRAN)
-        if (NOT "${MPI_C_COMPILE_FLAGS}" STREQUAL "${MPI_Fortran_COMPILE_FLAGS}")
-            list(APPEND _mpi_compile_flags ${MPI_CXX__COMPILE_FLAGS})
+        if (NOT "${MPI_C_${_mpi_compile_flags_suffix}}" STREQUAL
+                "${MPI_Fortran_${_mpi_compile_flags_suffix}}")
+            list(APPEND _mpi_compile_flags ${MPI_Fortran_${_mpi_compile_flags_suffix}})
         endif()
     endif()
 
     # Include paths
-    list(APPEND _mpi_includes ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+    list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}}
+                              ${MPI_CXX_${_mpi_includes_suffix}})
     if (ENABLE_FORTRAN)
-        list(APPEND _mpi_includes ${MPI_Fortran_INCLUDE_PATH})
+        list(APPEND _mpi_includes ${MPI_Fortran_${_mpi_includes_suffix}})
     endif()
-    list(REMOVE_DUPLICATES _mpi_includes)
+    blt_list_remove_duplicates(TO _mpi_includes)
 
     # Link flags
     set(_mpi_link_flags ${MPI_C_LINK_FLAGS})
@@ -61,12 +72,11 @@ if (ENABLE_FIND_MPI)
     endif()
 
     # Libraries
-    set(_mpi_libraries ${MPI_C_LIBRARIES}
-                       ${MPI_CXX_LIBRARIES})
+    set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
     if (ENABLE_FORTRAN)
         list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
     endif()
-    list(REMOVE_DUPLICATES _mpi_libraries)
+    blt_list_remove_duplicates(TO _mpi_libraries)
 endif()
 
 # Allow users to override CMake's FindMPI
@@ -122,5 +132,3 @@ blt_register_library(NAME          mpi
                      LIBRARIES     ${_mpi_libraries}
                      COMPILE_FLAGS ${_mpi_compile_flags}
                      LINK_FLAGS    ${_mpi_link_flags} )
-
-

@@ -14,9 +14,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   C++17 (A BLT fatal error will occur).
 - Added ability to override all MPI variables: BLT_MPI_COMPILE_FLAGS,
   BLT_MPI_INCLUDES, BLT_MPI_LIBRARIES, and BLT_MPI_LINK_FLAGS
+- blt_list_remove_duplicates(): macro for removing duplicates from a list that
+  doesn't error on empty lists.
 
 ### Changed
-
+- Handle CMake 3.10+ changing all the FindMPI output variables.
 - BLT_CXX_STD is no longer defined to "c++11" by default. If undefined, BLT will
   not try and add any C++ standard flags.
 - Handle FindMPI variable MPIEXEC changed to MPIEXEC_EXECUTABLE in CMake 3.10+.
