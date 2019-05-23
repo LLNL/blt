@@ -7,7 +7,7 @@
 # MPI
 ################################
 
-# CMake changed the output variables that we use from Find(MPI)
+# CMake changed some of the output variables that we use from Find(MPI)
 # in 3.10+.  This toggles the variables based on the CMake version
 # the user is running.
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
@@ -17,9 +17,6 @@ if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
 
     set(_mpi_includes_suffix "INCLUDE_DIRS")
     set(_mpi_compile_flags_suffix "COMPILE_OPTIONS")
-    set(_mpi_c_library_variable "MPI_mpi_LIBRARY")
-    set(_mpi_cxx_library_variable "MPI_mpicxx_LIBRARY")
-    set(_mpi_fortran_library_variable "MPI_mpifort_LIBRARY")
 else()
     if (MPIEXEC_EXECUTABLE AND NOT MPIEXEC)
         set(MPIEXEC ${MPIEXEC_EXECUTABLE} CACHE PATH "" FORCE)
@@ -27,9 +24,6 @@ else()
 
     set(_mpi_includes_suffix "INCLUDE_PATH")
     set(_mpi_compile_flags_suffix "COMPILE_FLAGS")
-    set(_mpi_c_library_variable "MPI_C_LIBRARIES")
-    set(_mpi_cxx_library_variable "MPI_CXX_LIBRARIES")
-    set(_mpi_fortran_library_variable "MPI_Fortran_LIBRARIES")
 endif()
 
 set(_mpi_compile_flags )
@@ -78,10 +72,9 @@ if (ENABLE_FIND_MPI)
     endif()
 
     # Libraries
-    set(_mpi_libraries ${${_mpi_c_library_variable}}
-                       ${${_mpi_cxx_library_variable}})
+    set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
     if (ENABLE_FORTRAN)
-        list(APPEND _mpi_libraries ${${_mpi_fortran_library_variable}})
+        list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
     endif()
     blt_list_remove_duplicates(TO _mpi_libraries)
 endif()
