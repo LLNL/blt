@@ -68,6 +68,42 @@ endmacro(blt_list_append)
 
 
 ##------------------------------------------------------------------------------
+## blt_list_remove_duplicates( TO <list> )
+##
+## Removes duplicate elements from the given TO list.
+##
+## This macro is essentially a wrapper around CMake's `list(REMOVE_DUPLICATES ...)`
+## command but doesn't throw an error if the list is empty or not defined.
+##
+## Usage Example:
+##
+##  set(mylist A B A)
+##  blt_list_remove_duplicates( TO mylist )
+##
+##------------------------------------------------------------------------------
+macro(blt_list_remove_duplicates)
+
+    set(options)
+    set(singleValueArgs TO )
+    set(multiValueArgs )
+
+    # parse macro arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+     # sanity checks
+    if( NOT DEFINED arg_TO )
+        message(FATAL_ERROR "blt_list_append() requires a TO <list> argument")
+    endif()
+
+    if ( ${arg_TO} )
+        list(REMOVE_DUPLICATES ${arg_TO} )
+    endif()
+
+endmacro(blt_list_remove_duplicates)
+
+
+##------------------------------------------------------------------------------
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
@@ -1140,8 +1176,8 @@ macro(blt_combine_static_libraries)
     endforeach()
     
     # Remove duplicates from the includes
-    list( REMOVE_DUPLICATES interface_include_directories )
-    list( REMOVE_DUPLICATES interface_system_include_directories )
+    blt_list_remove_duplicates(TO interface_include_directories )
+    blt_list_remove_duplicates(TO interface_system_include_directories )
 
     # Remove any system includes from the regular includes
     foreach( include_dir ${interface_system_include_directories} )
@@ -1222,7 +1258,7 @@ macro(blt_print_target_properties)
         string(REGEX REPLACE ";" "\\\\;" _property_list "${_property_list}")
         string(REGEX REPLACE "\n" ";" _property_list "${_property_list}")
         blt_filter_list(TO _property_list REGEX "^LOCATION$|^LOCATION_|_LOCATION$" OPERATION "exclude")
-        list(REMOVE_DUPLICATES _property_list)   
+        blt_list_remove_duplicates(TO _property_list)   
 
         ## For interface targets, filter against whitelist of valid properties
         get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
