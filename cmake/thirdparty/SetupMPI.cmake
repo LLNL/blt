@@ -77,6 +77,14 @@ if (ENABLE_FIND_MPI)
         list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
     endif()
     blt_list_remove_duplicates(TO _mpi_libraries)
+    
+    # Make nvcc work with MPI when compiling RAJA MPI+CUDA nvcc.
+    # It fixes nvcc compilation for options like -pthread.
+    if (RAJA_LOADED AND ENABLE_CUDA)
+        if (NOT "${_mpi_compile_flags}" STREQUAL "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_compile_flags}>")
+            set (_mpi_compile_flags "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_compile_flags}>")
+        endif()
+    endif()
 endif()
 
 # Allow users to override CMake's FindMPI
