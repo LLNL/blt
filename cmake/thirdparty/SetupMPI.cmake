@@ -125,21 +125,17 @@ if (ENABLE_FORTRAN)
     endif()
 endif()
 
-# Create the registered library
-# When using blt with RAJA, this fix is needed to compile RAJA with MPI and CUDA enabled smoothly.
-if(RAJA_EXISTS AND ENABLE_FIND_MPI AND ENABLE_CUDA)
-blt_register_library(NAME mpi
-                     INCLUDES ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH} ${MPI_Fortran_INCLUDE_PATH}
-                     TREAT_INCLUDES_AS_SYSTEM ON
-                     LIBRARIES ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES}
-                     COMPILE_FLAGS "-Xcompiler=${MPI_C_COMPILE_FLAGS}"
-                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}")
-else()
-blt_register_library(NAME mpi
-                     INCLUDES ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH} ${MPI_Fortran_INCLUDE_PATH}
-                     TREAT_INCLUDES_AS_SYSTEM ON
-                     LIBRARIES ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES}
-                     COMPILE_FLAGS "${MPI_C_COMPILE_FLAGS}"
-                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}")
+#This fixes nvcc issues with '-pthread' kind of options
+set(_compile_flags ${MPI_C_COMPILE_FLAGS})
 
+if (ENABLE_CUDA AND ENABLE_FIND_MPI)
+        set(_compile_flags $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${MPI_C_COMPILE_FLAGS}>)
 endif()
+
+# register MPI with blt
+blt_register_library(NAME mpi
+                     INCLUDES ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH} ${MPI_Fortran_INCLUDE_PATH}
+                     TREAT_INCLUDES_AS_SYSTEM ON
+                     LIBRARIES ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES}
+                     COMPILE_FLAGS ${_compile_flags}
+                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}")
