@@ -126,9 +126,20 @@ if (ENABLE_FORTRAN)
 endif()
 
 # Create the registered library
-blt_register_library(NAME          mpi
-                     INCLUDES      ${_mpi_includes}
+# When using blt with RAJA, this fix is needed to compile RAJA with MPI and CUDA enabled smoothly.
+if(RAJA_EXISTS AND ENABLE_FIND_MPI AND ENABLE_CUDA)
+blt_register_library(NAME mpi
+                     INCLUDES ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH} ${MPI_Fortran_INCLUDE_PATH}
                      TREAT_INCLUDES_AS_SYSTEM ON
-                     LIBRARIES     ${_mpi_libraries}
-                     COMPILE_FLAGS ${_mpi_compile_flags}
-                     LINK_FLAGS    ${_mpi_link_flags} )
+                     LIBRARIES ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES}
+                     COMPILE_FLAGS "-Xcompiler=${MPI_C_COMPILE_FLAGS}"
+                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}")
+else()
+blt_register_library(NAME mpi
+                     INCLUDES ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH} ${MPI_Fortran_INCLUDE_PATH}
+                     TREAT_INCLUDES_AS_SYSTEM ON
+                     LIBRARIES ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES} ${MPI_Fortran_LIBRARIES}
+                     COMPILE_FLAGS "${MPI_C_COMPILE_FLAGS}"
+                     LINK_FLAGS    "${MPI_C_COMPILE_FLAGS} ${MPI_Fortran_LINK_FLAGS}")
+
+endif()
