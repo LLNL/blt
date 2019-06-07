@@ -78,7 +78,7 @@ if (ENABLE_FIND_MPI)
     endif()
     blt_list_remove_duplicates(TO _mpi_libraries)
     
-    # Make nvcc work with MPI when compiling RAJA MPI+CUDA nvcc.
+    # Make nvcc work with MPI when compiling MPI+CUDA nvcc.
     # It fixes nvcc compilation for options like -pthread.
     if (ENABLE_CUDA)
         set (_mpi_compile_flags 
