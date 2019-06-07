@@ -81,9 +81,9 @@ if (ENABLE_FIND_MPI)
     # Make nvcc work with MPI when compiling RAJA MPI+CUDA nvcc.
     # It fixes nvcc compilation for options like -pthread.
     if (ENABLE_CUDA)
-        if (NOT "${_mpi_compile_flags}" STREQUAL "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_compile_flags}>")
-            set (_mpi_compile_flags "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_compile_flags}>")
-        endif()
+        set (_mpi_compile_flags 
+             "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_compile_flags}>"
+             "$<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_mpi_compile_flags}>")
     endif()
 endif()
 
