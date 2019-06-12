@@ -30,6 +30,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Improved how all BLT MPI information is being merged together and reported to users.
 - Increased number of ranks in `blt_mpi_smoke` test to catch regression.
 
+### Fixed
+- Do not attempt to split sources on generator expression
+
+
 ## 0.2.0 - Release date 2019-02-15
 
 ### Added
