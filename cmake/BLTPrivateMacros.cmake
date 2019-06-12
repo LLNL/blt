@@ -445,6 +445,11 @@ endmacro(blt_add_hip_executable)
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
 ##                                    Fortran_LIST <list name>)
+##
+## Filters source list by file extension into C/C++ and Fortran source lists
+## based on BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS (global BLT variables).
+## Files with no extension or generator expressions that are not object libraries
+## (of the form "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
 ##------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
@@ -463,13 +468,19 @@ macro(blt_split_source_list_by_language)
 
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
-        # Assume the user knows what they are doing if using a
-        # generator expressions because BLT can't evaluate them
-        if(${_file} MATCHES "^$<")
+        # Allow CMake object libraries but disallow generator expressions
+        # in source lists due to this causing all sorts of bad side effects
+        if("${_file}" MATCHES "^\\$<TARGET_OBJECTS:")
             continue()
+        elseif("${_file}" MATCHES "^\\$<")
+            message(FATAL_ERROR "blt_split_source_list_by_language macro does not support generator expressions because CMake does not provide a way to evaluate them. Given generator expression: ${_file}")
         endif()
 
         get_filename_component(_ext ${_file} EXT)
+        if("${_ext}" STREQUAL "")
+            message(FATAL_ERROR "blt_split_source_list_by_language given source file with no extension: ${_file}")
+        endif()
+
         string(TOLOWER ${_ext} _ext_lower)
 
         if(${_ext_lower} IN_LIST BLT_C_FILE_EXTS)
