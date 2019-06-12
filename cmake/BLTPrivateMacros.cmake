@@ -465,7 +465,7 @@ macro(blt_split_source_list_by_language)
     foreach(_file ${arg_SOURCES})
         # Assume the user knows what they are doing if using a
         # generator expressions because BLT can't evaluate them
-        if(${_file } MATCHES "^$<")
+        if(${_file} MATCHES "^$<")
             continue()
         endif()
 
