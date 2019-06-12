@@ -463,6 +463,12 @@ macro(blt_split_source_list_by_language)
 
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
+        # Assume the user knows what they are doing if using a
+        # generator expressions because BLT can't evaluate them
+        if(${_file } MATCHES "^$<")
+            continue()
+        endif()
+
         get_filename_component(_ext ${_file} EXT)
         string(TOLOWER ${_ext} _ext_lower)
 
