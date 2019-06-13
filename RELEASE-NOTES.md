@@ -29,9 +29,14 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   generator expressions so thats a plus.
 - Improved how all BLT MPI information is being merged together and reported to users.
 - Increased number of ranks in `blt_mpi_smoke` test to catch regression.
+- blt_split_source_list_by_language now supports non-BLT object libraries and errors
+  out when any other generator expression is given in source list.  This is to avoid
+  very bad side effects of not being able to set source properties on anything
+  inside the generator expression.  This is because BLT cannot evaluate them.
 
 ### Fixed
-- Do not attempt to split sources on generator expression
+- Error out with better message when empty file extensions is hit in
+  blt_split_source_list_by_language.
 
 
 ## 0.2.0 - Release date 2019-02-15
