@@ -7,7 +7,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 The project release numbers follow [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.2.5 - Release date 2019-06-13
 
 ### Added
 - Added support for C++17. Note: Neither XL or CMake's CUDA_STANDARD does not support
