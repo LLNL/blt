@@ -7,6 +7,8 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 The project release numbers follow [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - Release date yyyy-mm-dd
+
 ## [Version 0.2.5] - Release date 2019-06-13
 
 ### Added
@@ -70,5 +72,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Known Bugs
 
 
+
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.2.5...develop
 [Version 0.2.5]: https://github.com/LLNL/blt/compare/v0.2.0...v0.2.5
 [Version 0.2.0]: https://github.com/LLNL/blt/compare/v0.1.0...v0.2.0
