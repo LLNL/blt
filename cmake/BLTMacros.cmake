@@ -270,9 +270,9 @@ macro(blt_add_target_link_flags)
             # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
             # This now supports generator expressions but expects a list
             # not a string
-            string(REPLACE " " ";" _flag_list ${arg_FLAGS})
+            separate_arguments(_flag_list NATIVE_COMMAND "${arg_FLAGS}" )
             foreach( _flag  ${_flag_list} )
-                set_property(TARGET ${arg_TO} APPEND PROPERTY LINK_OPTIONS ${_flag})
+                set_property(TARGET ${arg_TO} APPEND PROPERTY LINK_OPTIONS "${_flag}" )
             endforeach()
         else()
             get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
