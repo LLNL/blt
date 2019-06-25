@@ -40,10 +40,23 @@ if (ENABLE_FIND_MPI)
     # Merge found MPI info and remove duplication
     #-------------------
     # Compile flags
-    list(APPEND _mpi_compile_flags ${MPI_C_${_mpi_compile_flags_suffix}})
+    if (ENABLE_CUDA)
+        list(APPEND _mpi_compile_flags   
+                    "$<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${MPI_C_${_mpi_compile_flags_suffix}}>"
+                    "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${MPI_C_${_mpi_compile_flags_suffix}}>")
+    else()
+        list(APPEND _mpi_compile_flags ${MPI_C_${_mpi_compile_flags_suffix}})
+    endif()
+    
     if (NOT "${MPI_C_${_mpi_compile_flags_suffix}}" STREQUAL
              "${MPI_CXX_${_mpi_compile_flags_suffix}}")
-        list(APPEND _mpi_compile_flags ${MPI_CXX_${_mpi_compile_flags_suffix}})
+        if (ENABLE_CUDA)
+            list(APPEND _mpi_compile_flags
+            "$<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${MPI_CXX_${_mpi_compile_flags_suffix}}>"
+            "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${MPI_CXX_${_mpi_compile_flags_suffix}}")
+        else()
+            list(APPEND _mpi_compile_flags ${MPI_CXX_${_mpi_compile_flags_suffix}})
+        endif()
     endif()
     if (ENABLE_FORTRAN)
         if (NOT "${MPI_C_${_mpi_compile_flags_suffix}}" STREQUAL
