@@ -32,7 +32,8 @@ set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-D${HIP_RUNTIME_DEFI
 # through a hip compiler (hipcc)
 blt_register_library(NAME      hip
                      INCLUDES  ${HIP_INCLUDE_DIRS}
-                     LIBRARIES ${HIP_LIBRARIES})
+                     LIBRARIES ${HIP_LIBRARIES}
+                     TREAT_INCLUDES_AS_SYSTEM ON)
 
 # depend on 'hip_runtime', if you only need to use hip
 # headers or link to hip libs, but don't need to run your source
@@ -41,4 +42,5 @@ blt_register_library(NAME          hip_runtime
                      INCLUDES      ${HIP_RUNTIME_INCLUDE_DIRS}
                      DEFINES       ${HIP_RUNTIME_DEFINES}
                      COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
-                     LIBRARIES     ${HIP_RUNTIME_LIBRARIES})
+                     LIBRARIES     ${HIP_RUNTIME_LIBRARIES}
+                     TREAT_INCLUDES_AS_SYSTEM ON)
