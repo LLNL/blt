@@ -130,6 +130,20 @@ if (ENABLE_CUDA)
         blt_add_test(NAME blt_cuda_openmp_smoke
                      COMMAND blt_cuda_openmp_smoke)
     endif()
+
+    if (ENABLE_MPI)
+        blt_add_executable(NAME blt_cuda_mpi_smoke
+                           SOURCES blt_cuda_mpi_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                           DEPENDS_ON cuda mpi hwloc
+                           FOLDER blt/tests )
+        blt_add_test(NAME blt_cuda_mpi_smoke
+                     # Tests on a 2^24 elements array.
+                     # It can go much bigger, but will not
+                     # exceed memory capacity in most computers.
+                     COMMAND blt_mpi_smoke 24
+                     NUM_MPI_TASKS 4)
+    endif()
 endif()
 
 ################
