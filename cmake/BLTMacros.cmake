@@ -352,12 +352,12 @@ macro(blt_register_library)
     set(BLT_${uppercase_name}_IS_REGISTERED_LIBRARY TRUE CACHE BOOL "" FORCE)
 
     if( arg_DEPENDS_ON )
-        set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE LIST "" FORCE)
+        set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE STRING "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_DEPENDS_ON)
     endif()
 
     if( arg_INCLUDES )
-        set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE LIST "" FORCE)
+        set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE STRING "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
     endif()
 
@@ -376,12 +376,12 @@ macro(blt_register_library)
     mark_as_advanced(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
-        set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE LIST "" FORCE)
+        set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE STRING "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_FORTRAN_MODULES)
     endif()
 
     if( arg_LIBRARIES )
-        set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE LIST "" FORCE)
+        set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE STRING "" FORCE)
     else()
         # This prevents cmake from falling back on adding -l<library name>
         # to the command line for BLT registered libraries which are not
@@ -401,7 +401,7 @@ macro(blt_register_library)
     endif()
 
     if( arg_DEFINES )
-        set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE LIST "" FORCE)
+        set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE STRING "" FORCE)
         mark_as_advanced(BLT_${uppercase_name}_DEFINES)
     endif()
 
