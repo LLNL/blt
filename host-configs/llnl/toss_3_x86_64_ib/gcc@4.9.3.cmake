@@ -16,29 +16,31 @@
 # gcc@4.9.3 compilers
 ###########################################################
 
+set(GCC_VERSION "gcc-4.9.3")
+set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}")
+
 # c compiler
-set(CMAKE_C_COMPILER "/usr/tce/packages/gcc/gcc-4.9.3/bin/gcc" CACHE PATH "")
+set(CMAKE_C_COMPILER "${GCC_HOME}/bin/gcc" CACHE PATH "")
 
 # cpp compiler
-set(CMAKE_CXX_COMPILER "/usr/tce/packages/gcc/gcc-4.9.3/bin/g++" CACHE PATH "")
+set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
 
 # fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
 
 # fortran compiler
-set(CMAKE_Fortran_COMPILER "/usr/tce/packages/gcc/gcc-4.9.3/bin/gfortran" CACHE PATH "")
+set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
 
 ###########################################################
 # MPI Support
 ###########################################################
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_C_COMPILER       "/usr/tce/packages/mvapich2/mvapich2-2.2-gcc-4.9.3/bin/mpicc" CACHE PATH "")
+set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3-${GCC_VERSION}" CACHE PATH "")
 
-set(MPI_CXX_COMPILER     "/usr/tce/packages/mvapich2/mvapich2-2.2-gcc-4.9.3/bin/mpicxx" CACHE PATH "")
-
-set(MPI_Fortran_COMPILER "/usr/tce/packages/mvapich2/mvapich2-2.2-gcc-4.9.3/bin/mpif90" CACHE PATH "")
+set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc" CACHE PATH "")
+set(MPI_CXX_COMPILER     "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
+set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 
 set(MPIEXEC              "/usr/bin/srun" CACHE PATH "")
-
 set(MPIEXEC_NUMPROC_FLAG "-n" CACHE PATH "")
