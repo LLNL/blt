@@ -1291,7 +1291,7 @@ macro(blt_print_target_properties)
         ## Filter to get variables of the form BLT_<target>_ and print
         get_cmake_property(_variable_names VARIABLES)
         foreach (prop ${_variable_names})
-            if(prop MATCHES "${_target_prefix}?")
+            if(prop MATCHES "^${_target_prefix}")
                 message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
             endif()
         endforeach()
