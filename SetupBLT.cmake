@@ -59,6 +59,12 @@ if (NOT BLT_LOADED)
         cmake_policy(SET CMP0057 NEW)
     endif()
 
+    # Policy to use <PackageName>_ROOT variable in find_<Package> commands
+    # Policy added in 3.12+
+    if(POLICY CMP0074)
+        cmake_policy(SET CMP0074 NEW)
+    endif()
+
     # New turns relative target_sources() paths to absolute
     # Policy added in 3.13+
     # NOTE: this will be deprecated eventually but NEW causes
