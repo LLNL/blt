@@ -12,6 +12,9 @@
 # 
 # It demonstrates a more complex build, where the code is linked with nvcc.
 #------------------------------------------------------------------------------
+# Warning: This host-config does not currently work with CMake@3.13 or above
+#          due to a linking error. 
+#------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
 # Compilers
