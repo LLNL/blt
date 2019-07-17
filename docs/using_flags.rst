@@ -6,7 +6,7 @@
 Portable compiler flags
 =========================
 
-To ease with the development of code that is portable across different architectures
+To simplify the development of code that is portable across different architectures
 and compilers, BLT provides the ``blt_append_custom_compiler_flag()`` macro,
 which allows users to easily place a compiler dependent flag into a CMake variable.
 
@@ -23,6 +23,9 @@ which allows users to easily place a compiler dependent flag into a CMake variab
    * XL (IBM compiler)
    * INTEL (Intel compiler)
    * MSVC (Microsoft Visual Studio)
+   * MSVC_INTEL (Intel toolchain in Microsoft Visual Studio)
+   * PGI
+   * HCC (AMD GPU)
 
 Here is an example for setting the appropriate flag to treat warnings as errors:
 

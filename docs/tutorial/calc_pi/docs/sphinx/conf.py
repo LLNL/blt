@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Calc Pi'
-copyright = u'2017, Calc Pi Developers'
+copyright = u'Calc Pi Developers'
 author = u'Calc Pi Developers'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -74,20 +74,20 @@ is recommended:
 
 This is a robust way of setting up BLT and supports an optional external BLT source
 directory. This allows the use of a common BLT across large projects. There are some
-helpful error messages for if the BLT submodule is missing and the commands to solve
+helpful error messages if the BLT submodule is missing as well as the commands to solve
 it. 
 
 .. note::
   Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
   our tutorial is part of the blt repository and we want this project to be 
-  automatically tested by just a single check-out of our repository.
+  automatically tested using a single clone of our repository.
 
 
 
 Running CMake
 -------------
 
-To configure a project with CMake, first create a build directory and cd into it.  
+To configure a project with CMake, first create a build directory and ``cd`` into it.  
 Then run cmake with the path to your project.  
 
 .. code-block:: bash
@@ -207,7 +207,7 @@ You can pass initial-cache files to cmake via the ``-C`` command line option.
 
 
 We call these initial-cache files ``host-config`` files since we typically create
-a file for each platform or specific hosts, if necessary. 
+a file for each platform or for specific hosts, if necessary. 
 
 These files use standard CMake commands. CMake ``set()`` commands need to specify
 ``CACHE`` as follows:
@@ -219,7 +219,7 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
 Here is a snippet from a host-config file that specifies compiler details for
 using gcc 4.9.3 on LLNL's surface cluster. 
 
-.. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :start-after: _blt_tutorial_surface_compiler_config_start
    :end-before:  _blt_tutorial_surface_compiler_config_end
    :language: cmake

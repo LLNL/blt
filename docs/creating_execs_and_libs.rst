@@ -12,9 +12,9 @@ In the previous section, we learned the basics about how to create a CMake
 project with BLT, how to configure the project and how to build and test BLT's built-in third party libraries.  
 
 We now move on to creating libraries and executables
-using two of BLT's core macros: ``blt_add_library`` and ``blt_add_executable``.
+using two of BLT's core macros: ``blt_add_library()`` and ``blt_add_executable()``.
 
-We begin with a simple executable that calculates pi by numerical integration
+We begin with a simple executable that calculates :math:`\pi` by numerical integration
 (``example_1``). We will then extract that code into a library, which we link
 into a new executable (``example_2``).
 
@@ -49,9 +49,10 @@ create the executable ``<build dir>/bin/example_1``:
 
 .. admonition:: blt_add_executable
    :class: hint
+   
    This is one of the core macros that enables BLT to simplify our CMake-based
    project. It unifies many CMake calls into one easy to use macro.
-   ``blt_add_executable`` creates a CMake executable target with the
+   ``blt_add_executable()`` creates a CMake executable target with the
    given sources, sets the output directory to ``<build dir>/bin``
    (unless overridden with the macro parameter ``OUTPUT_DIR``) and handles
    internal and external dependencies in a greatly simplified manner. There
@@ -62,7 +63,7 @@ Example 2: One library, one executable
 --------------------------------------
 
 This example is a bit more exciting.  This time we are creating a library
-that calculates pi and then linking that library into an executable.
+that calculates the value of pi and then linking that library into an executable.
 
 First, we create the library with the following BLT code:
 
@@ -103,7 +104,8 @@ BLT has simplified the use of CMake object libraries through the
 ``blt_add_library`` macro. Object libraries are a collection of object files
 that are not linked or archived into a library. They are used in other libraries
 or executables through the ``DEPENDS_ON`` macro argument. This is generally
-useful for combining smaller libraries into a larger library without the linker removing unused symbols in the larger library.
+useful for combining smaller libraries into a larger library without 
+the linker removing unused symbols in the larger library.
 
 .. code-block:: cmake
 
