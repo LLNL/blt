@@ -49,6 +49,7 @@ create the executable ``<build dir>/bin/example_1``:
 
 .. admonition:: blt_add_executable
    :class: hint
+   
    This is one of the core macros that enables BLT to simplify our CMake-based
    project. It unifies many CMake calls into one easy to use macro.
    ``blt_add_executable`` creates a CMake executable target with the

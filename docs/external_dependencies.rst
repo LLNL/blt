@@ -71,7 +71,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :start-after: _blt_tutorial_surface_mpi_config_start
    :end-before:  _blt_tutorial_surface_mpi_config_end
    :language: cmake
@@ -129,7 +129,7 @@ for you and enable the CUDA language.
 
 Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: ../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :start-after: _blt_tutorial_surface_cuda_config_start
    :end-before:  _blt_tutorial_surface_cuda_config_end
    :language: cmake
@@ -190,17 +190,17 @@ Example Host-configs
 
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
-:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
+:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
 
-:download:`llnl-ray-blue_os-clang-coral@2018.08.08.cmake <../host-configs/llnl-ray-blue_os-clang-coral@2018.08.08.cmake>`
+:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf <../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
 
-:download:`llnl-quartz-toss3-gcc@4.9.3.cmake <../host-configs/llnl-quartz-toss3-gcc@4.9.3.cmake>`
+:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake <../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
 
 Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
 
-:download:`llnl-naples-darwin-10.11-clang@7.3.0.cmake  <../host-configs/llnl-naples-darwin-10.11-clang@7.3.0.cmake>`
+:download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
 
 
 Building and testing on Surface
@@ -216,7 +216,7 @@ Here is how you can use the host-config file to configure a build of the ``calc_
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=../../../../blt ..
+    cmake -C ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  -DBLT_SOURCE_DIR=../../../../blt ..
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) to run the unit tests that are using MPI and CUDA:
 

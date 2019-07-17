@@ -56,7 +56,7 @@ blt_add_executable( NAME       test_1
 # _blt_tutorial_calcpi_test1_test_start
 blt_add_test( NAME    test_1 
               COMMAND test_1)
-# _blt_tutorial_calcpi_test1_test_start
+# _blt_tutorial_calcpi_test1_test_end
 
 ###############################################################################
 #

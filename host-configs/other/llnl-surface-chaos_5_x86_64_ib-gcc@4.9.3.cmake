@@ -46,5 +46,5 @@ set(CUDA_TOOLKIT_ROOT_DIR "/opt/cudatoolkit-8.0" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "/opt/cudatoolkit-8.0/bin/nvcc" CACHE PATH "")
 set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}" CACHE PATH "")
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "")
-# _blt_tutorial_surface_cuda_config_start
+# _blt_tutorial_surface_cuda_config_end
 
