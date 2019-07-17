@@ -1,14 +1,14 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include "gtest/gtest.h"
-#include <iostream> 
+#include <iostream>
 
 
 //------------------------------------------------------------------------------
-// Simple smoke test for gtest 
+// Simple smoke test for gtest
 //------------------------------------------------------------------------------
 TEST(blt_gtest_smoke,basic_assert_example)
 {
@@ -19,14 +19,14 @@ TEST(blt_gtest_smoke,basic_assert_example)
 //------------------------------------------------------------------------------
 // Tests the gtest death test feature, which are disabled by default.
 //
-// Exits program with non-zero exit code, passing the test. 
+// Exits program with non-zero exit code, passing the test.
 // Note: To enable death tests, configure BLT with ENABLE_GTEST_DEATH_TESTS.
 //------------------------------------------------------------------------------
 TEST(blt_gtest_smoke,death_test)
 {
-#if (GTEST_HAS_DEATH_TEST == 0)
+  #if (GTEST_HAS_DEATH_TEST == 0)
   std::cout <<"Note: Death tests disabled in this configuration." << std::endl;
-#endif 
+  #endif
 
   // Invoke death test function whether death tests enabled or disabled.
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";

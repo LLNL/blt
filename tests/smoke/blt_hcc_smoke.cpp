@@ -1,6 +1,6 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -8,9 +8,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 //-----------------------------------------------------------------------------
-///
-/// file: blt_hcc_smoke.cpp
-///
+//
+// file: blt_hcc_smoke.cpp
+//
 //-----------------------------------------------------------------------------
 
 #include <hc.hpp>
@@ -18,11 +18,12 @@
 
 int main()
 {
-    hc::parallel_for_each(hc::extent<1>(1), []() [[hc]] {
-        hc::printf("Accelerator: Hello World!\n");
-    }).wait();
+  hc::parallel_for_each(hc::extent<1>(1), []() [[hc]]
+  {
+    hc::printf("Accelerator: Hello World!\n");
+  }).wait();
 
-    return 0;
+  return 0;
 }
 
 

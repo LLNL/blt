@@ -1,6 +1,6 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include <omp.h>
@@ -8,23 +8,23 @@
 
 /**
  * Simple test program that uses openmp without guards.  Should only be compiled when OpenMP is enabled.
- */ 
+ */
 int main()
 {
-    
-    #pragma omp parallel
-    {
-      int thId = omp_get_thread_num();
-      int thNum = omp_get_num_threads();
-      int thMax = omp_get_max_threads();
 
-      #pragma omp critical
-      std::cout <<"\nMy thread id is: " << thId
-              <<"\nNum threads is: " << thNum 
+  #pragma omp parallel
+  {
+    int thId = omp_get_thread_num();
+    int thNum = omp_get_num_threads();
+    int thMax = omp_get_max_threads();
+
+    #pragma omp critical
+    std::cout <<"\nMy thread id is: " << thId
+              <<"\nNum threads is: " << thNum
               <<"\nMax threads is: " << thMax
-               << std::endl;
-    }
+              << std::endl;
+  }
 
-    return 0;
+  return 0;
 }
 

@@ -1,10 +1,10 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include "gtest/gtest.h"
-#include "gmock/gmock.h" 
+#include "gmock/gmock.h"
 
 //------------------------------------------------------------------------------
 
@@ -13,9 +13,9 @@
 //------------------------------------------------------------------------------
 class Thing
 {
-  public:
-      virtual ~Thing() {}
-      virtual void Method() = 0;
+public:
+  virtual ~Thing() {}
+  virtual void Method() = 0;
 };
 
 //------------------------------------------------------------------------------
@@ -23,22 +23,22 @@ class Thing
 //------------------------------------------------------------------------------
 class MethodCaller
 {
-  public: 
-        MethodCaller(Thing *thing)
-        :m_thing(thing)
-        {
-            // empty
-        }
+public:
+  MethodCaller(Thing *thing)
+    : m_thing(thing)
+  {
+    // empty
+  }
 
-        void Go()
-        {
-            // call Method() on thing 2 times
-            m_thing->Method();
-            m_thing->Method();
-        }
+  void Go()
+  {
+    // call Method() on thing 2 times
+    m_thing->Method();
+    m_thing->Method();
+  }
 
-  private:
-      Thing* m_thing;
+private:
+  Thing* m_thing;
 };
 
 //------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ class MethodCaller
 //------------------------------------------------------------------------------
 class MockThing : public Thing
 {
-  public:
-        MOCK_METHOD0(Method, void());
+public:
+  MOCK_METHOD0(Method, void());
 };
 
 
@@ -57,12 +57,12 @@ class MockThing : public Thing
 using ::testing::AtLeast;
 TEST(blt_gtest_smoke,basic_mock_test)
 {
-    MockThing m;
-    EXPECT_CALL(m, Method()).Times(AtLeast(2));
+  MockThing m;
+  EXPECT_CALL(m, Method()).Times(AtLeast(2));
 
-    MethodCaller mcaller(&m);
+  MethodCaller mcaller(&m);
 
-    mcaller.Go();
+  mcaller.Go();
 }
 
 
@@ -71,9 +71,9 @@ TEST(blt_gtest_smoke,basic_mock_test)
 //------------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
-    // The following lines must be executed to initialize Google Test
-    // and Google Mock before running the tests.
-    ::testing::InitGoogleTest(&argc, argv);
-    ::testing::InitGoogleMock(&argc, argv);
-    return RUN_ALL_TESTS();
+  // The following lines must be executed to initialize Google Test
+  // and Google Mock before running the tests.
+  ::testing::InitGoogleTest(&argc, argv);
+  ::testing::InitGoogleMock(&argc, argv);
+  return RUN_ALL_TESTS();
 }

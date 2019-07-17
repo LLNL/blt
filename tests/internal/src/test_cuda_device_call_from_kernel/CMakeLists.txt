@@ -3,27 +3,26 @@
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
-#####################################
+#------------------------------------------------------------------------------
 # Test CUDA virtual device method call from kernels across library boundary
-# CUDA needs to be enabled, with appropriate Flags set up for building and running
-# on your current GPU architecture. 
-#####################################
+# CUDA needs to be enabled, with appropriate Flags set up for building and
+# running on your current GPU architecture. 
+#------------------------------------------------------------------------------
 set(t_cuda_device_call_from_kernel_headers
-    Child.h
-    Parent.h)
+    Child.hpp
+    Parent.hpp)
 
 set(t_cuda_device_call_from_kernel_sources
-    Child.cxx
-    Parent.cxx)
+    Child.cpp
+    Parent.cpp)
 
 blt_add_library(NAME       t_cuda_device_call_from_kernel_lib
                 SOURCES    ${t_cuda_device_call_from_kernel_sources}
                 HEADERS    ${t_cuda_device_call_from_kernel_headers}
-                DEPENDS_ON cuda
-                )
+                DEPENDS_ON cuda)
 
 set(t_cuda_device_call_from_kernel_exec_src
-    CudaTests.cxx)
+    CudaTests.cpp)
 
 blt_add_executable( NAME       t_cuda_device_call_from_kernel_exec
                     SOURCES    ${t_cuda_device_call_from_kernel_exec_src}
@@ -31,5 +30,4 @@ blt_add_executable( NAME       t_cuda_device_call_from_kernel_exec
 
 blt_add_test(NAME    t_cuda_device_call_from_kernel
              COMMAND t_cuda_device_call_from_kernel_exec)
-
 
