@@ -1,6 +1,6 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include "Example.hpp"
@@ -8,19 +8,18 @@
 //------------------------------------------------------------------------------
 Example::Example()
 {
-    // empty
+  // empty
 }
 
 //------------------------------------------------------------------------------
 Example::~Example()
 {
-    // empty
+  // empty
 }
 
 //------------------------------------------------------------------------------
-bool
-Example::ReturnTrue()
+bool Example::ReturnTrue()
 {
-    return true;
+  return true;
 }
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #ifndef TESTS_INTERNAL_SRC_COMBINE_STATIC_LIBRARY_TEST_FOO2_HPP_
@@ -16,7 +16,7 @@ class Foo2
 public:
   Foo2();
   ~Foo2();
-  
+
   std::string output();
 
 };

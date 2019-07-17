@@ -1,20 +1,21 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #ifndef __Parent_h
 #define __Parent_h
 
-class Parent {
-   public:
+class Parent
+{
+public:
 
-      Parent** m_gpuParent;
-      Parent*** m_gpuExtractedParents;
+  Parent** m_gpuParent;
+  Parent*** m_gpuExtractedParents;
 
-      __host__ __device__ Parent(const char *id, int order);
+  __host__ __device__ Parent(const char *id, int order);
 
-      __host__ __device__ virtual double Evaluate(const double * args) const = 0;
+  __host__ __device__ virtual double Evaluate(const double * args) const = 0;
 
 
 };
