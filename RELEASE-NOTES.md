@@ -9,10 +9,20 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Sets CMake policy CMP0074 to NEW, when available.
+- Added simpler Clang+XLF+Cuda host-config for LLNL's blueos
+
+### Changed
+- Restructured the host-config directory by site and platform.
+
+### Fixed
+- Fixed some warnings in CMake 3.14 #285
+
 ## [Version 0.2.5] - Release date 2019-06-13
 
 ### Added
-- Added support for C++17. Note: Neither XL or CMake's CUDA_STANDARD does not support
+- Added support for C++17. Note: Neither XL nor CMake's CUDA_STANDARD supports
   C++17 (A BLT fatal error will occur).
 - Added ability to override all MPI variables: BLT_MPI_COMPILE_FLAGS,
   BLT_MPI_INCLUDES, BLT_MPI_LIBRARIES, and BLT_MPI_LINK_FLAGS

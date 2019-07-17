@@ -10,23 +10,24 @@ BLT provides macros to build documentation using `Sphinx <http://www.sphinx-doc.
 and `Doxygen <http://www.doxygen.org/>`_.
 
 
-Sphinx is the documentation system used for the Python programming language (and many other projects).
+Sphinx is the documentation system used by the Python programming 
+language project (among many others).
 
 Doxygen is  a widely used system that generates documentation from annotated source code.
 Doxygen is heavily used for documenting  C++ software.
 
 Sphinx and Doxygen are not built into BLT, so the ``sphinx-build`` and ``doxygen`` executables
-must be available via a users ``PATH`` at configuration time, or explicitly specified using the
-CMake variables ``SPHINX_EXECUTABLE`` and ``DOXYGEN_EXECUTABLE`` .
+must be available via a user's ``PATH`` at configuration time, or explicitly specified using the
+CMake variables ``SPHINX_EXECUTABLE`` and ``DOXYGEN_EXECUTABLE``.
 
 
 Here is an example of setting ``sphinx-build`` and ``doxygen`` paths in a host-config file:
 
 .. code-block:: cmake
    
-   set(SPHINX_EXECUTABLE "/usr/bin/sphinx-build" CACHE PATH "")
+   set(SPHINX_EXECUTABLE "/usr/bin/sphinx-build" CACHE FILEPATH "")
 
-   set(DOXYGEN_EXECUTABLE "/usr/bin/doxygen" CACHE PATH "")
+   set(DOXYGEN_EXECUTABLE "/usr/bin/doxygen" CACHE FILEPATH "")
 
 
 The ``calc_pi`` example provides examples of both Sphinx and Doxygen documentation. 
@@ -36,9 +37,9 @@ Calc Pi Sphinx Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sphinx is a python package that depends on several other packages.  
-It can be installed via spack, pip, anaconda, etc. 
+It can be installed via `spack <https://spack.io>`_, pip, anaconda, etc... 
 
-``sphinx-build`` process a ``config.py`` file which includes a tree of reStructuredText files.
+``sphinx-build`` processes a ``config.py`` file which includes a tree of `reStructuredText` files.
 The Sphinx ``sphinx-quickstart`` utility helps you generate a new sphinx project, including
 selecting common settings for the ``config.py``.
 
@@ -70,7 +71,7 @@ Here is the example reStructuredText file that contains documentation for the *c
 Calc Pi Doxygen Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Doxygen is a compiled executable that can be installed via spack, built-by-hand, etc. 
+Doxygen is a compiled executable that can be installed via spack, built-by-hand, etc...
 
 ``doxygen`` processes a ``Doxyfile`` which specifies options, including where to look for
 annotated source files.
