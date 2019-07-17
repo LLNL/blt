@@ -4,8 +4,8 @@
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include <stdio.h>
-#include "Parent.h"
-#include "Child.h"
+#include "Parent.hpp"
+#include "Child.hpp"
 
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {

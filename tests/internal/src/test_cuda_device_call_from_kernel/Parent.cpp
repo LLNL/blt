@@ -3,7 +3,7 @@
 // 
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "Parent.h"
+#include "Parent.hpp"
 #include <string.h>
 
 __host__ __device__ Parent::Parent(const char *id, int order)

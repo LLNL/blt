@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include <math.h>
-#include "Child.h"
+#include "Child.hpp"
 
 __global__ void kernelCreateChild(Parent **myGpuParent, double a, double b, double c, double d)
 {

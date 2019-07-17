@@ -6,7 +6,7 @@
 #ifndef __Child_h
 #define __Child_h
 
-#include "Parent.h"
+#include "Parent.hpp"
 
 class Child : public Parent {
    public:
