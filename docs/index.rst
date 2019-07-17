@@ -8,20 +8,21 @@ BLT
 
 **Build, Link and Test**
 
-BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. 
+BLT is a composition of CMake macros and several widely used open source tools 
+assembled to simplify HPC software development. 
 
 BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
 It is developed on github under LLNL's github organization: https://github.com/llnl/blt
 
 .. note::
   BLT officially supports CMake 3.8 and above.  However we only print a warning if you
-  are below our this version.  Some features may or may not work. Use at your own risk.
+  are below this version.  Some features in earlier versions may or may not work. Use at your own risk.
 
 
 BLT at a Glance
 ~~~~~~~~~~~~~~~~~~
 
-* Simplifies Setup
+* Simplifies setting up a CMake-based build system
 
   * CMake macros for:
 
@@ -76,7 +77,8 @@ by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
 integration. The code is adapted from:
 https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
 
-The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
+The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. 
+Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
 
 
 **Tutorial Contents**

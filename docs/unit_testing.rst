@@ -18,7 +18,7 @@ Each Google Test or FRUIT file may contain multiple tests and is compiled into
 its own executable that can be run directly or as a ``make`` target. 
 
 In this section, we give a brief overview of GTest and discuss how to add unit
-tests using the ``blt_add_test`` macro.
+tests using the ``blt_add_test()`` macro.
 
 
 Configuring tests within BLT

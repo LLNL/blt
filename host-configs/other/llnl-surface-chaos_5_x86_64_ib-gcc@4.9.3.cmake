@@ -3,17 +3,17 @@
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
-###########################################################
+#------------------------------------------------------------------------------
 # Example host-config file for the surface cluster at LLNL
-###########################################################
+#------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
 #  C,C++, & Fortran compilers + MPI & CUDA
-###########################################################
+#------------------------------------------------------------------------------
 
-###########################################################
+#------------------------------------------------------------------------------
 # gcc@4.9.3 compilers
-###########################################################
+#------------------------------------------------------------------------------
 # _blt_tutorial_surface_compiler_config_start
 set(CMAKE_C_COMPILER   "/usr/apps/gnu/4.9.3/bin/gcc" CACHE PATH "")
 set(CMAKE_CXX_COMPILER "/usr/apps/gnu/4.9.3/bin/g++" CACHE PATH "")
@@ -23,9 +23,9 @@ set(ENABLE_FORTRAN ON CACHE BOOL "")
 set(CMAKE_Fortran_COMPILER "/usr/apps/gnu/4.9.3/bin/gfortran" CACHE PATH "")
 # _blt_tutorial_surface_compiler_config_end
 
-###########################################################
+#------------------------------------------------------------------------------
 # MPI Support
-###########################################################
+#------------------------------------------------------------------------------
 # _blt_tutorial_surface_mpi_config_start
 set(ENABLE_MPI ON CACHE BOOL "")
 
@@ -36,9 +36,9 @@ set(MPI_CXX_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpicc" CACHE PATH ""
 set(MPI_Fortran_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpif90" CACHE PATH "")
 # _blt_tutorial_surface_mpi_config_end
 
-###########################################################
+#------------------------------------------------------------------------------
 # CUDA support
-###########################################################
+#------------------------------------------------------------------------------
 # _blt_tutorial_surface_cuda_config_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
