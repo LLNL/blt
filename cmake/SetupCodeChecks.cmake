@@ -525,6 +525,7 @@ macro(blt_add_astyle_target)
         execute_process(
             COMMAND ${ASTYLE_EXECUTABLE} --version
             OUTPUT_VARIABLE _version_str
+            ERROR_VARIABLE  _version_str
             OUTPUT_STRIP_TRAILING_WHITESPACE )
         string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
         
