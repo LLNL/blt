@@ -40,35 +40,35 @@ if (ENABLE_FIND_MPI)
     # Merge found MPI info and remove duplication
     #-------------------
     # Compile flags
-    set(_c_flg ${MPI_C_${_mpi_compile_flags_suffix}})
+    set(_c_flag ${MPI_C_${_mpi_compile_flags_suffix}})
     if (_c_flag AND ENABLE_CUDA)
-        list(APPEND _mpi_compile_flags   
-                    "$<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${c_flg}>"
-                    "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_c_flg}>")
+        list(APPEND _mpi_compile_flags
+                    $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_c_flag}>
+                    $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_c_flag}>)
     else()
-        list(APPEND _mpi_compile_flags ${_c_flg})
+        list(APPEND _mpi_compile_flags ${_c_flag})
     endif()
-    
-    set(_cxx_flg ${MPI_CXX_${_mpi_compile_flags_suffix}})
-    if (_cxx_flg AND NOT "${_c_flg}" STREQUAL "${_cxx_flg}")
+
+    set(_cxx_flag ${MPI_CXX_${_mpi_compile_flags_suffix}})
+    if (_cxx_flag AND NOT "${_c_flag}" STREQUAL "${_cxx_flag}")
         if (ENABLE_CUDA)
             list(APPEND _mpi_compile_flags
-            "$<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_cxx_flg}>"
-            "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_cxx_flg}>")
+            $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_cxx_flag}>
+            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_cxx_flag}>)
         else()
-            list(APPEND _mpi_compile_flags ${_cxx_flg})
+            list(APPEND _mpi_compile_flags ${_cxx_flag})
         endif()
     endif()
-    
+
     if (ENABLE_FORTRAN)
-        set(_f_flg ${MPI_Fortran_${_mpi_compile_flags_suffix}})
-        if (_f_flg AND NOT "${c_flg}" STREQUAL "${_f_flg}")
-            list(APPEND _mpi_compile_flags ${_f_flg})
+        set(_f_flag ${MPI_Fortran_${_mpi_compile_flags_suffix}})
+        if (_f_flag AND NOT "${c_flg}" STREQUAL "${_f_flag}")
+            list(APPEND _mpi_compile_flags ${_f_flag})
         endif()
     endif()
-    unset(_c_flg)
-    unset(_cxx_flg)
-    unset(_f_flg)
+    unset(_c_flag)
+    unset(_cxx_flag)
+    unset(_f_flag)
 
     # Include paths
     list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}}
