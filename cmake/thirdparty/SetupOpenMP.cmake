@@ -20,16 +20,16 @@ else()
 endif()
 
 set(_compile_flags ${OpenMP_CXX_FLAGS})
-set(_link_flags  ${OpenMP_CXX_FLAGS})
+set(_link_flags    ${OpenMP_CXX_FLAGS})
 
 if(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_CUDA AND ESCAPE_FORTRAN)
     set(_compile_flags
-        $<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<COMPILE_LANGUAGE:Fortran>>>:${OpenMP_CXX_FLAGS}> 
+        $<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<COMPILE_LANGUAGE:Fortran>>>:${OpenMP_CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:Fortran>:${OpenMP_Fortran_FLAGS}>)
 elseif(NOT COMPILER_FAMILY_IS_MSVC AND ENABLE_CUDA)
     set(_compile_flags
-        $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${OpenMP_CXX_FLAGS}> 
+        $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${OpenMP_CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}>)
 elseif(NOT COMPILER_FAMILY_IS_MSVC AND ESCAPE_FORTRAN)
     set(_compile_flags
@@ -40,12 +40,23 @@ endif()
 
 # Allow user to override
 if (BLT_OPENMP_COMPILE_FLAGS)
-    set(_compile_flags ${BLT_OPENMP_COMPILE_FLAGS})
+    if (ENABLE_CUDA)
+        set(_compile_flags
+        $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${BLT_OPENMP_COMPILE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${BLT_OPENMP_COMPILE_FLAGS}>)
+    else()
+        set(_compile_flags ${BLT_OPENMP_COMPILE_FLAGS})
+    endif()
 endif()
 if (BLT_OPENMP_LINK_FLAGS)
-    set(_link_flags ${BLT_OPENMP_LINK_FLAGS})
+    if (ENABLE_CUDA)
+        set(_link_flags
+        $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${BLT_OPENMP_LINK_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CUDA>:-Xlinker=${BLT_OPENMP_LINK_FLAGS}>)
+    else()
+        set(_link_flags ${BLT_OPENMP_LINK_FLAGS})
+    endif()
 endif()
-
 
 message(STATUS "OpenMP Compile Flags: ${_compile_flags}")
 message(STATUS "OpenMP Link Flags:    ${_link_flags}")
