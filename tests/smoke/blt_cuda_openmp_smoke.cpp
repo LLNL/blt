@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// Note: Parts of this is a CUDA Hello world example from NVIDIA:
+// Note: Parts of this are a CUDA Hello world example from NVIDIA:
 // Obtained from here: https://developer.nvidia.com/cuda-education
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
@@ -28,11 +28,13 @@ __global__ void hello()
 
 int main()
 {
+  // CUDA smoke test
   int num_threads = STR_LENGTH;
   int num_blocks = 1;
   hello<<<num_blocks,num_threads>>>();
   cudaDeviceSynchronize();
 
+  // OpenMP smoke test
   #pragma omp parallel
   {
     int thId = omp_get_thread_num();

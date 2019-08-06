@@ -61,9 +61,11 @@ if (POLICY CMP0063) # Visibility
   cmake_policy(SET CMP0063 NEW)
 endif (POLICY CMP0063)
 
-if (POLICY CMP0042) # MACOSX_RPATH behavior
-  cmake_policy(SET CMP0042 OLD)
-endif (POLICY CMP0042)
+if (APPLE)
+  if (POLICY CMP0042) # MACOSX_RPATH behavior
+    cmake_policy(SET CMP0042 OLD)
+  endif (POLICY CMP0042)
+endif()
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
