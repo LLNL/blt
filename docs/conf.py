@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'BLT Tutorial Guide'
+project = u'BLT: Build, Link, and Test'
 copyright = u'2017-2019, BLT Development Team'
 
 # The version info for the project you're documenting, acts as replacement for
