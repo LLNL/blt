@@ -3,15 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-API documentation
-=================
+Target Macros
+=============
 
-This is a stub for the upcoming API docs!
+This is a stub for the upcoming Target macros docs!
 
-.. toctree::
-    :maxdepth: 3
-    :caption: API Documentation
-
-    target
-    utility
-    code_health

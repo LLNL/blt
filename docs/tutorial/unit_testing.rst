@@ -186,14 +186,14 @@ We add a simple unit test that invokes ``calc_pi()``
 and compares the result to :math:`\pi`, within a given tolerance (``1e-6``). 
 Here is the test code:
 
-.. literalinclude:: tutorial/calc_pi/test_1.cpp
+.. literalinclude:: calc_pi/test_1.cpp
    :start-after: _blt_tutorial_calpi_test1_start
    :end-before:  _blt_tutorial_calpi_test1_end
    :language: cpp
 
 To add this test to the build system, we first generate a test executable:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+.. literalinclude:: calc_pi/CMakeLists.txt
    :start-after: _blt_tutorial_calcpi_test1_executable_start
    :end-before:  _blt_tutorial_calcpi_test1_executable_end
    :language: cmake
@@ -202,7 +202,7 @@ Note that this test executable depends on two targets: ``calc_pi`` and ``gtest``
 
 We then register this executable as a test:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+.. literalinclude:: calc_pi/CMakeLists.txt
    :start-after: _blt_tutorial_calcpi_test1_test_start
    :end-before:  _blt_tutorial_calcpi_test1_test_end
    :language: cmake

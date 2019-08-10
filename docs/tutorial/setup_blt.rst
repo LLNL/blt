@@ -67,7 +67,7 @@ This enables all of BLT's features in your project.
 However if your project is likely to be used by other projects.  The following
 is recommended:
 
-.. literalinclude:: tutorial/blank_project/CMakeLists.txt
+.. literalinclude:: blank_project/CMakeLists.txt
    :start-after: _blt_tutorial_include_blt_start
    :end-before:  _blt_tutorial_include_blt_end
    :language: cmake
@@ -114,7 +114,7 @@ features. It demonstrates the bare minimum required for testing purposes.
 
 Here is the entire CMakeLists.txt file for ``blank_project``:
 
-.. literalinclude:: tutorial/blank_project/CMakeLists.txt
+.. literalinclude:: blank_project/CMakeLists.txt
    :language: cmake
 
 BLT also enforces some best practices for building, such as not allowing
@@ -219,7 +219,7 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
 Here is a snippet from a host-config file that specifies compiler details for
 using gcc 4.9.3 on LLNL's surface cluster. 
 
-.. literalinclude:: ../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :start-after: _blt_tutorial_surface_compiler_config_start
    :end-before:  _blt_tutorial_surface_compiler_config_end
    :language: cmake
