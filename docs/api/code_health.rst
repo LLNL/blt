@@ -3,15 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-API documentation
-=================
+Code Health Macros
+==================
 
-This is a stub for the upcoming API docs!
+This is a stub for the upcoming Code Health docs!
 
-.. toctree::
-    :maxdepth: 3
-    :caption: API Documentation
-
-    target
-    utility
-    code_health

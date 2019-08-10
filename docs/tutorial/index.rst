@@ -35,5 +35,3 @@ Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
     external_dependencies
     creating_documentation
     recommendations
-
-
