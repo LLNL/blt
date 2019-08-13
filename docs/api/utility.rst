@@ -38,6 +38,8 @@ on the following variables set by FindGit():
 If Git_FOUND is "false" this macro will throw a FATAL_ERROR message.
 
 .. code-block:: cmake
+    :caption: **Example**
+    :linenos:
 
     blt_git( SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
              GIT_COMMAND describe --tags master
@@ -67,6 +69,8 @@ The resulting state is stored in the CMake variable specified by the caller
 using the OUTPUT_STATE parameter.
 
 .. code-block:: cmake
+    :caption: **Example**
+    :linenos:
 
     blt_is_git_repo( OUTTPUT_STATE is_git_repo )
     if ( ${is_git_repo} )
@@ -102,6 +106,8 @@ variable provided with the RETURN_CODE argument. A non-zero return code
 indicates that an error has occured.
 
 .. code-block:: cmake
+    :caption: **Example**
+    :linenos:
 
     blt_git_tag( OUTPUT_TAG tag RETURN_CODE rc ON_BRANCH master )
     if ( NOT ${rc} EQUAL 0 )
@@ -131,6 +137,8 @@ variable provided with the RETURN_CODE argument. A non-zero return code
 indicates that an error has occured.
 
 .. code-block:: cmake
+    :caption: **Example**
+    :linenos:
 
     blt_git_branch( BRANCH_NAME active_branch RETURN_CODE rc )
     if ( NOT ${rc} EQUAL 0 )
@@ -163,6 +171,8 @@ variable provided with the RETURN_CODE argument. A non-zero return code
 indicates that an error has occured.
 
 .. code-block:: cmake
+    :caption: **Example**
+    :linenos:
 
     blt_git_hashcode( HASHCODE sha1 RETURN_CODE rc )
     if ( NOT ${rc} EQUAL 0 )
