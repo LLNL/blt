@@ -9,24 +9,6 @@ include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 ## blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
 ##
 ## Appends elements to a list if the specified bool evaluates to true.
-##
-## This macro is essentially a wrapper around CMake's `list(APPEND ...)`
-## command which allows inlining a conditional check within the same call
-## for clarity and convenience.
-##
-## This macro requires specifying:
-##   (1) The target list to append to by passing TO <list>
-##   (2) A condition to check by passing IF <bool>
-##   (3) The list of elements to append by passing ELEMENTS [<element>...]
-##
-## Note, the argument passed to the IF option has to be a single boolean value
-## and cannot be a boolean expression since CMake cannot evaluate those inline.
-##
-## Usage Example:
-##
-##  set(mylist A B)
-##  blt_list_append( TO mylist ELEMENTS C IF ${ENABLE_C} )
-##
 ##------------------------------------------------------------------------------
 macro(blt_list_append)
 
@@ -71,15 +53,6 @@ endmacro(blt_list_append)
 ## blt_list_remove_duplicates( TO <list> )
 ##
 ## Removes duplicate elements from the given TO list.
-##
-## This macro is essentially a wrapper around CMake's `list(REMOVE_DUPLICATES ...)`
-## command but doesn't throw an error if the list is empty or not defined.
-##
-## Usage Example:
-##
-##  set(mylist A B A)
-##  blt_list_remove_duplicates( TO mylist )
-##
 ##------------------------------------------------------------------------------
 macro(blt_list_remove_duplicates)
 
@@ -91,7 +64,7 @@ macro(blt_list_remove_duplicates)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-     # sanity checks
+    # sanity checks
     if( NOT DEFINED arg_TO )
         message(FATAL_ERROR "blt_list_append() requires a TO <list> argument")
     endif()
@@ -107,25 +80,6 @@ endmacro(blt_list_remove_duplicates)
 ## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
-##
-## Adds pre-processor definitions to a particular target. This macro provides very
-## similar functionality to cmake's native "add_definitions" command, but,
-## it provides more fine-grained scoping for the compile definitions on a
-## per target basis. Given a list of definitions, e.g., FOO and BAR, this macro
-## adds compiler definitions to the compiler command for the given target, i.e.,
-## it will pass -DFOO and -DBAR.
-##
-## The supplied target must be added via add_executable() or add_library() or
-## with the corresponding blt_add_executable() and blt_add_library() macros.
-##
-## Note, the target definitions can either include or omit the "-D" characters. 
-## E.g. the following are all valid ways to add two compile definitions 
-## (A=1 and B) to target 'foo'
-##
-##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS A=1 B)
-##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS -DA=1 -DB)
-##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS "A=1;-DB")
-##   blt_add_target_definitions(TO foo TARGET_DEFINITIONS " " -DA=1;B")
 ##------------------------------------------------------------------------------
 macro(blt_add_target_definitions)
 
@@ -160,15 +114,10 @@ endmacro(blt_add_target_definitions)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_target_compile_flags (TO <target> FLAGS [FOO [BAR ...]])
+## blt_add_target_compile_flags(TO <target> FLAGS [FOO [BAR ...]])
 ##
 ## Adds compiler flags to a target (library, executable or interface) by 
 ## appending to the target's existing flags.
-##
-## The TO argument (required) specifies a cmake target.
-##
-## The FLAGS argument contains a list of compiler flags to add to the target. 
-## This macro will strip away leading and trailing whitespace from each flag.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_compile_flags)
 
@@ -203,16 +152,9 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
-## blt_set_target_folder (TARGET <target> FOLDER <folder>)
+## blt_set_target_folder(TARGET <target> FOLDER <folder>)
 ##
 ## Sets the folder property of cmake target <target> to <folder>.
-##
-## This feature is only available when blt's ENABLE_FOLDERS option is ON and 
-## in cmake generators that support folders (but is safe to call regardless
-## of the generator or value of ENABLE_FOLDERS).
-##
-## Note: Do not use this macro on header-only (INTERFACE) library targets, since 
-## this will generate a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_set_target_folder)
 
@@ -249,11 +191,6 @@ endmacro(blt_set_target_folder)
 ## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
-##
-## The FLAGS argument expects a ; delimited list of linker flags to add to the target.
-## 
-## Note: In CMake versions prior to 3.13, this list is converted to a string internally
-## and any ; characters will be removed.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_link_flags)
 

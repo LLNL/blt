@@ -6,6 +6,9 @@
 Code Health Macros
 ==================
 
+Code Check Macros
+-----------------
+
 blt_add_code_checks
 ~~~~~~~~~~~~~~~~~~~
 
@@ -161,3 +164,41 @@ WORKING_DIRECTORY is the directory in which astyle will be run. It defaults to
 the directory where this macro is called.
 
 SRC_FILES is a list of source files to style/check with astyle.
+
+
+Documenation Macros
+-------------------
+
+blt_add_doxygen_target
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_doxygen_target(doxygen_target_name)
+
+Creates a build target for invoking doxygen to generate docs. Expects to 
+find a Doxyfile.in in the directory the macro is called in. 
+
+This macro sets up the doxygen paths so that the doc builds happen 
+out of source. For ``make install``, this will place the resulting docs in 
+docs/doxygen/<doxygen_target_name>.
+
+
+blt_add_sphinx_target
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_sphinx_target(sphinx_target_name)
+
+Creates a build target for invoking sphinx to generate docs. Expects to
+find a conf.py or conf.py.in in the directory the macro is called in. 
+
+If conf.py is found, it is directly used as input to sphinx.
+
+If conf.py.in is found, this macro uses CMake's configure_file() command
+to generate a conf.py, which is then used as input to sphinx.
+
+This macro sets up the sphinx paths so that the doc builds happen 
+out of source. For ``make install``, this will place the resulting docs in 
+docs/sphinx/<sphinx_target_name>.
