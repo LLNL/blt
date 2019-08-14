@@ -66,7 +66,6 @@ endforeach()
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
 ## filters based on file extensions.
-##
 ##------------------------------------------------------------------------------
 
 macro(blt_add_code_checks)
@@ -183,7 +182,6 @@ endmacro(blt_add_code_checks)
 ##                             SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
-##
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
     if(CLANGQUERY_FOUND)
@@ -259,7 +257,6 @@ endmacro(blt_add_clang_query_target)
 ##                          SRC_FILES           [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running cppcheck over the given SRC_FILES
-##
 ##-----------------------------------------------------------------------------
 macro(blt_add_cppcheck_target)
 
@@ -311,7 +308,6 @@ endmacro(blt_add_cppcheck_target)
 ##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running uncrustify over the given SRC_FILES.
-##
 ##------------------------------------------------------------------------------
 macro(blt_add_uncrustify_target)
     
@@ -402,7 +398,6 @@ endmacro(blt_add_uncrustify_target)
 ##                        SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running astyle over the given SRC_FILES.
-##
 ##------------------------------------------------------------------------------
 macro(blt_add_astyle_target)
 

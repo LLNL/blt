@@ -6,11 +6,8 @@
 API documentation
 =================
 
-This is a stub for the upcoming API docs!
-
 .. toctree::
     :maxdepth: 3
-    :caption: API Documentation
 
     target
     utility
