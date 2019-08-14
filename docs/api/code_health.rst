@@ -44,7 +44,7 @@ blt_add_clang_query_target
     blt_add_clang_query_target( NAME              <Created Target Name>
                                 WORKING_DIRECTORY <Working Directory>
                                 COMMENT           <Additional Comment for Target Invocation>
-                                CHECKERS          <If specified, requires a specific set of checkers>
+                                CHECKERS          <specifies a subset of checkers>
                                 DIE_ON_MATCH      <If true, matches stop the build>
                                 SRC_FILES         [FILE1 [FILE2 ...]] )
 
