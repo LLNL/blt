@@ -7,20 +7,23 @@ Utility Macros
 ==============
 
 
-General Utility Macros
-----------------------
+General
+-------
 
 
 blt_list_append
 ~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
+    :caption: **Signature**
 
-    blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
+    blt_list_append(TO       <list>
+                    ELEMENTS [ <element>...]
+                    IF       <bool>)
 
 Appends elements to a list if the specified bool evaluates to true.
 
-This macro is essentially a wrapper around CMake's `list(APPEND ...)`
+This macro is essentially a wrapper around CMake's ``list(APPEND ...)``
 command which allows inlining a conditional check within the same call
 for clarity and convenience.
 
@@ -46,11 +49,11 @@ blt_list_remove_duplicates
 
 .. code-block:: cmake
 
-    blt_list_remove_duplicates( TO <list> )
+    blt_list_remove_duplicates(TO <list>)
 
 Removes duplicate elements from the given TO list.
 
-This macro is essentially a wrapper around CMake's `list(REMOVE_DUPLICATES ...)`
+This macro is essentially a wrapper around CMake's ``list(REMOVE_DUPLICATES ...)``
 command but doesn't throw an error if the list is empty or not defined.
 
 .. code-block:: cmake
@@ -70,11 +73,11 @@ blt_git
 
 .. code-block:: cmake
 
-    blt_git( SOURCE_DIR <dir>
-             GIT_COMMAND <command>
-             OUTPUT_VARIABLE <out>
-             RETURN_CODE <rc>
-             [QUIET] )
+    blt_git(SOURCE_DIR      <dir>
+            GIT_COMMAND     <command>
+            OUTPUT_VARIABLE <out>
+            RETURN_CODE     <rc>
+            [QUIET] )
 
 Runs the supplied git command on the given Git repository.
 
@@ -114,8 +117,8 @@ blt_is_git_repo
 
 .. code-block:: cmake
 
-    blt_is_git_repo( OUTPUT_STATE <state>
-                     [SOURCE_DIR <dir>] )
+    blt_is_git_repo(OUTPUT_STATE <state>
+                    [SOURCE_DIR  <dir>] )
 
 Checks if we are working with a valid Git repository.
 
@@ -144,10 +147,10 @@ blt_git_tag
 
 .. code-block:: cmake
 
-    blt_git_tag( OUTPUT_TAG <tag>
+    blt_git_tag( OUTPUT_TAG  <tag>
                  RETURN_CODE <rc>
                  [SOURCE_DIR <dir>]
-                 [ON_BRANCH <branch>] )
+                 [ON_BRANCH  <branch>] )
 
 Returns the latest tag on a corresponding Git repository.
 
@@ -211,10 +214,10 @@ blt_git_hashcode
 
 .. code-block:: cmake
 
-    blt_git_hashcode( HASHCODE <hc>
+    blt_git_hashcode( HASHCODE    <hc>
                       RETURN_CODE <rc>
                       [SOURCE_DIR <dir>]
-                      [ON_BRANCH <branch>] )
+                      [ON_BRANCH  <branch>])
 
 Returns the SHA-1 hashcode at the tip of a branch.
 
@@ -249,7 +252,8 @@ blt_add_target_compile_flags
 
 .. code-block:: cmake
 
-    blt_add_target_compile_flags(TO <target> FLAGS [FOO [BAR ...]])
+    blt_add_target_compile_flags( TO    <target>
+                                  FLAGS [FOO [BAR ...]])
 
 Adds compiler flags to a target (library, executable or interface) by 
 appending to the target's existing flags.
@@ -266,7 +270,8 @@ blt_add_target_definitions
 
 .. code-block:: cmake
 
-    blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
+    blt_add_target_definitions( TO <target>
+                                TARGET_DEFINITIONS [FOO [BAR ...]])
 
 Adds pre-processor definitions to the given target. This macro provides very
 similar functionality to cmake's native "add_definitions" command, but,
@@ -297,7 +302,8 @@ blt_add_target_link_flags
 
 .. code-block:: cmake
 
-    blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
+    blt_add_target_link_flags( TO <target>
+                               FLAGS [FOO [BAR ...]])
 
 Adds linker flags to a target by appending to the target's existing flags.
 
@@ -312,7 +318,8 @@ blt_set_target_folder
 
 .. code-block:: cmake
 
-    blt_set_target_folder(TARGET <target> FOLDER <folder>)
+    blt_set_target_folder( TARGET <target>
+                           FOLDER <folder>)
 
 Sets the folder property of cmake target <target> to <folder>.
 
