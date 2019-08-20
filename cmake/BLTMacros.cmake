@@ -239,35 +239,7 @@ endmacro(blt_add_target_link_flags)
 ##                       LINK_FLAGS [ flag1 [ flag2 ..]]
 ##                       DEFINES [def1 [def2 ...]] )
 ##
-## Registers a library to the project to ease use in other blt macro calls.
-##
-## Stores information about a library in a specific way that is easily recalled
-## in other macros.  For example, after registering gtest, you can add gtest to
-## the DEPENDS_ON in your blt_add_executable call and it will add the INCLUDES
-## and LIBRARIES to that executable.
-##
-## TREAT_INCLUDES_AS_SYSTEM informs the compiler to treat this library's include paths
-## as system headers.  Only some compilers support this. This is useful if the headers
-## generate warnings you want to not have them reported in your build. This defaults
-## to OFF.
-##
-## This does not actually build the library.  This is strictly to ease use after
-## discovering it on your system or building it yourself inside your project.
-##
-## Note: The OBJECT parameter is for internal BLT support for object libraries
-## and is not for users.  Object libraries are created using blt_add_library().
-##
-## Output variables (name = "foo"):
-##  BLT_FOO_IS_REGISTERED_LIBRARY
-##  BLT_FOO_IS_OBJECT_LIBRARY
-##  BLT_FOO_DEPENDS_ON
-##  BLT_FOO_INCLUDES
-##  BLT_FOO_TREAT_INCLUDES_AS_SYSTEM
-##  BLT_FOO_FORTRAN_MODULES
-##  BLT_FOO_LIBRARIES
-##  BLT_FOO_COMPILE_FLAGS
-##  BLT_FOO_LINK_FLAGS
-##  BLT_FOO_DEFINES
+## Registers a library to the project to ease use in other BLT macro calls.
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
@@ -357,53 +329,9 @@ endmacro(blt_register_library)
 ##                  SHARED       [TRUE | FALSE]
 ##                  OBJECT       [TRUE | FALSE]
 ##                  CLEAR_PREFIX [TRUE | FALSE]
-##                  FOLDER       [name]
-##                 )
+##                  FOLDER       [name])
 ##
 ## Adds a library target, called <libname>, to be built from the given sources.
-## This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
-## whether the library will be build as shared or static. The optional boolean
-## SHARED argument can be used to override this choice.
-##
-## The OBJECT argument creates a CMake object library. Basically it is a collection
-## of compiled source files that are not archived or linked. Unlike regular CMake
-## object libraries you do not have to use the $<TARGET_OBJECTS:<libname>> syntax,
-## you can just use <libname>.
-##    Note: Object libraries do not follow CMake's transitivity rules until 3.12.
-##          BLT will add the various information provided in this macro and its
-##          dependencies in the order you provide them to help.
-##
-## The INCLUDES argument allows you to define what include directories are
-## needed by any target that is dependent on this library.  These will
-## be inherited by CMake's target dependency rules.
-##
-## The DEFINES argument allows you to add needed compiler definitions that are
-## needed by any target that is dependent on this library.  These will
-## be inherited by CMake's target dependency rules.
-##
-## If given a DEPENDS_ON argument, it will add the necessary includes and 
-## libraries if they are already registered with blt_register_library.  If 
-## not it will add them as a CMake target dependency.
-##
-## In addition, this macro will add the associated dependencies to the given
-## library target. Specifically, it will add the dependency for the CMake target
-## and for copying the headers for that target as well.
-##
-## The OUTPUT_DIR is used to control the build output directory of this 
-## library. This is used to overwrite the default lib directory.
-##
-## OUTPUT_NAME is the name of the output file; the default is NAME.
-## It's useful when multiple libraries with the same name need to be created
-## by different targets. NAME is the target name, OUTPUT_NAME is the library name.
-##
-## CLEAR_PREFIX allows you to remove the automatically appended "lib" prefix
-## from your built library.  The created library will be foo.a instead of libfoo.a.
-##
-## FOLDER is an optional keyword to organize the target into a folder in an IDE.
-## This is available when ENABLE_FOLDERS is ON and when the cmake generator
-## supports this feature and will otherwise be ignored. 
-##    Note: Do not use with header-only (INTERFACE)libraries, as this will generate 
-##          a cmake configuration error.
 ##------------------------------------------------------------------------------
 macro(blt_add_library)
 
@@ -555,35 +483,15 @@ endmacro(blt_add_library)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_executable( NAME <name>
-##                     SOURCES [source1 [source2 ...]]
-##                     INCLUDES [dir1 [dir2 ...]]
-##                     DEFINES [define1 [define2 ...]]
+## blt_add_executable( NAME       <name>
+##                     SOURCES    [source1 [source2 ...]]
+##                     INCLUDES   [dir1 [dir2 ...]]
+##                     DEFINES    [define1 [define2 ...]]
 ##                     DEPENDS_ON [dep1 [dep2 ...]]
 ##                     OUTPUT_DIR [dir]
-##                     FOLDER [name])
+##                     FOLDER     [name])
 ##
-## Adds an executable target, called <name>.
-##
-## The INCLUDES argument allows you to define what include directories are
-## needed to compile this executable.
-##
-## The DEFINES argument allows you to add needed compiler definitions that are
-## needed to compile this executable.
-##
-## If given a DEPENDS_ON argument, it will add the necessary includes and 
-## libraries if they are already registered with blt_register_library.  If
-## not it will add them as a cmake target dependency.
-##
-## The OUTPUT_DIR is used to control the build output directory of this 
-## executable. This is used to overwrite the default bin directory.
-##
-## If the first entry in SOURCES is a Fortran source file, the fortran linker 
-## is used. (via setting the CMake target property LINKER_LANGUAGE to Fortran )
-##
-## FOLDER is an optional keyword to organize the target into a folder in an IDE.
-## This is available when ENABLE_FOLDERS is ON and when using a cmake generator
-## that supports this feature and will otherwise be ignored.
+## Adds an executable target, called <name>, to be built from the given sources.
 ##------------------------------------------------------------------------------
 macro(blt_add_executable)
 
@@ -663,22 +571,11 @@ endmacro(blt_add_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_test( NAME [name] COMMAND [command] NUM_MPI_TASKS [n] )
+## blt_add_test( NAME          [name]
+##               COMMAND       [command] 
+##               NUM_MPI_TASKS [n] )
 ##
 ## Adds a CMake test to the project.
-##
-## NAME is used for the name that CTest reports with.
-##
-## COMMAND is the command line that will be used to run the test. This will
-## have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
-##
-## NUM_MPI_TASKS indicates this is an MPI test and how many tasks to use. The
-## command line will use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND
-## to create the MPI run line.
-##
-## MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
-## be overwritten in your host-config specific to your platform. BLT_MPI_COMMAND_APPEND
-## is useful on machines that require extra arguments to MPIEXEC.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
@@ -744,24 +641,10 @@ endmacro(blt_add_test)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_benchmark( NAME [name] COMMAND [command]  )
+## blt_add_benchmark( NAME [name] 
+##                    COMMAND [command])
 ##
 ## Adds a (google) benchmark test to the project.
-##
-## NAME is used for the name that CTest reports and should include the string 'benchmark'.
-##
-## COMMAND is the command line that will be used to run the test and can include arguments.  
-## This will have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
-##
-## The underlying executable (added with blt_add_executable) should include gbenchmark
-## as one of its dependencies.
-##
-##  Example
-##    blt_add_executable(NAME component_benchmark ... DEPENDS gbenchmark)
-##    blt_add_benchmark( 
-##          NAME component_benchmark
-##          COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json"
-##          )
 ##------------------------------------------------------------------------------
 macro(blt_add_benchmark)
 
@@ -822,19 +705,9 @@ endmacro(blt_add_benchmark)
 ##                    XL         xlFlag         (optional)
 ##                    MSVC       msvcFlag       (optional)
 ##                    MSVC_INTEL msvcIntelFlag  (optional)
-##                    PGI        pgiFlag        (optional)
-## )
+##                    PGI        pgiFlag        (optional))
 ##
 ## Appends compiler-specific flags to a given variable of flags
-##
-## If a custom flag is given for the current compiler, we use that.
-## Otherwise, we will use the DEFAULT flag (if present)
-## If ENABLE_FORTRAN is On, any flagsVar with "fortran" (any capitalization)
-## in its name will pick the compiler family (GNU,CLANG, INTEL, etc) based on
-## the fortran compiler family type. This allows mixing C and Fortran compiler
-## families, e.g. using Intel fortran compilers with clang C compilers. 
-## When using the Intel toolchain within visual studio, we use the 
-## MSVC_INTEL flag, when provided, with a fallback to the MSVC flag.
 ##------------------------------------------------------------------------------
 macro(blt_append_custom_compiler_flag)
 
@@ -898,21 +771,11 @@ endmacro(blt_append_custom_compiler_flag)
 
 ##------------------------------------------------------------------------------
 ## blt_find_libraries( FOUND_LIBS <FOUND_LIBS variable name>
-##                     NAMES [libname1 [libname2 ...]]
-##                     REQUIRED [TRUE (default) | FALSE ]
-##                     PATHS [path1 [path2 ...]] )
+##                     NAMES      [libname1 [libname2 ...]]
+##                     REQUIRED   [TRUE (default) | FALSE ]
+##                     PATHS      [path1 [path2 ...]] )
 ##
 ## This command is used to find a list of libraries.
-## 
-## If the libraries are found the results are appended to the given FOUND_LIBS variable name.
-##
-## NAMES lists the names of the libraries that will be searched for in the given PATHS.
-##
-## If REQUIRED is set to TRUE, BLT will produce an error message if any of the
-## given libraries are not found.  The default value is TRUE.
-##
-## PATH lists the paths in which to search for NAMES. No system paths will be searched.
-##
 ##------------------------------------------------------------------------------
 macro(blt_find_libraries)
 
@@ -964,8 +827,7 @@ endmacro(blt_find_libraries)
 ##                               SOURCE_LIBS [lib1 ...] 
 ##                               LIB_TYPE [STATIC,SHARED]
 ##                               LINK_PREPEND []
-##                               LINK_POSTPEND []
-##                             )
+##                               LINK_POSTPEND [])
 ##
 ## Adds a library target, called <libname>, to be built from the set of 
 ## static libraries given in SOURCE_LIBS.
@@ -1144,16 +1006,9 @@ endmacro(blt_combine_static_libraries)
 
 
 ##------------------------------------------------------------------------------
-## blt_print_target_properties (TARGET <target> )
+## blt_print_target_properties(TARGET <target> )
 ##
 ## Prints out all properties of the given target.
-##
-## The required target parameteter must either be a valid cmake target 
-## or was registered via blt_register_library.
-##
-## Output is of the form:
-##     [<target> property] <property>: <value>
-## for each property
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties)
 
