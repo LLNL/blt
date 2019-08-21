@@ -6,23 +6,39 @@
 Target Macros
 =============
 
+.. _blt_add_benchmark:
+
 blt_add_benchmark
 ~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
-    blt_add_benchmark( NAME [name]
-                       COMMAND [command])
+    blt_add_benchmark( NAME          [name]
+                       COMMAND       [command]
+                       NUM_MPI_TASKS [n])
 
-Adds a (google) benchmark test to the project.
+Adds a benchmark to the project.
 
-NAME is used for the name that CTest reports and should include the string 'benchmark'.
+NAME
+  Name that CTest reports.
 
-COMMAND is the command line that will be used to run the test and can include arguments.  
+COMMAND
+  Command line that will be used to run the test and can include arguments.  
 
-This will have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
-The underlying executable (added with blt_add_executable) should include gbenchmark
-as one of its dependencies.
+NUM_MPI_TASKS
+  Indicates this is an MPI test and how many MPI tasks to use.
+
+This macro adds the benchmark to the ``run_benchmarks`` build target.
+The underlying executable, previously added with :ref:`blt_add_executable`,
+should include necessary benchmarking library in its DEPENDS_ON list.
+
+BLT provides a built-in Google Benchmark that is enabled by default if you set
+ENABLE_BENCHMARKS=ON and can be turned off with the option ENABLE_GBENCHMARK.
+
+.. note::
+  This is just a thin wrapper around :ref:`blt_add_test` that sets the CTest configuration
+  to "Benchmark" to filter these benchmarks out of the ``test`` build target. It also assists
+  with building up the correct command line.  For more info see :ref:`blt_add_test`.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -35,6 +51,8 @@ as one of its dependencies.
          NAME    component_benchmark
          COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
 
+
+.. _blt_add_executable:
 
 blt_add_executable
 ~~~~~~~~~~~~~~~~~~
@@ -71,6 +89,8 @@ FOLDER is an optional keyword to organize the target into a folder in an IDE.
 This is available when ENABLE_FOLDERS is ON and when using a cmake generator
 that supports this feature and will otherwise be ignored.
 
+
+.. _blt_add_library:
 
 blt_add_library
 ~~~~~~~~~~~~~~~
@@ -138,30 +158,60 @@ Note: Do not use with header-only (INTERFACE) libraries, as this will generate
 a CMake configuration error.
 
 
+.. _blt_add_test:
+
 blt_add_test
 ~~~~~~~~~~~~
 
 .. code-block:: cmake
 
-    blt_add_test( NAME          [name]
-                  COMMAND       [command] 
-                  NUM_MPI_TASKS [n])
+    blt_add_test( NAME           [name]
+                  COMMAND        [command]
+                  NUM_MPI_TASKS  [n]
+                  CONFIGURATIONS [config1 [config2...]])
 
-Adds a CMake test to the project.
+Adds a test to the project.
 
-NAME is used for the name that CTest reports with.
+NAME
+  Name that CTest reports.
 
-COMMAND is the command line that will be used to run the test. This will
-have the RUNTIME_OUTPUT_DIRECTORY prepended to it to fully qualify the path.
+COMMAND
+  Command line that will be used to run the test and can include arguments.
 
-NUM_MPI_TASKS indicates this is an MPI test and how many tasks to use. The
-command line will use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND
-to create the MPI run line.
+NUM_MPI_TASKS
+  Indicates this is an MPI test and how many MPI tasks to use.
+
+CONFIGURATIONS
+  Set the CTest configuration for this test.  Do not specify if you want the
+  test to run every ``test`` build target.
+
+This macro adds the named test to CTest and the build target ``test``. This macro
+does not build the executable and requires a call to :ref:`blt_add_executable` first.
+
+This macro assists with building up the correct command line. It will prepend
+the RUNTIME_OUTPUT_DIRECTORY target property to the executable. If NUM_MPI_TASKS
+is given, the macro will appropiately use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and 
+BLT_MPI_COMMAND_APPEND to create the MPI run line.
 
 MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
 be overwritten in your host-config specific to your platform. BLT_MPI_COMMAND_APPEND
 is useful on machines that require extra arguments to MPIEXEC.
 
+.. note::
+  If you do not want the command line assistance, for example you already have a script
+  you wish to run as a test, then just call CMake's ``add_test()``.
+
+.. code-block:: cmake
+    :caption: **Example**
+    :linenos:
+
+    blt_add_executable(NAME    my_test
+                       SOURCES my_test.cpp)
+    blt_add_test(NAME    my_test
+                 COMMAND my_test --with-some-argument)
+
+
+.. _blt_register_library:
 
 blt_register_library
 ~~~~~~~~~~~~~~~~~~~~

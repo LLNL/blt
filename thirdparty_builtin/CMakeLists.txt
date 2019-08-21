@@ -121,33 +121,36 @@ if(ENABLE_TESTS)
 endif()
 
 if(ENABLE_BENCHMARKS)
-    if(WIN32 AND BUILD_SHARED_LIBS)
-      message(FATAL_ERROR "Benchmarks cannot be built when BUILD_SHARED_LIBS=On")
+    if(NOT ENABLE_TESTS)
+        message(FATAL_ERROR "ENABLE_BENCHMARKS requires ENABLE_TESTS to be ON")
     endif()
 
-    ## google benchmark support
-    add_subdirectory(gbenchmark-master-2017-05-19
-                     ${BLT_BUILD_DIR}/thirdparty_builtin/gbenchmark-master-2017-05-19)
+    message(STATUS "Google Benchmark Support is ${ENABLE_GBENCHMARK}")
 
-    if (UNIX AND NOT APPLE)
-      find_library(RT_LIBRARIES rt)
+    if(ENABLE_GBENCHMARK)
+        if(WIN32 AND BUILD_SHARED_LIBS)
+          message(FATAL_ERROR "Google Benchmark cannot be built when BUILD_SHARED_LIBS=ON or on Windows")
+        endif()
+
+        add_subdirectory(gbenchmark-master-2017-05-19
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/gbenchmark-master-2017-05-19)
+
+        if (UNIX AND NOT APPLE)
+          find_library(RT_LIBRARIES rt)
+        endif()
+
+        blt_register_library(NAME      gbenchmark
+                             INCLUDES  ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
+                             LIBRARIES benchmark ${RT_LIBRARIES}
+                             TREAT_INCLUDES_AS_SYSTEM ON)
+
+        list(APPEND _blt_tpl_targets gbenchmark)
     endif()
 
-    blt_register_library(NAME gbenchmark
-                         INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
-                         LIBRARIES benchmark ${RT_LIBRARIES}
-                         TREAT_INCLUDES_AS_SYSTEM ON
-                         )
-
-    list(APPEND _blt_tpl_targets benchmark)
-
-    if(ENABLE_TESTS)
-      # This sets up a target to run the benchmarks
-      add_custom_target(run_benchmarks 
-                        COMMAND ctest -C Benchmark -VV -R benchmark
-                        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                        )
-    endif()
+    # This sets up a target to run the benchmarks
+    add_custom_target(run_benchmarks
+                      COMMAND ctest -C Benchmark -VV
+                      WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
 
 # Set the folder property of the blt thirdparty libraries 

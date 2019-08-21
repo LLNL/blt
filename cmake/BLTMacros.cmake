@@ -571,17 +571,18 @@ endmacro(blt_add_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_test( NAME          [name]
-##               COMMAND       [command] 
-##               NUM_MPI_TASKS [n] )
+## blt_add_test( NAME           [name]
+##               COMMAND        [command] 
+##               NUM_MPI_TASKS  [n]
+##               CONFIGURATIONS [config1 [config2...]])
 ##
-## Adds a CMake test to the project.
+## Adds a test to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
     set(options )
     set(singleValueArgs NAME NUM_MPI_TASKS)
-    set(multiValueArgs COMMAND)
+    set(multiValueArgs COMMAND CONFIGURATIONS)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -634,62 +635,36 @@ macro(blt_add_test)
         set(test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${test_command} )
     endif()
 
-    add_test(NAME ${arg_NAME}
-             COMMAND ${test_command} )
+    add_test(NAME           ${arg_NAME}
+             COMMAND        ${test_command}
+             CONFIGURATIONS ${arg_CONFIGURATIONS})
 
 endmacro(blt_add_test)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_benchmark( NAME [name] 
-##                    COMMAND [command])
+## blt_add_benchmark( NAME          [name] 
+##                    COMMAND       [command]
+##                    NUM_MPI_TASKS [n])
 ##
-## Adds a (google) benchmark test to the project.
+## Adds a benchmark to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_benchmark)
 
-   if(ENABLE_BENCHMARKS)
+    set(options)
+    set(singleValueArgs NAME NUM_MPI_TASKS)      
+    set(multiValueArgs COMMAND)
 
-      set(options)
-      set(singleValueArgs NAME)      
-      set(multiValueArgs COMMAND)
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+     "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-      ## parse the arguments to the macro
-      cmake_parse_arguments(arg
-         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-      if ( NOT DEFINED arg_NAME )
-          message(FATAL_ERROR "NAME is a required parameter to blt_add_benchmark")
-      endif()
-
-      if ( NOT DEFINED arg_COMMAND )
-          message(FATAL_ERROR "COMMAND is a required parameter to blt_add_benchmark")
-      endif()
-
-      # Generate command
-      if ( NOT TARGET ${arg_NAME} )
-          # Handle case of running multiple tests against one executable, 
-          # the NAME will not be the target
-          list(GET arg_COMMAND 0 executable)
-          get_target_property(runtime_output_directory ${executable} RUNTIME_OUTPUT_DIRECTORY )
-      else()
-          get_target_property(runtime_output_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
-      endif()
-      set(test_command ${runtime_output_directory}/${arg_COMMAND} )
-
-      # Note: No MPI handling for now.  If desired, see how this is handled in blt_add_test macro
-
-      # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
-      # from the general list of tests
-      add_test( NAME ${arg_NAME}
-                COMMAND ${test_command}
-                CONFIGURATIONS Benchmark   
-                )
-
-      if(ENABLE_TESTS)
-        add_dependencies(run_benchmarks ${arg_NAME})
-      endif()
-   endif()
+    # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
+    # from the general list of tests
+    blt_add_test( NAME           ${arg_NAME}
+                  COMMAND        ${arg_COMMAND}
+                  NUM_MPI_TASKS  ${arg_NUM_MPI_TASKS}
+                  CONFIGURATIONS Benchmark)
 
 endmacro(blt_add_benchmark)
 

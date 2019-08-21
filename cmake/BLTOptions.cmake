@@ -64,6 +64,8 @@ endif()
 option(ENABLE_GTEST        "Enable Google Test testing support (if ENABLE_TESTS=ON)" ${_CXX_enabled})
 option(ENABLE_GMOCK        "Enable Google Mock testing support (if ENABLE_TESTS=ON)" OFF)
 option(ENABLE_FRUIT        "Enable Fruit testing support (if ENABLE_TESTS=ON and ENABLE_FORTRAN=ON)" ON)
+option(ENABLE_GBENCHMARK   "Enable Google Benchmark support (if ENABLE_TESTS=ON)" ${ENABLE_BENCHMARKS})
+
 
 if( (NOT _CXX_enabled) AND ENABLE_GTEST )
   message( FATAL_ERROR
