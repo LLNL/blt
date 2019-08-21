@@ -12,6 +12,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Added
 - Sets CMake policy CMP0074 to NEW, when available.
 - Added simpler Clang+XLF+Cuda host-config for LLNL's blueos
+- API Docs that are public!
 
 ### Changed
 - Restructured the host-config directory by site and platform.
