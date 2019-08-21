@@ -10,5 +10,8 @@ API documentation
     :maxdepth: 3
 
     target
+    target_properties
     utility
-    code_health
+    git
+    code_check
+    documentation
