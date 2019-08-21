@@ -66,4 +66,4 @@ Documentation
     :maxdepth: 2
 
     User Tutorial <tutorial/index>
-    API Documenation <api/index>
+    API Documentation <api/index>
