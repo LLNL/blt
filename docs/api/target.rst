@@ -52,12 +52,12 @@ is always on in your build project.
     :linenos:
 
     if(ENABLE_BENCHMARKS)
-      blt_add_executable(NAME    component_benchmark
-                         SOURCES my_benchmark.cpp
-                         DEPENDS gbenchmark)
-      blt_add_benchmark(
-           NAME    component_benchmark
-           COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
+        blt_add_executable(NAME    component_benchmark
+                           SOURCES my_benchmark.cpp
+                           DEPENDS gbenchmark)
+        blt_add_benchmark(
+             NAME    component_benchmark
+             COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
     endif()
 
 .. _blt_add_executable:
@@ -213,14 +213,19 @@ is useful on machines that require extra arguments to MPIEXEC.
   repository you wish to run as a test instead of an executable you built as a part
   of your build system.
 
+Any calls to this macro should be guarded with ENABLE_TESTS unless this option
+is always on in your build project.
+
 .. code-block:: cmake
     :caption: **Example**
     :linenos:
 
-    blt_add_executable(NAME    my_test
-                       SOURCES my_test.cpp)
-    blt_add_test(NAME    my_test
-                 COMMAND my_test --with-some-argument)
+    if (ENABLE_TESTS)
+        blt_add_executable(NAME    my_test
+                           SOURCES my_test.cpp)
+        blt_add_test(NAME    my_test
+                     COMMAND my_test --with-some-argument)
+    endif()
 
 
 .. _blt_register_library:
