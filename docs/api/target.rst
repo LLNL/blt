@@ -28,29 +28,37 @@ COMMAND
 NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
 
-This macro adds the benchmark to the ``run_benchmarks`` build target.
-The underlying executable, previously added with :ref:`blt_add_executable`,
-should include necessary benchmarking library in its DEPENDS_ON list.
+This macro adds a benchmark test to the ``Benchmark`` CTest configuration
+which can be run by the ``run_benchmarks`` build target.  These tests are
+not run when you use the regular ``test`` build target.
 
-BLT provides a built-in Google Benchmark that is enabled by default if you set
-ENABLE_BENCHMARKS=ON and can be turned off with the option ENABLE_GBENCHMARK.
+This macro is just a thin wrapper around :ref:`blt_add_test` and assists 
+with building up the correct command line for running the benchmark.  For more
+information see :ref:`blt_add_test`.
+
+The underlying executable should be previously added to the build system
+with :ref:`blt_add_executable`. It should include the necessary benchmarking 
+library in its DEPENDS_ON list.
+
+Any calls to this macro should be guarded with ENABLE_BENCHMARKS unless this option
+is always on in your build project.
 
 .. note::
-  This is just a thin wrapper around :ref:`blt_add_test` that sets the CTest configuration
-  to "Benchmark" to filter these benchmarks out of the ``test`` build target. It also assists
-  with building up the correct command line.  For more info see :ref:`blt_add_test`.
+  BLT provides a built-in Google Benchmark that is enabled by default if you set
+  ENABLE_BENCHMARKS=ON and can be turned off with the option ENABLE_GBENCHMARK.
 
 .. code-block:: cmake
     :caption: **Example**
     :linenos:
 
-    blt_add_executable(NAME    component_benchmark
-                       SOURCES my_benchmark.cpp
-                       DEPENDS gbenchmark)
-    blt_add_benchmark(
-         NAME    component_benchmark
-         COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
-
+    if(ENABLE_BENCHMARKS)
+      blt_add_executable(NAME    component_benchmark
+                         SOURCES my_benchmark.cpp
+                         DEPENDS gbenchmark)
+      blt_add_benchmark(
+           NAME    component_benchmark
+           COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
+    endif()
 
 .. _blt_add_executable:
 
@@ -182,24 +190,28 @@ NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
 
 CONFIGURATIONS
-  Set the CTest configuration for this test.  Do not specify if you want the
-  test to run every ``test`` build target.
+  Set the CTest configuration for this test.  When not specified, the test
+  will be added to the default CTest configuration.
 
-This macro adds the named test to CTest and the build target ``test``. This macro
-does not build the executable and requires a call to :ref:`blt_add_executable` first.
+This macro adds the named test to CTest, which is run by the build target ``test``. This macro
+does not build the executable and requires a prior call to :ref:`blt_add_executable`.
 
 This macro assists with building up the correct command line. It will prepend
-the RUNTIME_OUTPUT_DIRECTORY target property to the executable. If NUM_MPI_TASKS
-is given, the macro will appropiately use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and 
-BLT_MPI_COMMAND_APPEND to create the MPI run line.
+the RUNTIME_OUTPUT_DIRECTORY target property to the executable.
+
+If NUM_MPI_TASKS is given or ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, the macro 
+will appropiately use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND 
+to create the MPI run line.
 
 MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
 be overwritten in your host-config specific to your platform. BLT_MPI_COMMAND_APPEND
 is useful on machines that require extra arguments to MPIEXEC.
 
 .. note::
-  If you do not want the command line assistance, for example you already have a script
-  you wish to run as a test, then just call CMake's ``add_test()``.
+  If you do not require this macros command line assistance, you can call CMake's
+  ``add_test()`` directly. For example, you may have a script checked into your
+  repository you wish to run as a test instead of an executable you built as a part
+  of your build system.
 
 .. code-block:: cmake
     :caption: **Example**
