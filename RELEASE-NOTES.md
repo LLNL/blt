@@ -16,6 +16,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Changed
 - Restructured the host-config directory by site and platform.
+- Renamed 'check' target to 'code_check' since the former is often used
+  for validating a build. 
 
 ### Fixed
 - Fixed some warnings in CMake 3.14 #285

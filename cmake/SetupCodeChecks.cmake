@@ -7,13 +7,13 @@
 # Targets related to source code checks (formatting, static analysis, etc)
 ###############################################################################
 
-add_custom_target(check)
+add_custom_target(code_check)
 add_custom_target(style)
 
 if(UNCRUSTIFY_FOUND)
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
-    add_dependencies(check uncrustify_check)
+    add_dependencies(code_check uncrustify_check)
 
     # targets for modifying formatting
     add_custom_target(uncrustify_style)
@@ -23,7 +23,7 @@ endif()
 if(ASTYLE_FOUND)
     # targets for verifying formatting
     add_custom_target(astyle_check)
-    add_dependencies(check astyle_check)
+    add_dependencies(code_check astyle_check)
 
     # targets for modifying formatting
     add_custom_target(astyle_style)
@@ -32,7 +32,7 @@ endif()
 
 if(CPPCHECK_FOUND)
     add_custom_target(cppcheck_check)
-    add_dependencies(check cppcheck_check)
+    add_dependencies(code_check cppcheck_check)
 endif()
 
 if(CLANGQUERY_FOUND)
@@ -43,7 +43,7 @@ if(CLANGQUERY_FOUND)
     # sense as a dependency of check
     add_custom_target(clang_query_check)
     add_custom_target(interactive_clang_query_check)
-    add_dependencies(check clang_query_check)
+    add_dependencies(code_check clang_query_check)
 endif()
 
 # Code check targets should only be run on demand
