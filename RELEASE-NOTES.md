@@ -13,12 +13,15 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Sets CMake policy CMP0074 to NEW, when available.
 - Added simpler Clang+XLF+Cuda host-config for LLNL's blueos
 - API Docs that are public!
+- Added the ability to override blt's custom target names, e.g. for code checks,
+  formatting and generating documentation. The new variables are: ``BLT_CODE_CHECK_TARGET_NAME``,
+ ``BLT_CODE_STYLE_TARGET_NAME``, ``BLT_DOCS_TARGET_NAME`` and  ``BLT_RUN_BENCHMARKS_TARGET_NAME``.
 
 ### Changed
 - Restructured the host-config directory by site and platform.
 
 ### Fixed
-- Fixed some warnings in CMake 3.14 #285
+- Fixed some warnings in CMake 3.14+
 
 ## [Version 0.2.5] - Release date 2019-06-13
 

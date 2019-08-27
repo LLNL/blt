@@ -2,17 +2,20 @@
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
+#------------------------------------------------------------------------------
+# Sets up targets and macros associated with documentation
+#------------------------------------------------------------------------------
 
-add_custom_target(docs)
+add_custom_target(${BLT_DOCS_TARGET_NAME})
 
 if(DOXYGEN_FOUND)
     add_custom_target(doxygen_docs)
-    add_dependencies(docs doxygen_docs)
+    add_dependencies(${BLT_DOCS_TARGET_NAME} doxygen_docs)
 endif()
 
 if(SPHINX_FOUND)
     add_custom_target(sphinx_docs)
-    add_dependencies(docs sphinx_docs)
+    add_dependencies(${BLT_DOCS_TARGET_NAME} sphinx_docs)
 endif()
 
 
