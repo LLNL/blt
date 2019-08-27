@@ -2,37 +2,36 @@
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
-
-###############################################################################
+#------------------------------------------------------------------------------
 # Targets related to source code checks (formatting, static analysis, etc)
-###############################################################################
+#------------------------------------------------------------------------------
 
-add_custom_target(code_check)
-add_custom_target(style)
+add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
+add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
 if(UNCRUSTIFY_FOUND)
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
-    add_dependencies(code_check uncrustify_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
 
     # targets for modifying formatting
     add_custom_target(uncrustify_style)
-    add_dependencies(style uncrustify_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} uncrustify_style)
 endif()
 
 if(ASTYLE_FOUND)
     # targets for verifying formatting
     add_custom_target(astyle_check)
-    add_dependencies(code_check astyle_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} astyle_check)
 
     # targets for modifying formatting
     add_custom_target(astyle_style)
-    add_dependencies(style astyle_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} astyle_style)
 endif()
 
 if(CPPCHECK_FOUND)
     add_custom_target(cppcheck_check)
-    add_dependencies(code_check cppcheck_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} cppcheck_check)
 endif()
 
 if(CLANGQUERY_FOUND)
@@ -43,7 +42,7 @@ if(CLANGQUERY_FOUND)
     # sense as a dependency of check
     add_custom_target(clang_query_check)
     add_custom_target(interactive_clang_query_check)
-    add_dependencies(code_check clang_query_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_query_check)
 endif()
 
 # Code check targets should only be run on demand

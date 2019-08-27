@@ -2,20 +2,22 @@
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
+#------------------------------------------------------------------------------
+# Sets up configuration options for BLT
+#------------------------------------------------------------------------------
 
-################################
+#------------------------------------------------------------------------------
 # Build Targets
-################################
+#------------------------------------------------------------------------------
 option(ENABLE_DOCS       "Enables documentation" ON)
 option(ENABLE_EXAMPLES   "Enables examples" ON)
 option(ENABLE_TESTS      "Enables tests" ON)
 option(ENABLE_BENCHMARKS "Enables benchmarks" OFF)
 option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 
-
-################################
+#------------------------------------------------------------------------------
 # TPL Executable Options
-################################
+#------------------------------------------------------------------------------
 option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
 option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
 option(ENABLE_GIT          "Enables Git support" ON)
@@ -24,10 +26,9 @@ option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
 option(ENABLE_ASTYLE       "Enables AStyle support" ON)
 option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
 
-
-################################
+#------------------------------------------------------------------------------
 # Build Options
-################################
+#------------------------------------------------------------------------------
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 if(_languages MATCHES "Fortran")
     set(_fortran_already_enabled TRUE)
@@ -47,6 +48,9 @@ option(ENABLE_HIP         "Enable HIP support" OFF)
 option(ENABLE_HCC         "Enable HCC support" OFF)
 set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")
 
+#------------------------------------------------------------------------------
+# Test Options
+#
 # Options that control if Google Test, Google Mock, and Fruit are built 
 # and available for use. 
 #
@@ -54,7 +58,7 @@ set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating
 #
 # Google Mock requires and always builds Google Test, so ENABLE_GMOCK=ON
 # implies ENABLE_GTEST=ON.
-#
+#------------------------------------------------------------------------------
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 if(_languages MATCHES "CXX")
   set(_CXX_enabled ON)
@@ -72,21 +76,20 @@ if( (NOT _CXX_enabled) AND ENABLE_GTEST )
     "You must have CXX enabled in your project to use GTEST!" )
 endif()
 
-################################
+#------------------------------------------------------------------------------
 # Compiler Options
-################################
+#------------------------------------------------------------------------------
 option(ENABLE_ALL_WARNINGS       "Enables all compiler warnings on all build targets" ON)
 option(ENABLE_WARNINGS_AS_ERRORS "Enables treating compiler warnings as errors on all build targets" OFF)
 
-################################
+#------------------------------------------------------------------------------
 # Generator Options
-################################
+#------------------------------------------------------------------------------
 option(ENABLE_FOLDERS "Organize projects using folders (in generators that support this)" OFF)
 
-
-################################
+#------------------------------------------------------------------------------
 # Advanced configuration options
-################################
+#------------------------------------------------------------------------------
 
 option(ENABLE_FIND_MPI     "Enables CMake's Find MPI support (Turn off when compiling with the mpi wrapper directly)" ON)
 
@@ -99,14 +102,28 @@ option(
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC
     "Option to ensure that all tests are invoked through mpiexec. Required on some platforms, like IBM's BG/Q."
     OFF )
-
-# All advanced options should be marked as advanced
-mark_as_advanced(
-    ENABLE_FIND_MPI
-    ENABLE_GTEST_DEATH_TESTS
-    ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC )
        
 if (DEFINED ENABLE_SHARED_LIBS)
     message(FATAL_ERROR "ENABLE_SHARED_LIBS is a deprecated BLT option."
                         "Use the standard CMake option, BUILD_SHARED_LIBS, instead.")
 endif()
+
+# Provide some overridable target names for custom targets that blt defines.
+# This can be useful when working with other build systems since CMake requires
+# unique names for targets.
+set(BLT_CODE_CHECK_TARGET_NAME "check" CACHE STRING "Name of the master code check target")
+set(BLT_CODE_STYLE_TARGET_NAME "style" CACHE STRING "Name of the master code formatting target")
+set(BLT_DOCS_TARGET_NAME "docs" CACHE STRING "Name of the master documentation generation target")
+set(BLT_RUN_BENCHMARKS_TARGET_NAME "run_benchmarks" CACHE STRING "Name of the target to run benchmark tests")
+
+
+# All advanced options should be marked as advanced
+mark_as_advanced(
+    ENABLE_FIND_MPI
+    ENABLE_GTEST_DEATH_TESTS
+    ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC 
+    BLT_CODE_CHECK_TARGET_NAME
+    BLT_CODE_STYLE_TARGET_NAME
+    BLT_DOCS_TARGET_NAME
+    BLT_RUN_BENCHMARKS_TARGET_NAME )
+
