@@ -58,13 +58,13 @@ CMake target.
 
 Here is an example of using ``blt_add_sphinx_target()`` in a CMakeLists.txt file:
 
-.. literalinclude:: tutorial/calc_pi/docs/sphinx/CMakeLists.txt
+.. literalinclude:: calc_pi/docs/sphinx/CMakeLists.txt
    :language: rst
 
 
 Here is the example reStructuredText file that contains documentation for the *calc_pi* example.
 
-.. literalinclude:: tutorial/calc_pi/docs/sphinx/index.rst
+.. literalinclude:: calc_pi/docs/sphinx/index.rst
    :language: rst
    
 
@@ -90,13 +90,13 @@ and add a command to build the Doxygen docs using this file to the ``docs`` CMak
 
 Here is an example of using ``blt_add_doxygen_target()`` in a CMakeLists.txt file:
 
-.. literalinclude:: tutorial/calc_pi/docs/doxygen/CMakeLists.txt
+.. literalinclude:: calc_pi/docs/doxygen/CMakeLists.txt
    :language: rst
 
 
 Here is the example ``Doxyfile.in`` file that is configured by CMake and passed to ``doxygen``.
 
-.. literalinclude:: tutorial/calc_pi/docs/doxygen/Doxyfile.in
+.. literalinclude:: calc_pi/docs/doxygen/Doxyfile.in
    :language: rst
 
 

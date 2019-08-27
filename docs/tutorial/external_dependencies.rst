@@ -56,7 +56,7 @@ it just exposes these options via BLT's support for  ``DEPENDS_ON``.
 You have already seen one use of ``DEPENDS_ON`` for a BLT
 registered dependency in test_1:  ``gtest``
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+.. literalinclude:: calc_pi/CMakeLists.txt 
    :start-after: _blt_tutorial_calcpi_test1_executable_start
    :end-before:  _blt_tutorial_calcpi_test1_executable_end
    :language: cmake
@@ -77,7 +77,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: ../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :start-after: _blt_tutorial_surface_mpi_config_start
    :end-before:  _blt_tutorial_surface_mpi_config_end
    :language: cmake
@@ -85,7 +85,7 @@ To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER
 
 Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+.. literalinclude:: calc_pi/CMakeLists.txt 
    :start-after: _blt_tutorial_calcpi_test2_executable_start
    :end-before:  _blt_tutorial_calcpi_test2_executable_end
    :language: cmake
@@ -94,7 +94,7 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 For MPI unit tests, you also need to specify the number of MPI Tasks
 to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test()`` macro.
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+.. literalinclude:: calc_pi/CMakeLists.txt 
    :start-after: _blt_tutorial_calcpi_test2_test_start
    :end-before:  _blt_tutorial_calcpi_test2_test_end
    :language: cmake
@@ -105,7 +105,7 @@ driver that will execute all unit tests defined in the source. To test MPI code,
 we need to create a main that initializes and finalizes MPI in addition to Google
 Test. ``test_2.cpp`` provides an example driver for MPI with Google Test.
 
-.. literalinclude:: tutorial/calc_pi/test_2.cpp
+.. literalinclude:: calc_pi/test_2.cpp
    :start-after: _blt_tutorial_calcpi_test2_main_start
    :end-before:  _blt_tutorial_calcpi_test2_main_end
    :language: cpp
@@ -140,14 +140,14 @@ for you and enable the CUDA language.
 
 Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: ../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
    :start-after: _blt_tutorial_surface_cuda_config_start
    :end-before:  _blt_tutorial_surface_cuda_config_end
    :language: cmake
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt 
+.. literalinclude:: calc_pi/CMakeLists.txt 
    :start-after: _blt_tutorial_calcpi_cuda_start
    :end-before:  _blt_tutorial_calcpi_cuda_end
    :language: cmake
@@ -181,7 +181,7 @@ executable's ``DEPENDS_ON`` list.
 
 Here is an example of how to add an OpenMP enabled executable:
 
-   .. literalinclude:: ../tests/smoke/CMakeLists.txt
+   .. literalinclude:: ../../tests/smoke/CMakeLists.txt
      :start-after: _blt_tutorial_openmp_executable_start
      :end-before:  _blt_tutorial_openmp_executable_end
      :language: cmake
@@ -203,17 +203,17 @@ Example Host-configs
 
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
-:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
+:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
 
-:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf <../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
+:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf <../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
 
-:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake <../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake>`
+:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
 
 Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
 
-:download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
+:download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
 
 
 Building and testing on Surface

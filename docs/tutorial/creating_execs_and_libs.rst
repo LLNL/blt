@@ -26,7 +26,7 @@ This example is as basic as it gets. After setting up a BLT CMake project,
 like ``blank_project`` in the previous section, we can start using BLT's macros.  
 Creating an executable is as simple as calling the following macro:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+.. literalinclude:: calc_pi/CMakeLists.txt
    :start-after: _blt_tutorial_example_executable_start
    :end-before:  _blt_tutorial_example_executable_end
    :language: cmake
@@ -67,7 +67,7 @@ that calculates the value of pi and then linking that library into an executable
 
 First, we create the library with the following BLT code:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+.. literalinclude:: calc_pi/CMakeLists.txt
    :start-after: _blt_tutorial_calcpi_library_start
    :end-before:  _blt_tutorial_calcpi_library_end
    :language: cmake
@@ -78,7 +78,7 @@ Just like before, this creates a CMake library target that will get built to
 Next, we create an executable named ``example_2`` and link in the previously
 created library target:
 
-.. literalinclude:: tutorial/calc_pi/CMakeLists.txt
+.. literalinclude:: calc_pi/CMakeLists.txt
    :start-after: _blt_tutorial_calcpi_example2_start
    :end-before:  _blt_tutorial_calcpi_example2_end
    :language: cmake
