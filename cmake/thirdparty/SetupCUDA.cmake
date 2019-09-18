@@ -52,6 +52,12 @@ else()
     endif()
 endif()
 
+# Override rpath link flags for nvcc
+if (CUDA_LINK_WITH_NVCC)
+    set(CMAKE_SHARED_LIBRARY_RUNTIME_CUDA_FLAG "-Xlinker -rpath -Xlinker " CACHE STRING "")
+    set(CMAKE_SHARED_LIBRARY_RPATH_LINK_CUDA_FLAG "-Xlinker -rpath -Xlinker " CACHE STRING "")
+endif()
+
 
 ############################################################
 # Basics
@@ -70,7 +76,6 @@ endif ()
 # FindMPI can break nvcc. In that case, you should set ENABLE_FIND_MPI to Off and control
 # the link using CMAKE_CUDA_LINK_FLAGS. -Wl,-rpath, equivalent would be -Xlinker -rpath -Xlinker
 if (CUDA_LINK_WITH_NVCC)
-    set(CMAKE_SHARED_LIBRARY_RPATH_LINK_CUDA_FLAG "-Xlinker -rpath -Xlinker")
     set(CMAKE_CUDA_LINK_EXECUTABLE
     "${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS>  <FLAGS>  <LINK_FLAGS>  <OBJECTS> -o <TARGET>  <LINK_LIBRARIES>")
     # do a no-op for the device links - for some reason the device link library dependencies are only a subset of the 
