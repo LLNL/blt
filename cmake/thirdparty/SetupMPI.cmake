@@ -88,6 +88,11 @@ if (ENABLE_FIND_MPI)
             list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
         endif()
     endif()
+    # Convert rpath flag if linking with CUDA
+    if (CUDA_LINK_WITH_NVCC)
+        string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
+                       _mpi_link_flags "${_mpi_link_flags}")
+    endif()
 
     # Libraries
     set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})

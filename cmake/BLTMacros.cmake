@@ -202,12 +202,19 @@ macro(blt_add_target_link_flags)
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
+    set(_flags ${arg_FLAGS})
+    # Convert rpath flag if linking with CUDA
+    if (CUDA_LINK_WITH_NVCC)
+        string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
+                       _flags "${_flags}")
+    endif()
+
     if(NOT "${arg_FLAGS}" STREQUAL "")
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
             # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
             # This now supports generator expressions but expects a list
             # not a string
-            separate_arguments(_flag_list NATIVE_COMMAND "${arg_FLAGS}" )
+            separate_arguments(_flag_list NATIVE_COMMAND "${_flags}" )
             foreach( _flag  ${_flag_list} )
                 set_property(TARGET ${arg_TO} APPEND PROPERTY LINK_OPTIONS "${_flag}" )
             endforeach()
@@ -216,7 +223,7 @@ macro(blt_add_target_link_flags)
             if(NOT _link_flags)
                 set(_link_flags "")
             endif()
-            set(_link_flags "${arg_FLAGS} ${_link_flags}")
+            set(_link_flags "${_flags} ${_link_flags}")
 
             # Convert from a CMake ;-list to a string
             string (REPLACE ";" " " _link_flags_str "${_link_flags}")

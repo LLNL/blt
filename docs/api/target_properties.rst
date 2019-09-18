@@ -69,6 +69,9 @@ Adds linker flags to a target by appending to the target's existing flags.
 
 The FLAGS argument expects a ; delimited list of linker flags to add to the target.
 
+If `CUDA_LINK_WITH_NVCC` is set to ON, this macro will automatically convert
+"-Wl,-rpath," to "-Xlinker -rpath -Xlinker ".
+
 Note: In CMake versions prior to 3.13, this list is converted to a string internally
 and any ; characters will be removed.
 
