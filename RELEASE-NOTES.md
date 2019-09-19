@@ -20,6 +20,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   '-Wl,-rpath' linking flag to '-Xlinker -rpath -Xlinker' and removes ``-pthread`` from from
   MPI linking flags returned from FindMPI because it doesn't work
   (see https://gitlab.kitware.com/cmake/cmake/issues/18008).
+- In CMake 3.13+, "SHELL:" was added to blt_add_target_link_flags.  This stops CMake from de-duplicating
+  needed linker flags.
 
 ### Changed
 - Restructured the host-config directory by site and platform.
