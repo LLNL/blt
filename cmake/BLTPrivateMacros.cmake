@@ -9,6 +9,52 @@ include(CMakeParseArguments)
 
 
 ##-----------------------------------------------------------------------------
+## blt_determine_scope(TARGET <target>
+##                     SCOPE  <public (Default)| interface | private >
+##                     OUT    <out variable name>)
+##
+## Returns the scope from a given target and scope string
+##-----------------------------------------------------------------------------
+macro(blt_determine_scope)
+
+    set(options)
+    set(singleValueArgs TARGET SCOPE)
+    set(multiValueArgs OUT)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                        "${multiValueArgs}" ${ARGN} )
+
+    string(TOUPPER "${arg_SCOPE}" _uppercaseScope)
+    if("${_uppercaseScope}" MATCHES "")
+        # Default to public
+        set(_uppercaseScope PUBLIC)
+    elseif(NOT ("${_uppercaseScope}" STREQUAL "PUBLIC" OR
+                "${_uppercaseScope}" STREQUAL "INTERFACE" OR
+                "${_uppercaseScope}" STREQUAL "PRIVATE"))
+        message(FATAL_ERROR "Given SCOPE (${arg_SCOPE}) is not valid, valid options are:"
+                            "public, interface, private")
+    endif()
+
+    if(TARGET ${arg_TARGET})
+        get_property(_targetType TARGET ${arg_TO} PROPERTY TYPE)
+        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+            # Interface targets can only set INTERFACE
+            set(${arg_OUT} INTERFACE)
+        else()
+            set(${arg_OUT} ${_uppercaseScope})
+        endif()
+    else()
+        set(${arg_OUT} ${_uppercaseScope})
+    endif()
+
+    unset(_targetType)
+    unset(_uppercaseScope)
+
+endmacro(blt_determine_scope)
+
+
+##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()
 ##
 ## Checks if target already exists in CMake project and errors out with given
