@@ -20,7 +20,7 @@ macro(blt_list_append)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-     # sanity checks
+     # Sanity checks
     if( NOT DEFINED arg_TO )
         message(FATAL_ERROR "blt_list_append() requires a TO <list> argument")
     endif()
@@ -64,7 +64,7 @@ macro(blt_list_remove_duplicates)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # sanity checks
+    # Sanity checks
     if( NOT DEFINED arg_TO )
         message(FATAL_ERROR "blt_list_append() requires a TO <list> argument")
     endif()
@@ -77,44 +77,45 @@ endmacro(blt_list_remove_duplicates)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_target_definitions(TO <target> TARGET_DEFINITIONS [FOO [BAR ...]])
+## blt_add_target_definitions(TO     <target>
+##                            SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
+##                            TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_definitions)
 
     set(options)
-    set(singleValueArgs TO)
+    set(singleValueArgs TO SCOPE)
     set(multiValueArgs TARGET_DEFINITIONS)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    ## check that the passed in parameter TO is actually a target
+    # Sanity checks
     if(NOT TARGET ${arg_TO})
         message(FATAL_ERROR "Target ${arg_TO} passed to blt_add_target_definitions is not a valid cmake target")    
     endif()
 
-    ## only add the flag if it is not empty
+    blt_determine_scope(TARGET ${arg_TO} SCOPE "${arg_SCOPE}" OUT _scope)
+
+    # Only add the flag if it is not empty
     string(STRIP "${arg_TARGET_DEFINITIONS}" _strippedDefs)
     if(NOT "${_strippedDefs}" STREQUAL "")
-        get_property(_targetType TARGET ${arg_TO} PROPERTY TYPE)
-        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
-            target_compile_definitions(${arg_TO} INTERFACE ${_strippedDefs})
-        else()
-            target_compile_definitions(${arg_TO} PUBLIC ${_strippedDefs})
-        endif()        
+        target_compile_definitions(${arg_TO} ${_scope} ${_strippedDefs})
     endif()
 
-    unset(_targetType)
+    unset(_scope)
     unset(_strippedDefs)
 
 endmacro(blt_add_target_definitions)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_target_compile_flags(TO <target> FLAGS [FOO [BAR ...]])
+## blt_add_target_compile_flags(TO    <target>
+##                              SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
+##                              FLAGS [FOO [BAR ...]])
 ##
 ## Adds compiler flags to a target (library, executable or interface) by 
 ## appending to the target's existing flags.
@@ -122,31 +123,28 @@ endmacro(blt_add_target_definitions)
 macro(blt_add_target_compile_flags)
 
     set(options)
-    set(singleValuedArgs TO)
+    set(singleValuedArgs TO SCOPE)
     set(multiValuedArgs FLAGS)
 
-    ## parse the arguments to the macro
+    # Parse the arguments to the macro
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
-    ## check that the passed in parameter TO is actually a target
+    # Sanity checks
     if(NOT TARGET ${arg_TO})
         message(FATAL_ERROR "Target ${arg_TO} passed to blt_add_target_compile_flags is not a valid cmake target")    
     endif()
 
-    ## only add the flag if it is not empty
+    blt_determine_scope(TARGET ${arg_TO} SCOPE "${arg_SCOPE}" OUT _scope)
+
+    # Only add the flag if it is not empty
     string(STRIP "${arg_FLAGS}" _strippedFlags)
     if(NOT "${_strippedFlags}" STREQUAL "")
-        get_property(_targetType TARGET ${arg_TO} PROPERTY TYPE)
-        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
-            target_compile_options(${arg_TO} INTERFACE ${_strippedFlags})
-        else()
-            target_compile_options(${arg_TO} PUBLIC ${_strippedFlags})
-        endif()        
+        target_compile_options(${arg_TO} ${_scope} ${_strippedFlags})
     endif()
 
-    unset(_targetType)
     unset(_strippedFlags)
+    unset(_scope)
 
 endmacro(blt_add_target_compile_flags)
 
@@ -162,11 +160,11 @@ macro(blt_set_target_folder)
     set(singleValuedArgs TARGET FOLDER)
     set(multiValuedArgs)
 
-    ## parse the arguments to the macro
+    # Parse the arguments to the macro
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
-    ## check for required arguments
+    # Sanity checks
     if(NOT DEFINED arg_TARGET)
         message(FATAL_ERROR "TARGET is a required parameter for blt_set_target_folder macro")
     endif()
@@ -179,7 +177,7 @@ macro(blt_set_target_folder)
         message(FATAL_ERROR "FOLDER is a required parameter for blt_set_target_folder macro")
     endif()
 
-    ## set the folder property for this target
+    # Set the folder property for this target
     if(ENABLE_FOLDERS AND NOT "${arg_FOLDER}" STREQUAL "")
         set_property(TARGET ${arg_TARGET} PROPERTY FOLDER "${arg_FOLDER}")
     endif()
@@ -188,35 +186,51 @@ endmacro(blt_set_target_folder)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_target_link_flags (TO <target> FLAGS [FOO [BAR ...]])
+## blt_add_target_link_flags (TO    <target>
+##                            SCOPE <PUBLIC (Default)| INTERFACE | PRIVATE>
+##                            FLAGS [FOO [BAR ...]])
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
 ##------------------------------------------------------------------------------
 macro(blt_add_target_link_flags)
 
     set(options)
-    set(singleValuedArgs TO)
+    set(singleValuedArgs TO SCOPE)
     set(multiValuedArgs FLAGS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN} )
 
+    set(_flags ${arg_FLAGS})
+    # Convert rpath flag if linking with CUDA
+    if (CUDA_LINK_WITH_NVCC)
+        string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
+                       _flags "${_flags}")
+    endif()
+
+    # Only add the flag if it is not empty
     if(NOT "${arg_FLAGS}" STREQUAL "")
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
             # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
-            # This now supports generator expressions but expects a list
+            # This now supports generator expressions and scoping but expects a list
             # not a string
-            separate_arguments(_flag_list NATIVE_COMMAND "${arg_FLAGS}" )
-            foreach( _flag  ${_flag_list} )
-                set_property(TARGET ${arg_TO} APPEND PROPERTY LINK_OPTIONS "${_flag}" )
-            endforeach()
+            blt_determine_scope(TARGET ${arg_TO} SCOPE "${arg_SCOPE}" OUT _scope)
+
+            # Note: "SHELL:"" causes the flags to be not de-duplicated and parsed with
+            # separate_arguments
+            if(NOT "${arg_FLAGS}" MATCHES SHELL:)
+                target_link_options(${arg_TO} ${_scope} SHELL:${arg_FLAGS})
+            else()
+                target_link_options(${arg_TO} ${_scope} ${arg_FLAGS})
+            endif()
         else()
+            # In CMake <= 3.12, there is no target_link_flags or target_link_options command
             get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
             if(NOT _link_flags)
                 set(_link_flags "")
             endif()
-            set(_link_flags "${arg_FLAGS} ${_link_flags}")
+            set(_link_flags "${_flags} ${_link_flags}")
 
             # Convert from a CMake ;-list to a string
             string (REPLACE ";" " " _link_flags_str "${_link_flags}")
@@ -224,6 +238,11 @@ macro(blt_add_target_link_flags)
                                   PROPERTIES LINK_FLAGS "${_link_flags_str}")
         endif()
     endif()
+
+    unset(_flags)
+    unset(_link_flags)
+    unset(_link_flags_str)
+    unset(_scope)
 
 endmacro(blt_add_target_link_flags)
 
@@ -343,7 +362,7 @@ macro(blt_add_library)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # sanity checks
+    # Sanity checks
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "blt_add_library() must be called with argument NAME <name>")
     endif()
@@ -503,7 +522,7 @@ macro(blt_add_executable)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # sanity checks
+    # Sanity checks
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "blt_add_executable() must be called with argument NAME <name>")
     endif()
@@ -824,7 +843,7 @@ macro(blt_combine_static_libraries)
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    # sanity checks
+    # Sanity checks
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "blt_combine_static_libraries() must be called with argument NAME <name>")
     endif()

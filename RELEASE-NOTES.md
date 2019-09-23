@@ -15,7 +15,14 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - API Docs that are public!
 - Added the ability to override blt's custom target names, e.g. for code checks,
   formatting and generating documentation. The new variables are: ``BLT_CODE_CHECK_TARGET_NAME``,
- ``BLT_CODE_STYLE_TARGET_NAME``, ``BLT_DOCS_TARGET_NAME`` and  ``BLT_RUN_BENCHMARKS_TARGET_NAME``.
+  ``BLT_CODE_STYLE_TARGET_NAME``, ``BLT_DOCS_TARGET_NAME`` and  ``BLT_RUN_BENCHMARKS_TARGET_NAME``.
+- Clean up linking flags when ``CUDA_LINK_WITH_NVCC`` is ON. Added logic to automatically convert
+  '-Wl,-rpath' linking flag to '-Xlinker -rpath -Xlinker' and removes ``-pthread`` from from
+  MPI linking flags returned from FindMPI because it doesn't work
+  (see https://gitlab.kitware.com/cmake/cmake/issues/18008).
+- In CMake 3.13+, "SHELL:" was added to blt_add_target_link_flags.  This stops CMake from de-duplicating
+  needed linker flags.
+- Added optional SCOPE to all target property macros, blt_add_target_link_flags, etc.  It defaults to PUBLIC.
 
 ### Changed
 - Restructured the host-config directory by site and platform.
