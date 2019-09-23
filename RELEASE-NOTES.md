@@ -22,7 +22,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   (see https://gitlab.kitware.com/cmake/cmake/issues/18008).
 - In CMake 3.13+, "SHELL:" was added to blt_add_target_link_flags.  This stops CMake from de-duplicating
   needed linker flags.
-- Added SCOPE to all target property macros, blt_add_target_link_flags, etc.  It defaults to PUBLIC.
+- Added optional SCOPE to all target property macros, blt_add_target_link_flags, etc.  It defaults to PUBLIC.
 
 ### Changed
 - Restructured the host-config directory by site and platform.
