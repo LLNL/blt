@@ -19,7 +19,7 @@ blt_add_target_compile_flags
 Appends compiler flags to a CMake target by appending to the target's existing flags.
 
 TO
-  Name of CMake target that the flags will be appended to
+  Name of CMake target
 
 SCOPE
   Defines the scope of the given flags. Defaults to PUBLIC and is case insensitive.
@@ -28,12 +28,12 @@ FLAGS
   List of compile flags
 
 This macro provides very similar functionality to CMake's native 
-``add_compile_options`` and ``target_compile_options``commands, but,
-it provides more fine-grained scoping for the compile flags on a
+``add_compile_options`` and ``target_compile_options`` commands, but
+provides more fine-grained scoping for the compile flags on a
 per target basis.
 
-The given target must be added via add_executable() or add_library() or
-with the corresponding blt_add_executable() and blt_add_library() macros.
+The given target must be added via CMake's ``add_executable`` or ``add_library`` commands
+or with the corresponding ``blt_add_executable`` and ``blt_add_library`` macros.
 
 PRIVATE flags are used for the given target. INTERFACE flags are inherited
 by any target that depends on this target. PUBLIC flags are both INTERFACE and PRIVATE.
@@ -54,7 +54,7 @@ blt_add_target_definitions
 Appends pre-processor definitions to the given target's existing flags.
 
 TO
-  Name of CMake target that the definitions will be appended to
+  Name of CMake target
 
 SCOPE
   Defines the scope of the given definitions. Defaults to PUBLIC and is case insensitive.
@@ -63,14 +63,14 @@ FLAGS
   List of definitions flags
 
 This macro provides very similar functionality to CMake's native 
-``add_definitions`` and ``target_add_defintions`` commands, but, it provides
+``add_definitions`` and ``target_add_defintions`` commands, but provides
 more fine-grained scoping for the compile definitions on a per target basis.
 Given a list of definitions, e.g., FOO and BAR, this macro adds compiler
 definitions to the compiler command for the given target, i.e., it will pass
 -DFOO and -DBAR.
 
-The given target must be added via add_executable() or add_library() or
-with the corresponding blt_add_executable() and blt_add_library() macros.
+The given target must be added via CMake's ``add_executable`` or ``add_library`` commands
+or with the corresponding ``blt_add_executable`` and ``blt_add_library`` macros.
 
 PRIVATE flags are used for the given target. INTERFACE flags are inherited
 by any target that depends on this target. PUBLIC flags are both INTERFACE and PRIVATE.
@@ -105,7 +105,7 @@ blt_add_target_link_flags
 Appends linker flags to a the given target's existing flags.
 
 TO
-  Name of CMake target that the flags will be added to
+  Name of CMake target
 
 SCOPE
   Defines the scope of the given flags. Defaults to PUBLIC and is case insensitive.
@@ -114,11 +114,11 @@ FLAGS
   List of linker flags
 
 This macro provides very similar functionality to CMake's native 
-``add_link_options`` and ``target_link_options``, but, it provides
+``add_link_options`` and ``target_link_options`` commands, but provides
 more fine-grained scoping for the compile definitions on a per target basis.
 
-The given target must be added via add_executable() or add_library() or
-with the corresponding blt_add_executable() and blt_add_library() macros.
+The given target must be added via CMake's ``add_executable`` or ``add_library`` commands
+or with the corresponding ``blt_add_executable`` and ``blt_add_library`` macros.
 
 PRIVATE flags are used for the given target. INTERFACE flags are inherited
 by any target that depends on this target. PUBLIC flags are both INTERFACE and PRIVATE.
@@ -152,8 +152,12 @@ blt_print_target_properties
 
 Prints out all properties of the given target.
 
-The required target parameteter must either be a valid cmake target 
-or was registered via blt_register_library.
+TARGET
+  Name of CMake target
+
+The given target must be added via ``add_executable`` or ``add_library`` or
+with the corresponding ``blt_add_executable``, ``blt_add_library``, or
+``blt_register_library`` macros.
 
 Output is of the form for each property:
  | [<target> property] <property>: <value>
@@ -167,12 +171,21 @@ blt_set_target_folder
     blt_set_target_folder( TARGET <target>
                            FOLDER <folder>)
 
-Sets the folder property of cmake target <target> to <folder>.
+Sets the FOLDER property of the given CMake target.
 
-This feature is only available when blt's ENABLE_FOLDERS option is ON and 
-in cmake generators that support folders (but is safe to call regardless
+TARGET
+  Name of CMake target
+
+FOLDER
+  Name of the folder
+
+This is used to organize properties in an IDE.
+
+This feature is only available when BLT's `ENABLE_FOLDERS` option is ON and 
+in CMake generators that support folders (but is safe to call regardless
 of the generator or value of ENABLE_FOLDERS).
 
-Note: Do not use this macro on header-only (INTERFACE) library targets, since 
-this will generate a cmake configuration error.
+.. note::
+  Do not use this macro on header-only (INTERFACE) library targets, since 
+  this will generate a CMake configuration error.
 
