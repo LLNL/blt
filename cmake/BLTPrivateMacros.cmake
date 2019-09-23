@@ -10,16 +10,24 @@ include(CMakeParseArguments)
 
 ##-----------------------------------------------------------------------------
 ## blt_determine_scope(TARGET <target>
-##                     SCOPE  <public (Default)| interface | private >
+##                     SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
 ##                     OUT    <out variable name>)
 ##
-## Returns the scope from a given target and scope string
+## Returns the normalized scope string for a given SCOPE and TARGET to be used
+## in BLT macros.
+##
+## TARGET - Name of CMake Target that the property is being added to
+##          Note: the only real purpose of this parameter is to make sure we aren't
+##                adding returning other than INTERFACE for Interface Libraries
+## SCOPE  - case-insensitive scope string, defaults to PUBLIC
+## OUT    - variable that is filled with the uppercased scope
+##
 ##-----------------------------------------------------------------------------
 macro(blt_determine_scope)
 
     set(options)
-    set(singleValueArgs TARGET SCOPE)
-    set(multiValueArgs OUT)
+    set(singleValueArgs TARGET SCOPE OUT)
+    set(multiValueArgs )
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
@@ -33,14 +41,20 @@ macro(blt_determine_scope)
                 "${_uppercaseScope}" STREQUAL "INTERFACE" OR
                 "${_uppercaseScope}" STREQUAL "PRIVATE"))
         message(FATAL_ERROR "Given SCOPE (${arg_SCOPE}) is not valid, valid options are:"
-                            "public, interface, private")
+                            "PUBLIC, INTERFACE, or PRIVATE")
     endif()
 
     if(TARGET ${arg_TARGET})
-        get_property(_targetType TARGET ${arg_TO} PROPERTY TYPE)
+        get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
         if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
             # Interface targets can only set INTERFACE
-            set(${arg_OUT} INTERFACE)
+            if("${_uppercaseScope}" STREQUAL "PUBLIC" OR
+               "${_uppercaseScope}" STREQUAL "INTERFACE")
+                set(${arg_OUT} INTERFACE)
+            else()
+                message(FATAL_ERROR "Cannot set PRIVATE scope to Interface Library."
+                                    "Change to Scope to INTERFACE.")
+            endif()
         else()
             set(${arg_OUT} ${_uppercaseScope})
         endif()

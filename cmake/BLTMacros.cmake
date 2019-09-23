@@ -77,8 +77,8 @@ endmacro(blt_list_remove_duplicates)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_target_definitions(TO <target>
-##                            SCOPE <public (default)|private|interface>
+## blt_add_target_definitions(TO     <target>
+##                            SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
 ##                            TARGET_DEFINITIONS [FOO [BAR ...]])
 ##
 ## Adds pre-processor definitions to the given target.
@@ -114,7 +114,7 @@ endmacro(blt_add_target_definitions)
 
 ##------------------------------------------------------------------------------
 ## blt_add_target_compile_flags(TO    <target>
-##                              SCOPE <public (default)|private|interface>
+##                              SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
 ##                              FLAGS [FOO [BAR ...]])
 ##
 ## Adds compiler flags to a target (library, executable or interface) by 
@@ -187,7 +187,7 @@ endmacro(blt_set_target_folder)
 
 ##------------------------------------------------------------------------------
 ## blt_add_target_link_flags (TO    <target>
-##                            SCOPE <public (default)|private|interface>
+##                            SCOPE <PUBLIC (Default)| INTERFACE | PRIVATE>
 ##                            FLAGS [FOO [BAR ...]])
 ##
 ## Adds linker flags to a target by appending to the target's existing flags.
