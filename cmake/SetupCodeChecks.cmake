@@ -60,8 +60,8 @@ endforeach()
 ##------------------------------------------------------------------------------
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
-##                      UNCRUSTIFY_CFG_FILE <path to uncrustify config file>
-##                      ASTYLE_CFG_FILE     <path to astyle config file>)
+##                      UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
+##                      ASTYLE_CFG_FILE     <Path to AStyle config file>)
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
 ## filters based on file extensions.

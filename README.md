@@ -85,19 +85,50 @@ Open-Source Projects using BLT
 If you would like to add a library to this list, please let us know via [email](mailto:blt-dev@llnl.gov)
 or by submitting an [issue](https://github.com/LLNL/blt/issues) or [pull-request](https://github.com/LLNL/blt/pulls).
 
-Release
+License
 -------
 
-Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
+BLT is licensed under the BSD 3-Clause license,
+(BSD-3-Clause or https://opensource.org/licenses/BSD-3-Clause).
 
-Produced at the Lawrence Livermore National Laboratory.
+Copyrights and patents in the BLT project are retained by contributors.
+No copyright assignment is required to contribute to BLT.
 
-All rights reserved.
-
+See [LICENSE](./LICENSE) for details.
+ 
 Unlimited Open Source - BSD 3-clause Distribution
 `LLNL-CODE-725085`  `OCEC-17-023`
 
-Additional license and copyright information can be found in the following files:
- * [LICENSE](./LICENSE)
- * [COPYRIGHT](./COPYRIGHT) 
- 
+SPDX usage
+------------
+
+Individual files contain SPDX tags instead of the full license text.
+This enables machine processing of license information based on the SPDX
+License Identifiers that are available here: https://spdx.org/licenses/
+
+Files that are licensed as BSD 3-Clause contain the following
+text in the license header:
+
+    SPDX-License-Identifier: (BSD-3-Clause)
+
+External Packages
+-------------------
+BLT bundles its external dependencies in thirdparty_builtin/.  These
+packages are covered by various permissive licenses.  A summary listing
+follows.  See the license included with each package for full details.
+
+PackageName: fruit
+PackageHomePage: https://sourceforge.net/projects/fortranxunit/
+PackageLicenseDeclared: BSD-3-Clause
+
+PackageName: gbenchmark
+PackageHomePage: https://github.com/google/benchmark
+PackageLicenseDeclared: Apache-2.0
+
+PackageName: gmock
+PackageHomePage: https://github.com/google/googlemock
+PackageLicenseDeclared: BSD-3-Clause
+
+PackageName: gtest
+PackageHomePage: https://github.com/google/googletest
+PackageLicenseDeclared: BSD-3-Clause
