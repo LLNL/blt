@@ -117,18 +117,18 @@ BLT bundles its external dependencies in thirdparty_builtin/.  These
 packages are covered by various permissive licenses.  A summary listing
 follows.  See the license included with each package for full details.
 
-PackageName: fruit
-PackageHomePage: https://sourceforge.net/projects/fortranxunit/
-PackageLicenseDeclared: BSD-3-Clause
+PackageName: fruit  
+PackageHomePage: https://sourceforge.net/projects/fortranxunit/  
+PackageLicenseDeclared: BSD-3-Clause  
 
-PackageName: gbenchmark
-PackageHomePage: https://github.com/google/benchmark
-PackageLicenseDeclared: Apache-2.0
+PackageName: gbenchmark  
+PackageHomePage: https://github.com/google/benchmark  
+PackageLicenseDeclared: Apache-2.0  
 
-PackageName: gmock
-PackageHomePage: https://github.com/google/googlemock
-PackageLicenseDeclared: BSD-3-Clause
+PackageName: gmock  
+PackageHomePage: https://github.com/google/googlemock  
+PackageLicenseDeclared: BSD-3-Clause  
 
-PackageName: gtest
-PackageHomePage: https://github.com/google/googletest
-PackageLicenseDeclared: BSD-3-Clause
+PackageName: gtest  
+PackageHomePage: https://github.com/google/googletest  
+PackageLicenseDeclared: BSD-3-Clause  
