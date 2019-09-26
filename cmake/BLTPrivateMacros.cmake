@@ -33,8 +33,11 @@ macro(blt_determine_scope)
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                         "${multiValueArgs}" ${ARGN} )
 
+    # Convert to upper case and strip white space
     string(TOUPPER "${arg_SCOPE}" _uppercaseScope)
-    if("${_uppercaseScope}" MATCHES "")
+    string(STRIP "${_uppercaseScope}" _uppercaseScope )
+
+    if("${_uppercaseScope}" STREQUAL "")
         # Default to public
         set(_uppercaseScope PUBLIC)
     elseif(NOT ("${_uppercaseScope}" STREQUAL "PUBLIC" OR
