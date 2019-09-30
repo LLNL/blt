@@ -8,7 +8,7 @@
 # (OpenMP support is provided by the compiler)
 #################################################
 
-find_package(OpenMP REQUIRED)
+find_package(OPENMP REQUIRED)
 
 # avoid generator expressions if possible, as generator expressions can be 
 # passed as flags to downstream projects that might not be using the same
