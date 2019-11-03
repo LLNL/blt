@@ -1,6 +1,6 @@
 # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
-# 
+#
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 include(CMakeParseArguments)
@@ -83,6 +83,34 @@ function(blt_error_if_target_exists target_name error_msg)
     endif()
 endfunction()
 
+##-----------------------------------------------------------------------------
+## blt_fix_fortran_openmp_flags()
+##
+## Fixes the openmp flags for a Fortran target if they are different from the
+## corresponding C/C++ openmp flags.
+##-----------------------------------------------------------------------------
+function(blt_fix_fortran_openmp_flags target_name)
+
+
+    if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
+
+        get_target_property(target_link_flags ${target_name} LINK_FLAGS)
+        if ( target_link_flags )
+
+            message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
+
+            string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                    correct_link_flags
+                    "${target_link_flags}"
+                    )
+
+            set_target_properties( ${target_name} PROPERTIES LINK_FLAGS
+                                   "${correct_link_flags}" )
+        endif()
+
+    endif()
+
+endfunction()
 
 ##-----------------------------------------------------------------------------
 ## blt_find_executable(NAME         <name of program to find>
@@ -213,8 +241,8 @@ endmacro(blt_inherit_target_info)
 
 
 ##------------------------------------------------------------------------------
-## blt_setup_target( NAME       [name] 
-##                   DEPENDS_ON [dep1 ...] 
+## blt_setup_target( NAME       [name]
+##                   DEPENDS_ON [dep1 ...]
 ##                   OBJECT     [TRUE | FALSE])
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
@@ -351,7 +379,7 @@ macro(blt_setup_cuda_target)
     endif()
 
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
-        if (CUDA_LINK_WITH_NVCC) 
+        if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
         endif()
     endif()
@@ -617,7 +645,7 @@ macro(blt_filter_list)
     set(multiValueArgs )
 
     # Parse arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -678,7 +706,7 @@ macro(blt_clean_target)
     set(multiValueArgs )
 
     # Parse arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Properties to remove duplicates from
