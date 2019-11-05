@@ -561,6 +561,12 @@ macro(blt_add_executable)
                      DEPENDS_ON ${arg_DEPENDS_ON} 
                      OBJECT     FALSE)
 
+    # fix the openmp flags for fortran if needed
+    # NOTE: this needs to be called after blt_setup_target()
+    if (_lang STREQUAL Fortran)
+       blt_fix_fortran_openmp_flags( ${arg_NAME} )
+    endif()
+
     if ( arg_INCLUDES )
         target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
     endif()
