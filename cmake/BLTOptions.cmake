@@ -18,6 +18,7 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 #------------------------------------------------------------------------------
 # TPL Executable Options
 #------------------------------------------------------------------------------
+option(ENABLE_CLANGQUERY   "Enables Clang-query support" ON)
 option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
 option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
 option(ENABLE_GIT          "Enables Git support" ON)

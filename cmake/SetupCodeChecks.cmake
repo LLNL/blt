@@ -165,9 +165,9 @@ macro(blt_add_code_checks)
     if (CLANGQUERY_FOUND)
         set(_clang_query_target_name ${arg_PREFIX}_clang_query_check)
         blt_error_if_target_exists(${_clang_query_target_name} ${_error_msg})
-        blt_add_clang_query_target( NAME           ${_clang_query_target_name}
-                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                 SRC_FILES         ${_c_sources})
+        blt_add_clang_query_target( NAME              ${_clang_query_target_name}
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                    SRC_FILES         ${_c_sources})
     endif()
 
 endmacro(blt_add_code_checks)
