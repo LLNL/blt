@@ -189,7 +189,7 @@ endmacro(blt_find_executable)
 ##------------------------------------------------------------------------------
 macro(blt_inherit_target_info)
     set(options)
-    set(singleValueArgs TO FROM)
+    set(singleValueArgs TO FROM OBJECT)
     set(multiValueArgs)
 
     # Parse the arguments
@@ -299,6 +299,18 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
+        if ( arg_OBJECT )
+            # Object libraries need to inherit info from their CMake targets listed
+            # in their LIBRARIES
+            foreach( _library ${BLT_${uppercase_dependency}_LIBRARIES} )
+                if(TARGET ${_library})
+                    blt_inherit_target_info(TO     ${arg_NAME}
+                                            FROM   ${_library}
+                                            OBJECT ${arg_OBJECT})
+                endif()
+            endforeach()
+        endif()
+
         if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             # We want object libraries to inherit the vital info but not call
             # target_link_libraries() otherwise you have to install the object
@@ -306,7 +318,7 @@ macro(blt_setup_target)
             if ( TARGET ${dependency} )
                 blt_inherit_target_info(TO     ${arg_NAME}
                                         FROM   ${dependency}
-                                        OBJECT TRUE)
+                                        OBJECT ${arg_OBJECT})
             endif()
         elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the
