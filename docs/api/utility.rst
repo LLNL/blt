@@ -76,9 +76,9 @@ for clarity and convenience.
 
 This macro requires specifying:
 
-    * The target list to append to by passing TO <list>
-    * A condition to check by passing IF <bool>
-    * The list of elements to append by passing ELEMENTS [<element>...]
+    * The target list to append to by passing ``TO <list>``
+    * A condition to check by passing ``IF <bool>``
+    * The list of elements to append by passing ``ELEMENTS [<element>...]``
 
 Note, the argument passed to the IF option has to be a single boolean value
 and cannot be a boolean expression since CMake cannot evaluate those inline.
@@ -88,7 +88,18 @@ and cannot be a boolean expression since CMake cannot evaluate those inline.
     :linenos:
 
     set(mylist A B)
-    blt_list_append( TO mylist ELEMENTS C IF ${ENABLE_C} )
+    
+    set(ENABLE_C TRUE)
+    blt_list_append( TO mylist ELEMENTS C IF ${ENABLE_C} ) # Appends 'C'
+
+    set(ENABLE_D TRUE)
+    blt_list_append( TO mylist ELEMENTS D IF ENABLE_D ) # Appends 'D'
+
+    set(ENABLE_E FALSE)
+    blt_list_append( TO mylist ELEMENTS E IF ENABLE_E ) # Does not append 'E'
+
+    unset(_undefined)
+    blt_list_append( TO mylist ELEMENTS F IF _undefined ) # Does not append 'F'
 
 
 blt_list_remove_duplicates
