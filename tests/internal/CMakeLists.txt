@@ -203,7 +203,7 @@ if(ENABLE_GTEST)
     set(_defined_nonempty_var "<evaluates-to-true-before-but-not-after-escaping>")
     unset(_undefined_var)
     
-    unset(_actual_list) # blt_list_append can work on an non-existant list
+    unset(_actual_list) # blt_list_append can work on an initially undefined list
     
     # The following will be added to the list
     blt_list_append(TO _actual_list ELEMENTS "true_literal"         IF TRUE)
