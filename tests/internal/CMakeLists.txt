@@ -161,6 +161,7 @@ if(ENABLE_GTEST)
     
     #------------------------------------------------------
     # Tests blt_add_target_definitions macro
+    #
     # Four variants of a test with a list of two definitions
     #------------------------------------------------------
     set(_variant_1 A=1 B)         # neither use '-D'
@@ -184,6 +185,52 @@ if(ENABLE_GTEST)
             NAME ${_testname}
             COMMAND ${_testname})
     endforeach()
+
+    #------------------------------------------------------
+    # Tests the IF clause of the blt_list_append macro
+    #
+    # We expect variables that are not defined to be omitted.
+    # For defined variables, we expect them to be added when
+    # they evaluate to TRUE, whether or not they are escaped.
+    #------------------------------------------------------
+    
+    unset(_existing_true_var)
+    unset(_existing_false_var)
+    
+    set(_existing_true_var TRUE)
+    set(_existing_false_var FALSE)
+    set(_defined_empty_var "")
+    set(_defined_nonempty_var "<evaluates-to-true-before-but-not-after-escaping>")
+    unset(_undefined_var)
+    
+    unset(_actual_list) # blt_list_append can work on an non-existant list
+    
+    # The following will be added to the list
+    blt_list_append(TO _actual_list ELEMENTS "true_literal"         IF TRUE)
+    blt_list_append(TO _actual_list ELEMENTS "true_nonescaped"      IF _existing_true_var)
+    blt_list_append(TO _actual_list ELEMENTS "true_escaped"         IF ${_existing_true_var})
+    blt_list_append(TO _actual_list ELEMENTS "nonempty_nonescaped"  IF _defined_nonempty_var)
+    set(_expected_list "true_literal" "true_nonescaped" "true_escaped" "nonempty_nonescaped")
+    set(_expected_size 4)
+    
+    # The following will not be added to the list
+    blt_list_append(TO _actual_list ELEMENTS "false_literal"        IF FALSE)
+    blt_list_append(TO _actual_list ELEMENTS "false_nonescaped"     IF _existing_false_var)
+    blt_list_append(TO _actual_list ELEMENTS "false_escaped"        IF ${_existing_false_var})
+    blt_list_append(TO _actual_list ELEMENTS "undefined_nonescaped" IF _nonexisting_var)
+    blt_list_append(TO _actual_list ELEMENTS "undefined_escaped"    IF ${_nonexisting_var})
+    blt_list_append(TO _actual_list ELEMENTS "empty_nonescaped"     IF _defined_empty_var)
+    blt_list_append(TO _actual_list ELEMENTS "empty_escaped"        IF ${_defined_empty_var})
+    blt_list_append(TO _actual_list ELEMENTS "nonempty_escaped"     IF ${_defined_nonempty_var})
+
+    # Check the results
+    list(LENGTH _actual_list _actual_size)
+    if(NOT "${_actual_list}" STREQUAL "${_expected_list}"
+       OR NOT ${_actual_size} EQUAL ${_expected_size})
+        message(FATAL_ERROR "[blt_list_append] Unexpected evaluation: "
+                            "\n\t" "Expected: '${_expected_list}'"
+                            "\n\t" "Got:      '${_actual_list}'" )
+    endif()
 
 endif() # endif ENABLE_GTEST
 
