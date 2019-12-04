@@ -333,12 +333,28 @@ blt_append_custom_compiler_flag(
      )
 
 #
-# Modify flags to avoid static linking runtime issues on windows.
-# (adapted from RAJA)
+# Modify flags to avoid static linking runtime issues on MS Windows.
+#
+# When building on Windows, you can link in the runtime library
+#   - statically (with /MT), or
+#   - dynamically (with /MD).
+# See https://docs.microsoft.com/en-us/cpp/build/reference/md-mt-ld-use-run-time-library?view=vs-2019.
+#
+# Mixing /MD with /MT can cause linking errors.  CMake specifies
+# /MD when generating project files for MSVC and provides no way to
+# change this.  This can be a problem with Google Test in particular,
+# which when building statically replaces all /MD with /MT.  HDF5, on
+# the other hand, sternly warns against the use of /MT, even when
+# built statically.
+#
+# See https://gitlab.kitware.com/cmake/community/wikis/FAQ#dynamic-replace.
+# Once we require CMake >= 3.15 we can address the issue differently, using
+# CMAKE_MSVC_RUNTIME_LIBRARY:
+# https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
 #
 
 if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
-  if ( ENABLE_MSVC_STATIC_MD_TO_MT )
+  if ( BLT_ENABLE_MSVC_STATIC_MD_TO_MT )
     foreach(_lang C CXX)
       foreach(_build
               FLAGS FLAGS_DEBUG FLAGS_RELEASE
@@ -351,7 +367,7 @@ if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
     endforeach()
   elseif (ENABLE_GTEST)
     message(FATAL_ERROR
-      "For static linking with MS Visual Studio using GTEST, you must enable changing /MD to /MT.")
+      "For static linking with MS Visual Studio using GTEST, you must set BLT_ENABLE_MSVC_STATIC_MD_TO_MT to ON in order to enable changing /MD to /MT.")
   endif()
 endif()
 
