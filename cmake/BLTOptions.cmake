@@ -6,6 +6,8 @@
 # Sets up configuration options for BLT
 #------------------------------------------------------------------------------
 
+include(CMakeDependentOption)
+
 #------------------------------------------------------------------------------
 # Build Targets
 #------------------------------------------------------------------------------
@@ -82,7 +84,12 @@ endif()
 #------------------------------------------------------------------------------
 option(ENABLE_ALL_WARNINGS         "Enables all compiler warnings on all build targets" ON)
 option(ENABLE_WARNINGS_AS_ERRORS   "Enables treating compiler warnings as errors on all build targets" OFF)
-option(ENABLE_MSVC_STATIC_MD_TO_MT "For static linking with MS Visual Studio, enables changing /MD to /MT" ON)
+cmake_dependent_option(BLT_ENABLE_MSVC_STATIC_MD_TO_MT
+                                   "When linking statically with MS Visual Studio, enables changing /MD to /MT"
+                                   ON
+                                   "NOT BUILD_SHARED_LIBS"
+                                   OFF)
+mark_as_advanced(BLT_ENABLE_MSVC_STATIC_MD_TO_MT)
 
 #------------------------------------------------------------------------------
 # Generator Options
