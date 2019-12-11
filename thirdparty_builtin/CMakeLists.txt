@@ -132,8 +132,13 @@ if(ENABLE_BENCHMARKS)
           message(FATAL_ERROR "Google Benchmark cannot be built when BUILD_SHARED_LIBS=ON or on Windows")
         endif()
 
-        add_subdirectory(gbenchmark-master-2017-05-19
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/gbenchmark-master-2017-05-19)
+        if(CMAKE_CXX_STANDARD LESS 11)
+            message(WARNING "C++11 is required to compile gbenchmark.")
+        endif()
+
+        set(BENCHMARK_ENABLE_TESTING OFF CACHE "" BOOL)
+        add_subdirectory(benchmark-1.5.0
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.5.0)
 
         if (UNIX AND NOT APPLE)
           find_library(RT_LIBRARIES rt)
