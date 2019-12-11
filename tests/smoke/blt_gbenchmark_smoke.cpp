@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "benchmark/benchmark_api.h"
+#include <benchmark/benchmark.h>
 
 //------------------------------------------------------------------------------
 
@@ -12,7 +12,7 @@
 
 void benchmark_smoke_empty(benchmark::State& state)
 {
-  while (state.KeepRunning())
+  for (auto _ : state)
   {
     benchmark::DoNotOptimize(state.iterations());
   }
@@ -22,7 +22,7 @@ BENCHMARK(benchmark_smoke_empty);
 
 void benchmark_smoke_spin_loop(benchmark::State& state)
 {
-  while (state.KeepRunning())
+  for (auto _ : state)
   {
     for (int i=0; i < state.range(0); ++i)
     {
@@ -37,7 +37,7 @@ BASIC_BENCHMARK_TEST(benchmark_smoke_spin_loop);
 
 void benchmark_smoke_accum_loop(benchmark::State& state)
 {
-  while (state.KeepRunning())
+  for (auto _ : state)
   {
     int accum = 0;
     for (int i=0; i <  state.range(0); ++i)
@@ -51,5 +51,5 @@ void benchmark_smoke_accum_loop(benchmark::State& state)
 }
 BASIC_BENCHMARK_TEST(benchmark_smoke_accum_loop);
 
-BENCHMARK_MAIN()
+BENCHMARK_MAIN();
 

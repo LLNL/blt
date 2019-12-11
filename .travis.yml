@@ -160,6 +160,7 @@ script:
   # c & c++ compilers
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_CXX_COMPILER=${BLT_CXX}"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_CXX_STD:STRING=c++11"
   # gtest support
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GTEST=${BLT_GTEST}"
   # gmock support
