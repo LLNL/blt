@@ -9,8 +9,8 @@
 
 #####################################################
 # Set some variables to simplify determining compiler
-# Compiler string list from: 
-#   https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html
+# Compiler string list from:
+#   https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html
 ####################################################3
 
 # use CMAKE_BUILD_TOOL to identify visual studio
@@ -46,6 +46,10 @@ else()
         set(C_COMPILER_FAMILY_IS_PGI 1)
         message(STATUS "C Compiler family is PGI")
 
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray")
+        set(C_COMPILER_FAMILY_IS_CRAY 1)
+        message(STATUS "C Compiler family is Cray")
+
     else()
         message(STATUS "C Compiler family not set!!!")
     endif()
@@ -69,6 +73,10 @@ else()
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
         set(Fortran_COMPILER_FAMILY_IS_PGI 1)
         message(STATUS "Fortran Compiler family is PGI")
+
+    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
+        set(Fortran_COMPILER_FAMILY_IS_CRAY 1)
+        message(STATUS "Fortran Compiler family is Cray")
 
     elseif(ENABLE_FORTRAN)
         message(STATUS "Fortran Compiler family not set!!!")
