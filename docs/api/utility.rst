@@ -22,7 +22,8 @@ blt_append_custom_compiler_flag
                        XL         xlFlag         (optional)
                        MSVC       msvcFlag       (optional)
                        MSVC_INTEL msvcIntelFlag  (optional)
-                       PGI        pgiFlag        (optional))
+                       PGI        pgiFlag        (optional)
+                       CRAY       crayFlag       (optional))
 
 Appends compiler-specific flags to a given variable of flags
 
