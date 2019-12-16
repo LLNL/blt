@@ -23,6 +23,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - In CMake 3.13+, "SHELL:" was added to blt_add_target_link_flags.  This stops CMake from de-duplicating
   needed linker flags.
 - Added optional SCOPE to all target property macros, blt_add_target_link_flags, etc.  It defaults to PUBLIC.
+- Added support for Cray compilers in blt_append_custom_compiler_flag.
 
 ### Changed
 - Restructured the host-config directory by site and platform.
