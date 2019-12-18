@@ -61,17 +61,18 @@ endforeach()
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
 ##                      UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
-##                      ASTYLE_CFG_FILE     <Path to AStyle config file>)
+##                      ASTYLE_CFG_FILE     <Path to AStyle config file>
+##                      CPPCHECK_FLAGS      <List of flags added to Cppcheck>)
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
-## filters based on file extensions.
+## filters checks based on file extensions.
 ##------------------------------------------------------------------------------
 
 macro(blt_add_code_checks)
 
     set(options )
     set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE ASTYLE_CFG_FILE)
-    set(multiValueArgs SOURCES)
+    set(multiValueArgs SOURCES CPPCHECK_FLAGS)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -159,7 +160,8 @@ macro(blt_add_code_checks)
 
         blt_add_cppcheck_target( NAME              ${_cppcheck_target_name}
                                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                 SRC_FILES         ${_c_sources})
+                                 SRC_FILES         ${_c_sources}
+                                 PREPEND_FLAGS     ${arg_CPPCHECK_FLAGS})
     endif()
 
     if (CLANGQUERY_FOUND)
