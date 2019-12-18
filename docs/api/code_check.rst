@@ -14,7 +14,8 @@ blt_add_code_checks
     blt_add_code_checks( PREFIX              <Base name used for created targets>
                          SOURCES             [source1 [source2 ...]]
                          UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
-                         ASTYLE_CFG_FILE     <Path to AStyle config file>)
+                         ASTYLE_CFG_FILE     <Path to AStyle config file>
+                         CPPCHECK_FLAGS      <List of flags added to Cppcheck>)
 
 This macro adds all enabled code check targets for the given SOURCES.
 
@@ -30,6 +31,9 @@ UNCRUSTIFY_CFG_FILE
 
 ASTYLE_CFG_FILE
   Path to AStyle config file
+
+CPPCHECK_FLAGS
+  List of flags added to Cppcheck
 
 Sources are filtered based on file extensions for use in these code checks.  If you need
 additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
@@ -58,6 +62,7 @@ This macro supports the following static analysis tools with their requirements:
 - CppCheck
 
   * CPPCHECK_EXECUTABLE is defined and found prior to calling this macro
+  * <optional> CPPCHECK_FLAGS added to the cppcheck command line before the sources
 
 - Clang-Query
 
