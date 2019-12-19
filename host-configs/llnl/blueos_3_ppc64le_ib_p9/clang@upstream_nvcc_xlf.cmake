@@ -20,7 +20,7 @@
 #------------------------------------------------------------------------------
 
 # Use Clang compilers for C/C++
-set(CLANG_VERSION "clang-upstream-2019.03.26" CACHE STRING "")
+set(CLANG_VERSION "clang-upstream-2019.08.15" CACHE STRING "")
 set(CLANG_HOME "/usr/tce/packages/clang/${CLANG_VERSION}")
 
 set(CMAKE_C_COMPILER   "${CLANG_HOME}/bin/clang" CACHE PATH "")
@@ -34,16 +34,17 @@ set(XL_HOME "/usr/tce/packages/xl/${XL_VERSION}")
 set(CMAKE_Fortran_COMPILER "${XL_HOME}/bin/xlf2003" CACHE PATH "")
 
 #------------------------------------------------------------------------------
-# MPI
+# MPI Support
 #------------------------------------------------------------------------------
 
 set(ENABLE_MPI ON CACHE BOOL "")
 
 set(MPI_HOME               "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${CLANG_VERSION}")
+set(MPI_Fortran_HOME       "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${XL_VERSION}")
 
 set(MPI_C_COMPILER         "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 set(MPI_CXX_COMPILER       "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
-set(MPI_Fortran_COMPILER   "${MPI_HOME}/bin/mpif90" CACHE PATH "")
+set(MPI_Fortran_COMPILER   "${MPI_Fortran_HOME}/bin/mpif90" CACHE PATH "")
 
 set(MPIEXEC                "${MPI_HOME}/bin/mpirun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG   "-np" CACHE PATH "")
@@ -57,19 +58,19 @@ set(CMAKE_Fortran_COMPILER_ID "XL" CACHE PATH "All of BlueOS compilers report cl
 set(BLT_FORTRAN_FLAGS "-WF,-C!" CACHE PATH "Converts C-style comments to Fortran style in preprocessed files")
 
 #------------------------------------------------------------------------------
-# Cuda
+# CUDA support
 #------------------------------------------------------------------------------
 
 set(ENABLE_CUDA ON CACHE BOOL "")
 
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-9.2.148" CACHE PATH "")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-10.1.168" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
+set(CMAKE_CUDA_HOST_COMPILER "${MPI_CXX_COMPILER}" CACHE PATH "")
 
-set(_cuda_arch "sm_60")
+set(_cuda_arch "sm_70")
 set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G" CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
-set(CMAKE_CUDA_HOST_COMPILER "${MPI_CXX_COMPILER}" CACHE PATH "")
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
