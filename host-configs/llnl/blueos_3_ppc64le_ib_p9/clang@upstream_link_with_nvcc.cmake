@@ -20,13 +20,15 @@
 # Compilers
 #------------------------------------------------------------------------------
 
-set(CLANG_VERSION "clang-upstream-2019.03.26" CACHE STRING "")
+# Use Clang compilers for C/C++
+set(CLANG_VERSION "clang-upstream-2019.08.15" CACHE STRING "")
 set(CLANG_HOME "/usr/tce/packages/clang/${CLANG_VERSION}")
 
 set(CMAKE_C_COMPILER   "${CLANG_HOME}/bin/clang" CACHE PATH "")
 set(CMAKE_CXX_COMPILER "${CLANG_HOME}/bin/clang++" CACHE PATH "")
-
 set(BLT_CXX_STD "c++11" CACHE STRING "")
+
+# Disable Fortran
 set(ENABLE_FORTRAN OFF CACHE BOOL "")
 
 #------------------------------------------------------------------------------
@@ -48,7 +50,7 @@ set(BLT_MPI_COMMAND_APPEND "mpibind" CACHE PATH "")
 set(ENABLE_OPENMP ON CACHE BOOL "")
 
 # Override default link flags because linking with nvcc
-set(OMP_HOME ${CLANG_HOME}/ibm/omprtl)
+set(OMP_HOME ${CLANG_HOME}/release)
 set(BLT_OPENMP_LINK_FLAGS "-Xlinker -rpath -Xlinker ${OMP_HOME}/lib -L${OMP_HOME}/lib -lomp -lomptarget-nvptx" CACHE STRING "")
 
 #------------------------------------------------------------------------------
@@ -56,17 +58,15 @@ set(BLT_OPENMP_LINK_FLAGS "-Xlinker -rpath -Xlinker ${OMP_HOME}/lib -L${OMP_HOME
 #------------------------------------------------------------------------------
 set(ENABLE_CUDA ON CACHE BOOL "")
 
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-9.2.148" CACHE PATH "")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-10.1.168" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
 set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE PATH "")
 
-set (_cuda_arch "sm_60")
+set (_cuda_arch "sm_70")
 set (CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G" CACHE STRING "" )
 
 set (CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 set (CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
-
-
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
