@@ -197,6 +197,13 @@ Here is an example of how to add an OpenMP enabled executable:
   * ``BLT_OPENMP_COMPILE_FLAGS``
   * ``BLT_OPENMP_LINK_FLAGS``
 
+Here is an example of how to add an OpenMP enabled test that sets the amount of threads used:
+
+   .. literalinclude:: ../../tests/smoke/CMakeLists.txt
+     :start-after: _blt_tutorial_openmp_test_start
+     :end-before:  _blt_tutorial_openmp_test_end
+     :language: cmake
+
 
 Example Host-configs
 ~~~~~~~~~~~~~~~~~~~~

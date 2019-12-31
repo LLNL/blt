@@ -173,10 +173,11 @@ blt_add_test
 
 .. code-block:: cmake
 
-    blt_add_test( NAME           [name]
-                  COMMAND        [command]
-                  NUM_MPI_TASKS  [n]
-                  CONFIGURATIONS [config1 [config2...]])
+    blt_add_test( NAME            [name]
+                  COMMAND         [command]
+                  NUM_MPI_TASKS   [n]
+                  NUM_OMP_THREADS [n]
+                  CONFIGURATIONS  [config1 [config2...]])
 
 Adds a test to the project.
 
@@ -188,6 +189,9 @@ COMMAND
 
 NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
+
+NUM_OMP_THREADS
+  Indicates this test requires the defined environment variable OMP_NUM_THREADS set to the given variable.
 
 CONFIGURATIONS
   Set the CTest configuration for this test.  When not specified, the test
@@ -206,6 +210,9 @@ to create the MPI run line.
 MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
 be overwritten in your host-config specific to your platform. BLT_MPI_COMMAND_APPEND
 is useful on machines that require extra arguments to MPIEXEC.
+
+If NUM_OMP_THREADS is given, this macro will set the environment variable OMP_NUM_THREADS
+before running this test.  This is done by appending to the CMake tests property.
 
 .. note::
   If you do not require this macros command line assistance, you can call CMake's

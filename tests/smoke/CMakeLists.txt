@@ -78,8 +78,11 @@ if (ENABLE_OPENMP)
                        FOLDER blt/tests )
     # _blt_tutorial_openmp_executable_end
 
-    blt_add_test(NAME blt_openmp_smoke
-                 COMMAND blt_openmp_smoke)
+    # _blt_tutorial_openmp_test_start
+    blt_add_test(NAME            blt_openmp_smoke
+                 COMMAND         blt_openmp_smoke
+                 NUM_OMP_THREADS 4)
+    # _blt_tutorial_openmp_test_end
 endif()
 
 

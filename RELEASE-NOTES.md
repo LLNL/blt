@@ -25,6 +25,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added optional SCOPE to all target property macros, blt_add_target_link_flags, etc.  It defaults to PUBLIC.
 - Added support for Cray compilers in blt_append_custom_compiler_flag.
 - Added ability to add flags to the cppcheck command line through blt_add_code_checks()
+- Added ability for blt_add_test() to set required number of OpenMP threads via new option NUM_OMP_THREADS.
 
 ### Changed
 - Restructured the host-config directory by site and platform.

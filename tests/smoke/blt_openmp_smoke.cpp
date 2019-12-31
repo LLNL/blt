@@ -7,7 +7,7 @@
 #include <iostream>
 
 /**
- * Simple test program that uses openmp without guards.  Should only be compiled when OpenMP is enabled.
+ * Simple test program that uses OpenMP without guards.  Should only be compiled when OpenMP is enabled.
  */
 int main()
 {
