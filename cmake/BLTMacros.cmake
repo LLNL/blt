@@ -596,17 +596,18 @@ endmacro(blt_add_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_test( NAME           [name]
-##               COMMAND        [command] 
-##               NUM_MPI_TASKS  [n]
-##               CONFIGURATIONS [config1 [config2...]])
+## blt_add_test( NAME            [name]
+##               COMMAND         [command] 
+##               NUM_MPI_TASKS   [n]
+##               NUM_OMP_THREADS [n]
+##               CONFIGURATIONS  [config1 [config2...]])
 ##
 ## Adds a test to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
     set(options )
-    set(singleValueArgs NAME NUM_MPI_TASKS)
+    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS)
     set(multiValueArgs COMMAND CONFIGURATIONS)
 
     # Parse the arguments to the macro
@@ -649,7 +650,7 @@ macro(blt_add_test)
     endif()
 
     # Handle MPI
-    if ( ${arg_NUM_MPI_TASKS} )
+    if( arg_NUM_MPI_TASKS )
         # Handle CMake changing MPIEXEC to MPIEXEC_EXECUTABLE
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
             set(_mpiexec ${MPIEXEC_EXECUTABLE})
@@ -663,6 +664,12 @@ macro(blt_add_test)
     add_test(NAME           ${arg_NAME}
              COMMAND        ${test_command}
              CONFIGURATIONS ${arg_CONFIGURATIONS})
+
+    # Handle OpenMP
+    if( arg_NUM_OMP_THREADS )
+        set_property(TEST ${arg_NAME}
+                     APPEND PROPERTY ENVIRONMENT OMP_NUM_THREADS=${arg_NUM_OMP_THREADS})
+    endif()
 
 endmacro(blt_add_test)
 
