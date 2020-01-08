@@ -60,6 +60,10 @@ if(ENABLE_TESTS)
     
     if(ENABLE_GTEST)
         
+        if(CMAKE_CXX_STANDARD LESS 11)
+            message(WARNING "C++11 is required to compile gtest or gmock.")
+        endif()
+
         #
         # gtest 1.8 emits many warnings related to dll-interface 
         # issues on windows, so we add flags to work around these
