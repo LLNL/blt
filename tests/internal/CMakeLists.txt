@@ -164,10 +164,10 @@ if(ENABLE_GTEST)
     #
     # Four variants of a test with a list of two definitions
     #------------------------------------------------------
-    set(_variant_1 A=1 B)         # neither use '-D'
-    set(_variant_2 -DA=1 -DB)     # both uses '-D'
-    set(_variant_3 "A=1;-DB")     # list passed in as string
-    set(_variant_4 " " "-DA=1;B") # list can contain empty strings
+    set(_variant_1 BLT_A=1 BLT_B)         # neither use '-D'
+    set(_variant_2 -DBLT_A=1 -DBLT_B)     # both uses '-D'
+    set(_variant_3 "BLT_A=1;-DBLT_B")     # list passed in as string
+    set(_variant_4 " " "-DBLT_A=1;BLT_B") # list can contain empty strings
     foreach(i RANGE 1 4)
         set(_casename "_variant_${i}")
         set(_testname "t_example_compile_definitions_test${_casename}")

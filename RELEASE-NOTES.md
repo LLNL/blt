@@ -30,6 +30,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Changed
 - Restructured the host-config directory by site and platform.
 - Updated gbenchmark to 1.5.0, note that this requires C++11 to build.
+- Updated gtest and gmock to Master as of 2020-01-07, note that this requires C++11 to build.
 
 ### Fixed
 - Fixed some warnings in CMake 3.14+

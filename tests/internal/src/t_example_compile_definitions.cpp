@@ -7,20 +7,20 @@
 
 //------------------------------------------------------------------------------
 
-// Simple test that expects symbol A to be defined as a non-zero number
-TEST(blt_compile_definitions,check_A_defined)
+// Simple test that expects symbol BLT_A to be defined as a non-zero number
+TEST(blt_compile_definitions,check_BLT_A_defined)
 {
-  #if A
+  #if BLT_A
   SUCCEED();
   #else
   FAIL() << "Compiler define A was not defined as a non-zero number";
   #endif
 }
 
-// Simple test that expects symbol B to be defined
-TEST(blt_compile_definitions,check_B_defined)
+// Simple test that expects symbol BLT_B to be defined
+TEST(blt_compile_definitions,check_BLT_B_defined)
 {
-  #ifdef B
+  #ifdef BLT_B
   SUCCEED();
   #else
   FAIL() << "Compiler define B was not defined";
