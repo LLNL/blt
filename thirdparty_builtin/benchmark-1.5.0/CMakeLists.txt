@@ -1,5 +1,3 @@
-cmake_minimum_required (VERSION 3.5.1)
-
 foreach(p
     CMP0048 # OK to clear PROJECT_VERSION on project()
     CMP0054 # CMake 3.1
