@@ -3,17 +3,17 @@
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
-################################
+#------------------------------------------------------------------------------
 # BLT Internal Testing Project
-################################
+#------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.8)
 
 project(blt-example LANGUAGES C CXX)
 
-###############################################################################
+#------------------------------------------------------------------------------
 # Setup BLT
-###############################################################################
+#------------------------------------------------------------------------------
 # Set BLT_SOURCE_DIR to default location, if not set by user 
 if(NOT BLT_SOURCE_DIR)
     set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../..")
@@ -21,19 +21,19 @@ endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
-################################
+#------------------------------------------------------------------------------
 # Project options
-################################
+#------------------------------------------------------------------------------
 option(TEST_GIT_MACROS 
        "Toggle smoke tests for git macros. Off by default since it requires a modified git repo." 
        OFF)
 
 
-################################
+#------------------------------------------------------------------------------
 # Add a library
-################################
+#------------------------------------------------------------------------------
 
-blt_add_library( NAME example
+blt_add_library( NAME    example
                  SOURCES "src/Example.cpp"
                  HEADERS "src/Example.hpp"
                  )
@@ -43,25 +43,25 @@ if(WIN32 AND BUILD_SHARED_LIBS)
 endif()
 
 if(ENABLE_GTEST)
-    ################################
+    #------------------------------------------------------
     # Add an executable
     # (which happens to be a test)
-    ################################
+    #------------------------------------------------------
     blt_add_executable(
              NAME t_example_smoke
              SOURCES "src/t_example_smoke.cpp"
              DEPENDS_ON example gtest)
 
-    ################################
+    #------------------------------------------------------
     # Register our test w/ ctest
-    ################################
+    #------------------------------------------------------
     blt_add_test(NAME t_example_smoke
                  COMMAND t_example_smoke)
 
 
-    ####################
+    #------------------------------------------------------
     #  Header-only test
-    ####################
+    #------------------------------------------------------
 
     blt_add_library(NAME blt_header_only
                     HEADERS "src/HeaderOnly.hpp")
@@ -76,10 +76,10 @@ if(ENABLE_GTEST)
     blt_add_test(NAME t_header_only_smoke
                  COMMAND t_header_only_smoke)
 
-    ####################################################
+    #------------------------------------------------------
     # Tests blt_combine_static_libs macro
     # Note: Does not currently work on Windows or BGQ
-    ####################################################
+    #------------------------------------------------------
     set(_try_combine_static_libs ON)
 
     if(CMAKE_HOST_WIN32)
@@ -94,9 +94,9 @@ if(ENABLE_GTEST)
         add_subdirectory( src/combine_static_library_test )
     endif ()
 
-    ####################
+    #------------------------------------------------------
     # Git Macros test
-    ####################
+    #------------------------------------------------------
     if ( GIT_FOUND AND TEST_GIT_MACROS)
 
       blt_is_git_repo( OUTPUT_STATE is_git_repo
@@ -140,33 +140,34 @@ if(ENABLE_GTEST)
                         ${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp )
 
         blt_add_executable(
-          NAME t_git_macros_smoke
-          SOURCES "${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp"
+          NAME       t_git_macros_smoke
+          SOURCES    ${CMAKE_BINARY_DIR}/t_git_macros_smoke.cpp
           DEPENDS_ON gtest
           )
 
-        blt_add_test( NAME t_git_macros_smoke
+        blt_add_test( NAME    t_git_macros_smoke
                       COMMAND t_git_macros_smoke )
 
       endif() # endif is_git_repo
 
     endif() # endif Git_FOUND
 
-    ################
+    #------------------------------------------------------
     # CUDA tests
-    #################
+    #------------------------------------------------------
     if (ENABLE_CUDA)
         add_subdirectory(src/test_cuda_device_call_from_kernel)
     endif()
     
-    ########################################################
+    #------------------------------------------------------
     # Tests blt_add_target_definitions macro
+    #
     # Four variants of a test with a list of two definitions
-    ########################################################
-    set(_variant_1 A=1 B)         # neither use '-D'
-    set(_variant_2 -DA=1 -DB)     # both uses '-D'
-    set(_variant_3 "A=1;-DB")     # list passed in as string
-    set(_variant_4 " " "-DA=1;B") # list can contain empty strings
+    #------------------------------------------------------
+    set(_variant_1 BLT_A=1 BLT_B)         # neither use '-D'
+    set(_variant_2 -DBLT_A=1 -DBLT_B)     # both uses '-D'
+    set(_variant_3 "BLT_A=1;-DBLT_B")     # list passed in as string
+    set(_variant_4 " " "-DBLT_A=1;BLT_B") # list can contain empty strings
     foreach(i RANGE 1 4)
         set(_casename "_variant_${i}")
         set(_testname "t_example_compile_definitions_test${_casename}")
@@ -185,7 +186,68 @@ if(ENABLE_GTEST)
             COMMAND ${_testname})
     endforeach()
 
+    #------------------------------------------------------
+    # Tests the IF clause of the blt_list_append macro
+    #
+    # We expect variables that are not defined to be omitted.
+    # For defined variables, we expect them to be added when
+    # they evaluate to TRUE, whether or not they are escaped.
+    #------------------------------------------------------
+    
+    unset(_existing_true_var)
+    unset(_existing_false_var)
+    
+    set(_existing_true_var TRUE)
+    set(_existing_false_var FALSE)
+    set(_defined_empty_var "")
+    set(_defined_nonempty_var "<evaluates-to-true-before-but-not-after-escaping>")
+    unset(_undefined_var)
+    
+    unset(_actual_list) # blt_list_append can work on an initially undefined list
+    
+    # The following will be added to the list
+    blt_list_append(TO _actual_list ELEMENTS "true_literal"         IF TRUE)
+    blt_list_append(TO _actual_list ELEMENTS "true_nonescaped"      IF _existing_true_var)
+    blt_list_append(TO _actual_list ELEMENTS "true_escaped"         IF ${_existing_true_var})
+    blt_list_append(TO _actual_list ELEMENTS "nonempty_nonescaped"  IF _defined_nonempty_var)
+    set(_expected_list "true_literal" "true_nonescaped" "true_escaped" "nonempty_nonescaped")
+    set(_expected_size 4)
+    
+    # The following will not be added to the list
+    blt_list_append(TO _actual_list ELEMENTS "false_literal"        IF FALSE)
+    blt_list_append(TO _actual_list ELEMENTS "false_nonescaped"     IF _existing_false_var)
+    blt_list_append(TO _actual_list ELEMENTS "false_escaped"        IF ${_existing_false_var})
+    blt_list_append(TO _actual_list ELEMENTS "undefined_nonescaped" IF _nonexisting_var)
+    blt_list_append(TO _actual_list ELEMENTS "undefined_escaped"    IF ${_nonexisting_var})
+    blt_list_append(TO _actual_list ELEMENTS "empty_nonescaped"     IF _defined_empty_var)
+    blt_list_append(TO _actual_list ELEMENTS "empty_escaped"        IF ${_defined_empty_var})
+    blt_list_append(TO _actual_list ELEMENTS "nonempty_escaped"     IF ${_defined_nonempty_var})
+
+    # Check the results
+    list(LENGTH _actual_list _actual_size)
+    if(NOT "${_actual_list}" STREQUAL "${_expected_list}"
+       OR NOT ${_actual_size} EQUAL ${_expected_size})
+        message(FATAL_ERROR "[blt_list_append] Unexpected evaluation: "
+                            "\n\t" "Expected: '${_expected_list}'"
+                            "\n\t" "Got:      '${_actual_list}'" )
+    endif()
+
 endif() # endif ENABLE_GTEST
+
+if (ENABLE_CUDA AND ENABLE_MPI AND 
+    "${BLT_CXX_STD}" MATCHES c\\+\\+1)
+    blt_add_executable(
+      NAME       test_cuda_mpi
+      SOURCES    src/test_cuda_mpi.cpp
+      DEPENDS_ON cuda mpi hwloc)
+
+    # Tests on a 2^24 elements array.
+    # It can go much bigger, but will not
+    # exceed memory capacity in most computers.
+    blt_add_test(NAME          test_cuda_mpi
+                 COMMAND       test_cuda_mpi 24
+                 NUM_MPI_TASKS 4)
+endif()
 
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
@@ -197,4 +259,79 @@ add_subdirectory(src/object_library_test)
 
 if(ENABLE_CLANGQUERY)
   add_subdirectory(src/static_analysis)
+endif()
+
+#------------------------------------------------------------------------------
+# Format the testing code using AStyle
+#------------------------------------------------------------------------------
+if(ASTYLE_FOUND)
+
+  set(smoke_tests_srcs
+    ../smoke/blt_cuda_mpi_smoke.cpp
+    ../smoke/blt_cuda_openmp_smoke.cpp
+    ../smoke/blt_cuda_runtime_smoke.cpp
+    ../smoke/blt_cuda_smoke.cpp
+    ../smoke/blt_fruit_smoke.f90
+    ../smoke/blt_gbenchmark_smoke.cpp
+    ../smoke/blt_gmock_smoke.cpp
+    ../smoke/blt_gtest_smoke.cpp
+    ../smoke/blt_hcc_runtime_smoke.cpp
+    ../smoke/blt_hcc_smoke.cpp
+    ../smoke/blt_hip_runtime_smoke.cpp
+    ../smoke/blt_hip_smoke.cpp
+    ../smoke/blt_mpi_smoke.cpp
+    ../smoke/blt_openmp_smoke.cpp
+    ../smoke/fortran_driver.cpp
+  )
+
+  set(internal_tests_srcs
+    src/Example.cpp
+    src/Example.hpp
+    src/Example_Exports.h
+    src/HeaderOnly.hpp
+
+    src/combine_static_library_test/Foo1.cpp
+    src/combine_static_library_test/Foo1.hpp
+    src/combine_static_library_test/Foo2.cpp
+    src/combine_static_library_test/Foo2.hpp
+    src/combine_static_library_test/Foo3.cpp
+    src/combine_static_library_test/Foo3.hpp
+    src/combine_static_library_test/blt_combine_static_libraries_shared_smoke.cpp
+    src/combine_static_library_test/blt_combine_static_libraries_static_smoke.cpp
+    src/combine_static_library_test/dummy.cpp
+    src/combine_static_library_test/main.cpp
+
+    src/object_library_test/base_object.cpp
+    src/object_library_test/base_object.hpp
+
+    src/object_library_test/inherited_base/inherited_base.cpp
+    src/object_library_test/inherited_base/inherited_base.hpp
+    src/object_library_test/main.cpp
+    src/object_library_test/object.cpp
+    src/object_library_test/object.hpp
+
+    src/static_analysis/well_analyzed_source.cpp
+    src/t_example_compile_definitions.cpp
+    src/t_example_smoke.cpp
+    src/t_header_only_smoke.cpp
+    src/test_cuda_mpi.cpp
+    
+    src/test_cuda_device_call_from_kernel/Child.cpp
+    src/test_cuda_device_call_from_kernel/Child.hpp
+    src/test_cuda_device_call_from_kernel/CudaTests.cpp
+    src/test_cuda_device_call_from_kernel/Parent.cpp
+    src/test_cuda_device_call_from_kernel/Parent.hpp
+  )
+
+  blt_add_code_checks(
+      PREFIX          smoke_tests
+      SOURCES         ${smoke_tests_srcs}
+      ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
+
+  blt_add_code_checks(
+      PREFIX          internal_tests
+      SOURCES         ${internal_tests_srcs}
+      ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
+
+      
 endif()

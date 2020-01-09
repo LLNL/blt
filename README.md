@@ -1,8 +1,8 @@
-# <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/> v0.2
+# <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/>
 
 [![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
 [![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j/branch/master?svg=true)](https://ci.appveyor.com/project/cyrush/blt/branch/master)
-[![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=latest)](https://llnl-blt.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=develop)](https://llnl-blt.readthedocs.io/en/develop/?badge=develop)
 
 BLT is a streamlined [CMake](https://cmake.org)-based foundation for 
 <b>B</b>uilding, <b>L</b>inking and <b>T</b>esting large-scale high performance computing (HPC) applications.
@@ -71,8 +71,8 @@ Developers include:
 
 Please see the [BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors) for the full list of project contributors.
 
-Projects using this library
----------------------------
+Open-Source Projects using BLT
+------------------------------
 
  * [Ascent](https://github.com/Alpine-DAV/ascent): A flyweight in-situ visualization and analysis runtime for multi-physics HPC simulations
  * [Axom](https://github.com/LLNL/axom): Software infrastructure for the development of multi-physics applications and computational tools
@@ -85,19 +85,50 @@ Projects using this library
 If you would like to add a library to this list, please let us know via [email](mailto:blt-dev@llnl.gov)
 or by submitting an [issue](https://github.com/LLNL/blt/issues) or [pull-request](https://github.com/LLNL/blt/pulls).
 
-Release
+License
 -------
 
-Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC.
+BLT is licensed under the BSD 3-Clause license,
+(BSD-3-Clause or https://opensource.org/licenses/BSD-3-Clause).
 
-Produced at the Lawrence Livermore National Laboratory.
+Copyrights and patents in the BLT project are retained by contributors.
+No copyright assignment is required to contribute to BLT.
 
-All rights reserved.
-
+See [LICENSE](./LICENSE) for details.
+ 
 Unlimited Open Source - BSD 3-clause Distribution
 `LLNL-CODE-725085`  `OCEC-17-023`
 
-Additional license and copyright information can be found in the following files:
- * [LICENSE](./LICENSE)
- * [COPYRIGHT](./COPYRIGHT) 
- 
+SPDX usage
+------------
+
+Individual files contain SPDX tags instead of the full license text.
+This enables machine processing of license information based on the SPDX
+License Identifiers that are available here: https://spdx.org/licenses/
+
+Files that are licensed as BSD 3-Clause contain the following
+text in the license header:
+
+    SPDX-License-Identifier: (BSD-3-Clause)
+
+External Packages
+-------------------
+BLT bundles its external dependencies in thirdparty_builtin/.  These
+packages are covered by various permissive licenses.  A summary listing
+follows.  See the license included with each package for full details.
+
+PackageName: fruit  
+PackageHomePage: https://sourceforge.net/projects/fortranxunit/  
+PackageLicenseDeclared: BSD-3-Clause  
+
+PackageName: gbenchmark  
+PackageHomePage: https://github.com/google/benchmark  
+PackageLicenseDeclared: Apache-2.0  
+
+PackageName: gmock  
+PackageHomePage: https://github.com/google/googlemock  
+PackageLicenseDeclared: BSD-3-Clause  
+
+PackageName: gtest  
+PackageHomePage: https://github.com/google/googletest  
+PackageLicenseDeclared: BSD-3-Clause  

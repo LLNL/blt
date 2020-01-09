@@ -2,37 +2,36 @@
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
-
-###############################################################################
+#------------------------------------------------------------------------------
 # Targets related to source code checks (formatting, static analysis, etc)
-###############################################################################
+#------------------------------------------------------------------------------
 
-add_custom_target(check)
-add_custom_target(style)
+add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
+add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
 if(UNCRUSTIFY_FOUND)
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
-    add_dependencies(check uncrustify_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
 
     # targets for modifying formatting
     add_custom_target(uncrustify_style)
-    add_dependencies(style uncrustify_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} uncrustify_style)
 endif()
 
 if(ASTYLE_FOUND)
     # targets for verifying formatting
     add_custom_target(astyle_check)
-    add_dependencies(check astyle_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} astyle_check)
 
     # targets for modifying formatting
     add_custom_target(astyle_style)
-    add_dependencies(style astyle_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} astyle_style)
 endif()
 
 if(CPPCHECK_FOUND)
     add_custom_target(cppcheck_check)
-    add_dependencies(check cppcheck_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} cppcheck_check)
 endif()
 
 if(CLANGQUERY_FOUND)
@@ -43,7 +42,7 @@ if(CLANGQUERY_FOUND)
     # sense as a dependency of check
     add_custom_target(clang_query_check)
     add_custom_target(interactive_clang_query_check)
-    add_dependencies(check clang_query_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_query_check)
 endif()
 
 # Code check targets should only be run on demand
@@ -61,36 +60,19 @@ endforeach()
 ##------------------------------------------------------------------------------
 ## blt_add_code_checks( PREFIX              <Base name used for created targets>
 ##                      SOURCES             [source1 [source2 ...]]
-##                      UNCRUSTIFY_CFG_FILE <path to uncrustify config file>
-##                      ASTYLE_CFG_FILE     <path to astyle config file>)
+##                      UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
+##                      ASTYLE_CFG_FILE     <Path to AStyle config file>
+##                      CPPCHECK_FLAGS      <List of flags added to Cppcheck>)
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
-## filters based on file extensions.
-##
-## PREFIX is used in the creation of all the underlying targets. For example:
-## <PREFIX>_uncrustify_check.
-##
-## Sources are filtered based on file extensions for use in these code checks.  If you need
-## additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
-##
-## This macro supports formatting with either Uncrustify or AStyle (but not both) using
-## the following parameters:
-##
-## * UNCRUSTIFY_CFG_FILE is the configuration file for Uncrustify. If UNCRUSTIFY_EXECUTABLE
-##   is defined, found, and UNCRUSTIFY_CFG_FILE is provided it will create both check and
-##   style function for the given C/C++ files.
-##
-## * ASTYLE_CFG_FILE is the configuration file for AStyle. If ASTYLE_EXECUTABLE
-##   is defined, found, and ASTYLE_CFG_FILE is provided it will create both check and
-##   style function for the given C/C++ files.
-##
+## filters checks based on file extensions.
 ##------------------------------------------------------------------------------
 
 macro(blt_add_code_checks)
 
     set(options )
     set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE ASTYLE_CFG_FILE)
-    set(multiValueArgs SOURCES)
+    set(multiValueArgs SOURCES CPPCHECK_FLAGS)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -178,43 +160,29 @@ macro(blt_add_code_checks)
 
         blt_add_cppcheck_target( NAME              ${_cppcheck_target_name}
                                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                 SRC_FILES         ${_c_sources})
+                                 SRC_FILES         ${_c_sources}
+                                 PREPEND_FLAGS     ${arg_CPPCHECK_FLAGS})
     endif()
 
     if (CLANGQUERY_FOUND)
         set(_clang_query_target_name ${arg_PREFIX}_clang_query_check)
         blt_error_if_target_exists(${_clang_query_target_name} ${_error_msg})
-        blt_add_clang_query_target( NAME           ${_clang_query_target_name}
-                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                 SRC_FILES         ${_c_sources})
+        blt_add_clang_query_target( NAME              ${_clang_query_target_name}
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                    SRC_FILES         ${_c_sources})
     endif()
 
 endmacro(blt_add_code_checks)
 
 ##-----------------------------------------------------------------------------
-## blt_add_clang_query_target( NAME             <Created Target Name>
-##                          WORKING_DIRECTORY   <Working Directory>
-##                          COMMENT             <Additional Comment for Target Invocation>
-##                          CHECKERS            <If specified, requires a specific set of checkers>
-##                          DIE_ON_MATCH        <If true, matches stop the build>
-##                          SRC_FILES           [FILE1 [FILE2 ...]] )
+## blt_add_clang_query_target( NAME              <Created Target Name>
+##                             WORKING_DIRECTORY <Working Directory>
+##                             COMMENT           <Additional Comment for Target Invocation>
+##                             CHECKERS          <If specified, requires a specific set of checkers>
+##                             DIE_ON_MATCH      <If true, matches stop the build>
+##                             SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
-##
-## COMMENT is prepended to the commented outputted by CMake.
-##
-## WORKING_DIRECTORY is the directory that clang_query will be ran.  It defaults to the directory
-## where this macro is called.
-##
-## DIE_ON_MATCH This will make a match cause the build to fail, useful if you're using this in
-##              CI to enforce rules about your code
-##
-## CHECKERS are the static analysis passes to specifically run on the target. Options
-##              (no value)          : run all available static analysis checks found
-##              (checker1:checker2) : run checker1 and checker2
-##              (interpreter)       : run the clang-query interpeter to interactively develop queries
-##
-## SRC_FILES is a list of source files that clang_query will be run on.
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_query_target)
     if(CLANGQUERY_FOUND)
@@ -290,17 +258,6 @@ endmacro(blt_add_clang_query_target)
 ##                          SRC_FILES           [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running cppcheck over the given SRC_FILES
-##
-## PREPEND_FLAGS are additional flags added to the front of the cppcheck flags.
-##
-## APPEND_FLAGS are additional flags added to the end of the cppcheck flags.
-##
-## COMMENT is prepended to the commented outputted by CMake.
-##
-## WORKING_DIRECTORY is the directory that cppcheck will be ran.  It defaults to the directory
-## where this macro is called.
-##
-## SRC_FILES is a list of source files that cppcheck will be run on.
 ##-----------------------------------------------------------------------------
 macro(blt_add_cppcheck_target)
 
@@ -352,25 +309,6 @@ endmacro(blt_add_cppcheck_target)
 ##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running uncrustify over the given SRC_FILES.
-##
-## MODIFY_FILES, if set to TRUE, modifies the files in place and adds the created target to
-## the style target.  Otherwise the files are not modified and the created target is added
-## to the check target.
-## Note: Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
-##
-## CFG_FILE defines the uncrustify settings.
-##
-## PREPEND_FLAGS are additional flags added to the front of the uncrustify flags.
-##
-## APPEND_FLAGS are additional flags added to the end of the uncrustify flags.
-##
-## COMMENT is prepended to CMake's output for this target.
-##
-## WORKING_DIRECTORY is the directory in which uncrustify will be run.  It defaults 
-## to the directory where this macro is called.
-##
-## SRC_FILES is a list of source files to style/check with uncrustify.
-##
 ##------------------------------------------------------------------------------
 macro(blt_add_uncrustify_target)
     
@@ -461,25 +399,6 @@ endmacro(blt_add_uncrustify_target)
 ##                        SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running astyle over the given SRC_FILES.
-##
-## MODIFY_FILES, if set to TRUE, modifies the files in place and adds the created target to
-## the style target. Otherwise the files are not modified and the created target is added
-## to the check target.  
-## Note: Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.
-##
-## CFG_FILE defines the astyle settings.
-##
-## PREPEND_FLAGS are additional flags added to the front of the astyle flags.
-##
-## APPEND_FLAGS are additional flags added to the end of the astyle flags.
-##
-## COMMENT is prepended to CMake's output for this target.
-##
-## WORKING_DIRECTORY is the directory in which astyle will be run. It defaults to 
-## the directory where this macro is called.
-##
-## SRC_FILES is a list of source files to style/check with astyle.
-##
 ##------------------------------------------------------------------------------
 macro(blt_add_astyle_target)
 
@@ -525,6 +444,7 @@ macro(blt_add_astyle_target)
         execute_process(
             COMMAND ${ASTYLE_EXECUTABLE} --version
             OUTPUT_VARIABLE _version_str
+            ERROR_VARIABLE  _version_str
             OUTPUT_STRIP_TRAILING_WHITESPACE )
         string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
         

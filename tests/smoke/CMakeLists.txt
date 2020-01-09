@@ -78,8 +78,11 @@ if (ENABLE_OPENMP)
                        FOLDER blt/tests )
     # _blt_tutorial_openmp_executable_end
 
-    blt_add_test(NAME blt_openmp_smoke
-                 COMMAND blt_openmp_smoke)
+    # _blt_tutorial_openmp_test_start
+    blt_add_test(NAME            blt_openmp_smoke
+                 COMMAND         blt_openmp_smoke
+                 NUM_OMP_THREADS 4)
+    # _blt_tutorial_openmp_test_end
 endif()
 
 
@@ -99,7 +102,7 @@ if (ENABLE_MPI)
 endif()
 
 ################
-#  CUDA test
+#  CUDA tests
 ################
 if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_smoke
@@ -129,6 +132,17 @@ if (ENABLE_CUDA)
 
         blt_add_test(NAME blt_cuda_openmp_smoke
                      COMMAND blt_cuda_openmp_smoke)
+    endif()
+
+    if (ENABLE_MPI)
+        blt_add_executable(NAME       blt_cuda_mpi_smoke
+                           SOURCES    blt_cuda_mpi_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                           DEPENDS_ON cuda mpi
+                           FOLDER blt/tests )
+        blt_add_test(NAME    blt_cuda_mpi_smoke
+                     COMMAND blt_cuda_mpi_smoke
+                     NUM_MPI_TASKS 4)
     endif()
 endif()
 

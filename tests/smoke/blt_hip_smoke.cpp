@@ -1,12 +1,12 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 //-----------------------------------------------------------------------------
-///
-/// file: blt_hip_smoke.cpp
-///
+//
+// file: blt_hip_smoke.cpp
+//
 //-----------------------------------------------------------------------------
 
 #include <iostream>
@@ -18,17 +18,17 @@ const char STR_LENGTH = 12;
 
 __global__ void hello()
 {
-    printf("%c\n", STR[threadIdx.x % STR_LENGTH]);
+  printf("%c\n", STR[threadIdx.x % STR_LENGTH]);
 }
 
 int main()
 {
-    int num_threads = STR_LENGTH;
-    int num_blocks = 1;
-    hipLaunchKernelGGL((hello), dim3(num_blocks), dim3(num_threads),0,0);
-    hipDeviceSynchronize();
-    
-    return 0;
+  int num_threads = STR_LENGTH;
+  int num_blocks = 1;
+  hipLaunchKernelGGL((hello), dim3(num_blocks), dim3(num_threads),0,0);
+  hipDeviceSynchronize();
+
+  return 0;
 }
 
 

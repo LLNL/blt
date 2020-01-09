@@ -112,8 +112,8 @@ addons:
        - gcc-4.9
        - g++-4.9
        - gfortran-4.9
-       - mpich2
-       - libmpich2-dev
+       - mpich
+       - libmpich-dev
 before_install:
   # workaround apt related for error:
   # Err:6 http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty InRelease
@@ -160,6 +160,7 @@ script:
   # c & c++ compilers
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_C_COMPILER=${BLT_CC}"
   - CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_CXX_COMPILER=${BLT_CXX}"
+  - CMAKE_OPTS="${CMAKE_OPTS} -DBLT_CXX_STD:STRING=c++11"
   # gtest support
   - CMAKE_OPTS="${CMAKE_OPTS} -DENABLE_GTEST=${BLT_GTEST}"
   # gmock support

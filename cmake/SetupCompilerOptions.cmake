@@ -9,8 +9,8 @@
 
 #####################################################
 # Set some variables to simplify determining compiler
-# Compiler string list from: 
-#   https://cmake.org/cmake/help/v3.0/variable/CMAKE_LANG_COMPILER_ID.html
+# Compiler string list from:
+#   https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html
 ####################################################3
 
 # use CMAKE_BUILD_TOOL to identify visual studio
@@ -46,6 +46,10 @@ else()
         set(C_COMPILER_FAMILY_IS_PGI 1)
         message(STATUS "C Compiler family is PGI")
 
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray")
+        set(C_COMPILER_FAMILY_IS_CRAY 1)
+        message(STATUS "C Compiler family is Cray")
+
     else()
         message(STATUS "C Compiler family not set!!!")
     endif()
@@ -69,6 +73,10 @@ else()
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
         set(Fortran_COMPILER_FAMILY_IS_PGI 1)
         message(STATUS "Fortran Compiler family is PGI")
+
+    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
+        set(Fortran_COMPILER_FAMILY_IS_CRAY 1)
+        message(STATUS "Fortran Compiler family is Cray")
 
     elseif(ENABLE_FORTRAN)
         message(STATUS "Fortran Compiler family not set!!!")
@@ -333,21 +341,42 @@ blt_append_custom_compiler_flag(
      )
 
 #
-# Modify flags to avoid static linking runtime issues on windows.
-# (adapted from RAJA)
+# Modify flags to avoid static linking runtime issues on MS Windows.
+#
+# When building on Windows, you can link in the runtime library
+#   - statically (with /MT), or
+#   - dynamically (with /MD).
+# See https://docs.microsoft.com/en-us/cpp/build/reference/md-mt-ld-use-run-time-library?view=vs-2019.
+#
+# Mixing /MD with /MT can cause linking errors.  CMake specifies
+# /MD when generating project files for MSVC and provides no way to
+# change this.  This can be a problem with Google Test in particular,
+# which when building statically replaces all /MD with /MT.  HDF5, on
+# the other hand, sternly warns against the use of /MT, even when
+# built statically.
+#
+# See https://gitlab.kitware.com/cmake/community/wikis/FAQ#dynamic-replace.
+# Once we require CMake >= 3.15 we can address the issue differently, using
+# CMAKE_MSVC_RUNTIME_LIBRARY:
+# https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
 #
 
 if ( COMPILER_FAMILY_IS_MSVC AND NOT BUILD_SHARED_LIBS )
-  foreach(_lang C CXX)
-    foreach(_build
-            FLAGS FLAGS_DEBUG FLAGS_RELEASE
-            FLAGS_MINSIZEREL FLAGS_RELWITHDEBINFO)
-        set(_flag CMAKE_${_lang}_${_build})
-        if(${_flag} MATCHES "/MD")
-            string(REGEX REPLACE "/MD" "/MT" ${_flag} "${${_flag}}")
-        endif()
+  if ( BLT_ENABLE_MSVC_STATIC_MD_TO_MT )
+    foreach(_lang C CXX)
+      foreach(_build
+              FLAGS FLAGS_DEBUG FLAGS_RELEASE
+              FLAGS_MINSIZEREL FLAGS_RELWITHDEBINFO)
+          set(_flag CMAKE_${_lang}_${_build})
+          if(${_flag} MATCHES "/MD")
+              string(REGEX REPLACE "/MD" "/MT" ${_flag} "${${_flag}}")
+          endif()
+      endforeach()
     endforeach()
-  endforeach()
+  elseif (ENABLE_GTEST)
+    message(FATAL_ERROR
+      "For static linking with MS Visual Studio using GTEST, you must set BLT_ENABLE_MSVC_STATIC_MD_TO_MT to ON in order to enable changing /MD to /MT.")
+  endif()
 endif()
 
 set(langFlags "CMAKE_C_FLAGS" "CMAKE_CXX_FLAGS")

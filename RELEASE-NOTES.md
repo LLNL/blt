@@ -7,10 +7,40 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 The project release numbers follow [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - Release date yyyy-mm-dd
+
+## [Version 0.3.0] - Release date 2020-01-08
+
+### Added
+- Sets CMake policy CMP0074 to NEW, when available.
+- Added simpler Clang+XLF+Cuda host-config for LLNL's blueos
+- API Docs that are public!
+- Added the ability to override blt's custom target names, e.g. for code checks,
+  formatting and generating documentation. The new variables are: ``BLT_CODE_CHECK_TARGET_NAME``,
+  ``BLT_CODE_STYLE_TARGET_NAME``, ``BLT_DOCS_TARGET_NAME`` and  ``BLT_RUN_BENCHMARKS_TARGET_NAME``.
+- Clean up linking flags when ``CUDA_LINK_WITH_NVCC`` is ON. Added logic to automatically convert
+  '-Wl,-rpath' linking flag to '-Xlinker -rpath -Xlinker' and removes ``-pthread`` from from
+  MPI linking flags returned from FindMPI because it doesn't work
+  (see https://gitlab.kitware.com/cmake/cmake/issues/18008).
+- In CMake 3.13+, "SHELL:" was added to blt_add_target_link_flags.  This stops CMake from de-duplicating
+  needed linker flags.
+- Added optional SCOPE to all target property macros, blt_add_target_link_flags, etc.  It defaults to PUBLIC.
+- Added support for Cray compilers in blt_append_custom_compiler_flag.
+- Added ability to add flags to the cppcheck command line through blt_add_code_checks()
+- Added ability for blt_add_test() to set required number of OpenMP threads via new option NUM_OMP_THREADS.
+
+### Changed
+- Restructured the host-config directory by site and platform.
+- Updated gbenchmark to 1.5.0, note that this requires C++11 to build.
+- Updated gtest and gmock to Master as of 2020-01-07, note that this requires C++11 to build.
+
+### Fixed
+- Fixed some warnings in CMake 3.14+
+
 ## [Version 0.2.5] - Release date 2019-06-13
 
 ### Added
-- Added support for C++17. Note: Neither XL or CMake's CUDA_STANDARD does not support
+- Added support for C++17. Note: Neither XL nor CMake's CUDA_STANDARD supports
   C++17 (A BLT fatal error will occur).
 - Added ability to override all MPI variables: BLT_MPI_COMPILE_FLAGS,
   BLT_MPI_INCLUDES, BLT_MPI_LIBRARIES, and BLT_MPI_LINK_FLAGS
@@ -70,5 +100,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Known Bugs
 
 
+
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.0...develop
+[Version 0.3.0]: https://github.com/LLNL/blt/compare/v0.2.5...v0.3.0
 [Version 0.2.5]: https://github.com/LLNL/blt/compare/v0.2.0...v0.2.5
 [Version 0.2.0]: https://github.com/LLNL/blt/compare/v0.1.0...v0.2.0

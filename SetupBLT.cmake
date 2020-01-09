@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.2.5" CACHE STRING "")
+    set(BLT_VERSION "0.3.0" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
@@ -57,6 +57,12 @@ if (NOT BLT_LOADED)
     # Policy added in 3.3+
     if(POLICY CMP0057)
         cmake_policy(SET CMP0057 NEW)
+    endif()
+
+    # Policy to use <PackageName>_ROOT variable in find_<Package> commands
+    # Policy added in 3.12+
+    if(POLICY CMP0074)
+        cmake_policy(SET CMP0074 NEW)
     endif()
 
     # New turns relative target_sources() paths to absolute
@@ -167,9 +173,9 @@ if (NOT BLT_LOADED)
     #
     ################################
     set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".cc" ".hh" ".inl" ".cu"
-               CACHE LIST "List of known file extensions used for C/CXX sources")
+               CACHE STRING "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
-               CACHE LIST "List of known file extensions used for Fortran sources")
+               CACHE STRING "List of known file extensions used for Fortran sources")
 
 
     ################################

@@ -60,6 +60,10 @@ if(ENABLE_TESTS)
     
     if(ENABLE_GTEST)
         
+        if(CMAKE_CXX_STANDARD LESS 11)
+            message(WARNING "C++11 is required to compile gtest or gmock.")
+        endif()
+
         #
         # gtest 1.8 emits many warnings related to dll-interface 
         # issues on windows, so we add flags to work around these
@@ -76,8 +80,8 @@ if(ENABLE_TESTS)
         set (INSTALL_GTEST OFF CACHE BOOL "")
                 
         # Enable builtin google test 
-        add_subdirectory(googletest-master-2018-02-01
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2018-02-01)
+        add_subdirectory(googletest-master-2020-01-07
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2020-01-07)
 
         if(UNIX AND NOT APPLE)
             find_package( Threads )
@@ -121,33 +125,41 @@ if(ENABLE_TESTS)
 endif()
 
 if(ENABLE_BENCHMARKS)
-    if(WIN32 AND BUILD_SHARED_LIBS)
-      message(FATAL_ERROR "Benchmarks cannot be built when BUILD_SHARED_LIBS=On")
+    if(NOT ENABLE_TESTS)
+        message(FATAL_ERROR "ENABLE_BENCHMARKS requires ENABLE_TESTS to be ON")
     endif()
 
-    ## google benchmark support
-    add_subdirectory(gbenchmark-master-2017-05-19
-                     ${BLT_BUILD_DIR}/thirdparty_builtin/gbenchmark-master-2017-05-19)
+    message(STATUS "Google Benchmark Support is ${ENABLE_GBENCHMARK}")
 
-    if (UNIX AND NOT APPLE)
-      find_library(RT_LIBRARIES rt)
+    if(ENABLE_GBENCHMARK)
+        if(WIN32 AND BUILD_SHARED_LIBS)
+          message(FATAL_ERROR "Google Benchmark cannot be built when BUILD_SHARED_LIBS=ON or on Windows")
+        endif()
+
+        if(CMAKE_CXX_STANDARD LESS 11)
+            message(WARNING "C++11 is required to compile gbenchmark.")
+        endif()
+
+        set(BENCHMARK_ENABLE_TESTING OFF CACHE "" BOOL)
+        add_subdirectory(benchmark-1.5.0
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.5.0)
+
+        if (UNIX AND NOT APPLE)
+          find_library(RT_LIBRARIES rt)
+        endif()
+
+        blt_register_library(NAME      gbenchmark
+                             INCLUDES  ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
+                             LIBRARIES benchmark ${RT_LIBRARIES}
+                             TREAT_INCLUDES_AS_SYSTEM ON)
+
+        list(APPEND _blt_tpl_targets gbenchmark)
     endif()
 
-    blt_register_library(NAME gbenchmark
-                         INCLUDES ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
-                         LIBRARIES benchmark ${RT_LIBRARIES}
-                         TREAT_INCLUDES_AS_SYSTEM ON
-                         )
-
-    list(APPEND _blt_tpl_targets benchmark)
-
-    if(ENABLE_TESTS)
-      # This sets up a target to run the benchmarks
-      add_custom_target(run_benchmarks 
-                        COMMAND ctest -C Benchmark -VV -R benchmark
-                        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                        )
-    endif()
+    # This sets up a target to run the benchmarks
+    add_custom_target(${BLT_RUN_BENCHMARKS_TARGET_NAME}
+                      COMMAND ctest -C Benchmark -VV
+                      WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
 
 # Set the folder property of the blt thirdparty libraries 

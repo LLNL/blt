@@ -6,22 +6,23 @@
 BLT
 ===
 
-**Build, Link and Test**
+**Build, Link, and Test**
 
-BLT is composition of CMake macros and several widely used open source tools assembled to simplify HPC software development. 
+BLT is a composition of CMake macros and several widely used open source tools 
+assembled to simplify HPC software development. 
 
 BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
 It is developed on github under LLNL's github organization: https://github.com/llnl/blt
 
 .. note::
   BLT officially supports CMake 3.8 and above.  However we only print a warning if you
-  are below our this version.  Some features may or may not work. Use at your own risk.
+  are below this version.  Some features in earlier versions may or may not work. Use at your own risk.
 
 
 BLT at a Glance
 ~~~~~~~~~~~~~~~~~~
 
-* Simplifies Setup
+* Simplifies setting up a CMake-based build system
 
   * CMake macros for:
 
@@ -43,9 +44,8 @@ BLT at a Glance
 
     * Runtime and static analysis, benchmarking
 
-BLT Developers
-~~~~~~~~~~~~~~~~~~~
-Developers include:
+Developers
+~~~~~~~~~~
 
  * Chris White (white238@llnl.gov)
  * Cyrus Harrison (harrison37@llnl.gov)
@@ -56,40 +56,14 @@ Developers include:
  * David A. Beckingsale (beckingsale1@llnl.gov)
  * Richard Hornung (hornung1@llnl.gov)
  * Randolph Settgast (settgast1@llnl.gov)
- * Peter Robinson  (robinson96@llnl.gov)
-
-BLT User Tutorial
-~~~~~~~~~~~~~~~~~~~
-This tutorial is aimed at getting BLT users up and running as quickly as possible.
-
-It provides instructions for:
-
-    * Adding BLT to a CMake project
-    * Setting up *host-config* files to handle multiple platform configurations
-    * Building, linking, and installing libraries and executables
-    * Setting up unit tests with GTest
-    * Using external project dependencies
-    * Creating documentation with Sphinx and Doxygen
-
-The tutorial provides several examples that calculate the value of :math:`\pi` 
-by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
-integration. The code is adapted from:
-https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
-
-The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
+ * Peter Robinson (robinson96@llnl.gov)
 
 
-**Tutorial Contents**
+Documentation
+~~~~~~~~~~~~~
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
-    setup_blt
-    creating_execs_and_libs
-    using_flags
-    unit_testing
-    external_dependencies
-    creating_documentation
-    recommendations
-
-
+    User Tutorial <tutorial/index>
+    API Documentation <api/index>

@@ -1,6 +1,6 @@
 // Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 // other BLT Project Developers. See the top-level COPYRIGHT file for details
-// 
+//
 // SPDX-License-Identifier: (BSD-3-Clause)
 
 #include "gtest/gtest.h"
@@ -10,7 +10,7 @@
 
 TEST(blt_gtest_smoke,basic_assert_example)
 {
-    Example e;
+  Example e;
 
-    EXPECT_TRUE( e.ReturnTrue() );
+  EXPECT_TRUE( e.ReturnTrue() );
 }

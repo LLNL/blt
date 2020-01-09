@@ -1,11 +1,74 @@
 # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
-# 
+#
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 include(CMakeParseArguments)
 
 ## Internal BLT CMake Macros
+
+
+##-----------------------------------------------------------------------------
+## blt_determine_scope(TARGET <target>
+##                     SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
+##                     OUT    <out variable name>)
+##
+## Returns the normalized scope string for a given SCOPE and TARGET to be used
+## in BLT macros.
+##
+## TARGET - Name of CMake Target that the property is being added to
+##          Note: the only real purpose of this parameter is to make sure we aren't
+##                adding returning other than INTERFACE for Interface Libraries
+## SCOPE  - case-insensitive scope string, defaults to PUBLIC
+## OUT    - variable that is filled with the uppercased scope
+##
+##-----------------------------------------------------------------------------
+macro(blt_determine_scope)
+
+    set(options)
+    set(singleValueArgs TARGET SCOPE OUT)
+    set(multiValueArgs )
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                        "${multiValueArgs}" ${ARGN} )
+
+    # Convert to upper case and strip white space
+    string(TOUPPER "${arg_SCOPE}" _uppercaseScope)
+    string(STRIP "${_uppercaseScope}" _uppercaseScope )
+
+    if("${_uppercaseScope}" STREQUAL "")
+        # Default to public
+        set(_uppercaseScope PUBLIC)
+    elseif(NOT ("${_uppercaseScope}" STREQUAL "PUBLIC" OR
+                "${_uppercaseScope}" STREQUAL "INTERFACE" OR
+                "${_uppercaseScope}" STREQUAL "PRIVATE"))
+        message(FATAL_ERROR "Given SCOPE (${arg_SCOPE}) is not valid, valid options are:"
+                            "PUBLIC, INTERFACE, or PRIVATE")
+    endif()
+
+    if(TARGET ${arg_TARGET})
+        get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
+        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+            # Interface targets can only set INTERFACE
+            if("${_uppercaseScope}" STREQUAL "PUBLIC" OR
+               "${_uppercaseScope}" STREQUAL "INTERFACE")
+                set(${arg_OUT} INTERFACE)
+            else()
+                message(FATAL_ERROR "Cannot set PRIVATE scope to Interface Library."
+                                    "Change to Scope to INTERFACE.")
+            endif()
+        else()
+            set(${arg_OUT} ${_uppercaseScope})
+        endif()
+    else()
+        set(${arg_OUT} ${_uppercaseScope})
+    endif()
+
+    unset(_targetType)
+    unset(_uppercaseScope)
+
+endmacro(blt_determine_scope)
 
 
 ##-----------------------------------------------------------------------------
@@ -20,6 +83,34 @@ function(blt_error_if_target_exists target_name error_msg)
     endif()
 endfunction()
 
+##-----------------------------------------------------------------------------
+## blt_fix_fortran_openmp_flags()
+##
+## Fixes the openmp flags for a Fortran target if they are different from the
+## corresponding C/C++ openmp flags.
+##-----------------------------------------------------------------------------
+function(blt_fix_fortran_openmp_flags target_name)
+
+
+    if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
+
+        get_target_property(target_link_flags ${target_name} LINK_FLAGS)
+        if ( target_link_flags )
+
+            message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
+
+            string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                    correct_link_flags
+                    "${target_link_flags}"
+                    )
+
+            set_target_properties( ${target_name} PROPERTIES LINK_FLAGS
+                                   "${correct_link_flags}" )
+        endif()
+
+    endif()
+
+endfunction()
 
 ##-----------------------------------------------------------------------------
 ## blt_find_executable(NAME         <name of program to find>
@@ -98,7 +189,7 @@ endmacro(blt_find_executable)
 ##------------------------------------------------------------------------------
 macro(blt_inherit_target_info)
     set(options)
-    set(singleValueArgs TO FROM)
+    set(singleValueArgs TO FROM OBJECT)
     set(multiValueArgs)
 
     # Parse the arguments
@@ -150,8 +241,8 @@ endmacro(blt_inherit_target_info)
 
 
 ##------------------------------------------------------------------------------
-## blt_setup_target( NAME       [name] 
-##                   DEPENDS_ON [dep1 ...] 
+## blt_setup_target( NAME       [name]
+##                   DEPENDS_ON [dep1 ...]
 ##                   OBJECT     [TRUE | FALSE])
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
@@ -208,6 +299,18 @@ macro(blt_setup_target)
                 ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
+        if ( arg_OBJECT )
+            # Object libraries need to inherit info from their CMake targets listed
+            # in their LIBRARIES
+            foreach( _library ${BLT_${uppercase_dependency}_LIBRARIES} )
+                if(TARGET ${_library})
+                    blt_inherit_target_info(TO     ${arg_NAME}
+                                            FROM   ${_library}
+                                            OBJECT ${arg_OBJECT})
+                endif()
+            endforeach()
+        endif()
+
         if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             # We want object libraries to inherit the vital info but not call
             # target_link_libraries() otherwise you have to install the object
@@ -215,7 +318,7 @@ macro(blt_setup_target)
             if ( TARGET ${dependency} )
                 blt_inherit_target_info(TO     ${arg_NAME}
                                         FROM   ${dependency}
-                                        OBJECT TRUE)
+                                        OBJECT ${arg_OBJECT})
             endif()
         elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the
@@ -288,7 +391,7 @@ macro(blt_setup_cuda_target)
     endif()
 
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
-        if (CUDA_LINK_WITH_NVCC) 
+        if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
         endif()
     endif()
@@ -554,7 +657,7 @@ macro(blt_filter_list)
     set(multiValueArgs )
 
     # Parse arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
@@ -615,7 +718,7 @@ macro(blt_clean_target)
     set(multiValueArgs )
 
     # Parse arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" 
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Properties to remove duplicates from
