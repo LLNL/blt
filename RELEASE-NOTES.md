@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.3.0] - Release date 2020-01-08
+
 ### Added
 - Sets CMake policy CMP0074 to NEW, when available.
 - Added simpler Clang+XLF+Cuda host-config for LLNL's blueos
@@ -99,6 +101,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.2.5...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.0...develop
+[Version 0.3.0]: https://github.com/LLNL/blt/compare/v0.2.5...v0.3.0
 [Version 0.2.5]: https://github.com/LLNL/blt/compare/v0.2.0...v0.2.5
 [Version 0.2.0]: https://github.com/LLNL/blt/compare/v0.1.0...v0.2.0
