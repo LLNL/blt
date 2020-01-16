@@ -11,7 +11,12 @@ project( pi_playground )
 #------------------------------------------------------------------------------
 # Set BLT_SOURCE_DIR to default location, if not set by user 
 if(NOT BLT_SOURCE_DIR)
-    set(BLT_SOURCE_DIR "blt")
+    set(BLT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
+endif()
+
+# Default to C++11 if not set so GTest/GMock can build
+if (NOT BLT_CXX_STD)
+    set(BLT_CXX_STD "c++11" CACHE STRING "")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
