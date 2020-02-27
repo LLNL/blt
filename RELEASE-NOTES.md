@@ -9,10 +9,12 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added blt_assert_exists() utility macro.
+
 ## [Version 0.3.0] - Release date 2020-01-08
 
 ### Added
-- Added blt_assert_exists() utility macro.
 - Sets CMake policy CMP0074 to NEW, when available.
 - Added simpler Clang+XLF+Cuda host-config for LLNL's blueos
 - API Docs that are public!
