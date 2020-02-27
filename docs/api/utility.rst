@@ -13,9 +13,9 @@ blt_assert_exists
 .. code-block:: cmake
 
     blt_assert_exists(
-      [DIRECTORY <path/to/directory/>]
-      [FILE <path/to/file>]
-      [TARGET <cmake-target]> )
+      [DIRECTORIES <dir1> [<dir2> ...] ]
+      [FILES <file1> [<file2> ...] ]
+      [TARGETS <target1> [<target2> ...] ] )
 
 Checks if the specified directory, file and/or cmake target exists and throws
 an error message.
@@ -30,17 +30,17 @@ an error message.
    :linenos:
 
    ## check if the directory 'blt' exists in the project
-   blt_assert_exists( DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/blt )
+   blt_assert_exists( DIRECTORIES ${PROJECT_SOURCE_DIR}/cmake/blt )
 
    ## check if the file 'SetupBLT.cmake' file exists
-   blt_assert_exists( FILE ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake )
+   blt_assert_exists( FILES ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake )
 
    ## checks can also be bundled in one call
-   blt_assert_exists( DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/blt
-                      FILE ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake )
+   blt_assert_exists( DIRECTORIES ${PROJECT_SOURCE_DIR}/cmake/blt
+                      FILES ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake )
 
-   ## check if a CMake target for a library or executable exists
-   blt_assert_exists( TARGET foo )
+   ## check if the CMake targets `foo` and `bar` exist
+   blt_assert_exists( TARGETS foo bar )
 
 
 blt_append_custom_compiler_flag
