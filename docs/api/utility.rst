@@ -8,7 +8,7 @@ Utility Macros
 
 
 blt_assert_exists
-^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
