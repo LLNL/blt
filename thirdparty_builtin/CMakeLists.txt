@@ -1,6 +1,6 @@
 # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
-# 
+#
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 set(_blt_tpl_targets) # tracks names of enabled tpl targets
@@ -16,12 +16,12 @@ endif()
 if(ENABLE_TESTS)
     include(CTest)
 
-    # Note: Users can pass extra compiler flags to gtest 
-    #       with the 'gtest_extra_flags' variable and extra 
+    # Note: Users can pass extra compiler flags to gtest
+    #       with the 'gtest_extra_flags' variable and extra
     #       compile definitions with the 'gtest_defines' variable.
 
 
-    # The following flag should be added to gtest's dependents, 
+    # The following flag should be added to gtest's dependents,
     # but not to gtest in shared Windows builds
     if(WIN32 AND BUILD_SHARED_LIBS)
         list(APPEND gtest_export_defines "-DGTEST_LINKED_AS_SHARED_LIBRARY=1")
@@ -39,18 +39,18 @@ if(ENABLE_TESTS)
     endif()
 
     #
-    # Use BLT's ENABLE_GMOCK option to set the build options for 
+    # Use BLT's ENABLE_GMOCK option to set the build options for
     # gtest's cmake project
     #
-    
+
     if(ENABLE_GMOCK)
-        
+
         # In BLT ENABLE_GMOCK implies ENABLE_GTEST,
         # IF ENABLE_GTEST is OFF, force to ON
         if(NOT ENABLE_GTEST)
             set(ENABLE_GTEST ON CACHE BOOL "")
         endif()
-        
+
         set(BUILD_GMOCK ON  CACHE BOOL "")
         set(BUILD_GTEST OFF CACHE BOOL "")
     else()
@@ -60,30 +60,30 @@ if(ENABLE_TESTS)
 
     message(STATUS "Google Test Support is ${ENABLE_GTEST}")
     message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
-    
+
     #
     # Guard of googletest w/ ENABLE_GTEST
     # In BLT, ENABLE_GTEST is also required when using ENABLE_GMOCK
     #
-    
+
     if(ENABLE_GTEST)
-        
+
         #
-        # gtest 1.8 emits many warnings related to dll-interface 
+        # gtest 1.8 emits many warnings related to dll-interface
         # issues on windows, so we add flags to work around these
         # warnings, so they don't mask warnings we care about
         #
         # For more info see: https://github.com/LLNL/blt/issues/79
-        # 
-        
+        #
+
         blt_append_custom_compiler_flag( FLAGS_VAR gtest_extra_flags
-                                         DEFAULT " " 
+                                         DEFAULT " "
                                          MSVC  "/wd4251" "/wd4275" )
 
         set (INSTALL_GMOCK OFF CACHE BOOL "")
         set (INSTALL_GTEST OFF CACHE BOOL "")
-                
-        # Enable builtin google test 
+
+        # Enable builtin google test
         add_subdirectory(googletest-master-2020-01-07
                          ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2020-01-07)
 
@@ -99,7 +99,7 @@ if(ENABLE_TESTS)
                              DEFINES  ${gtest_defines} ${gtest_export_defines}
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
-                             
+
         blt_add_target_definitions(TO gtest TARGET_DEFINITIONS ${gtest_defines})
 
         list(APPEND _blt_tpl_targets gtest gtest_main)
@@ -120,8 +120,8 @@ if(ENABLE_TESTS)
     if (ENABLE_FORTRAN)
         message(STATUS "Fruit Support is ${ENABLE_FRUIT}")
         if(ENABLE_FRUIT)
-            add_subdirectory(fruit-3.4.1
-                             ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.1)
+            add_subdirectory(fruit-3.4.3
+                             ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.3)
             list(APPEND _blt_tpl_targets fruit)
         endif()
     endif()
@@ -162,11 +162,9 @@ if(ENABLE_BENCHMARKS)
                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
 
-# Set the folder property of the blt thirdparty libraries 
+# Set the folder property of the blt thirdparty libraries
 if(ENABLE_FOLDERS)
     foreach(tpl ${_blt_tpl_targets})
         blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
     endforeach()
 endif()
-
-

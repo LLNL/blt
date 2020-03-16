@@ -1,4 +1,22 @@
 -----------
+FRUIT 3.4.3
+-----------
+
+rakefile of fruit_processor_gem is modified.
+See https://sourceforge.net/p/fortranxunit/bugs/6/
+
+On some versions of ruby (between version 1.9 and 2.1) and minitest (version 5),
+  fruit_processor_gem/test/fruit_processor_test.rb
+  fruit_processor_gem/test/misc_test.rb
+may need modification.
+A sample of modification is added as
+  fruit_processor_gem/test/fruit_processor_test_ruby2.rb
+  fruit_processor_gem/test/misc_test_ruby2.rb
+See
+  https://sourceforge.net/p/fortranxunit/bugs/5/
+
+
+-----------
 FRUIT 3.4.1
 -----------
 
