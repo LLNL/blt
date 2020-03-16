@@ -1,6 +1,6 @@
 ! Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 ! other BLT Project Developers. See the top-level COPYRIGHT file for details
-! 
+!
 ! SPDX-License-Identifier: (BSD-3-Clause)
 
 !------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ contains
 !------------------------------------------------------------------------------
 
   subroutine simple_test
-        call assert_equals (42, 42)
+        call fruit_assert_equals (42, 42)
   end subroutine simple_test
 
 
@@ -31,7 +31,7 @@ program fortran_test
   implicit none
   logical ok
 
-  call init_fruit
+  call fruit_init
 !----------
 ! Our tests
   call simple_test
@@ -39,10 +39,9 @@ program fortran_test
 
   call fruit_summary
   call fruit_finalize
-  call is_all_successful(ok)
+  call fruit_is_all_successful(ok)
   if (.not. ok) then
      call exit(1)
   endif
-  
-end program fortran_test
 
+end program fortran_test
