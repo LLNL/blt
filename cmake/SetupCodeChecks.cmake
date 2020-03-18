@@ -9,16 +9,6 @@
 add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
 add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
-if(UNCRUSTIFY_FOUND)
-    # targets for verifying formatting
-    add_custom_target(uncrustify_check)
-    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
-
-    # targets for modifying formatting
-    add_custom_target(uncrustify_style)
-    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} uncrustify_style)
-endif()
-
 if(ASTYLE_FOUND)
     # targets for verifying formatting
     add_custom_target(astyle_check)
@@ -27,6 +17,26 @@ if(ASTYLE_FOUND)
     # targets for modifying formatting
     add_custom_target(astyle_style)
     add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} astyle_style)
+endif()
+
+if(CLANGFORMAT_FOUND)
+    # targets for verifying formatting
+    add_custom_target(clangformat_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clangformat_check)
+
+    # targets for modifying formatting
+    add_custom_target(clangformat_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} clangformat_style)
+endif()
+
+if(UNCRUSTIFY_FOUND)
+    # targets for verifying formatting
+    add_custom_target(uncrustify_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
+
+    # targets for modifying formatting
+    add_custom_target(uncrustify_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} uncrustify_style)
 endif()
 
 if(CPPCHECK_FOUND)
@@ -47,8 +57,8 @@ endif()
 
 # Code check targets should only be run on demand
 foreach(target 
-        check uncrustify_check astyle_check cppcheck_check
-        style uncrustify_style astyle_style 
+        check uncrustify_check astyle_check clangformat_check cppcheck_check
+        style uncrustify_style astyle_style clangformat_style
         clang_query_check interactive_clang_query_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
@@ -116,24 +126,6 @@ macro(blt_add_code_checks)
 
     # Add code checks
     set(_error_msg "blt_add_code_checks tried to create an already existing target with given PREFIX: ${arg_PREFIX}. ")
-    if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
-        set(_check_target_name ${arg_PREFIX}_uncrustify_check)
-        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
-        set(_style_target_name ${arg_PREFIX}_uncrustify_style)
-        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
-
-        blt_add_uncrustify_target( NAME              ${_check_target_name}
-                                   MODIFY_FILES      FALSE
-                                   CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
-                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                   SRC_FILES         ${_c_sources} )
-
-        blt_add_uncrustify_target( NAME              ${_style_target_name}
-                                   MODIFY_FILES      TRUE
-                                   CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
-                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                   SRC_FILES         ${_c_sources} )
-    endif()
 
     if (ASTYLE_FOUND AND DEFINED arg_ASTYLE_CFG_FILE)
         set(_check_target_name ${arg_PREFIX}_astyle_check)
@@ -152,6 +144,44 @@ macro(blt_add_code_checks)
                                CFG_FILE          ${arg_ASTYLE_CFG_FILE} 
                                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                SRC_FILES         ${_c_sources} )
+    endif()
+
+    if (CLANGFORMAT_FOUND AND DEFINED arg_CLANGFORMAT_CFG_FILE)
+        set(_check_target_name ${arg_PREFIX}_clangformat_check)
+        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
+        set(_style_target_name ${arg_PREFIX}_clangformat_style)
+        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
+
+        blt_add_clangformat_target( NAME              ${_check_target_name}
+                                    MODIFY_FILES      FALSE
+                                    CFG_FILE          ${arg_CLANGFORMAT_CFG_FILE} 
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                    SRC_FILES         ${_c_sources} )
+
+        blt_add_clangformat_target( NAME              ${_style_target_name}
+                                    MODIFY_FILES      TRUE
+                                    CFG_FILE          ${arg_CLANGFORMAT_CFG_FILE} 
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                    SRC_FILES         ${_c_sources} )
+    endif()
+
+    if (UNCRUSTIFY_FOUND AND DEFINED arg_UNCRUSTIFY_CFG_FILE)
+        set(_check_target_name ${arg_PREFIX}_uncrustify_check)
+        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
+        set(_style_target_name ${arg_PREFIX}_uncrustify_style)
+        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
+
+        blt_add_uncrustify_target( NAME              ${_check_target_name}
+                                   MODIFY_FILES      FALSE
+                                   CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
+                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                   SRC_FILES         ${_c_sources} )
+
+        blt_add_uncrustify_target( NAME              ${_style_target_name}
+                                   MODIFY_FILES      TRUE
+                                   CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
+                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                   SRC_FILES         ${_c_sources} )
     endif()
 
     if (CPPCHECK_FOUND)
@@ -299,96 +329,6 @@ endmacro(blt_add_cppcheck_target)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_uncrustify_target( NAME              <Created Target Name>
-##                            MODIFY_FILES      [TRUE | FALSE (default)]
-##                            CFG_FILE          <Uncrustify Configuration File> 
-##                            PREPEND_FLAGS     <Additional Flags to Uncrustify>
-##                            APPEND_FLAGS      <Additional Flags to Uncrustify>
-##                            COMMENT           <Additional Comment for Target Invocation>
-##                            WORKING_DIRECTORY <Working Directory>
-##                            SRC_FILES         [FILE1 [FILE2 ...]] )
-##
-## Creates a new target with the given NAME for running uncrustify over the given SRC_FILES.
-##------------------------------------------------------------------------------
-macro(blt_add_uncrustify_target)
-    
-    ## parse the arguments to the macro
-    set(options)
-    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
-    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
-
-    cmake_parse_arguments(arg
-        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    # Check/Set required parameters
-    if(NOT DEFINED arg_NAME)
-        message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
-    endif()
-
-    if(NOT DEFINED arg_CFG_FILE)
-        message(FATAL_ERROR "blt_add_uncrustify_target requires a CFG_FILE parameter")
-    endif()
-
-    if(NOT DEFINED arg_SRC_FILES)
-        message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
-    endif()
-
-    if(NOT DEFINED arg_MODIFY_FILES)
-        set(arg_MODIFY_FILES FALSE)
-    endif()
-
-    if(DEFINED arg_WORKING_DIRECTORY)
-        set(_wd ${arg_WORKING_DIRECTORY})
-    else()
-        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
-    endif()
-
-    set(_generate_target TRUE)
-
-    if(${arg_MODIFY_FILES})
-        set(MODIFY_FILES_FLAG --replace;--no-backup)
-    else()
-        set(MODIFY_FILES_FLAG "--check")
-
-        # Check the version -- output is of the form "uncrustify X.Y.Z"
-        execute_process(
-            COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
-            OUTPUT_VARIABLE _version_str
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-        string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
-
-        # Skip 'check' target if version is not high enough 
-        if(_uncrustify_version VERSION_LESS 0.61)
-            set(_generate_target FALSE)
-            message(WARNING "blt_add_uncrustify_target requires uncrustify v0.61 or greater "
-                            " for style check targets. "
-                            " Current uncrustify executable: '${UNCRUSTIFY_EXECUTABLE}' "
-                            " Current uncrustify version is: ${_uncrustify_version}."    )
-        endif()        
-    endif()
-
-    if(_generate_target)
-        add_custom_target(${arg_NAME}
-                COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_PREPEND_FLAGS}
-                    -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
-                WORKING_DIRECTORY ${_wd} 
-                COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
-            
-        # hook our new target into the proper dependency chain
-        if(${arg_MODIFY_FILES})
-            add_dependencies(uncrustify_style ${arg_NAME})
-        else()
-            add_dependencies(uncrustify_check ${arg_NAME})
-        endif()
-
-        # Code formatting targets should only be run on demand
-        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
-        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-    endif()
-
-endmacro(blt_add_uncrustify_target)
-
-##------------------------------------------------------------------------------
 ## blt_add_astyle_target( NAME              <Created Target Name>
 ##                        MODIFY_FILES      [TRUE | FALSE (default)]
 ##                        CFG_FILE          <AStyle Configuration File> 
@@ -487,3 +427,166 @@ macro(blt_add_astyle_target)
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
 endmacro(blt_add_astyle_target)
+
+##------------------------------------------------------------------------------
+## blt_add_clangformat_target( NAME              <Created Target Name>
+##                             MODIFY_FILES      [TRUE | FALSE (default)]
+##                             CFG_FILE          <clang-format Configuration File> 
+##                             PREPEND_FLAGS     <Additional Flags to clang-format>
+##                             APPEND_FLAGS      <Additional Flags to clang-format>
+##                             COMMENT           <Additional Comment for Target Invocation>
+##                             WORKING_DIRECTORY <Working Directory>
+##                             SRC_FILES         [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running clang-format over the given SRC_FILES.
+##------------------------------------------------------------------------------
+macro(blt_add_clangformat_target)
+
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check/Set required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_clangformat_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_CFG_FILE)
+        message(FATAL_ERROR "blt_add_clangformat_target requires a CFG_FILE parameter")
+    endif()
+
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_clangformat_target requires a SRC_FILES parameter")
+    endif()
+
+    if(NOT DEFINED arg_MODIFY_FILES)
+        set(arg_MODIFY_FILES FALSE)
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    set(_generate_target TRUE)
+
+    if(${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG -i)
+    else()
+        set(MODIFY_FILES_FLAG --dry-run)
+    endif()
+
+    if(_generate_target)
+        add_custom_target(${arg_NAME}
+                COMMAND ${CLANGFORMAT_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                    -style ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+                WORKING_DIRECTORY ${_wd} 
+                COMMENT "${arg_COMMENT}Running clang-format source code formatting checks.")
+
+        # Hook our new target into the proper dependency chain
+        if(${arg_MODIFY_FILES})
+            add_dependencies(clangformat_style ${arg_NAME})
+        else()
+            add_dependencies(clangformat_check ${arg_NAME})
+        endif()
+
+        # Code formatting targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    endif()
+endmacro(blt_add_clangformat_target)
+
+##------------------------------------------------------------------------------
+## blt_add_uncrustify_target( NAME              <Created Target Name>
+##                            MODIFY_FILES      [TRUE | FALSE (default)]
+##                            CFG_FILE          <Uncrustify Configuration File> 
+##                            PREPEND_FLAGS     <Additional Flags to Uncrustify>
+##                            APPEND_FLAGS      <Additional Flags to Uncrustify>
+##                            COMMENT           <Additional Comment for Target Invocation>
+##                            WORKING_DIRECTORY <Working Directory>
+##                            SRC_FILES         [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running uncrustify over the given SRC_FILES.
+##------------------------------------------------------------------------------
+macro(blt_add_uncrustify_target)
+    
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check/Set required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_CFG_FILE)
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a CFG_FILE parameter")
+    endif()
+
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_uncrustify_target requires a SRC_FILES parameter")
+    endif()
+
+    if(NOT DEFINED arg_MODIFY_FILES)
+        set(arg_MODIFY_FILES FALSE)
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    set(_generate_target TRUE)
+
+    if(${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG --replace;--no-backup)
+    else()
+        set(MODIFY_FILES_FLAG "--check")
+
+        # Check the version -- output is of the form "uncrustify X.Y.Z"
+        execute_process(
+            COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
+            OUTPUT_VARIABLE _version_str
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+        string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
+
+        # Skip 'check' target if version is not high enough 
+        if(_uncrustify_version VERSION_LESS 0.61)
+            set(_generate_target FALSE)
+            message(WARNING "blt_add_uncrustify_target requires uncrustify v0.61 or greater "
+                            " for style check targets. "
+                            " Current uncrustify executable: '${UNCRUSTIFY_EXECUTABLE}' "
+                            " Current uncrustify version is: ${_uncrustify_version}."    )
+        endif()        
+    endif()
+
+    if(_generate_target)
+        add_custom_target(${arg_NAME}
+                COMMAND ${UNCRUSTIFY_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                    -c ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+                WORKING_DIRECTORY ${_wd} 
+                COMMENT "${arg_COMMENT}Running uncrustify source code formatting checks.")
+            
+        # hook our new target into the proper dependency chain
+        if(${arg_MODIFY_FILES})
+            add_dependencies(uncrustify_style ${arg_NAME})
+        else()
+            add_dependencies(uncrustify_check ${arg_NAME})
+        endif()
+
+        # Code formatting targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    endif()
+
+endmacro(blt_add_uncrustify_target)
