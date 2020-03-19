@@ -11,11 +11,12 @@ blt_add_code_checks
 
 .. code-block:: cmake
 
-    blt_add_code_checks( PREFIX              <Base name used for created targets>
-                         SOURCES             [source1 [source2 ...]]
-                         UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
-                         ASTYLE_CFG_FILE     <Path to AStyle config file>
-                         CPPCHECK_FLAGS      <List of flags added to Cppcheck>)
+    blt_add_code_checks( PREFIX               <Base name used for created targets>
+                         SOURCES              [source1 [source2 ...]]
+                         ASTYLE_CFG_FILE      <Path to AStyle config file>
+                         CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
+                         UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
+                         CPPCHECK_FLAGS       <List of flags added to Cppcheck>)
 
 This macro adds all enabled code check targets for the given SOURCES.
 
@@ -26,11 +27,14 @@ PREFIX
 SOURCES
   Source list that the code checks will be ran on
 
-UNCRUSTIFY_CFG_FILE
-  Path to Uncrustify config file
-
 ASTYLE_CFG_FILE
   Path to AStyle config file
+
+CLANGFORMAT_CFG_FILE
+  Path to ClangFormat config file
+
+UNCRUSTIFY_CFG_FILE
+  Path to Uncrustify config file
 
 CPPCHECK_FLAGS
   List of flags added to Cppcheck
@@ -39,23 +43,29 @@ Sources are filtered based on file extensions for use in these code checks.  If 
 additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
 Currently this macro only has code checks for C/C++ and simply filters out the Fortran files.
 
-This macro supports code formatting with either Uncrustify or AStyle (but not both at the same time)
-only if the following requirements are met:
-
-- Uncrustify
-
-  * UNCRUSTIFY_CFG_FILE is given
-  * UNCRUSTIFY_EXECUTABLE is defined and found prior to calling this macro
+This macro supports code formatting with either AStyle, ClangFormat, or Uncrustify
+(but not all at the same time) only if the following requirements are met:
 
 - AStyle
 
   * ASTYLE_CFG_FILE is given
   * ASTYLE_EXECUTABLE is defined and found prior to calling this macro
 
+- ClangFormat
+
+  * CLANGFORMAT_CFG_FILE is given
+  * CLANGFORMAT_EXECUTABLE is defined and found prior to calling this macro
+
+- Uncrustify
+
+  * UNCRUSTIFY_CFG_FILE is given
+  * UNCRUSTIFY_EXECUTABLE is defined and found prior to calling this macro
+
+
 Enabled code formatting checks produce a `check` build target that will test to see if you
 are out of compliance with your code formatting and a `style` build target that will actually
 modify your source files.  It also creates smaller child build targets that follow the pattern
-`<PREFIX>_<uncrustify|astyle>_<check|style>`.
+`<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>`.
 
 This macro supports the following static analysis tools with their requirements:
 
@@ -152,56 +162,6 @@ SRC_FILES
 Cppcheck is a static analysis tool for C/C++ code. More information about
 Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`_.
 
-blt_add_uncrustify_target
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: cmake
-
-    blt_add_uncrustify_target( NAME              <Created Target Name>
-                               MODIFY_FILES      [TRUE | FALSE (default)]
-                               CFG_FILE          <Uncrustify Configuration File> 
-                               PREPEND_FLAGS     <Additional Flags to Uncrustify>
-                               APPEND_FLAGS      <Additional Flags to Uncrustify>
-                               COMMENT           <Additional Comment for Target Invocation>
-                               WORKING_DIRECTORY <Working Directory>
-                               SRC_FILES         [source1 [source2 ...]] )
-
-Creates a new build target for running Uncrustify
-
-NAME
-  Name of created build target
-
-MODIFY_FILES
-  Modify the files in place. Defaults to FALSE.
-
-CFG_FILE
-  Path to Uncrustify config file
-
-PREPEND_FLAGS
-  Additional flags added to the front of the Uncrustify flags
-
-APPEND_FLAGS
- Additional flags added to the end of the Uncrustify flags
-
-COMMENT
-  Comment prepended to the build target output
-
-WORKING_DIRECTORY
-  Directory in which the Uncrustify command is run. Defaults to where macro is called.
-
-SRC_FILES
-  Source list that Uncrustify will be ran on
-
-Uncrustify is a Source Code Beautifier for C/C++ code. More information about
-Uncrustify can be found `here <http://uncrustify.sourceforge.net/>`_.
-
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
-target to the parent `style` build target.  Otherwise the files are not modified and the
-created target is added to the parent `check` build target. This target will notify you
-which files do not conform to your style guide.
-.. Note::
-  Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
-
 
 blt_add_astyle_target
 ~~~~~~~~~~~~~~~~~~~~~
@@ -252,3 +212,103 @@ created target is added to the parent `check` build target. This target will not
 which files do not conform to your style guide.
 .. Note::
   Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.
+
+
+blt_add_clangformat_target
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_clangformat_target( NAME              <Created Target Name>
+                                MODIFY_FILES      [TRUE | FALSE (default)]
+                                CFG_FILE          <ClangFormat Configuration File> 
+                                PREPEND_FLAGS     <Additional Flags to ClangFormat>
+                                APPEND_FLAGS      <Additional Flags to ClangFormat>
+                                COMMENT           <Additional Comment for Target Invocation>
+                                WORKING_DIRECTORY <Working Directory>
+                                SRC_FILES         [FILE1 [FILE2 ...]] )
+
+Creates a new build target for running ClangFormat
+
+NAME
+  Name of created build target
+
+MODIFY_FILES
+  Modify the files in place. Defaults to FALSE.
+
+CFG_FILE
+  Path to ClangFormat config file
+
+PREPEND_FLAGS
+  Additional flags added to the front of the ClangFormat flags
+
+APPEND_FLAGS
+ Additional flags added to the end of the ClangFormat flags
+
+COMMENT
+  Comment prepended to the build target output
+
+WORKING_DIRECTORY
+  Directory in which the ClangFormat command is run. Defaults to where macro is called.
+
+SRC_FILES
+  Source list that ClangFormat will be ran on
+
+ClangFormat is a Source Code Beautifier for C/C++ code. More information about
+ClangFormat can be found `here <https://clang.llvm.org/docs/ClangFormat.html>`_.
+
+When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+target to the parent `style` build target.  Otherwise the files are not modified and the
+created target is added to the parent `check` build target. This target will notify you
+which files do not conform to your style guide.
+
+
+blt_add_uncrustify_target
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_uncrustify_target( NAME              <Created Target Name>
+                               MODIFY_FILES      [TRUE | FALSE (default)]
+                               CFG_FILE          <Uncrustify Configuration File> 
+                               PREPEND_FLAGS     <Additional Flags to Uncrustify>
+                               APPEND_FLAGS      <Additional Flags to Uncrustify>
+                               COMMENT           <Additional Comment for Target Invocation>
+                               WORKING_DIRECTORY <Working Directory>
+                               SRC_FILES         [source1 [source2 ...]] )
+
+Creates a new build target for running Uncrustify
+
+NAME
+  Name of created build target
+
+MODIFY_FILES
+  Modify the files in place. Defaults to FALSE.
+
+CFG_FILE
+  Path to Uncrustify config file
+
+PREPEND_FLAGS
+  Additional flags added to the front of the Uncrustify flags
+
+APPEND_FLAGS
+ Additional flags added to the end of the Uncrustify flags
+
+COMMENT
+  Comment prepended to the build target output
+
+WORKING_DIRECTORY
+  Directory in which the Uncrustify command is run. Defaults to where macro is called.
+
+SRC_FILES
+  Source list that Uncrustify will be ran on
+
+Uncrustify is a Source Code Beautifier for C/C++ code. More information about
+Uncrustify can be found `here <http://uncrustify.sourceforge.net/>`_.
+
+When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+target to the parent `style` build target.  Otherwise the files are not modified and the
+created target is added to the parent `check` build target. This target will notify you
+which files do not conform to your style guide.
+.. Note::
+  Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
