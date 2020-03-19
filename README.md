@@ -61,17 +61,21 @@ Authors
 
 Developers include:
 
- * Chris White (white238@llnl.gov)
- * Kenneth Weiss (kweiss@llnl.gov)
- * Cyrus Harrison (harrison37@llnl.gov)
- * George Zagaris (zagaris2@llnl.gov)
- * Lee Taylor (taylor16@llnl.gov)
- * Aaron Black (black27@llnl.gov)
- * David A. Beckingsale (beckingsale1@llnl.gov)
- * Richard Hornung (hornung1@llnl.gov)
- * Randolph Settgast (settgast1@llnl.gov)
+ * Chris White, LLNL
+ * Kenneth Weiss, LLNL
+ * Cyrus Harrison, LLNL
+ * George Zagaris, LLNL
+ * Lee Taylor, LLNL
+ * Aaron Black, LLNL
+ * David A. Beckingsale, LLNL
+ * Richard Hornung, LLNL
+ * Randolph Settgast, LLNL
 
-Please see the [BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors) for the full list of project contributors.
+Please see our [contributing guide](https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md) 
+for details about how to contribute to the project.
+
+The full list of project contributors can be found on the 
+[BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors).
 
 Open-Source Projects using BLT
 ------------------------------
