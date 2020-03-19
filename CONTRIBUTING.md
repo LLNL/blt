@@ -10,7 +10,8 @@ Any questions can be sent to blt-dev@llnl.gov.
 # Attribution
 
 We want everyone to feel they are getting the proper attribution for their
-contributions.  Here are some suggestions on how to get that:
+contributions.  Github automatically tracks contribution but if you do not feel
+that is adequate. Here are some suggestions we recommend:
 
 * New files: add your name and a date to the top of the file
 * New functions or macros: add your name to the comment above it
@@ -34,5 +35,5 @@ For example:
 * Matt Larsen
 * Martin McFadden, LLNL
 * Mark Miller, LLNL
-* David Poliakoff, LLNL
+* David Poliakoff, Sandia National Laboratories
 

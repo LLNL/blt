@@ -266,9 +266,9 @@ if(ENABLE_CLANGQUERY)
 endif()
 
 #------------------------------------------------------------------------------
-# Format the testing code using AStyle
+# Format the testing code using ClangFormat
 #------------------------------------------------------------------------------
-if(ASTYLE_FOUND)
+if(CLANGFORMAT_FOUND)
 
   set(smoke_tests_srcs
     ../smoke/blt_cuda_mpi_smoke.cpp
@@ -327,15 +327,20 @@ if(ASTYLE_FOUND)
     src/test_cuda_device_call_from_kernel/Parent.hpp
   )
 
-  blt_add_code_checks(
-      PREFIX          smoke_tests
-      SOURCES         ${smoke_tests_srcs}
-      ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
+  set(_cfg_file "${BLT_ROOT_DIR}/thirdparty_builtin/benchmark-1.5.0/.clang-format")
+  if(NOT EXISTS "${_cfg_file}")
+      message(FATAL_ERROR "Could not find ClangFormat style file: ${_cfg_file}")
+  endif()
 
   blt_add_code_checks(
-      PREFIX          internal_tests
-      SOURCES         ${internal_tests_srcs}
-      ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
+      PREFIX               smoke_tests
+      SOURCES              ${smoke_tests_srcs}
+      CLANGFORMAT_CFG_FILE ${_cfg_file} )
+
+  blt_add_code_checks(
+      PREFIX               internal_tests
+      SOURCES              ${internal_tests_srcs}
+      CLANGFORMAT_CFG_FILE ${_cfg_file} )
 
       
 endif()
