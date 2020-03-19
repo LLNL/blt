@@ -31,6 +31,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added support for Cray compilers in blt_append_custom_compiler_flag.
 - Added ability to add flags to the cppcheck command line through blt_add_code_checks()
 - Added ability for blt_add_test() to set required number of OpenMP threads via new option NUM_OMP_THREADS.
+- Added ClangFormat as an option for code styling.  This has some caveats that are noted here:
+  https://llnl-blt.readthedocs.io/en/develop/api/code_check.html
 
 ### Changed
 - Restructured the host-config directory by site and platform.
