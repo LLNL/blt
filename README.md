@@ -29,13 +29,15 @@ operating systems and technologies:
       [FRUIT](https://sourceforge.net/projects/fortranxunit),
       [gbenchmark](https://github.com/google/benchmark)
  * Documentation:
-      [Doxygen](http://www.doxygen.nl/), 
+      [Doxygen](http://www.doxygen.nl/),
       [Sphinx](http://www.sphinx-doc.org)
- * Code style and health:
-      [Uncrustify](http://uncrustify.sourceforge.net), 
-      [AStyle](http://astyle.sourceforge.net), 
-      [Cppcheck](http://cppcheck.sourceforge.net),
-      [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html)
+ * Code style:
+      [AStyle](http://astyle.sourceforge.net),
+      [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html),
+      [Uncrustify](http://uncrustify.sourceforge.net)
+ * Code quality
+      [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
+      [Cppcheck](http://cppcheck.sourceforge.net)
  
 
 Getting started
@@ -59,17 +61,21 @@ Authors
 
 Developers include:
 
- * Chris White (white238@llnl.gov)
- * Kenneth Weiss (kweiss@llnl.gov)
- * Cyrus Harrison (harrison37@llnl.gov)
- * George Zagaris (zagaris2@llnl.gov)
- * Lee Taylor (taylor16@llnl.gov)
- * Aaron Black (black27@llnl.gov)
- * David A. Beckingsale (beckingsale1@llnl.gov)
- * Richard Hornung (hornung1@llnl.gov)
- * Randolph Settgast (settgast1@llnl.gov)
+ * Chris White, LLNL
+ * Kenneth Weiss, LLNL
+ * Cyrus Harrison, LLNL
+ * George Zagaris, LLNL
+ * Lee Taylor, LLNL
+ * Aaron Black, LLNL
+ * David A. Beckingsale, LLNL
+ * Richard Hornung, LLNL
+ * Randolph Settgast, LLNL
 
-Please see the [BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors) for the full list of project contributors.
+Please see our [contributing guide](https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md) 
+for details about how to contribute to the project.
+
+The full list of project contributors can be found on the 
+[BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors).
 
 Open-Source Projects using BLT
 ------------------------------
@@ -132,3 +138,7 @@ PackageLicenseDeclared: BSD-3-Clause
 PackageName: gtest  
 PackageHomePage: https://github.com/google/googletest  
 PackageLicenseDeclared: BSD-3-Clause  
+
+PackageName: run-clang-format  
+PackageHomePage: https://github.com/Sarcasm/run-clang-format  
+PackageLicenseDeclared: MIT  

@@ -266,9 +266,9 @@ if(ENABLE_CLANGQUERY)
 endif()
 
 #------------------------------------------------------------------------------
-# Format the testing code using AStyle
+# Format the testing code using ClangFormat
 #------------------------------------------------------------------------------
-if(ASTYLE_FOUND)
+if(CLANGFORMAT_FOUND)
 
   set(smoke_tests_srcs
     ../smoke/blt_cuda_mpi_smoke.cpp
@@ -336,6 +336,5 @@ if(ASTYLE_FOUND)
       PREFIX          internal_tests
       SOURCES         ${internal_tests_srcs}
       ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
-
       
 endif()
