@@ -13,12 +13,6 @@ The BLT project uses git's commit history to track contributions from individual
 
 Since we want everyone to feel they are getting the proper attribution for their contributions, please add your name to the list below as part of your commit.
 
-For example: 
-
-```
-# Author: John Doe @ Some Company, Inc.
-```
-
 # Contributors (In Alphabetical Order)
 
 * Izaak Beekman
