@@ -1,0 +1,79 @@
+# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# 
+# SPDX-License-Identifier: (BSD-3-Clause)
+
+strategy:
+  matrix:
+    linux_gcc7:
+      VM_ImageName: 'ubuntu-16.04'
+      Compiler_ImageName: 'axom/compilers:gcc-7'
+      CMAKE_EXTRA_FLAGS: ''
+      COMPILER: 'g++'
+      TEST_TARGET: 'linux_gcc7'
+    # linux_gcc8:
+    #   VM_ImageName: 'ubuntu-16.04'
+    #   Compiler_ImageName: 'axom/compilers:gcc-8'
+    #   CMAKE_EXTRA_FLAGS: ''
+    #   COMPILER: 'g++'
+    #   TEST_TARGET: 'linux_gcc8'
+    # linux_clang4:
+    #    VM_ImageName: 'ubuntu-16.04'
+    #    Compiler_ImageName: 'axom/compilers:clang-4'
+    #    CMAKE_EXTRA_FLAGS: ''
+    #    COMPILER: 'clang++'
+    #    TEST_TARGET: 'linux_clang4'
+    # linux_clang6:
+    #    VM_ImageName: 'ubuntu-16.04'
+    #    Compiler_ImageName: 'axom/compilers:clang-6'
+    #    CMAKE_EXTRA_FLAGS: ''
+    #    COMPILER: 'clang++'
+    #    TEST_TARGET: 'linux_clang6'
+    # osx_gcc:
+    #   VM_ImageName: 'macos-10.14'
+    #   CMAKE_EXTRA_FLAGS: ''
+    #   TEST_TARGET: 'osx_gcc'
+    # windows:
+    #   VM_ImageName: 'windows-2019'
+    #   CMAKE_EXTRA_FLAGS: ''
+    #   TEST_TARGET: 'win_vs'
+
+pool:
+  vmImage: $(VM_ImageName)
+
+steps:
+- checkout: self
+  clean: true
+  submodules: recursive
+- task: CMake@1
+  inputs:
+    workingDir: 'build'
+    cmakeArgs: '$(CMAKE_EXTRA_FLAGS) ../tests/internal'
+  condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
+- task: VSBuild@1
+  inputs:
+    solution: 'build/*.sln'
+    vsVersion: 'latest'
+  condition: eq( variables['Agent.OS'], 'Windows_NT')
+  displayName: 'Visual Studio Build'
+- script: |
+    cd build
+    make
+  displayName: '$(TEST_TARGET) Build'
+  condition: eq( variables['Agent.OS'], 'Darwin')
+- script: |
+    cd build
+    ctest -T test --output-on-failure -V
+  displayName: '$(TEST_TARGET) Test'
+  condition: eq( variables['Agent.OS'], 'Darwin')
+- script:  |
+    docker run --rm -v `pwd`:/home/axom/blt -e COMPILER -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) pwd
+
+  condition: eq( variables['Agent.OS'], 'Linux')
+  displayName: '$(TEST_TARGET) Build & Test'
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'cTest'
+    testResultsFiles: '**/Test.xml'
+    testRunTitle: '$(TEST_TARGET) Tests'
+    failTaskOnFailedTests: true
