@@ -68,8 +68,8 @@ steps:
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
-    #docker run --rm -v `pwd`:/home/axom/blt mkdir build
-    docker run --rm -w /home/axom/blt pwd && ls
+    #docker run --rm -v `pwd`:/home/axom/blt $(Compiler_ImageName) 'mkdir build'
+    docker run --rm -w /home/axom/blt $(Compiler_ImageName) 'pwd && ls'
     # docker run --rm -v `pwd`:/home/axom/blt/build -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
     # docker run --rm -v `pwd`:/home/axom/blt/build $(Compiler_ImageName) make -j2
     # docker run --rm -v `pwd`:/home/axom/blt/build $(Compiler_ImageName) make -j2 test
