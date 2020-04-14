@@ -12,32 +12,35 @@ strategy:
       CXX_COMPILER: '/usr/bin/g++'
       CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
       TEST_TARGET: 'linux_gcc7'
-    # linux_gcc8:
-    #   VM_ImageName: 'ubuntu-16.04'
-    #   Compiler_ImageName: 'axom/compilers:gcc-8'
-    #   CMAKE_EXTRA_FLAGS: ''
-    #   COMPILER: 'g++'
-    #   TEST_TARGET: 'linux_gcc8'
-    # linux_clang4:
-    #    VM_ImageName: 'ubuntu-16.04'
-    #    Compiler_ImageName: 'axom/compilers:clang-4'
-    #    CMAKE_EXTRA_FLAGS: ''
-    #    COMPILER: 'clang++'
-    #    TEST_TARGET: 'linux_clang4'
-    # linux_clang6:
-    #    VM_ImageName: 'ubuntu-16.04'
-    #    Compiler_ImageName: 'axom/compilers:clang-6'
-    #    CMAKE_EXTRA_FLAGS: ''
-    #    COMPILER: 'clang++'
-    #    TEST_TARGET: 'linux_clang6'
-    # osx_gcc:
-    #   VM_ImageName: 'macos-10.14'
-    #   CMAKE_EXTRA_FLAGS: ''
-    #   TEST_TARGET: 'osx_gcc'
-    # windows:
-    #   VM_ImageName: 'windows-2019'
-    #   CMAKE_EXTRA_FLAGS: ''
-    #   TEST_TARGET: 'win_vs'
+    linux_gcc8:
+      VM_ImageName: 'ubuntu-16.04'
+      Compiler_ImageName: 'axom/compilers:gcc-8'
+      C_COMPILER: '/usr/bin/gcc'
+      CXX_COMPILER: '/usr/bin/g++'
+      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+      TEST_TARGET: 'linux_gcc8'
+    linux_clang4:
+       VM_ImageName: 'ubuntu-16.04'
+       Compiler_ImageName: 'axom/compilers:clang-4'
+      C_COMPILER: '/usr/bin/gcc'
+      CXX_COMPILER: '/usr/bin/g++'
+      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+       TEST_TARGET: 'linux_clang4'
+    linux_clang6:
+       VM_ImageName: 'ubuntu-16.04'
+       Compiler_ImageName: 'axom/compilers:clang-6'
+      C_COMPILER: '/usr/bin/gcc'
+      CXX_COMPILER: '/usr/bin/g++'
+      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+       TEST_TARGET: 'linux_clang6'
+    osx_gcc:
+      VM_ImageName: 'macos-10.14'
+      CMAKE_EXTRA_FLAGS: ''
+      TEST_TARGET: 'osx_gcc'
+    windows:
+      VM_ImageName: 'windows-2019'
+      CMAKE_EXTRA_FLAGS: ''
+      TEST_TARGET: 'win_vs'
 
 pool:
   vmImage: $(VM_ImageName)
@@ -68,7 +71,6 @@ steps:
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
-    docker run      --user='root' -v `pwd`:/blt -w /blt $(Compiler_ImageName) ls -al
     docker run      --user='root' -v `pwd`:/blt -w /blt/build -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
     docker run      --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) make -j2
     docker run --rm --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) make test
