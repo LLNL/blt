@@ -49,7 +49,7 @@ steps:
   inputs:
     workingDir: 'build'
     cmakeArgs: '$(CMAKE_EXTRA_FLAGS) ../tests/internal'
-  condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
+#  condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - task: VSBuild@1
   inputs:
     solution: 'build/*.sln'
