@@ -4,37 +4,40 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 variables:
-  DOCKER_OPTIONS: "--user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName)"
+  DOCKER_FLAGS: "--user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName)"
+  MPI_DIR: "/blt/axom_tpls/gcc-6.1.0/mpich-3.2.1"
+  MPI_FLAGS: "-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n"
+  CMAKE_FLAGS: "-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF"
 
 strategy:
   matrix:
     linux_gcc7:
       VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/compilers:gcc-7'
+      Compiler_ImageName: 'axom/tpls:gcc-7'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+      CMAKE_EXTRA_FLAGS: ''
       TEST_TARGET: 'linux_gcc7'
     linux_gcc8:
       VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/compilers:gcc-8'
+      Compiler_ImageName: 'axom/tpls:gcc-8'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+      CMAKE_EXTRA_FLAGS: ''
       TEST_TARGET: 'linux_gcc8'
     linux_clang4:
       VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/compilers:clang-4'
+      Compiler_ImageName: 'axom/tpls:clang-4'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+      CMAKE_EXTRA_FLAGS: ''
       TEST_TARGET: 'linux_clang4'
     linux_clang6:
       VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/compilers:clang-6'
+      Compiler_ImageName: 'axom/tpls:clang-6'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+      CMAKE_EXTRA_FLAGS: ''
       TEST_TARGET: 'linux_clang6'
     osx_gcc:
       VM_ImageName: 'macos-10.14'
@@ -51,10 +54,10 @@ pool:
 steps:
 - checkout: self
   clean: true
-  submodules: recursive
 - task: CMake@1
   inputs:
     workingDir: 'build'
+    # Note: Don't add CMAKE_FLAGS here since compilers are auto-detected
     cmakeArgs: '$(CMAKE_EXTRA_FLAGS) ../tests/internal'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - task: VSBuild@1
@@ -74,7 +77,7 @@ steps:
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
-    docker run $(DOCKER_OPTIONS) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
+    docker run $(DOCKER_OPTIONS) cmake ${CMAKE_FLAGS} ${MPI_FLAGS} $(CMAKE_EXTRA_FLAGS) ../tests/internal
     docker run $(DOCKER_OPTIONS) make -j2
     docker run $(DOCKER_OPTIONS) ctest -T Test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
