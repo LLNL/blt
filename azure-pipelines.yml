@@ -82,6 +82,7 @@ steps:
     docker run $(DOCKER_FLAGS) ctest -T Test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) Build & Test'
+  failOnStderr: true
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'cTest'
