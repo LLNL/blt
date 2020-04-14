@@ -3,6 +3,9 @@
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
+variables:
+  DOCKER_OPTIONS: "--user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName)"
+
 strategy:
   matrix:
     linux_gcc7:
@@ -71,9 +74,9 @@ steps:
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
-    docker run      --user='root' -v `pwd`:/blt -w /blt/build -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
-    docker run      --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) make -j2
-    docker run --rm --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) ctest -T Test --output-on-failure -V
+    docker run $(DOCKER_OPTIONS) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
+    docker run $(DOCKER_OPTIONS) make -j2
+    docker run $(DOCKER_OPTIONS) ctest -T Test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) Build & Test'
 - task: PublishTestResults@2
