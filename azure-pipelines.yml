@@ -67,18 +67,18 @@ steps:
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script: |
     cd build
-    ctest -T test --output-on-failure -V
+    ctest -T Test --output-on-failure -V
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
     docker run      --user='root' -v `pwd`:/blt -w /blt/build -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
     docker run      --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) make -j2
-    docker run --rm --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) ctest -T test --output-on-failure -V
+    docker run --rm --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) ctest -T Test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) Build & Test'
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'cTest'
-    testResultsFiles: 'build/Testing/Temporary/Test.xml'
+    testResultsFiles: '**/Test.xml'
     testRunTitle: '$(TEST_TARGET) Tests'
     failTaskOnFailedTests: true
