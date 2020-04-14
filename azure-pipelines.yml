@@ -79,6 +79,6 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'cTest'
-    testResultsFiles: '/blt/build/Testing/Temporary/Test.xml'
+    testResultsFiles: 'build/Testing/Temporary/Test.xml'
     testRunTitle: '$(TEST_TARGET) Tests'
     failTaskOnFailedTests: true
