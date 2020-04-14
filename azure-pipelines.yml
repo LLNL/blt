@@ -48,7 +48,7 @@ steps:
 - task: CMake@1
   inputs:
     workingDir: 'build'
-    cmakeArgs: '$(CMAKE_EXTRA_FLAGS) ../tests/internal'
+    cmakeArgs: '$(CMAKE_EXTRA_FLAGS) -DCMAKE_CXX_COMPILER=$(COMPILER) ../tests/internal'
 #  condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - task: VSBuild@1
   inputs:
