@@ -77,9 +77,9 @@ steps:
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
-    docker run $(DOCKER_OPTIONS) cmake ${CMAKE_FLAGS} ${MPI_FLAGS} $(CMAKE_EXTRA_FLAGS) ../tests/internal
-    docker run $(DOCKER_OPTIONS) make -j2
-    docker run $(DOCKER_OPTIONS) ctest -T Test --output-on-failure -V
+    docker run $(DOCKER_FLAGS) cmake $(CMAKE_FLAGS) $(MPI_FLAGS) $(CMAKE_EXTRA_FLAGS) ../tests/internal
+    docker run $(DOCKER_FLAGS) make -j2
+    docker run $(DOCKER_FLAGS) ctest -T Test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) Build & Test'
 - task: PublishTestResults@2
