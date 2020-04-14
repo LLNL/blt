@@ -73,12 +73,12 @@ steps:
 - script:  |
     docker run      --user='root' -v `pwd`:/blt -w /blt/build -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
     docker run      --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) make -j2
-    docker run --rm --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) make test
+    docker run --rm --user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName) ctest -T test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) Build & Test'
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'cTest'
-    testResultsFiles: '**/Test.xml'
+    testResultsFiles: '/blt/build/Testing/Temporary/Test.xml'
     testRunTitle: '$(TEST_TARGET) Tests'
     failTaskOnFailedTests: true
