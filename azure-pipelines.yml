@@ -10,7 +10,7 @@ strategy:
       Compiler_ImageName: 'axom/compilers:gcc-7'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_EXTRA_FLAGS: ' -DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
+      CMAKE_EXTRA_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)'
       TEST_TARGET: 'linux_gcc7'
     # linux_gcc8:
     #   VM_ImageName: 'ubuntu-16.04'
@@ -50,7 +50,7 @@ steps:
   inputs:
     workingDir: 'build'
     cmakeArgs: '$(CMAKE_EXTRA_FLAGS) ../tests/internal'
-#  condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
+  condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - task: VSBuild@1
   inputs:
     solution: 'build/*.sln'
@@ -68,8 +68,9 @@ steps:
   displayName: '$(TEST_TARGET) Test'
   condition: eq( variables['Agent.OS'], 'Darwin')
 - script:  |
-    docker run --rm -v `pwd`:/home/axom/blt -e COMPILER -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) ls
-
+    docker run --rm -v `pwd`:/home/axom/blt -e COMPILER -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
+    docker run --rm -v `pwd`:/home/axom/blt -e COMPILER -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cd buid && make -j2
+    docker run --rm -v `pwd`:/home/axom/blt -e COMPILER -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) make -j2 test
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) Build & Test'
 - task: PublishTestResults@2
