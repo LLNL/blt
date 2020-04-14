@@ -70,6 +70,7 @@ steps:
 - script:  |
     docker run --user='root' -v `pwd`:/home/axom $(Compiler_ImageName) chown -R axom /home/axom
     docker run      -w /home/axom $(Compiler_ImageName) mkdir build
+    docker run      -w /home/axom $(Compiler_ImageName) ls -al
     docker run      -w /home/axom/build -e CMAKE_EXTRA_FLAGS $(Compiler_ImageName) cmake $(CMAKE_EXTRA_FLAGS) ../tests/internal
     docker run      -w /home/axom/build $(Compiler_ImageName) make -j2
     docker run --rm -w /home/axom/build $(Compiler_ImageName) make test
