@@ -81,14 +81,14 @@ steps:
 - script:  |
     docker run $(DOCKER_FLAGS) echo /
     docker run $(DOCKER_FLAGS) ls /
-    docker run $(DOCKER_FLAGS) echo /blt
-    docker run $(DOCKER_FLAGS) ls /blt
-    docker run $(DOCKER_FLAGS) echo /blt/axom_tpls
-    docker run $(DOCKER_FLAGS) ls /blt/axom_tpls
-    docker run $(DOCKER_FLAGS) echo /blt/axom_tpls/gcc-6.1.0
-    docker run $(DOCKER_FLAGS) ls /blt/axom_tpls/gcc-6.1.0
-    docker run $(DOCKER_FLAGS) echo /blt/axom_tpls/gcc-6.1.0/mpich-3.2.1
-    docker run $(DOCKER_FLAGS) ls /blt/axom_tpls/gcc-6.1.0/mpich-3.2.1
+    docker run $(DOCKER_FLAGS) echo /home
+    docker run $(DOCKER_FLAGS) ls /home
+    docker run $(DOCKER_FLAGS) echo /home/axom/axom_tpls
+    docker run $(DOCKER_FLAGS) ls /home/axom/axom_tpls
+    docker run $(DOCKER_FLAGS) echo /home/axom/axom_tpls/gcc-6.1.0
+    docker run $(DOCKER_FLAGS) ls /home/axom/axom_tpls/gcc-6.1.0
+    docker run $(DOCKER_FLAGS) echo /home/axom/axom_tpls/gcc-6.1.0/mpich-3.2.1
+    docker run $(DOCKER_FLAGS) ls /home/axom/axom_tpls/gcc-6.1.0/mpich-3.2.1
     docker run $(DOCKER_FLAGS) cmake $(CMAKE_FLAGS) ../tests/internal
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) CMake'
