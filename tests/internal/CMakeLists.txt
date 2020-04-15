@@ -338,3 +338,6 @@ if(CLANGFORMAT_FOUND)
       ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
       
 endif()
+
+# Add tutorials
+add_subdirectory(../../docs/tutorial/calc_pi calc_pi)
