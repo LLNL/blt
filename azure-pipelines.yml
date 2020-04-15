@@ -69,27 +69,27 @@ steps:
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
     cmake --build build --config Release 
-  displayName: '$(TEST_TARGET) Build'
+  displayName: 'OSX/Windows Build'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
     cd build
     ctest -C Release -T Test --output-on-failure -V
-  displayName: '$(TEST_TARGET) Test'
+  displayName: 'OSX/Windows Test'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 
 # Linux
 - script:  |
     docker run $(DOCKER_FLAGS) cmake $(CMAKE_FLAGS) ../tests/internal
   condition: eq( variables['Agent.OS'], 'Linux')
-  displayName: '$(TEST_TARGET) CMake'
+  displayName: 'Linux CMake'
 - script:  |
     docker run $(DOCKER_FLAGS) make -j2
   condition: eq( variables['Agent.OS'], 'Linux')
-  displayName: '$(TEST_TARGET) Build'
+  displayName: 'Linux Build'
 - script:  |
     docker run $(DOCKER_FLAGS) ctest -T Test --output-on-failure -V
   condition: eq( variables['Agent.OS'], 'Linux')
-  displayName: '$(TEST_TARGET) Test'
+  displayName: 'Linux Test'
 
 # All
 - task: PublishTestResults@2
