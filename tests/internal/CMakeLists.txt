@@ -340,4 +340,4 @@ if(CLANGFORMAT_FOUND)
 endif()
 
 # Add tutorials
-add_subdirectory(../tutorial/calc_pi)
+add_subdirectory(../../tutorial/calc_pi)
