@@ -72,12 +72,19 @@ steps:
   displayName: '$(TEST_TARGET) Build'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
+    cd build
     ctest -T Test --output-on-failure -V
   displayName: '$(TEST_TARGET) Test'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 
 # Linux
 - script:  |
+    docker run $(DOCKER_FLAGS) echo /blt/axom_tpls
+    docker run $(DOCKER_FLAGS) ls /blt/axom_tpls
+    docker run $(DOCKER_FLAGS) echo /blt/axom_tpls/gcc-6.1.0
+    docker run $(DOCKER_FLAGS) ls /blt/axom_tpls/gcc-6.1.0
+    docker run $(DOCKER_FLAGS) echo /blt/axom_tpls/gcc-6.1.0/mpich-3.2.1
+    docker run $(DOCKER_FLAGS) ls /blt/axom_tpls/gcc-6.1.0/mpich-3.2.1
     docker run $(DOCKER_FLAGS) cmake $(CMAKE_FLAGS) ../tests/internal
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: '$(TEST_TARGET) CMake'
