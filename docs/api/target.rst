@@ -75,27 +75,46 @@ blt_add_executable
                         OUTPUT_DIR [dir]
                         FOLDER     [name])
 
+Adds an executable target to the project.
+
+NAME
+  Name of the created CMake target
+
+SOURCES
+  List of all sources to be added
+
+INCLUDES
+  List of include directories both used by this target and inherited by dependent
+  targets
+
+DEFINES
+  List of compiler defines both used by this target and inherited by dependent
+  targets
+
+DEPENDS_ON
+  List of CMake targets and BLT registered libraries that this target
+  depends on
+
+OUTPUT_DIR
+  Directory that this target will built to, defaults to bin
+
+FOLDER
+  Name of the IDE folder to ease organization
+
 Adds an executable target, called <name>, to be built from the given sources.
+It also adds the given INCLUDES and DEFINES from the parameters to this macro
+and adds all inherited information from the list given by DEPENDS_ON.  This
+macro creates a true CMake target that can be altered by other CMake commands
+like normal, such as `set_target_property()`.
 
-The INCLUDES argument allows you to define what include directories are
-needed to compile this executable.
+.. note::
+  If the first entry in SOURCES is a Fortran source file, the fortran linker 
+  is used. (via setting the CMake target property LINKER_LANGUAGE to Fortran )
 
-The DEFINES argument allows you to add needed compiler definitions that are
-needed to compile this executable.
+.. note::
+  The FOLDER option is only used when ENABLE_FOLDERS is ON and when the CMake generator
+  supports this feature and will otherwise be ignored. 
 
-If given a DEPENDS_ON argument, it will add the necessary includes and 
-libraries if they are already registered with blt_register_library.  If
-not it will add them as a cmake target dependency.
-
-The OUTPUT_DIR is used to control the build output directory of this 
-executable. This is used to overwrite the default bin directory.
-
-If the first entry in SOURCES is a Fortran source file, the fortran linker 
-is used. (via setting the CMake target property LINKER_LANGUAGE to Fortran )
-FOLDER is an optional keyword to organize the target into a folder in an IDE.
-
-This is available when ENABLE_FOLDERS is ON and when using a cmake generator
-that supports this feature and will otherwise be ignored.
 
 
 .. _blt_add_library:
@@ -158,6 +177,9 @@ CLEAR_PREFIX
 
 FOLDER
   Name of the IDE folder to ease organization
+
+This macro creates a true CMake target that can be altered by other CMake commands
+like normal, such as `set_target_property()`.
 
 This macro supports three types of libraries automatically: normal, header-only,
 or object.

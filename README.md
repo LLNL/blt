@@ -1,7 +1,7 @@
 # <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/>
 
-[![Build Status](https://travis-ci.org/LLNL/blt.svg)](https://travis-ci.org/LLNL/blt)
-[![Build Status](https://ci.appveyor.com/api/projects/status/fuaftu9mvp0y488j/branch/master?svg=true)](https://ci.appveyor.com/project/cyrush/blt/branch/master)
+[![Build
+Status](https://dev.azure.com/llnl-blt/blt/_apis/build/status/LLNL.blt?branchName=develop)](https://dev.azure.com/llnl-blt/blt/_build/latest?definitionId=1&branchName=develop)
 [![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=develop)](https://llnl-blt.readthedocs.io/en/develop/?badge=develop)
 
 BLT is a streamlined [CMake](https://cmake.org)-based foundation for 
