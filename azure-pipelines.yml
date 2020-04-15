@@ -15,7 +15,7 @@ strategy:
       CXX_COMPILER: '/usr/bin/g++'
       MPI_DIR: '/blt/axom_tpls/gcc-6.1.0/mpich-3.2.1'
       MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF'
+      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS)'
       TEST_TARGET: 'linux_gcc7'
     linux_gcc8:
       VM_ImageName: 'ubuntu-16.04'
@@ -24,7 +24,7 @@ strategy:
       CXX_COMPILER: '/usr/bin/g++'
       MPI_DIR: '/blt/axom_tpls/gcc-6.1.0/mpich-3.2.1'
       MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF'
+      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS)'
       TEST_TARGET: 'linux_gcc8'
     linux_clang4:
       VM_ImageName: 'ubuntu-16.04'
@@ -33,7 +33,7 @@ strategy:
       CXX_COMPILER: '/usr/bin/g++'
       MPI_DIR: '/blt/axom_tpls/gcc-6.1.0/mpich-3.2.1'
       MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF'
+      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS)'
       TEST_TARGET: 'linux_clang4'
     linux_clang6:
       VM_ImageName: 'ubuntu-16.04'
@@ -42,7 +42,7 @@ strategy:
       CXX_COMPILER: '/usr/bin/g++'
       MPI_DIR: '/blt/axom_tpls/gcc-6.1.0/mpich-3.2.1'
       MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF'
+      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS)'
       TEST_TARGET: 'linux_clang6'
     osx_gcc:
       VM_ImageName: 'macos-10.14'
@@ -68,12 +68,10 @@ steps:
     cmakeArgs: '$(CMAKE_FLAGS) ../tests/internal'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
-    cd build
     cmake --build build --config Release  -- -m:8 
   displayName: '$(TEST_TARGET) Build'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
-    cd build
     ctest -T Test --output-on-failure -V
   displayName: '$(TEST_TARGET) Test'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
