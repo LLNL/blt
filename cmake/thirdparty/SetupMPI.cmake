@@ -84,8 +84,9 @@ if (ENABLE_FIND_MPI)
         list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
     endif()
     if (ENABLE_FORTRAN)
-        if (NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}")
-            list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
+        if ((NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}") AND
+            (NOT "${MPI_CXX_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}"))
+            list(APPEND _mpi_link_flags ${MPI_Fortran_LINK_FLAGS})
         endif()
     endif()
     # Fixes for linking with NVCC
