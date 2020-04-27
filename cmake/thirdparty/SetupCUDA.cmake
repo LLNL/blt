@@ -7,6 +7,15 @@
 # Sanity Checks
 ################################
 
+# Ensure CUDA_TOOLKIT_ROOT_DIR is specified, since it is needed 
+# by the call to find_package(CUDA) below.
+if (NOT DEFINED CUDA_TOOLKIT_ROOT_DIR)
+   message( FATAL_ERROR
+        "Please specify CUDA_TOOLKIT_ROOT_DIR to use CUDA" )
+endif()
+
+blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
+
 # Rare case of two flags being incompatible
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     if (NOT CMAKE_SKIP_BUILD_RPATH AND CUDA_LINK_WITH_NVCC)
@@ -88,7 +97,16 @@ endif()
 
 find_package(CUDA REQUIRED)
 
+# Append the path to the NVIDIA SDK to the link flags
+if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
+    list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
+endif()
+if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib}" )
+    list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib" )
+endif()
+
 message(STATUS "CUDA Version:       ${CUDA_VERSION_STRING}")
+message(STATUS "CUDA Toolkit Root Dir: ${CUDA_TOOLKIT_ROOT_DIR}")
 message(STATUS "CUDA Compiler:      ${CMAKE_CUDA_COMPILER}")
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
     message(STATUS "CUDA Host Compiler: ${CMAKE_CUDA_HOST_COMPILER}")
@@ -125,7 +143,9 @@ endif()
 blt_register_library(NAME cuda
                      COMPILE_FLAGS ${_cuda_compile_flags}
                      INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES})
+                     LIBRARIES ${CUDA_LIBRARIES}
+                     LINK_FLAGS "${CMAKE_CUDA_LINK_FLAGS}"
+                     )
 
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 
