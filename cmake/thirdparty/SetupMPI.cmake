@@ -98,8 +98,9 @@ if (ENABLE_FIND_MPI)
     endif()
 
     # Selectively remove set of known locations of spaces
-    string(REPLACE " -Wl" ";-Wl" _mpi_link_flags "${_mpi_link_flags}")
-    string(REPLACE " -L"  ";-L"  _mpi_link_flags "${_mpi_link_flags}")
+    string(REPLACE " -Wl"      ";-Wl"       _mpi_link_flags "${_mpi_link_flags}")
+    string(REPLACE " -L"       ";-L"        _mpi_link_flags "${_mpi_link_flags}")
+    string(REPLACE " -pthread" ";-pthread"  _mpi_link_flags "${_mpi_link_flags}")
 
     # Fixes for linking with NVCC
     if (CUDA_LINK_WITH_NVCC)
