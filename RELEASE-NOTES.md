@@ -20,7 +20,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   specified, BLT will produce an error message.
 
 ### Fixed
-- Removed trying to get target properties on not targets in blt_add_test.
+- blt_add_test is no longer trying to extract target properties from non-targets.
 
 ## [Version 0.3.0] - Release date 2020-01-08
 
