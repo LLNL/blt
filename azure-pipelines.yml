@@ -68,6 +68,7 @@ steps:
 # OSX and Windows
 - script: |
     mkdir build
+    cd build
     cmake $(CMAKE_FLAGS) ../tests/internal
   displayName: 'OSX/Windows CMake'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
