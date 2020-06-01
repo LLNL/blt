@@ -340,7 +340,7 @@ if(CLANGFORMAT_FOUND)
 endif()
 
 # Check blt_add_test with a command that is not a target
-if(WIN32)
+if(NOT WIN32)
     configure_file(return_true.in return_true COPYONLY)
 else()
     configure_file(return_true_win32.in return_true COPYONLY)
