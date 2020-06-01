@@ -340,13 +340,15 @@ if(CLANGFORMAT_FOUND)
 endif()
 
 # Check blt_add_test with a command that is not a target
-if(NOT WIN32)
-    configure_file(return_true.in return_true COPYONLY)
+if(WIN32)
+    configure_file(return_true_win32.in tests/return_true.bat COPYONLY)
+    blt_add_test(NAME    test_executable_not_a_target
+                 COMMAND tests/return_true.bat)
 else()
-    configure_file(return_true_win32.in return_true COPYONLY)
+    configure_file(return_true.in tests/return_true COPYONLY)
+    blt_add_test(NAME    test_executable_not_a_target
+                 COMMAND tests/return_true)
 endif()
-blt_add_test(NAME    test_executable_not_a_target
-             COMMAND return_true)
 
 # Add tutorials
 add_subdirectory(../../docs/tutorial/calc_pi calc_pi)
