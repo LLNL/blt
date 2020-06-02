@@ -19,6 +19,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - ``CUDA_TOOLKIT_ROOT_DIR`` must now be set in order to use CUDA. If it is not
   specified, BLT will produce an error message.
 
+### Fixed
+- blt_add_test is no longer trying to extract target properties from non-targets.
+
 ## [Version 0.3.0] - Release date 2020-01-08
 
 ### Added
