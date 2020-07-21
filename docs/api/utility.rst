@@ -7,6 +7,42 @@ Utility Macros
 ==============
 
 
+blt_assert_exists
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_assert_exists(
+      [DIRECTORIES <dir1> [<dir2> ...] ]
+      [FILES <file1> [<file2> ...] ]
+      [TARGETS <target1> [<target2> ...] ] )
+
+Checks if the specified directory, file and/or cmake target exists and throws
+an error message.
+
+.. note::
+
+   The behavior for checking if a given file or directory exists is well-defined
+   only for absolute paths.
+
+.. code-block:: cmake
+   :caption: **Example**
+   :linenos:
+
+   ## check if the directory 'blt' exists in the project
+   blt_assert_exists( DIRECTORIES ${PROJECT_SOURCE_DIR}/cmake/blt )
+
+   ## check if the file 'SetupBLT.cmake' file exists
+   blt_assert_exists( FILES ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake )
+
+   ## checks can also be bundled in one call
+   blt_assert_exists( DIRECTORIES ${PROJECT_SOURCE_DIR}/cmake/blt
+                      FILES ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake )
+
+   ## check if the CMake targets `foo` and `bar` exist
+   blt_assert_exists( TARGETS foo bar )
+
+
 blt_append_custom_compiler_flag
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

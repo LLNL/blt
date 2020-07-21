@@ -9,6 +9,24 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added blt_assert_exists() utility macro.
+- Additional link flags for CUDA may now be specified by setting 
+  ``CMAKE_CUDA_LINK_FLAGS`` when configuring CMake either in a host-config 
+  or at the command-line.
+- Added support for ClangFormat.
+
+### Changed
+- ``CUDA_TOOLKIT_ROOT_DIR`` must now be set in order to use CUDA. If it is not
+  specified, BLT will produce an error message.
+
+### Fixed
+- blt_add_test is no longer trying to extract target properties from non-targets.
+- Improved support for HIP 3.5.
+- Improved support for CMake 3.13.0+.
+- Remove some known spaces that show up in MPI link flags.
+- Remove GTest and GBenchmark adding '-Werror' that got inherited.
+
 ## [Version 0.3.0] - Release date 2020-01-08
 
 ### Added
@@ -28,6 +46,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added support for Cray compilers in blt_append_custom_compiler_flag.
 - Added ability to add flags to the cppcheck command line through blt_add_code_checks()
 - Added ability for blt_add_test() to set required number of OpenMP threads via new option NUM_OMP_THREADS.
+- Added ClangFormat as an option for code styling.  This has some caveats that are noted here:
+  https://llnl-blt.readthedocs.io/en/develop/api/code_check.html
 
 ### Changed
 - Restructured the host-config directory by site and platform.
@@ -36,6 +56,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Fixed
 - Fixed some warnings in CMake 3.14+
+- Duplication of MPI link flags in CMake 3.14+ when Fortran was enabled.
+
+### Removed
+- Removed unused ``HEADERS_OUTPUT_SUBDIR`` argument from blt_add_library().
+
 
 ## [Version 0.2.5] - Release date 2019-06-13
 

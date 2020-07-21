@@ -9,17 +9,9 @@ Any questions can be sent to blt-dev@llnl.gov.
 
 # Attribution
 
-We want everyone to feel they are getting the proper attribution for their
-contributions.  Here are some suggestions on how to get that:
+The BLT project uses git's commit history to track contributions from individual developers. 
 
-* New files: add your name and a date to the top of the file
-* New functions or macros: add your name to the comment above it
-
-For example: 
-
-```
-# Author: John Doe @ Some Company, Inc.
-```
+Since we want everyone to feel they are getting the proper attribution for their contributions, please add your name to the list below as part of your commit.
 
 # Contributors (In Alphabetical Order)
 
@@ -31,8 +23,8 @@ For example:
 * Chip Freitag, AMD, Inc.
 * Elsa Gonsiorowski, LLNL
 * Burl Hall, LLNL
-* Matt Larsen
+* Matt Larsen, LLNL
 * Martin McFadden, LLNL
 * Mark Miller, LLNL
-* David Poliakoff, LLNL
+* David Poliakoff, Sandia National Laboratories
 

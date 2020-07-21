@@ -5,6 +5,11 @@
 cmake_minimum_required(VERSION 3.8)
 project( blank )
 
+# Note: This is specific to running our tests and shouldn't be exported to documentation
+if(NOT BLT_SOURCE_DIR)
+    set(BLT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
+endif()
+
 #------------------------------------------------------------------------------
 # Setup BLT
 #------------------------------------------------------------------------------
@@ -26,6 +31,11 @@ else()
             "    git submodule update\n"
             "Or add -DBLT_SOURCE_DIR=/path/to/blt to your CMake command." )
     endif()
+endif()
+
+# Default to C++11 if not set so GTest/GMock can build
+if (NOT BLT_CXX_STD)
+    set(BLT_CXX_STD "c++11" CACHE STRING "")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)

@@ -86,11 +86,14 @@ blt_find_executable(NAME        Valgrind
 #------------------------------------
 # linting
 #------------------------------------
-blt_find_executable(NAME        Uncrustify
-                    EXECUTABLES uncrustify)
-
 blt_find_executable(NAME        AStyle
                     EXECUTABLES astyle)
+
+blt_find_executable(NAME        ClangFormat
+                    EXECUTABLES clang-format)
+
+blt_find_executable(NAME        Uncrustify
+                    EXECUTABLES uncrustify)
 
 
 #------------------------------------

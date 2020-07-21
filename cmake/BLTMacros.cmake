@@ -6,6 +6,50 @@
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
 ##------------------------------------------------------------------------------
+## blt_assert_exists( [DIRECTORIES [<dir1> <dir2> ...] ]
+##                    [TARGETS [<target1> <target2> ...] ]
+##                    [FILES <file1> <file2> ...] )
+##
+## Throws a FATAL_ERROR message if any of the specified directories, files, or 
+## targets do not exist.
+##------------------------------------------------------------------------------
+macro(blt_assert_exists)
+
+    set(options)
+    set(singleValueArgs)
+    set(multiValueArgs DIRECTORIES TARGETS FILES)
+
+    # parse macro arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if (DEFINED arg_DIRECTORIES)
+        foreach (_dir ${arg_DIRECTORIES})
+            if (NOT IS_DIRECTORY ${_dir})
+                message(FATAL_ERROR "directory [${_dir}] does not exist!")
+            endif()
+        endforeach()
+    endif()
+
+    if (DEFINED arg_FILES)
+        foreach (_file ${arg_FILES})
+            if (NOT EXISTS ${_file})
+                message(FATAL_ERROR "file [${_file}] does not exist!")
+            endif()
+        endforeach()
+    endif()
+
+    if (DEFINED arg_TARGETS)
+        foreach (_target ${arg_TARGETS})
+            if (NOT TARGET ${_target})
+                message(FATAL_ERROR "target [${_target}] does not exist!")
+            endif()
+        endforeach()
+    endif()
+
+endmacro(blt_assert_exists)
+
+##------------------------------------------------------------------------------
 ## blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
 ##
 ## Appends elements to a list if the specified bool evaluates to true.
@@ -355,7 +399,7 @@ endmacro(blt_register_library)
 macro(blt_add_library)
 
     set(options)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED OBJECT CLEAR_PREFIX FOLDER)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR SHARED OBJECT CLEAR_PREFIX FOLDER)
     set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
@@ -623,23 +667,32 @@ macro(blt_add_test)
     endif()
 
     # Extract test directory and executable from arg_NAME and arg_COMMAND
-    if ( NOT TARGET ${arg_NAME} )
+    set(_test_directory)
+    if(NOT TARGET ${arg_NAME})
         # Handle cases where multiple tests are run against one executable
         # the NAME will not be the target
-        list(GET arg_COMMAND 0 test_executable)
-        get_target_property(test_directory ${test_executable} RUNTIME_OUTPUT_DIRECTORY )
+        list(GET arg_COMMAND 0 _test_executable)
+        if(TARGET ${_test_executable})
+            get_target_property(_test_directory ${_test_executable} RUNTIME_OUTPUT_DIRECTORY )
+        endif()
     else()
-        set(test_executable ${arg_NAME})
-        get_target_property(test_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
+        set(_test_executable ${arg_NAME})
+        get_target_property(_test_directory ${arg_NAME} RUNTIME_OUTPUT_DIRECTORY )
     endif()
     
     # Append the test_directory to the test argument, accounting for multi-config generators
     if(NOT CMAKE_CONFIGURATION_TYPES)
-        set(test_command ${test_directory}/${arg_COMMAND} )
+        if(NOT "${_test_directory}" STREQUAL "")
+            set(_test_command ${_test_directory}/${arg_COMMAND} )
+        else()
+            set(_test_command ${arg_COMMAND})
+        endif()
     else()
-        list(INSERT arg_COMMAND 0 "$<TARGET_FILE:${test_executable}>")
-        list(REMOVE_AT arg_COMMAND 1)
-        set(test_command ${arg_COMMAND})
+        if(TARGET ${_test_executable})
+            list(INSERT arg_COMMAND 0 "$<TARGET_FILE:${_test_executable}>")
+            list(REMOVE_AT arg_COMMAND 1)
+        endif()
+        set(_test_command ${arg_COMMAND})
     endif()
 
     # If configuration option ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, 
@@ -658,11 +711,11 @@ macro(blt_add_test)
             set(_mpiexec ${MPIEXEC})
         endif()
 
-        set(test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${test_command} )
+        set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
     endif()
 
     add_test(NAME           ${arg_NAME}
-             COMMAND        ${test_command}
+             COMMAND        ${_test_command}
              CONFIGURATIONS ${arg_CONFIGURATIONS})
 
     # Handle OpenMP

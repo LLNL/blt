@@ -5,6 +5,14 @@
 
 set(_blt_tpl_targets) # tracks names of enabled tpl targets
 
+if(ENABLE_GBENCHMARK OR ENABLE_GTEST OR ENABLE_GMOCK)
+  if("${CMAKE_CXX_STANDARD}" STREQUAL "" OR
+     "${CMAKE_CXX_STANDARD}" LESS 11)
+      message(WARNING "GoogleTest, GoogleMock, and GoogleBenchmark require C++11 or later. "
+                      "Set BLT_CXX_STD to 'c++11' or higher before loading BLT.")
+  endif()
+endif()
+
 if(ENABLE_TESTS)
     include(CTest)
 
@@ -60,10 +68,6 @@ if(ENABLE_TESTS)
     
     if(ENABLE_GTEST)
         
-        if(CMAKE_CXX_STANDARD LESS 11)
-            message(WARNING "C++11 is required to compile gtest or gmock.")
-        endif()
-
         #
         # gtest 1.8 emits many warnings related to dll-interface 
         # issues on windows, so we add flags to work around these
@@ -134,10 +138,6 @@ if(ENABLE_BENCHMARKS)
     if(ENABLE_GBENCHMARK)
         if(WIN32 AND BUILD_SHARED_LIBS)
           message(FATAL_ERROR "Google Benchmark cannot be built when BUILD_SHARED_LIBS=ON or on Windows")
-        endif()
-
-        if(CMAKE_CXX_STANDARD LESS 11)
-            message(WARNING "C++11 is required to compile gbenchmark.")
         endif()
 
         set(BENCHMARK_ENABLE_TESTING OFF CACHE "" BOOL)
