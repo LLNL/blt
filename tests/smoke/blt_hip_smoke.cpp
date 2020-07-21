@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include "hip/hip_runtime.h"
 
-__device__ const char STR[] = "HELLO WORLD!";
+__device__ const char *STR = "HELLO WORLD!";
 const char STR_LENGTH = 12;
 
 __global__ void hello()
