@@ -29,15 +29,13 @@ operating systems and technologies:
       [FRUIT](https://sourceforge.net/projects/fortranxunit),
       [gbenchmark](https://github.com/google/benchmark)
  * Documentation:
-      [Doxygen](http://www.doxygen.nl/),
+      [Doxygen](http://www.doxygen.nl/), 
       [Sphinx](http://www.sphinx-doc.org)
- * Code style:
-      [AStyle](http://astyle.sourceforge.net),
-      [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html),
-      [Uncrustify](http://uncrustify.sourceforge.net)
- * Code quality
-      [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
-      [Cppcheck](http://cppcheck.sourceforge.net)
+ * Code style and health:
+      [Uncrustify](http://uncrustify.sourceforge.net), 
+      [AStyle](http://astyle.sourceforge.net), 
+      [Cppcheck](http://cppcheck.sourceforge.net),
+      [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html)
  
 
 Getting started
@@ -134,7 +132,3 @@ PackageLicenseDeclared: BSD-3-Clause
 PackageName: gtest  
 PackageHomePage: https://github.com/google/googletest  
 PackageLicenseDeclared: BSD-3-Clause  
-
-PackageName: run-clang-format  
-PackageHomePage: https://github.com/Sarcasm/run-clang-format  
-PackageLicenseDeclared: MIT  

@@ -61,9 +61,6 @@ This macro supports code formatting with either AStyle, ClangFormat, or Uncrusti
   * UNCRUSTIFY_CFG_FILE is given
   * UNCRUSTIFY_EXECUTABLE is defined and found prior to calling this macro
 
-.. note::
-  ClangFormat does not support a command line option for config files.  To work around this,
-  we copy the given config file to the build directory where this macro runs from.
 
 Enabled code formatting checks produce a `check` build target that will test to see if you
 are out of compliance with your code formatting and a `style` build target that will actually
@@ -265,15 +262,6 @@ target to the parent `style` build target.  Otherwise the files are not modified
 created target is added to the parent `check` build target. This target will notify you
 which files do not conform to your style guide.
 
-.. note::
-  ClangFormat does not support a command line option for config files.  To work around this,
-  we copy the given config file to the given working directory. We recommend using the build
-  directory.
-
-.. note::
-  ClangFormat does not support a command line option for check (--dry-run) until version 10.
-  This version is not widely used or available at this time. To work around this, we use an 
-  included script called run-clang-format.py that does not use PREPEND_FLAGS or APPEND_FLAGS.
 
 blt_add_uncrustify_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~

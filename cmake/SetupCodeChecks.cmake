@@ -476,26 +476,18 @@ macro(blt_add_clangformat_target)
 
     set(_generate_target TRUE)
 
-    # Copy config file to given working directory since ClangFormat doesn't support pointing to one
-    configure_file(${arg_CFG_FILE} ${arg_WORKING_DIRECTORY}/.clang-format COPYONLY)
+    if(${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG -i)
+    else()
+        set(MODIFY_FILES_FLAG --dry-run)
+    endif()
 
     if(_generate_target)
-        # ClangFormat does not support --dry-run until version 10 which isn't on many machines.
-        # For now, use run-clang-format for dry running purposes.
-        if(${arg_MODIFY_FILES})
-            add_custom_target(${arg_NAME}
-                    COMMAND  ${CLANGFORMAT_EXECUTABLE} ${arg_PREPEND_FLAGS}
-                        --style=file -i ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
-                    WORKING_DIRECTORY ${_wd} 
-                    COMMENT "${arg_COMMENT}Running ClangFormat source code formatting checks.")
-        else()
-            set(_run_clangformat "${BLT_ROOT_DIR}/cmake/run-clang-format.py" --clang-format-executable ${CLANGFORMAT_EXECUTABLE})
-            add_custom_target(${arg_NAME}
-                    COMMAND ${_run_clangformat} -j1 ${arg_SRC_FILES}
-                    WORKING_DIRECTORY ${_wd} 
-                    COMMENT "${arg_COMMENT}Running ClangFormat source code formatting checks.")
-
-        endif()
+        add_custom_target(${arg_NAME}
+                COMMAND ${CLANGFORMAT_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                    -style ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+                WORKING_DIRECTORY ${_wd} 
+                COMMENT "${arg_COMMENT}Running ClangFormat source code formatting checks.")
 
         # Hook our new target into the proper dependency chain
         if(${arg_MODIFY_FILES})
