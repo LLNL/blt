@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.3.5" CACHE STRING "")
+    set(BLT_VERSION "0.3.0" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 

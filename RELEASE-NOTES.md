@@ -9,9 +9,6 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
-
-## [Version 0.3.5] - Release date 2020-07-20
-
 ### Added
 - Added blt_assert_exists() utility macro.
 - Additional link flags for CUDA may now be specified by setting 
@@ -129,8 +126,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.5...develop
-[Version 0.3.5]: https://github.com/LLNL/blt/compare/v0.3.0...v0.3.5
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.0...develop
 [Version 0.3.0]: https://github.com/LLNL/blt/compare/v0.2.5...v0.3.0
 [Version 0.2.5]: https://github.com/LLNL/blt/compare/v0.2.0...v0.2.5
 [Version 0.2.0]: https://github.com/LLNL/blt/compare/v0.1.0...v0.2.0
