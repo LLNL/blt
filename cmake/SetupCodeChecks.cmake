@@ -68,12 +68,11 @@ endforeach()
 
 
 ##------------------------------------------------------------------------------
-## blt_add_code_checks( PREFIX               <Base name used for created targets>
-##                      SOURCES              [source1 [source2 ...]]
-##                      ASTYLE_CFG_FILE      <Path to AStyle config file>
-##                      CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
-##                      UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
-##                      CPPCHECK_FLAGS       <List of flags added to Cppcheck>)
+## blt_add_code_checks( PREFIX              <Base name used for created targets>
+##                      SOURCES             [source1 [source2 ...]]
+##                      UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
+##                      ASTYLE_CFG_FILE     <Path to AStyle config file>
+##                      CPPCHECK_FLAGS      <List of flags added to Cppcheck>)
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
 ## filters checks based on file extensions.
@@ -82,7 +81,7 @@ endforeach()
 macro(blt_add_code_checks)
 
     set(options )
-    set(singleValueArgs PREFIX ASTYLE_CFG_FILE CLANGFORMAT_CFG_FILE UNCRUSTIFY_CFG_FILE)
+    set(singleValueArgs PREFIX UNCRUSTIFY_CFG_FILE ASTYLE_CFG_FILE)
     set(multiValueArgs SOURCES CPPCHECK_FLAGS)
 
     cmake_parse_arguments(arg
@@ -432,14 +431,14 @@ endmacro(blt_add_astyle_target)
 ##------------------------------------------------------------------------------
 ## blt_add_clangformat_target( NAME              <Created Target Name>
 ##                             MODIFY_FILES      [TRUE | FALSE (default)]
-##                             CFG_FILE          <ClangFormat Configuration File> 
-##                             PREPEND_FLAGS     <Additional Flags to ClangFormat>
-##                             APPEND_FLAGS      <Additional Flags to ClangFormat>
+##                             CFG_FILE          <clang-format Configuration File> 
+##                             PREPEND_FLAGS     <Additional Flags to clang-format>
+##                             APPEND_FLAGS      <Additional Flags to clang-format>
 ##                             COMMENT           <Additional Comment for Target Invocation>
 ##                             WORKING_DIRECTORY <Working Directory>
 ##                             SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
-## Creates a new target with the given NAME for running ClangFormat over the given SRC_FILES.
+## Creates a new target with the given NAME for running clang-format over the given SRC_FILES.
 ##------------------------------------------------------------------------------
 macro(blt_add_clangformat_target)
 
@@ -487,7 +486,7 @@ macro(blt_add_clangformat_target)
                 COMMAND ${CLANGFORMAT_EXECUTABLE} ${arg_PREPEND_FLAGS}
                     -style ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
                 WORKING_DIRECTORY ${_wd} 
-                COMMENT "${arg_COMMENT}Running ClangFormat source code formatting checks.")
+                COMMENT "${arg_COMMENT}Running clang-format source code formatting checks.")
 
         # Hook our new target into the proper dependency chain
         if(${arg_MODIFY_FILES})
