@@ -66,11 +66,10 @@ steps:
   clean: true
 
 # OSX and Windows
-- script: |
-    mkdir build
-    cd build
-    cmake $(CMAKE_FLAGS) ../tests/internal
-  displayName: 'OSX/Windows CMake'
+- task: CMake@1
+  inputs:
+    workingDir: 'build'
+    cmakeArgs: '$(CMAKE_FLAGS) ../tests/internal'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
     cmake --build build --config Release 
