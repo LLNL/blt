@@ -65,7 +65,7 @@ if (ENABLE_FIND_MPI)
 
     if (ENABLE_FORTRAN)
         set(_f_flag ${MPI_Fortran_${_mpi_compile_flags_suffix}})
-        if (_f_flag AND NOT "${_c_flag}" STREQUAL "${_f_flag}")
+        if (_f_flag AND NOT "${c_flg}" STREQUAL "${_f_flag}")
             list(APPEND _mpi_compile_flags ${_f_flag})
         endif()
     endif()
