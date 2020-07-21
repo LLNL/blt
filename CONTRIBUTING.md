@@ -9,9 +9,12 @@ Any questions can be sent to blt-dev@llnl.gov.
 
 # Attribution
 
-The BLT project uses git's commit history to track contributions from individual developers. 
+We want everyone to feel they are getting the proper attribution for their
+contributions.  Github automatically tracks contribution but if you do not feel
+that is adequate. Here are some suggestions we recommend:
 
-Since we want everyone to feel they are getting the proper attribution for their contributions, please add your name to the list below as part of your commit.
+* New files: add your name and a date to the top of the file
+* New functions or macros: add your name to the comment above it
 
 For example: 
 
@@ -29,7 +32,7 @@ For example:
 * Chip Freitag, AMD, Inc.
 * Elsa Gonsiorowski, LLNL
 * Burl Hall, LLNL
-* Matt Larsen, LLNL
+* Matt Larsen
 * Martin McFadden, LLNL
 * Mark Miller, LLNL
 * David Poliakoff, Sandia National Laboratories
