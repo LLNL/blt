@@ -118,88 +118,52 @@ blt_add_library
                      CLEAR_PREFIX [TRUE | FALSE]
                      FOLDER       [name])
 
-Adds a library target to your project.
-
-NAME
-  Name of the created CMake target
-
-SOURCES
-  List of all sources to be added
-
-HEADERS
-  List of all headers to be added
-
-INCLUDES
-  List of include directories both used by this target and inherited by dependent
-  targets
-
-DEFINES
-  List of compiler defines both used by this target and inherited by dependent
-  targets
-
-DEPENDS_ON
-  List of CMake targets and BLT registered libraries that this library
-  depends on
-
-OUTPUT_NAME
-  Override built file name of library (defaults to <NAME>)  
-
-OUTPUT_DIR
-  Directory that this target will built to
-
-SHARED
-  Builds library as shared and overrides global BUILD_SHARED_LIBS (defaults to OFF)
-
-OBJECT
-  Create an Object library
-
-CLEAR_PREFIX
-  Removes library prefix (defaults to 'lib' on linux)
-
-FOLDER
-  Name of the IDE folder to ease organization
-
-This macro supports three types of libraries automatically: normal, header-only,
-or object.
-
-Normal libraries are libraries that have sources that are compiled and linked into a single
-library and have headers that go along with them (unless it's a Fortran library).
-
-Header-only libraries are useful when you do not the library separately compiled or 
-are using C++ templates that require the library's user to instatiate them. To create
-a header-only library (CMake calls them INTERFACE libraries), simply
-list all headers under the HEADER argument and do not specify SOURCES.
-
-Object libraries are basically a collection of compiled source files that are not
-archived or linked. They are sometimes useful when you want to solve compilicated linking
-problems (like circular dependencies) or when you want to combine smaller libraries into
-one larger library but don't want the linker to remove unused symbols. Unlike regular CMake
-object libraries you do not have to use the $<TARGET_OBJECTS:<libname>> syntax, you can just
-use <libname> with BLT macros.  Unless you have a good reason don't use Object libraries.
-
-.. note::
-  BLT Object libraries do not follow CMake's normal transitivity rules. Due to CMake requiring
-  you install the individual object files if you install the target that uses them. BLT manually
-  adds the INTERFACE target properties to get around this.
+Adds a library target, called <libname>, to be built from the given sources.
 
 This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
 whether the library will be build as shared or static. The optional boolean
 SHARED argument can be used to override this choice.
 
-If given a DEPENDS_ON argument, this macro will inherit the necessary information
-from all targets given in the list.  This includes CMake targets as well as any
-BLT registered libraries already defined via :ref:`blt_register_library`.  To ease
-use, all information is used by this library and inherited by anything depending on this
-library (CMake PUBLIC inheritance).
+The OBJECT argument creates a CMake object library. Basically it is a collection
+of compiled source files that are not archived or linked. Unlike regular CMake
+object libraries you do not have to use the $<TARGET_OBJECTS:<libname>> syntax,
+you can just use <libname>.
 
-OUTPUT_NAME is useful when multiple libraries with the same name need to be created
-by different targets. For example, you might want to build both a shared and static
-library in the same build instead of building twice, once with BUILD_SHARED_LIBS set to ON
-and then with OFF. NAME is the CMake target name, OUTPUT_NAME is the created library name.
+Note: Object libraries do not follow CMake's transitivity rules until 3.12.
+BLT will add the various information provided in this macro and its
+dependencies in the order you provide them to help.
 
-.. note::
-  The FOLDER option is only used when ENABLE_FOLDERS is ON and when the CMake generator
-  supports this feature and will otherwise be ignored. 
+The INCLUDES argument allows you to define what include directories are
+needed by any target that is dependent on this library.  These will
+be inherited by CMake's target dependency rules.
+
+The DEFINES argument allows you to add needed compiler definitions that are
+needed by any target that is dependent on this library.  These will
+be inherited by CMake's target dependency rules.
+
+If given a DEPENDS_ON argument, it will add the necessary includes and 
+libraries if they are already registered with blt_register_library.  If 
+not it will add them as a CMake target dependency.
+
+In addition, this macro will add the associated dependencies to the given
+library target. Specifically, it will add the dependency for the CMake target
+and for copying the headers for that target as well.
+
+The OUTPUT_DIR is used to control the build output directory of this 
+library. This is used to overwrite the default lib directory.
+OUTPUT_NAME is the name of the output file; the default is NAME.
+
+It's useful when multiple libraries with the same name need to be created
+by different targets. NAME is the target name, OUTPUT_NAME is the library name.
+CLEAR_PREFIX allows you to remove the automatically appended "lib" prefix
+from your built library.  The created library will be foo.a instead of libfoo.a.
+FOLDER is an optional keyword to organize the target into a folder in an IDE.
+
+This is available when ENABLE_FOLDERS is ON and when the cmake generator
+supports this feature and will otherwise be ignored. 
+
+Note: Do not use with header-only (INTERFACE) libraries, as this will generate 
+a CMake configuration error.
 
 
 .. _blt_add_test:

@@ -355,7 +355,7 @@ endmacro(blt_register_library)
 macro(blt_add_library)
 
     set(options)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR SHARED OBJECT CLEAR_PREFIX FOLDER)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR HEADERS_OUTPUT_SUBDIR SHARED OBJECT CLEAR_PREFIX FOLDER)
     set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
 
     # parse the arguments
