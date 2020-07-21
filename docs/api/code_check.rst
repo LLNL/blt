@@ -44,9 +44,8 @@ all code checks from the working directory `CMAKE_BINARY_DIR`.  If you need more
 functionality you will need to call the individual code check macros yourself.
 
 .. note::
-  For library projects that may be included as a subproject of another code via CMake's
-  add_subproject(), we recommend guarding "code check" targets against being included in
-  other codes.  The following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`
+  We recommend guarding your code checks against someone directly including your CMake project
+  in theirs.  The following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`
   will stop your code checks from running unless you are the main CMake project.
 
 Sources are filtered based on file extensions for use in these code checks.  If you need
