@@ -165,16 +165,16 @@ or object.
 Normal libraries are libraries that have sources that are compiled and linked into a single
 library and have headers that go along with them (unless it's a Fortran library).
 
-Header-only libraries are useful when you do not want the library separately compiled or 
-are using C++ templates that require the library's user to instatiate them. These libraries
-have headers but no sources. To create a header-only library (CMake calls them INTERFACE libraries),
-simply list all headers under the HEADER argument and do not specify SOURCES (because there aren't any).
+Header-only libraries are useful when you do not the library separately compiled or 
+are using C++ templates that require the library's user to instatiate them. To create
+a header-only library (CMake calls them INTERFACE libraries), simply
+list all headers under the HEADER argument and do not specify SOURCES.
 
 Object libraries are basically a collection of compiled source files that are not
 archived or linked. They are sometimes useful when you want to solve compilicated linking
 problems (like circular dependencies) or when you want to combine smaller libraries into
 one larger library but don't want the linker to remove unused symbols. Unlike regular CMake
-object libraries you do not have to use the ``$<TARGET_OBJECTS:<libname>>`` syntax, you can just
+object libraries you do not have to use the $<TARGET_OBJECTS:<libname>> syntax, you can just
 use <libname> with BLT macros.  Unless you have a good reason don't use Object libraries.
 
 .. note::
@@ -183,7 +183,7 @@ use <libname> with BLT macros.  Unless you have a good reason don't use Object l
   adds the INTERFACE target properties to get around this.
 
 This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
-whether the library will be built as shared or static. The optional boolean
+whether the library will be build as shared or static. The optional boolean
 SHARED argument can be used to override this choice.
 
 If given a DEPENDS_ON argument, this macro will inherit the necessary information
