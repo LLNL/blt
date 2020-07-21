@@ -20,21 +20,14 @@ option(ENABLE_COVERAGE   "Enables code coverage support" OFF)
 #------------------------------------------------------------------------------
 # TPL Executable Options
 #------------------------------------------------------------------------------
-option(ENABLE_GIT          "Enables Git support" ON)
-
-# Documentation
-option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
-option(ENABLE_SPHINX       "Enables Sphinx support" ON)
-
-# Quality
 option(ENABLE_CLANGQUERY   "Enables Clang-query support" ON)
 option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
-option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
-
-# Style
-option(ENABLE_ASTYLE       "Enables AStyle support" ON)
-option(ENABLE_CLANGFORMAT  "Enables ClangFormat support" ON)
+option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
+option(ENABLE_GIT          "Enables Git support" ON)
+option(ENABLE_SPHINX       "Enables Sphinx support" ON)
 option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
+option(ENABLE_ASTYLE       "Enables AStyle support" ON)
+option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
 
 #------------------------------------------------------------------------------
 # Build Options
