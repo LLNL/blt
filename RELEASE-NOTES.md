@@ -14,6 +14,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Additional link flags for CUDA may now be specified by setting 
   ``CMAKE_CUDA_LINK_FLAGS`` when configuring CMake either in a host-config 
   or at the command-line.
+- Added support for ClangFormat.
 
 ### Changed
 - ``CUDA_TOOLKIT_ROOT_DIR`` must now be set in order to use CUDA. If it is not
@@ -21,6 +22,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Fixed
 - blt_add_test is no longer trying to extract target properties from non-targets.
+- Improved support for HIP 3.5.
+- Improved support for CMake 3.13.0+.
+- Remove some known spaces that show up in MPI link flags.
+- Remove GTest and GBenchmark adding '-Werror' that got inherited.
 
 ## [Version 0.3.0] - Release date 2020-01-08
 
