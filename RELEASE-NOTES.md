@@ -58,6 +58,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Fixed some warnings in CMake 3.14+
 - Duplication of MPI link flags in CMake 3.14+ when Fortran was enabled.
 
+### Removed
+- Removed unused ``HEADERS_OUTPUT_SUBDIR`` argument from blt_add_library().
+
+
 ## [Version 0.2.5] - Release date 2019-06-13
 
 ### Added
