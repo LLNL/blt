@@ -39,10 +39,6 @@ UNCRUSTIFY_CFG_FILE
 CPPCHECK_FLAGS
   List of flags added to Cppcheck
 
-The purpose of this macro is to enable all code checks in the default manner.  It runs
-all code checks from the working directory `CMAKE_BINARY_DIR`.  If you need more specific
-functionality you will need to call the individual code check macros yourself.
-
 Sources are filtered based on file extensions for use in these code checks.  If you need
 additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
 Currently this macro only has code checks for C/C++ and simply filters out the Fortran files.
@@ -272,16 +268,12 @@ which files do not conform to your style guide.
 .. note::
   ClangFormat does not support a command line option for config files.  To work around this,
   we copy the given config file to the given working directory. We recommend using the build
-  directory `${PROJECT_BINARY_DIR}`. Also if someone is directly including your CMake project
-  in theirs, you may conflict with theirs.  We recommend guarding your code checks against this
-  with the following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`.
+  directory.
 
 .. note::
   ClangFormat does not support a command line option for check (--dry-run) until version 10.
   This version is not widely used or available at this time. To work around this, we use an 
-  included script called run-clang-format.py that does not use PREPEND_FLAGS or APPEND_FLAGS
-  in the `check` build target because the script does not support command line flags passed
-  to `clang-format`. This script is not used in the `style` build target.
+  included script called run-clang-format.py that does not use PREPEND_FLAGS or APPEND_FLAGS.
 
 blt_add_uncrustify_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
