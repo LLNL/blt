@@ -6,45 +6,33 @@
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
 ##------------------------------------------------------------------------------
-## blt_assert_exists( [DIRECTORIES [<dir1> <dir2> ...] ]
-##                    [TARGETS [<target1> <target2> ...] ]
-##                    [FILES <file1> <file2> ...] )
+## blt_assert_exists( [DIRECTORY <path-to-dir>]
+##                    [TARGET <target>]
+##                    [FILE <path-to-file>] )
 ##
-## Throws a FATAL_ERROR message if any of the specified directories, files, or 
-## targets do not exist.
+## Throws a FATAL_ERROR message if the specified directory, file, or target does
+## not exist.
 ##------------------------------------------------------------------------------
 macro(blt_assert_exists)
 
     set(options)
-    set(singleValueArgs)
-    set(multiValueArgs DIRECTORIES TARGETS FILES)
+    set(singleValueArgs DIRECTORY TARGET FILE EXECUTABLE )
+    set(multiValueArgs)
 
     # parse macro arguments
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    if (DEFINED arg_DIRECTORIES)
-        foreach (_dir ${arg_DIRECTORIES})
-            if (NOT IS_DIRECTORY ${_dir})
-                message(FATAL_ERROR "directory [${_dir}] does not exist!")
-            endif()
-        endforeach()
+    if (DEFINED arg_DIRECTORY AND NOT IS_DIRECTORY ${arg_DIRECTORY})
+        message(FATAL_ERROR "directory [${arg_DIRECTORY}] does not exist!")
     endif()
 
-    if (DEFINED arg_FILES)
-        foreach (_file ${arg_FILES})
-            if (NOT EXISTS ${_file})
-                message(FATAL_ERROR "file [${_file}] does not exist!")
-            endif()
-        endforeach()
+    if (DEFINED arg_FILE AND NOT EXISTS ${arg_FILE})
+        message(FATAL_ERROR "file [${arg_FILE}] does not exists!")
     endif()
 
-    if (DEFINED arg_TARGETS)
-        foreach (_target ${arg_TARGETS})
-            if (NOT TARGET ${_target})
-                message(FATAL_ERROR "target [${_target}] does not exist!")
-            endif()
-        endforeach()
+    if (DEFINED arg_TARGET AND NOT TARGET ${arg_TARGET})
+        message(FATAL_ERROR "target [${arg_TARGET}] not found!" )
     endif()
 
 endmacro(blt_assert_exists)
