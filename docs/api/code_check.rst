@@ -43,11 +43,6 @@ The purpose of this macro is to enable all code checks in the default manner.  I
 all code checks from the working directory `CMAKE_BINARY_DIR`.  If you need more specific
 functionality you will need to call the individual code check macros yourself.
 
-.. note::
-  We recommend guarding your code checks against someone directly including your CMake project
-  in theirs.  The following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`
-  will stop your code checks from running unless you are the main CMake project.
-
 Sources are filtered based on file extensions for use in these code checks.  If you need
 additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
 Currently this macro only has code checks for C/C++ and simply filters out the Fortran files.
@@ -222,7 +217,6 @@ When MODIFY_FILES is set to TRUE, modifies the files in place and adds the creat
 target to the parent `style` build target.  Otherwise the files are not modified and the
 created target is added to the parent `check` build target. This target will notify you
 which files do not conform to your style guide.
-
 .. Note::
   Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.
 
