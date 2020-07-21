@@ -11,13 +11,6 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added blt_assert_exists() utility macro.
-- Additional link flags for CUDA may now be specified by setting 
-  ``CMAKE_CUDA_LINK_FLAGS`` when configuring CMake either in a host-config 
-  or at the command-line.
-
-### Changed
-- ``CUDA_TOOLKIT_ROOT_DIR`` must now be set in order to use CUDA. If it is not
-  specified, BLT will produce an error message.
 
 ## [Version 0.3.0] - Release date 2020-01-08
 
