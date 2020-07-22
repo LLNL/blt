@@ -6,15 +6,8 @@
 ################################
 # Sanity Checks
 ################################
-
-# Ensure CUDA_TOOLKIT_ROOT_DIR is specified, since it is needed 
-# by the call to find_package(CUDA) below.
-if (NOT DEFINED CUDA_TOOLKIT_ROOT_DIR)
-   message( FATAL_ERROR
-        "Please specify CUDA_TOOLKIT_ROOT_DIR to use CUDA" )
+if( ${CMAKE_VERSION} VERSION_LESS "3.10.0" )
 endif()
-
-blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
 
 # Rare case of two flags being incompatible
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
@@ -29,35 +22,17 @@ endif()
 # CUDA_HOST_COMPILER was changed in 3.9.0 to CMAKE_CUDA_HOST_COMPILER and
 # needs to be set prior to enabling the CUDA language
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
-if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
-    if ( NOT CMAKE_CUDA_HOST_COMPILER )
-        if("CUDA" IN_LIST _languages )
-            message( FATAL_ERROR 
-                 "CUDA language enabled prior to setting CMAKE_CUDA_HOST_COMPILER. "
-                 "Please set CMAKE_CUDA_HOST_COMPILER prior to "
-                 "ENABLE_LANGUAGE(CUDA) or PROJECT(.. LANGUAGES CUDA)")
-        endif()    
-  
-        if ( CMAKE_CXX_COMPILER )
-            set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
-        else()
-            set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
-        endif()
-    endif()
-else()
-   if (NOT CUDA_HOST_COMPILER)
-        if("CUDA" IN_LIST _languages )
-            message( FATAL_ERROR 
-                 "CUDA language enabled prior to setting CUDA_HOST_COMPILER. "
-                 "Please set CUDA_HOST_COMPILER prior to "
-                 "ENABLE_LANGUAGE(CUDA) or PROJECT(.. LANGUAGES CUDA)")
-        endif()    
-
-        if ( CMAKE_CXX_COMPILER )
-            set(CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
-        else()
-            set(CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
-        endif()
+if ( NOT CMAKE_CUDA_HOST_COMPILER )
+    if("CUDA" IN_LIST _languages )
+        message( FATAL_ERROR 
+                "CUDA language enabled prior to setting CMAKE_CUDA_HOST_COMPILER. "
+                "Please set CMAKE_CUDA_HOST_COMPILER prior to "
+                "ENABLE_LANGUAGE(CUDA) or PROJECT(.. LANGUAGES CUDA)")
+    endif()    
+    if ( CMAKE_CXX_COMPILER )
+        set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
+    else()
+        set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
     endif()
 endif()
 
@@ -95,26 +70,14 @@ if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
 endif()
 
-find_package(CUDA REQUIRED)
+find_package(CUDAToolkit REQUIRED)
 
-# Append the path to the NVIDIA SDK to the link flags
-if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
-    list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
-endif()
-if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib}" )
-    list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib" )
-endif()
-
-message(STATUS "CUDA Version:       ${CUDA_VERSION_STRING}")
-message(STATUS "CUDA Toolkit Root Dir: ${CUDA_TOOLKIT_ROOT_DIR}")
+message(STATUS "CUDA Version:       ${CUDAToolkit_VERSION}")
+message(STATUS "CUDA Toolkit Root Dir: ${CUDAToolkit_LIBRARY_ROOT}")
 message(STATUS "CUDA Compiler:      ${CMAKE_CUDA_COMPILER}")
-if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
-    message(STATUS "CUDA Host Compiler: ${CMAKE_CUDA_HOST_COMPILER}")
-else()
-    message(STATUS "CUDA Host Compiler: ${CUDA_HOST_COMPILER}")
-endif()
-message(STATUS "CUDA Include Path:  ${CUDA_INCLUDE_DIRS}")
-message(STATUS "CUDA Libraries:     ${CUDA_LIBRARIES}")
+message(STATUS "CUDA Host Compiler: ${CMAKE_CUDA_HOST_COMPILER}")
+message(STATUS "CUDA Include Path:  ${CUDAToolkit_INCLUDE_DIRS}")
+message(STATUS "CUDA Libraries:     ${CUDAToolkit_LIBRARY_DIR}")
 message(STATUS "CUDA Compile Flags: ${CMAKE_CUDA_FLAGS}")
 message(STATUS "CUDA Link Flags:    ${CMAKE_CUDA_LINK_FLAGS}")
 message(STATUS "CUDA Separable Compilation:  ${CUDA_SEPARABLE_COMPILATION}")
@@ -142,8 +105,8 @@ endif()
 # macros
 blt_register_library(NAME cuda
                      COMPILE_FLAGS ${_cuda_compile_flags}
-                     INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES}
+                     INCLUDES ${CUDAToolkit_INCLUDE_DIRS}
+                     LIBRARIES CUDA::cudart
                      LINK_FLAGS "${CMAKE_CUDA_LINK_FLAGS}"
                      )
 
@@ -154,5 +117,5 @@ blt_register_library(NAME cuda
 # This logic is handled in the blt_add_library/executable
 # macros
 blt_register_library(NAME cuda_runtime
-                     INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES})
+                     INCLUDES ${CUDAToolkit_INCLUDE_DIRS}
+                     LIBRARIES CUDA::cudart)
