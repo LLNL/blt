@@ -7,15 +7,6 @@
 # Sanity Checks
 ################################
 
-# Ensure CUDA_TOOLKIT_ROOT_DIR is specified, since it is needed 
-# by the call to find_package(CUDA) below.
-if (NOT DEFINED CUDA_TOOLKIT_ROOT_DIR)
-   message( FATAL_ERROR
-        "Please specify CUDA_TOOLKIT_ROOT_DIR to use CUDA" )
-endif()
-
-blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
-
 # Rare case of two flags being incompatible
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     if (NOT CMAKE_SKIP_BUILD_RPATH AND CUDA_LINK_WITH_NVCC)
@@ -95,6 +86,7 @@ if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
 endif()
 
+# If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)
 find_package(CUDA REQUIRED)
 
 # Append the path to the NVIDIA SDK to the link flags
