@@ -88,6 +88,7 @@ endif()
 
 # If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)
 find_package(CUDA REQUIRED)
+blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
 
 # Append the path to the NVIDIA SDK to the link flags
 if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
