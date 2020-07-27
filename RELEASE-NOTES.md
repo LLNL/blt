@@ -9,6 +9,15 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.3.5] - Release date 2020-07-27
+
+### Changed
+- ``CUDA_TOOLKIT_ROOT_DIR`` is now optional. If it is not specified, FindCUDA.cmake will
+  attempt to set it.
+
+
+## [Version 0.3.5] - Release date 2020-07-20
+
 ### Added
 - Added blt_assert_exists() utility macro.
 - Additional link flags for CUDA may now be specified by setting 
@@ -26,6 +35,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Improved support for CMake 3.13.0+.
 - Remove some known spaces that show up in MPI link flags.
 - Remove GTest and GBenchmark adding '-Werror' that got inherited.
+
 
 ## [Version 0.3.0] - Release date 2020-01-08
 
@@ -126,7 +136,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.0...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.6...develop
+[Version 0.3.6]: https://github.com/LLNL/blt/compare/v0.3.5...v0.3.6
+[Version 0.3.5]: https://github.com/LLNL/blt/compare/v0.3.0...v0.3.5
 [Version 0.3.0]: https://github.com/LLNL/blt/compare/v0.2.5...v0.3.0
 [Version 0.2.5]: https://github.com/LLNL/blt/compare/v0.2.0...v0.2.5
 [Version 0.2.0]: https://github.com/LLNL/blt/compare/v0.1.0...v0.2.0
