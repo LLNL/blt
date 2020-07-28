@@ -9,7 +9,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
-## [Version 0.3.5] - Release date 2020-07-27
+## [Version 0.3.6] - Release date 2020-07-27
 
 ### Changed
 - ``CUDA_TOOLKIT_ROOT_DIR`` is now optional. If it is not specified, FindCUDA.cmake will
