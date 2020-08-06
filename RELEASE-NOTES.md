@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Fixed
+- ClangFormat checks now support multiple Python executable names
+
 ## [Version 0.3.6] - Release date 2020-07-27
 
 ### Changed
