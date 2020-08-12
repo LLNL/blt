@@ -9,12 +9,15 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Changed
+- MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed as single string prefixed by ``SHELL:`` to prevent
+de-duplication of flags passed to ``target_link_options``.
+
 ## [Version 0.3.6] - Release date 2020-07-27
 
 ### Changed
 - ``CUDA_TOOLKIT_ROOT_DIR`` is now optional. If it is not specified, FindCUDA.cmake will
   attempt to set it.
-
 
 ## [Version 0.3.5] - Release date 2020-07-20
 
