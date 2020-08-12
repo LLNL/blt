@@ -13,6 +13,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed as single string prefixed by ``SHELL:`` to prevent
 de-duplication of flags passed to ``target_link_options``.
 
+### Fixed
+- ClangFormat checks now support multiple Python executable names
+
+
 ## [Version 0.3.6] - Release date 2020-07-27
 
 ### Changed
