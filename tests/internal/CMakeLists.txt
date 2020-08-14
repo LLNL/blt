@@ -266,9 +266,9 @@ if(ENABLE_CLANGQUERY)
 endif()
 
 #------------------------------------------------------------------------------
-# Format the testing code using AStyle
+# Format the testing code using ClangFormat
 #------------------------------------------------------------------------------
-if(ASTYLE_FOUND)
+if(CLANGFORMAT_FOUND)
 
   set(smoke_tests_srcs
     ../smoke/blt_cuda_mpi_smoke.cpp
@@ -336,6 +336,19 @@ if(ASTYLE_FOUND)
       PREFIX          internal_tests
       SOURCES         ${internal_tests_srcs}
       ASTYLE_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/astyle.cfg )
-
       
 endif()
+
+# Check blt_add_test with a command that is not a target
+if(WIN32)
+    configure_file(return_true_win32.in tests/return_true.bat COPYONLY)
+    blt_add_test(NAME    test_executable_not_a_target
+                 COMMAND tests/return_true.bat)
+else()
+    configure_file(return_true.in tests/return_true COPYONLY)
+    blt_add_test(NAME    test_executable_not_a_target
+                 COMMAND tests/return_true)
+endif()
+
+# Add tutorials
+add_subdirectory(../../docs/tutorial/calc_pi calc_pi)

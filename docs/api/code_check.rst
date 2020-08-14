@@ -11,11 +11,12 @@ blt_add_code_checks
 
 .. code-block:: cmake
 
-    blt_add_code_checks( PREFIX              <Base name used for created targets>
-                         SOURCES             [source1 [source2 ...]]
-                         UNCRUSTIFY_CFG_FILE <Path to Uncrustify config file>
-                         ASTYLE_CFG_FILE     <Path to AStyle config file>
-                         CPPCHECK_FLAGS      <List of flags added to Cppcheck>)
+    blt_add_code_checks( PREFIX               <Base name used for created targets>
+                         SOURCES              [source1 [source2 ...]]
+                         ASTYLE_CFG_FILE      <Path to AStyle config file>
+                         CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
+                         UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
+                         CPPCHECK_FLAGS       <List of flags added to Cppcheck>)
 
 This macro adds all enabled code check targets for the given SOURCES.
 
@@ -26,36 +27,58 @@ PREFIX
 SOURCES
   Source list that the code checks will be ran on
 
-UNCRUSTIFY_CFG_FILE
-  Path to Uncrustify config file
-
 ASTYLE_CFG_FILE
   Path to AStyle config file
 
+CLANGFORMAT_CFG_FILE
+  Path to ClangFormat config file
+
+UNCRUSTIFY_CFG_FILE
+  Path to Uncrustify config file
+
 CPPCHECK_FLAGS
   List of flags added to Cppcheck
+
+The purpose of this macro is to enable all code checks in the default manner.  It runs
+all code checks from the working directory `CMAKE_BINARY_DIR`.  If you need more specific
+functionality you will need to call the individual code check macros yourself.
+
+.. note::
+  For library projects that may be included as a subproject of another code via CMake's
+  add_subproject(), we recommend guarding "code check" targets against being included in
+  other codes.  The following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`
+  will stop your code checks from running unless you are the main CMake project.
 
 Sources are filtered based on file extensions for use in these code checks.  If you need
 additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
 Currently this macro only has code checks for C/C++ and simply filters out the Fortran files.
 
-This macro supports code formatting with either Uncrustify or AStyle (but not both at the same time)
-only if the following requirements are met:
-
-- Uncrustify
-
-  * UNCRUSTIFY_CFG_FILE is given
-  * UNCRUSTIFY_EXECUTABLE is defined and found prior to calling this macro
+This macro supports code formatting with either AStyle, ClangFormat, or Uncrustify
+(but not all at the same time) only if the following requirements are met:
 
 - AStyle
 
   * ASTYLE_CFG_FILE is given
   * ASTYLE_EXECUTABLE is defined and found prior to calling this macro
 
+- ClangFormat
+
+  * CLANGFORMAT_CFG_FILE is given
+  * CLANGFORMAT_EXECUTABLE is defined and found prior to calling this macro
+
+- Uncrustify
+
+  * UNCRUSTIFY_CFG_FILE is given
+  * UNCRUSTIFY_EXECUTABLE is defined and found prior to calling this macro
+
+.. note::
+  ClangFormat does not support a command line option for config files.  To work around this,
+  we copy the given config file to the build directory where this macro runs from.
+
 Enabled code formatting checks produce a `check` build target that will test to see if you
 are out of compliance with your code formatting and a `style` build target that will actually
 modify your source files.  It also creates smaller child build targets that follow the pattern
-`<PREFIX>_<uncrustify|astyle>_<check|style>`.
+`<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>`.
 
 This macro supports the following static analysis tools with their requirements:
 
@@ -152,6 +175,121 @@ SRC_FILES
 Cppcheck is a static analysis tool for C/C++ code. More information about
 Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`_.
 
+
+blt_add_astyle_target
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_astyle_target( NAME              <Created Target Name>
+                           MODIFY_FILES      [TRUE | FALSE (default)]
+                           CFG_FILE          <AStyle Configuration File> 
+                           PREPEND_FLAGS     <Additional Flags to AStyle>
+                           APPEND_FLAGS      <Additional Flags to AStyle>
+                           COMMENT           <Additional Comment for Target Invocation>
+                           WORKING_DIRECTORY <Working Directory>
+                           SRC_FILES         [FILE1 [FILE2 ...]] )
+
+Creates a new build target for running AStyle
+
+NAME
+  Name of created build target
+
+MODIFY_FILES
+  Modify the files in place. Defaults to FALSE.
+
+CFG_FILE
+  Path to AStyle config file
+
+PREPEND_FLAGS
+  Additional flags added to the front of the AStyle flags
+
+APPEND_FLAGS
+ Additional flags added to the end of the AStyle flags
+
+COMMENT
+  Comment prepended to the build target output
+
+WORKING_DIRECTORY
+  Directory in which the AStyle command is run. Defaults to where macro is called.
+
+SRC_FILES
+  Source list that AStyle will be ran on
+
+AStyle is a Source Code Beautifier for C/C++ code. More information about
+AStyle can be found `here <http://astyle.sourceforge.net/>`_.
+
+When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+target to the parent `style` build target.  Otherwise the files are not modified and the
+created target is added to the parent `check` build target. This target will notify you
+which files do not conform to your style guide.
+
+.. Note::
+  Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.
+
+
+blt_add_clangformat_target
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_clangformat_target( NAME              <Created Target Name>
+                                MODIFY_FILES      [TRUE | FALSE (default)]
+                                CFG_FILE          <ClangFormat Configuration File> 
+                                PREPEND_FLAGS     <Additional Flags to ClangFormat>
+                                APPEND_FLAGS      <Additional Flags to ClangFormat>
+                                COMMENT           <Additional Comment for Target Invocation>
+                                WORKING_DIRECTORY <Working Directory>
+                                SRC_FILES         [FILE1 [FILE2 ...]] )
+
+Creates a new build target for running ClangFormat
+
+NAME
+  Name of created build target
+
+MODIFY_FILES
+  Modify the files in place. Defaults to FALSE.
+
+CFG_FILE
+  Path to ClangFormat config file
+
+PREPEND_FLAGS
+  Additional flags added to the front of the ClangFormat flags
+
+APPEND_FLAGS
+ Additional flags added to the end of the ClangFormat flags
+
+COMMENT
+  Comment prepended to the build target output
+
+WORKING_DIRECTORY
+  Directory in which the ClangFormat command is run. Defaults to where macro is called.
+
+SRC_FILES
+  Source list that ClangFormat will be ran on
+
+ClangFormat is a Source Code Beautifier for C/C++ code. More information about
+ClangFormat can be found `here <https://clang.llvm.org/docs/ClangFormat.html>`_.
+
+When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+target to the parent `style` build target.  Otherwise the files are not modified and the
+created target is added to the parent `check` build target. This target will notify you
+which files do not conform to your style guide.
+
+.. note::
+  ClangFormat does not support a command line option for config files.  To work around this,
+  we copy the given config file to the given working directory. We recommend using the build
+  directory `${PROJECT_BINARY_DIR}`. Also if someone is directly including your CMake project
+  in theirs, you may conflict with theirs.  We recommend guarding your code checks against this
+  with the following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`.
+
+.. note::
+  ClangFormat does not support a command line option for check (--dry-run) until version 10.
+  This version is not widely used or available at this time. To work around this, we use an 
+  included script called run-clang-format.py that does not use PREPEND_FLAGS or APPEND_FLAGS
+  in the `check` build target because the script does not support command line flags passed
+  to `clang-format`. This script is not used in the `style` build target.
+
 blt_add_uncrustify_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -201,54 +339,3 @@ created target is added to the parent `check` build target. This target will not
 which files do not conform to your style guide.
 .. Note::
   Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
-
-
-blt_add_astyle_target
-~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: cmake
-
-    blt_add_astyle_target( NAME              <Created Target Name>
-                           MODIFY_FILES      [TRUE | FALSE (default)]
-                           CFG_FILE          <AStyle Configuration File> 
-                           PREPEND_FLAGS     <Additional Flags to AStyle>
-                           APPEND_FLAGS      <Additional Flags to AStyle>
-                           COMMENT           <Additional Comment for Target Invocation>
-                           WORKING_DIRECTORY <Working Directory>
-                           SRC_FILES         [FILE1 [FILE2 ...]] )
-
-Creates a new build target for running AStyle
-
-NAME
-  Name of created build target
-
-MODIFY_FILES
-  Modify the files in place. Defaults to FALSE.
-
-CFG_FILE
-  Path to AStyle config file
-
-PREPEND_FLAGS
-  Additional flags added to the front of the AStyle flags
-
-APPEND_FLAGS
- Additional flags added to the end of the AStyle flags
-
-COMMENT
-  Comment prepended to the build target output
-
-WORKING_DIRECTORY
-  Directory in which the AStyle command is run. Defaults to where macro is called.
-
-SRC_FILES
-  Source list that AStyle will be ran on
-
-AStyle is a Source Code Beautifier for C/C++ code. More information about
-AStyle can be found `here <http://astyle.sourceforge.net/>`_.
-
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
-target to the parent `style` build target.  Otherwise the files are not modified and the
-created target is added to the parent `check` build target. This target will notify you
-which files do not conform to your style guide.
-.. Note::
-  Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.

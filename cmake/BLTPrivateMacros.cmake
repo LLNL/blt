@@ -84,17 +84,22 @@ function(blt_error_if_target_exists target_name error_msg)
 endfunction()
 
 ##-----------------------------------------------------------------------------
-## blt_fix_fortran_openmp_flags()
+## blt_fix_fortran_openmp_flags(<target name>)
 ##
 ## Fixes the openmp flags for a Fortran target if they are different from the
-## corresponding C/C++ openmp flags.
+## corresponding C/C++ OpenMP flags.
 ##-----------------------------------------------------------------------------
 function(blt_fix_fortran_openmp_flags target_name)
 
-
     if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
 
-        get_target_property(target_link_flags ${target_name} LINK_FLAGS)
+        set(_property_name LINK_FLAGS)
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+            # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
+            set(_property_name LINK_OPTIONS)
+        endif()
+
+        get_target_property(target_link_flags ${target_name} ${_property_name})
         if ( target_link_flags )
 
             message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
@@ -104,7 +109,7 @@ function(blt_fix_fortran_openmp_flags target_name)
                     "${target_link_flags}"
                     )
 
-            set_target_properties( ${target_name} PROPERTIES LINK_FLAGS
+            set_target_properties( ${target_name} PROPERTIES ${_property_name}
                                    "${correct_link_flags}" )
         endif()
 

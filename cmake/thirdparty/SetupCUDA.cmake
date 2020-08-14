@@ -86,9 +86,20 @@ if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
 endif()
 
+# If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)
 find_package(CUDA REQUIRED)
+blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
+
+# Append the path to the NVIDIA SDK to the link flags
+if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
+    list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
+endif()
+if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib}" )
+    list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib" )
+endif()
 
 message(STATUS "CUDA Version:       ${CUDA_VERSION_STRING}")
+message(STATUS "CUDA Toolkit Root Dir: ${CUDA_TOOLKIT_ROOT_DIR}")
 message(STATUS "CUDA Compiler:      ${CMAKE_CUDA_COMPILER}")
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
     message(STATUS "CUDA Host Compiler: ${CMAKE_CUDA_HOST_COMPILER}")
@@ -125,7 +136,9 @@ endif()
 blt_register_library(NAME cuda
                      COMPILE_FLAGS ${_cuda_compile_flags}
                      INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES})
+                     LIBRARIES ${CUDA_LIBRARIES}
+                     LINK_FLAGS "${CMAKE_CUDA_LINK_FLAGS}"
+                     )
 
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 

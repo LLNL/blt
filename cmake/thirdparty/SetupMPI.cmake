@@ -39,7 +39,10 @@ if (ENABLE_FIND_MPI)
     #-------------------
     # Merge found MPI info and remove duplication
     #-------------------
+
+    #-------------------
     # Compile flags
+    #-------------------
     set(_c_flag ${MPI_C_${_mpi_compile_flags_suffix}})
     if (_c_flag AND ENABLE_CUDA)
         list(APPEND _mpi_compile_flags
@@ -62,7 +65,7 @@ if (ENABLE_FIND_MPI)
 
     if (ENABLE_FORTRAN)
         set(_f_flag ${MPI_Fortran_${_mpi_compile_flags_suffix}})
-        if (_f_flag AND NOT "${c_flg}" STREQUAL "${_f_flag}")
+        if (_f_flag AND NOT "${_c_flag}" STREQUAL "${_f_flag}")
             list(APPEND _mpi_compile_flags ${_f_flag})
         endif()
     endif()
@@ -70,7 +73,9 @@ if (ENABLE_FIND_MPI)
     unset(_cxx_flag)
     unset(_f_flag)
 
+    #-------------------
     # Include paths
+    #-------------------
     list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}}
                               ${MPI_CXX_${_mpi_includes_suffix}})
     if (ENABLE_FORTRAN)
@@ -78,16 +83,25 @@ if (ENABLE_FIND_MPI)
     endif()
     blt_list_remove_duplicates(TO _mpi_includes)
 
+    #-------------------
     # Link flags
+    #-------------------
     set(_mpi_link_flags ${MPI_C_LINK_FLAGS})
     if (NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_CXX_LINK_FLAGS}")
         list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
     endif()
     if (ENABLE_FORTRAN)
-        if (NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}")
-            list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
+        if ((NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}") AND
+            (NOT "${MPI_CXX_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}"))
+            list(APPEND _mpi_link_flags ${MPI_Fortran_LINK_FLAGS})
         endif()
     endif()
+
+    # Selectively remove set of known locations of spaces
+    string(REPLACE " -Wl"      ";-Wl"       _mpi_link_flags "${_mpi_link_flags}")
+    string(REPLACE " -L"       ";-L"        _mpi_link_flags "${_mpi_link_flags}")
+    string(REPLACE " -pthread" ";-pthread"  _mpi_link_flags "${_mpi_link_flags}")
+
     # Fixes for linking with NVCC
     if (CUDA_LINK_WITH_NVCC)
         # Convert rpath flag if linking with CUDA
@@ -98,7 +112,9 @@ if (ENABLE_FIND_MPI)
                        _mpi_link_flags "${_mpi_link_flags}")
     endif()
 
+    #-------------------
     # Libraries
+    #-------------------
     set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
     if (ENABLE_FORTRAN)
         list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
@@ -120,6 +136,15 @@ if (BLT_MPI_LINK_FLAGS)
     set(_mpi_link_flags ${BLT_MPI_LINK_FLAGS})
 endif()
 
+#
+# We use `LINK_OPTIONS` for CMake 3.13 and beyond.
+# To make sure that de-duping doesn't undermine our MPI flags
+# use a string with SHELL: prefix
+#
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+    string(REPLACE ";" " " _mpi_link_flags "${_mpi_link_flags}")
+    set(_mpi_link_flags "SHELL:${_mpi_link_flags}")
+endif()
 
 # Output all MPI information
 message(STATUS "BLT MPI Compile Flags:  ${_mpi_compile_flags}")
