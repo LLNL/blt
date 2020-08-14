@@ -265,7 +265,7 @@ if (BLT_CXX_STD)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
             message(FATAL_ERROR "XL does not support C++17.")
         endif()
-        if (ENABLE_CUDA)
+        if (ENABLE_CUDA AND (NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES)))
             message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
         endif()
 
