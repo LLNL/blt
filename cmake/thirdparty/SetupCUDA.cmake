@@ -58,7 +58,6 @@ if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_SHARED_LIBRARY_RPATH_LINK_CUDA_FLAG "-Xlinker -rpath -Xlinker " CACHE STRING "")
 endif()
 
-
 ############################################################
 # Basics
 ############################################################
@@ -120,6 +119,14 @@ if (CMAKE_CXX_COMPILER)
 else()
     set(CUDA_HOST_COMPILER ${CMAKE_C_COMPILER})
 endif()
+
+# Set PIE options to empty for PGI since it doesn't understand -fPIE This
+# option is set in the CUDA toolchain file so must be unset after
+# enable_language(CUDA)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+  set(CMAKE_CUDA_COMPILE_OPTIONS_PIE "")
+endif()
+
 
 set(_cuda_compile_flags " ")
 if (ENABLE_CLANG_CUDA)
