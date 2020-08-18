@@ -321,60 +321,60 @@ macro(blt_register_library)
 
     string(TOUPPER ${arg_NAME} uppercase_name)
 
-    set(BLT_${uppercase_name}_IS_REGISTERED_LIBRARY TRUE CACHE BOOL "" FORCE)
+    set(_BLT_${uppercase_name}_IS_REGISTERED_LIBRARY TRUE CACHE BOOL "" FORCE)
 
     if( arg_DEPENDS_ON )
-        set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_DEPENDS_ON)
+        set(_BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_DEPENDS_ON)
     endif()
 
     if( arg_INCLUDES )
-        set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
+        set(_BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_INCLUDES)
     endif()
 
     if( ${arg_OBJECT} )
-        set(BLT_${uppercase_name}_IS_OBJECT_LIBRARY TRUE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY TRUE CACHE BOOL "" FORCE)
     else()
-        set(BLT_${uppercase_name}_IS_OBJECT_LIBRARY FALSE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY FALSE CACHE BOOL "" FORCE)
     endif()
-    mark_as_advanced(BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
+    mark_as_advanced(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
 
     if( ${arg_TREAT_INCLUDES_AS_SYSTEM} )
-        set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM TRUE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM TRUE CACHE BOOL "" FORCE)
     else()
-        set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM FALSE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM FALSE CACHE BOOL "" FORCE)
     endif()
-    mark_as_advanced(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
+    mark_as_advanced(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
-        set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_FORTRAN_MODULES)
+        set(_BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_FORTRAN_MODULES)
     endif()
 
     if( arg_LIBRARIES )
-        set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE STRING "" FORCE)
+        set(_BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE STRING "" FORCE)
     else()
         # This prevents cmake from falling back on adding -l<library name>
         # to the command line for BLT registered libraries which are not
         # actual CMake targets
-        set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE STRING "" FORCE)
+        set(_BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE STRING "" FORCE)
     endif()
-    mark_as_advanced(BLT_${uppercase_name}_LIBRARIES)
+    mark_as_advanced(_BLT_${uppercase_name}_LIBRARIES)
 
     if( arg_COMPILE_FLAGS )
-        set(BLT_${uppercase_name}_COMPILE_FLAGS "${arg_COMPILE_FLAGS}" CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_COMPILE_FLAGS)
+        set(_BLT_${uppercase_name}_COMPILE_FLAGS "${arg_COMPILE_FLAGS}" CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_COMPILE_FLAGS)
     endif()
 
     if( arg_LINK_FLAGS )
-        set(BLT_${uppercase_name}_LINK_FLAGS "${arg_LINK_FLAGS}" CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_LINK_FLAGS)
+        set(_BLT_${uppercase_name}_LINK_FLAGS "${arg_LINK_FLAGS}" CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_LINK_FLAGS)
     endif()
 
     if( arg_DEFINES )
-        set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_DEFINES)
+        set(_BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_DEFINES)
     endif()
 
 endmacro(blt_register_library)
@@ -1099,7 +1099,7 @@ macro(blt_print_target_properties)
 
     set(_is_blt_registered_target FALSE)
     string(TOUPPER ${arg_TARGET} _target_upper)
-    if(BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+    if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         set(_is_blt_registered_target TRUE)
         message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a blt_registered target")
     endif()
@@ -1141,11 +1141,11 @@ macro(blt_print_target_properties)
         unset(_propval)
     endif()
 
-    ## Additionally, output variables generated via blt_register_target of the form "BLT_<target>_*"
+    ## Additionally, output variables generated via blt_register_target of the form "_BLT_<target>_*"
     if(_is_blt_registered_target)
-        set(_target_prefix "BLT_${_target_upper}_")
+        set(_target_prefix "_BLT_${_target_upper}_")
 
-        ## Filter to get variables of the form BLT_<target>_ and print
+        ## Filter to get variables of the form _BLT_<target>_ and print
         get_cmake_property(_variable_names VARIABLES)
         foreach (prop ${_variable_names})
             if(prop MATCHES "^${_target_prefix}")
