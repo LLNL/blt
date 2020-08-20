@@ -188,7 +188,7 @@ Normal libraries are libraries that have sources that are compiled and linked in
 library and have headers that go along with them (unless it's a Fortran library).
 
 Header-only libraries are useful when you do not want the library separately compiled or 
-are using C++ templates that require the library's user to instatiate them. These libraries
+are using C++ templates that require the library's user to instantiate them. These libraries
 have headers but no sources. To create a header-only library (CMake calls them INTERFACE libraries),
 simply list all headers under the HEADER argument and do not specify SOURCES (because there aren't any).
 
@@ -262,7 +262,7 @@ This macro assists with building up the correct command line. It will prepend
 the RUNTIME_OUTPUT_DIRECTORY target property to the executable.
 
 If NUM_MPI_TASKS is given or ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC is set, the macro 
-will appropiately use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND 
+will appropriately use MPIEXEC, MPIEXEC_NUMPROC_FLAG, and BLT_MPI_COMMAND_APPEND 
 to create the MPI run line.
 
 MPIEXEC and MPIEXEC_NUMPROC_FLAG are filled in by CMake's FindMPI.cmake but can
@@ -329,13 +329,16 @@ Note: The OBJECT parameter is for internal BLT support for object libraries
 and is not for users.  Object libraries are created using blt_add_library().
 
 Internally created variables (NAME = "foo"):
-    | BLT_FOO_IS_REGISTERED_LIBRARY
-    | BLT_FOO_IS_OBJECT_LIBRARY
-    | BLT_FOO_DEPENDS_ON
-    | BLT_FOO_INCLUDES
-    | BLT_FOO_TREAT_INCLUDES_AS_SYSTEM
-    | BLT_FOO_FORTRAN_MODULES
-    | BLT_FOO_LIBRARIES
-    | BLT_FOO_COMPILE_FLAGS
-    | BLT_FOO_LINK_FLAGS
-    | BLT_FOO_DEFINES
+    | _BLT_FOO_IS_REGISTERED_LIBRARY
+    | _BLT_FOO_IS_OBJECT_LIBRARY
+    | _BLT_FOO_DEPENDS_ON
+    | _BLT_FOO_INCLUDES
+    | _BLT_FOO_TREAT_INCLUDES_AS_SYSTEM
+    | _BLT_FOO_FORTRAN_MODULES
+    | _BLT_FOO_LIBRARIES
+    | _BLT_FOO_COMPILE_FLAGS
+    | _BLT_FOO_LINK_FLAGS
+    | _BLT_FOO_DEFINES
+
+Internal variable names are prefixed with ``_`` to avoid collision with input parameters.
+
