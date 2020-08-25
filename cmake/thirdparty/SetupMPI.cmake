@@ -136,6 +136,15 @@ if (BLT_MPI_LINK_FLAGS)
     set(_mpi_link_flags ${BLT_MPI_LINK_FLAGS})
 endif()
 
+#
+# We use `LINK_OPTIONS` for CMake 3.13 and beyond.
+# To make sure that de-duping doesn't undermine our MPI flags
+# use a string with SHELL: prefix
+#
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+    string(REPLACE ";" " " _mpi_link_flags "${_mpi_link_flags}")
+    set(_mpi_link_flags "SHELL:${_mpi_link_flags}")
+endif()
 
 # Output all MPI information
 message(STATUS "BLT MPI Compile Flags:  ${_mpi_compile_flags}")

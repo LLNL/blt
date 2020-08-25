@@ -271,8 +271,8 @@ macro(blt_setup_target)
         foreach( dependency ${_expanded_DEPENDS_ON} )
             string(TOUPPER ${dependency} uppercase_dependency )
 
-            if ( DEFINED BLT_${uppercase_dependency}_DEPENDS_ON )
-                foreach(new_dependency ${BLT_${uppercase_dependency}_DEPENDS_ON})
+            if ( DEFINED _BLT_${uppercase_dependency}_DEPENDS_ON )
+                foreach(new_dependency ${_BLT_${uppercase_dependency}_DEPENDS_ON})
                     if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
                         list(APPEND _expanded_DEPENDS_ON ${new_dependency})
                     endif()
@@ -285,29 +285,29 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
-        if ( NOT arg_OBJECT AND BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+        if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
+        if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
+            if ( _BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
                 target_include_directories( ${arg_NAME} SYSTEM PUBLIC
-                    ${BLT_${uppercase_dependency}_INCLUDES} )
+                    ${_BLT_${uppercase_dependency}_INCLUDES} )
             else()
                 target_include_directories( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_INCLUDES} )
+                    ${_BLT_${uppercase_dependency}_INCLUDES} )
             endif()
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
+        if ( DEFINED _BLT_${uppercase_dependency}_FORTRAN_MODULES )
             target_include_directories( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
+                ${_BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
         if ( arg_OBJECT )
             # Object libraries need to inherit info from their CMake targets listed
             # in their LIBRARIES
-            foreach( _library ${BLT_${uppercase_dependency}_LIBRARIES} )
+            foreach( _library ${_BLT_${uppercase_dependency}_LIBRARIES} )
                 if(TARGET ${_library})
                     blt_inherit_target_info(TO     ${arg_NAME}
                                             FROM   ${_library}
@@ -316,7 +316,7 @@ macro(blt_setup_target)
             endforeach()
         endif()
 
-        if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+        if ( arg_OBJECT OR _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             # We want object libraries to inherit the vital info but not call
             # target_link_libraries() otherwise you have to install the object
             # files associated with the object library which noone wants.
@@ -325,32 +325,32 @@ macro(blt_setup_target)
                                         FROM   ${dependency}
                                         OBJECT ${arg_OBJECT})
             endif()
-        elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+        elseif (DEFINED _BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the
             # command line for BLT registered libraries which are not
             # actual CMake targets
-            if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
+            if(NOT "${_BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
                 target_link_libraries( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_LIBRARIES} )
+                    ${_BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
         else()
             target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
+        if ( DEFINED _BLT_${uppercase_dependency}_DEFINES )
             target_compile_definitions( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_DEFINES} )
+                ${_BLT_${uppercase_dependency}_DEFINES} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
+        if ( DEFINED _BLT_${uppercase_dependency}_COMPILE_FLAGS )
             blt_add_target_compile_flags(TO ${arg_NAME}
-                                         FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
+                                         FLAGS ${_BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( NOT arg_OBJECT AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT arg_OBJECT AND DEFINED _BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
-                                      FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
+                                      FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
 
     endforeach()

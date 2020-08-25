@@ -3,6 +3,8 @@
 We welcome contributions to BLT. To do so please submit a pull request through our
 BLT github page at https://github.com/LLNL/blt.
 
+Before submitting a pull request, update `RELEASE-NOTES.md` accordingly.
+
 All contributions to BLT must be made under the BSD License.
 
 Any questions can be sent to blt-dev@llnl.gov.
@@ -27,4 +29,3 @@ Since we want everyone to feel they are getting the proper attribution for their
 * Martin McFadden, LLNL
 * Mark Miller, LLNL
 * David Poliakoff, Sandia National Laboratories
-
