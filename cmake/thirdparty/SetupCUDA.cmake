@@ -58,6 +58,7 @@ if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_SHARED_LIBRARY_RPATH_LINK_CUDA_FLAG "-Xlinker -rpath -Xlinker " CACHE STRING "")
 endif()
 
+
 ############################################################
 # Basics
 ############################################################
@@ -111,6 +112,8 @@ message(STATUS "CUDA Compile Flags: ${CMAKE_CUDA_FLAGS}")
 message(STATUS "CUDA Link Flags:    ${CMAKE_CUDA_LINK_FLAGS}")
 message(STATUS "CUDA Separable Compilation:  ${CUDA_SEPARABLE_COMPILATION}")
 message(STATUS "CUDA Link with NVCC:         ${CUDA_LINK_WITH_NVCC}")
+message(STATUS "CUDA Implicit Link Libraries:   ${CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES}")
+message(STATUS "CUDA Implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
 
 # don't propagate host flags - too easy to break stuff!
 set (CUDA_PROPAGATE_HOST_FLAGS Off)
@@ -140,11 +143,11 @@ endif()
 # leaving it to the default source file language.
 # This logic is handled in the blt_add_library/executable
 # macros
-blt_register_library(NAME cuda
+blt_register_library(NAME          cuda
                      COMPILE_FLAGS ${_cuda_compile_flags}
-                     INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES}
-                     LINK_FLAGS "${CMAKE_CUDA_LINK_FLAGS}"
+                     INCLUDES      ${CUDA_INCLUDE_DIRS}
+                     LIBRARIES     ${CUDA_LIBRARIES}
+                     LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
                      )
 
 # same as 'cuda' but we don't flag your source files as
@@ -153,6 +156,16 @@ blt_register_library(NAME cuda
 # linking with nvcc.
 # This logic is handled in the blt_add_library/executable
 # macros
-blt_register_library(NAME cuda_runtime
-                     INCLUDES ${CUDA_INCLUDE_DIRS}
+blt_register_library(NAME      cuda_runtime
+                     INCLUDES  ${CUDA_INCLUDE_DIRS}
                      LIBRARIES ${CUDA_LIBRARIES})
+
+# Allow the removal of implicitly found link directories
+# Note: This is a very specific fix for working around CMake adding implicit link
+# directories returned by the BlueOS compilers to link CUDA executables
+# They are added by logic found in the CMake source: Modules/CMakeTestCUDACompiler.cmake
+if(BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE)
+    message(STATUS "Removing implicit CUDA link directories: ${BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE}")
+    list(REMOVE_ITEM CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
+    message(STATUS "Updated CUDA Implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
+endif()
