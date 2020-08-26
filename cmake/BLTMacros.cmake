@@ -340,7 +340,8 @@ macro(blt_register_library)
     endif()
     mark_as_advanced(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
 
-    if( ${arg_TREAT_INCLUDES_AS_SYSTEM} )
+    # PGI does not support -isystem
+    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
         set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM TRUE CACHE BOOL "" FORCE)
     else()
         set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM FALSE CACHE BOOL "" FORCE)

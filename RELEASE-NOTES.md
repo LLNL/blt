@@ -9,6 +9,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## Added
+- Added variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE to allow removing
+  implicit link directories added to CUDA executables by CMake. See the following example host-config:
+  host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
+
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
   as single string prefixed by ``SHELL:`` to prevent de-duplication of flags
@@ -18,6 +23,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - ClangFormat checks now support multiple Python executable names
 - Prefixed blt_register_library() internal variables with ``_`` to avoid collision
   with input parameters.
+- Turn off system includes for registered libraries when using the PGI compiler
+- Removed unneeded INTERFACE system includes added by googletest that was causing problems
+  in PGI builds (BLT was adding them already to the register library calls)
 
 ## [Version 0.3.6] - Release date 2020-07-27
 

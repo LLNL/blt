@@ -95,8 +95,6 @@ endif()
 #------------------------------------------------------------------------------
 if(CUDA_FOUND)
 # _blt_tutorial_calcpi_cuda_start
-    # avoid warnings about sm_20 deprecated
-    set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-arch=sm_30)
 	
     blt_add_library( NAME       calc_pi_cuda
                      HEADERS    calc_pi_cuda.hpp calc_pi_cuda_exports.h
@@ -106,8 +104,6 @@ if(CUDA_FOUND)
     if(WIN32 AND BUILD_SHARED_LIBS)
         target_compile_definitions(calc_pi_cuda PUBLIC WIN32_SHARED_LIBS)
     endif()
-
-
 
     blt_add_executable( NAME       test_3
                         SOURCES    test_3.cpp 

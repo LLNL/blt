@@ -159,7 +159,7 @@ if(ENABLE_GTEST)
     #------------------------------------------------------
     # CUDA tests
     #------------------------------------------------------
-    if (ENABLE_CUDA)
+    if (ENABLE_CUDA AND CUDA_SEPARABLE_COMPILATION)
         add_subdirectory(src/test_cuda_device_call_from_kernel)
     endif()
     
@@ -255,7 +255,7 @@ endif()
 
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
