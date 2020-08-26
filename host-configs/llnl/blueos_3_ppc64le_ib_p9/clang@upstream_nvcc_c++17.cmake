@@ -35,7 +35,7 @@ set(BLT_EXE_LINKER_FLAGS " -Wl,-rpath,${_GCC_DIR}/lib" CACHE PATH "Adds a missin
 #---------------------------------------
 # MPI
 #---------------------------------------
-set(ENABLE_MPI OFF CACHE BOOL "")
+set(ENABLE_MPI ON CACHE BOOL "")
 
 set(_MPI_BASE_DIR "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${_CLANG_VER}")
 
