@@ -10,8 +10,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ## [Unreleased] - Release date yyyy-mm-dd
 
 ## Added
-- Added variable to allow removing of implicit link directories added to CUDA executables
-  BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE. See the following example host-config:
+- Added variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE to allow removing
+  implicit link directories added to CUDA executables by CMake. See the following example host-config:
   host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
 
 ### Changed
@@ -25,7 +25,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   with input parameters.
 - Turn off system includes for registered libraries when using the PGI compiler
 - Removed unneeded INTERFACE system includes added by googletest that was causing problems
-  PGI builds (BLT was adding them already to the register library calls)
+  in PGI builds (BLT was adding them already to the register library calls)
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
