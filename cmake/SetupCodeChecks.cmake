@@ -56,13 +56,7 @@ if(CLANGQUERY_FOUND)
 endif()
 
 if(CLANGTIDY_FOUND)
-    # note: interactive_clang_tidy_check 
-    # is for the use of code developers who
-    # want to check specific attributes of
-    # specific targets, and does not make 
-    # sense as a dependency of check
     add_custom_target(clang_tidy_check)
-    add_custom_target(interactive_clang-tidy_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_tidy_check)
 endif()
 
@@ -70,8 +64,7 @@ endif()
 foreach(target 
         check uncrustify_check astyle_check clangformat_check cppcheck_check
         style uncrustify_style astyle_style clangformat_style
-        clang_query_check interactive_clang_query_check
-        clang_tidy_check interactive_clang_tidy_check)
+        clang_query_check interactive_clang_query_check clang_tidy_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
@@ -335,7 +328,6 @@ macro(blt_add_clang_tidy_target)
             set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
         endif()
    
-        set(interactive_tidy_target_name interactive_tidy_${arg_NAME})
         set(CLANG_TIDY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/run-clang-tidy.py)
         set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_SCRIPT} -clang-tidy-binary=${CLANGTIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR})
 
@@ -356,18 +348,10 @@ macro(blt_add_clang_tidy_target)
                     COMMENT "${arg_COMMENT}Running default clang-tidy source code static analysis checks.")
         endif()
 
-        add_custom_target(${interactive_tidy_target_name}
-          COMMAND ${CLANG_TIDY_HELPER_COMMAND} -i ${arg_SRC_FILES}
-                WORKING_DIRECTORY ${_wd}
-                COMMENT "${arg_COMMENT}Running clang-tidy source code static analysis checks.")
-
         # hook our new target into the proper dependency chain
         add_dependencies(clang_tidy_check ${arg_NAME})
-        add_dependencies(interactive_clang-tidy_check ${interactive_tidy_target_name})
 
         # Code check targets should only be run on demand
-        set_property(TARGET ${interactive_tidy_target_name} PROPERTY EXCLUDE_FROM_ALL TRUE)
-        set_property(TARGET ${interactive_tidy_target_name} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
