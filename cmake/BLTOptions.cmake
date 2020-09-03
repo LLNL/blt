@@ -28,6 +28,7 @@ option(ENABLE_SPHINX       "Enables Sphinx support" ON)
 
 # Quality
 option(ENABLE_CLANGQUERY   "Enables Clang-query support" ON)
+option(ENABLE_CLANGTIDY    "Enables clang-tidy support" ON)
 option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
 option(ENABLE_VALGRIND     "Enables Valgrind support" ON)
 
@@ -142,4 +143,3 @@ mark_as_advanced(
     BLT_CODE_STYLE_TARGET_NAME
     BLT_DOCS_TARGET_NAME
     BLT_RUN_BENCHMARKS_TARGET_NAME )
-
