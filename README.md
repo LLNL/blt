@@ -37,6 +37,7 @@ operating systems and technologies:
       [Uncrustify](http://uncrustify.sourceforge.net)
  * Code quality
       [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
+      [clang-tidy](https://clang.llvm.org/extra/clang-tidy),
       [Cppcheck](http://cppcheck.sourceforge.net)
  
 

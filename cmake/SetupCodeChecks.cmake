@@ -304,6 +304,7 @@ endmacro(blt_add_clang_query_target)
 ##                            WORKING_DIRECTORY <Working Directory>
 ##                            COMMENT           <Additional Comment for Target Invocation>
 ##                            CHECKS            <If specified, requires a specific set of checks>
+##                            FIX               <If true, apply fixes>
 ##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang=tidy over the given SRC_FILES
@@ -313,7 +314,7 @@ macro(blt_add_clang_tidy_target)
 
         ## parse the arguments to the macro
         set(options)
-        set(singleValueArgs NAME COMMENT WORKING_DIRECTORY)
+        set(singleValueArgs NAME COMMENT WORKING_DIRECTORY FIX)
         set(multiValueArgs SRC_FILES CHECKS)
 
         cmake_parse_arguments(arg
@@ -338,6 +339,10 @@ macro(blt_add_clang_tidy_target)
         set(CLANG_TIDY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/run-clang-tidy.py)
         set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_SCRIPT} -clang-tidy-binary=${CLANGTIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR})
 
+        if(arg_FIX)
+            set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_COMMAND} -fix)
+        endif()
+
         if(DEFINED arg_CHECKS)
             STRING(REGEX REPLACE " " ":" CHECK_ARG_STRING ${arg_CHECKS})
             add_custom_target(${arg_NAME}
@@ -346,7 +351,7 @@ macro(blt_add_clang_tidy_target)
                     COMMENT "${arg_COMMENT}Running specified clang-tidy source code static analysis checks.")
         else() #DEFINED CHECKERS
             add_custom_target(${arg_NAME}
-              COMMAND ${CLANG_TIDY_HELPER_COMMAND} -checks=* ${arg_SRC_FILES}
+              COMMAND ${CLANG_TIDY_HELPER_COMMAND} ${arg_SRC_FILES}
                     WORKING_DIRECTORY ${_wd}
                     COMMENT "${arg_COMMENT}Running default clang-tidy source code static analysis checks.")
         endif()
