@@ -18,3 +18,9 @@ blt_add_code_checks(PREFIX all
 blt_add_clang_query_target(NAME filtered CHECKERS "if-stmt"
   SRC_FILES well_analyzed_source.cpp)
 
+blt_add_executable( NAME subtle_error
+                    SOURCES subtle_error_source.cpp
+)
+blt_add_clang_tidy_target(NAME check_for_subtle_error 
+                          CHECKS "clang-analyzer-*"
+                          SRC_FILES subtle_error_source.cpp)
