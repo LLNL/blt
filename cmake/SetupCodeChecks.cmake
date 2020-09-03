@@ -336,7 +336,7 @@ macro(blt_add_clang_tidy_target)
         endif()
 
         if(DEFINED arg_CHECKS)
-            STRING(REGEX REPLACE " " ":" CHECK_ARG_STRING ${arg_CHECKS})
+            STRING(REGEX REPLACE " " "," CHECK_ARG_STRING ${arg_CHECKS})
             add_custom_target(${arg_NAME}
               COMMAND ${CLANG_TIDY_HELPER_COMMAND} -checks=${CHECK_ARG_STRING} ${arg_SRC_FILES}
                     WORKING_DIRECTORY ${_wd}
