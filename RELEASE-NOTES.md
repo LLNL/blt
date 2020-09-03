@@ -13,6 +13,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE to allow removing
   implicit link directories added to CUDA executables by CMake. See the following example host-config:
   host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
+- Added support for clang-tidy static analysis check
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed

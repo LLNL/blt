@@ -296,7 +296,7 @@ endmacro(blt_add_clang_query_target)
 ## blt_add_clang_tidy_target( NAME              <Created Target Name>
 ##                            WORKING_DIRECTORY <Working Directory>
 ##                            COMMENT           <Additional Comment for Target Invocation>
-##                            CHECKS            <If specified, requires a specific set of checks>
+##                            CHECKS            <If specified, enables a specific set of checks>
 ##                            FIX               <If true, apply fixes>
 ##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
