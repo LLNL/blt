@@ -684,7 +684,7 @@ macro(blt_add_test)
     # Append the test_directory to the test argument, accounting for multi-config generators
     if(NOT CMAKE_CONFIGURATION_TYPES)
         if(NOT "${_test_directory}" STREQUAL "")
-            set(_test_command ${_test_directory}/${arg_COMMAND} )
+            set(_test_command ${_test_directory}/${arg_COMMAND}${CMAKE_EXECUTABLE_SUFFIX} )
         else()
             set(_test_command ${arg_COMMAND})
         endif()
