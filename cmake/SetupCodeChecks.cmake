@@ -300,7 +300,7 @@ endmacro(blt_add_clang_query_target)
 ##                            FIX               <If true, apply fixes>
 ##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
-## Creates a new target with the given NAME for running clang=tidy over the given SRC_FILES
+## Creates a new target with the given NAME for running clang-tidy over the given SRC_FILES
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_tidy_target)
     if(CLANGTIDY_FOUND)
