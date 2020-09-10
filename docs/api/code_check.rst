@@ -96,7 +96,7 @@ This macro supports the following static analysis tools with their requirements:
   * CLANGTIDY_EXECUTABLE is defined and found prior to calling this macro
 
 These are added as children to the `check` build target and produce child build targets
-that follow the pattern `<PREFIX>_<cppcheck|clangquery|clang_tidy>_check`.
+that follow the pattern `<PREFIX>_<cppcheck|clang_query|clang_tidy>_check`.
 
 blt_add_clang_query_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
