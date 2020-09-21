@@ -55,7 +55,8 @@ For more information, please check our [user documentation and tutorial](https:/
 Questions
 ---------
 
-Any questions can be sent to blt-dev@llnl.gov.
+Any questions can be sent to blt-dev@llnl.gov.  If you are an LLNL employee or collaborator, we have an
+internal Microsoft Teams Group Chat named "BLT" as well.
 
 Authors
 -------
