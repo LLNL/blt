@@ -67,13 +67,14 @@ blt_add_executable
 
 .. code-block:: cmake
 
-    blt_add_executable( NAME       <name>
-                        SOURCES    [source1 [source2 ...]]
-                        INCLUDES   [dir1 [dir2 ...]]
-                        DEFINES    [define1 [define2 ...]]
-                        DEPENDS_ON [dep1 [dep2 ...]]
-                        OUTPUT_DIR [dir]
-                        FOLDER     [name])
+    blt_add_executable( NAME        <name>
+                        SOURCES     [source1 [source2 ...]]
+                        INCLUDES    [dir1 [dir2 ...]]
+                        DEFINES     [define1 [define2 ...]]
+                        DEPENDS_ON  [dep1 [dep2 ...]]
+                        OUTPUT_DIR  [dir]
+                        OUTPUT_NAME [name]
+                        FOLDER      [name])
 
 Adds an executable target to the project.
 
@@ -98,6 +99,9 @@ DEPENDS_ON
 OUTPUT_DIR
   Directory that this target will built to, defaults to bin
 
+OUTPUT_NAME
+  Override built file name of the executable (defaults to <NAME>)  
+
 FOLDER
   Name of the IDE folder to ease organization
 
@@ -106,6 +110,9 @@ It also adds the given INCLUDES and DEFINES from the parameters to this macro
 and adds all inherited information from the list given by DEPENDS_ON.  This
 macro creates a true CMake target that can be altered by other CMake commands
 like normal, such as `set_target_property()`.
+
+OUTPUT_NAME is useful when multiple CMake targets with the same name need to be
+created by different targets.
 
 .. note::
   If the first entry in SOURCES is a Fortran source file, the fortran linker 
@@ -161,7 +168,7 @@ DEPENDS_ON
   depends on
 
 OUTPUT_NAME
-  Override built file name of library (defaults to <NAME>)  
+  Override built file name of the library (defaults to <NAME>)  
 
 OUTPUT_DIR
   Directory that this target will built to

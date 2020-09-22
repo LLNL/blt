@@ -14,6 +14,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   implicit link directories added to CUDA executables by CMake. See the following example host-config:
   host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
 - Added support for clang-tidy static analysis check
+- Added ability to change the output name of an executable via the OUTPUT_NAME
+  parameter of blt_add_executable
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
