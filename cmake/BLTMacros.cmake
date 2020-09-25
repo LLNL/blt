@@ -547,20 +547,21 @@ endmacro(blt_add_library)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_executable( NAME       <name>
-##                     SOURCES    [source1 [source2 ...]]
-##                     INCLUDES   [dir1 [dir2 ...]]
-##                     DEFINES    [define1 [define2 ...]]
-##                     DEPENDS_ON [dep1 [dep2 ...]]
-##                     OUTPUT_DIR [dir]
-##                     FOLDER     [name])
+## blt_add_executable( NAME        <name>
+##                     SOURCES     [source1 [source2 ...]]
+##                     INCLUDES    [dir1 [dir2 ...]]
+##                     DEFINES     [define1 [define2 ...]]
+##                     DEPENDS_ON  [dep1 [dep2 ...]]
+##                     OUTPUT_DIR  [dir]
+##                     OUTPUT_NAME [name]
+##                     FOLDER      [name])
 ##
 ## Adds an executable target, called <name>, to be built from the given sources.
 ##------------------------------------------------------------------------------
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR FOLDER)
+    set(singleValueArgs NAME OUTPUT_DIR OUTPUT_NAME FOLDER)
     set(multiValueArgs SOURCES INCLUDES DEFINES DEPENDS_ON)
 
     # Parse the arguments to the macro
@@ -618,6 +619,11 @@ macro(blt_add_executable)
 
     if ( arg_DEFINES )
         target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+    endif()
+
+    if ( arg_OUTPUT_NAME )
+        set_target_properties(${arg_NAME} PROPERTIES
+            OUTPUT_NAME ${arg_OUTPUT_NAME} )
     endif()
 
     # when using shared libs on windows, all runtime targets

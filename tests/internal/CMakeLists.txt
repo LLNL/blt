@@ -261,7 +261,7 @@ endforeach()
 
 add_subdirectory(src/object_library_test)
 
-if(ENABLE_CLANGQUERY)
+if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)
   add_subdirectory(src/static_analysis)
 endif()
 

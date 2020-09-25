@@ -91,8 +91,12 @@ This macro supports the following static analysis tools with their requirements:
 
   * CLANGQUERY_EXECUTABLE is defined and found prior to calling this macro
 
+- clang-tidy
+
+  * CLANGTIDY_EXECUTABLE is defined and found prior to calling this macro
+
 These are added as children to the `check` build target and produce child build targets
-that follow the pattern `<PREFIX>_<cppcheck|clangquery>_check`.
+that follow the pattern `<PREFIX>_<cppcheck|clang_query|clang_tidy>_check`.
 
 blt_add_clang_query_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -174,6 +178,46 @@ SRC_FILES
 
 Cppcheck is a static analysis tool for C/C++ code. More information about
 Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`_.
+
+
+blt_add_clang_tidy_target
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_clang_tidy_target( NAME              <Created Target Name>
+                               WORKING_DIRECTORY <Working Directory>
+                               COMMENT           <Additional Comment for Target Invocation>
+                               CHECKS            <If specified, enables a specific set of checks>
+                               FIX               <TRUE | FALSE (default)>
+                               SRC_FILES         [source1 [source2 ...]] )
+
+Creates a new build target for running clang-tidy.
+
+NAME
+  Name of created build target
+
+WORKING_DIRECTORY
+  Directory in which the clang-tidy command is run. Defaults to where macro is called.
+
+COMMENT
+  Comment prepended to the build target output
+
+CHECKS
+  list of checks to be run on the selected source files, available checks are listed
+  `here <https://clang.llvm.org/extra/clang-tidy/checks/list.html>`_.
+
+FIX
+  Applies fixes for checks (a subset of clang-tidy checks specify how they should be resolved)
+
+SRC_FILES
+  Source list that clang-tidy will be ran on
+
+Clang-tidy is a tool used for diagnosing and fixing typical programming errors. It is useful for enforcing
+coding standards and rules on your source code.  Clang-tidy is documented `here <https://clang.llvm.org/extra/clang-tidy/index.html>`_.
+
+CHECKS are the static analysis "rules" to specifically run on the target. 
+If no checks are specified, clang-tidy will run the default available static analysis checks.
 
 
 blt_add_astyle_target

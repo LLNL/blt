@@ -37,6 +37,7 @@ operating systems and technologies:
       [Uncrustify](http://uncrustify.sourceforge.net)
  * Code quality
       [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
+      [clang-tidy](https://clang.llvm.org/extra/clang-tidy),
       [Cppcheck](http://cppcheck.sourceforge.net)
  
 
@@ -54,7 +55,8 @@ For more information, please check our [user documentation and tutorial](https:/
 Questions
 ---------
 
-Any questions can be sent to blt-dev@llnl.gov.
+Any questions can be sent to blt-dev@llnl.gov.  If you are an LLNL employee or collaborator, we have an
+internal Microsoft Teams group chat named "BLT" as well.
 
 Authors
 -------

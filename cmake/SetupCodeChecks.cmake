@@ -55,11 +55,16 @@ if(CLANGQUERY_FOUND)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_query_check)
 endif()
 
+if(CLANGTIDY_FOUND)
+    add_custom_target(clang_tidy_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_tidy_check)
+endif()
+
 # Code check targets should only be run on demand
 foreach(target 
         check uncrustify_check astyle_check clangformat_check cppcheck_check
         style uncrustify_style astyle_style clangformat_style
-        clang_query_check interactive_clang_query_check)
+        clang_query_check interactive_clang_query_check clang_tidy_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
@@ -203,6 +208,14 @@ macro(blt_add_code_checks)
                                     SRC_FILES         ${_c_sources})
     endif()
 
+    if (CLANGTIDY_FOUND)
+        set(_clang_tidy_target_name ${arg_PREFIX}_clang_tidy_check)
+        blt_error_if_target_exists(${_clang_tidy_target_name} ${_error_msg})
+        blt_add_clang_tidy_target( NAME              ${_clang_tidy_target_name}
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                    SRC_FILES         ${_c_sources})
+    endif()
+
 endmacro(blt_add_code_checks)
 
 ##-----------------------------------------------------------------------------
@@ -278,6 +291,71 @@ macro(blt_add_clang_query_target)
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
 endmacro(blt_add_clang_query_target)
+
+##-----------------------------------------------------------------------------
+## blt_add_clang_tidy_target( NAME              <Created Target Name>
+##                            WORKING_DIRECTORY <Working Directory>
+##                            COMMENT           <Additional Comment for Target Invocation>
+##                            CHECKS            <If specified, enables a specific set of checks>
+##                            FIX               <If true, apply fixes>
+##                            SRC_FILES         [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running clang-tidy over the given SRC_FILES
+##-----------------------------------------------------------------------------
+macro(blt_add_clang_tidy_target)
+    if(CLANGTIDY_FOUND)
+
+        ## parse the arguments to the macro
+        set(options)
+        set(singleValueArgs NAME COMMENT WORKING_DIRECTORY FIX)
+        set(multiValueArgs SRC_FILES CHECKS)
+
+        cmake_parse_arguments(arg
+            "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+        # Check required parameters
+        if(NOT DEFINED arg_NAME)
+             message(FATAL_ERROR "blt_add_clang_tidy_target requires a NAME parameter")
+        endif()
+
+        if(NOT DEFINED arg_SRC_FILES)
+            message(FATAL_ERROR "blt_add_clang_tidy_target requires a SRC_FILES parameter")
+        endif()
+
+        if(DEFINED arg_WORKING_DIRECTORY)
+            set(_wd ${arg_WORKING_DIRECTORY})
+        else()
+            set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+        endif()
+   
+        set(CLANG_TIDY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/run-clang-tidy.py)
+        set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_SCRIPT} -clang-tidy-binary=${CLANGTIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR})
+
+        if(arg_FIX)
+            set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_COMMAND} -fix)
+        endif()
+
+        if(DEFINED arg_CHECKS)
+            STRING(REGEX REPLACE " " "," CHECK_ARG_STRING ${arg_CHECKS})
+            add_custom_target(${arg_NAME}
+              COMMAND ${CLANG_TIDY_HELPER_COMMAND} -checks=${CHECK_ARG_STRING} ${arg_SRC_FILES}
+                    WORKING_DIRECTORY ${_wd}
+                    COMMENT "${arg_COMMENT}Running specified clang-tidy source code static analysis checks.")
+        else() #DEFINED CHECKERS
+            add_custom_target(${arg_NAME}
+              COMMAND ${CLANG_TIDY_HELPER_COMMAND} ${arg_SRC_FILES}
+                    WORKING_DIRECTORY ${_wd}
+                    COMMENT "${arg_COMMENT}Running default clang-tidy source code static analysis checks.")
+        endif()
+
+        # hook our new target into the proper dependency chain
+        add_dependencies(clang_tidy_check ${arg_NAME})
+
+        # Code check targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    endif()
+endmacro(blt_add_clang_tidy_target)
 
 
 ##-----------------------------------------------------------------------------
