@@ -159,13 +159,3 @@ blt_register_library(NAME          cuda
 blt_register_library(NAME      cuda_runtime
                      INCLUDES  ${CUDA_INCLUDE_DIRS}
                      LIBRARIES ${CUDA_LIBRARIES})
-
-# Allow the removal of implicitly found link directories
-# Note: This is a very specific fix for working around CMake adding implicit link
-# directories returned by the BlueOS compilers to link CUDA executables
-# They are added by logic found in the CMake source: Modules/CMakeTestCUDACompiler.cmake
-if(BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE)
-    message(STATUS "Removing implicit CUDA link directories: ${BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE}")
-    list(REMOVE_ITEM CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
-    message(STATUS "Updated CUDA Implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
-endif()

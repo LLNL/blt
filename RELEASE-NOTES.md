@@ -16,6 +16,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added support for clang-tidy static analysis check
 - Added ability to change the output name of an executable via the OUTPUT_NAME
   parameter of blt_add_executable
+- Added variable BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE that will be used to filter
+  implicit link directories for all languages
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
@@ -29,6 +31,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Turn off system includes for registered libraries when using the PGI compiler
 - Removed unneeded INTERFACE system includes added by googletest that was causing problems
   in PGI builds (BLT was adding them already to the register library calls)
+- Removed variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE, functionality now
+  provided for all languages using BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE variable
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
