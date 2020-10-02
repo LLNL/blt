@@ -236,8 +236,10 @@ endif()
 ################################
 # C++ Standard
 ################################
-
-SET( CMAKE_CXX_EXTENSIONS OFF )
+if (NOT DEFINED CMAKE_CXX_EXTENSIONS)
+    message(STATUS "Setting CMAKE_CXX_EXTENSIONS to Off")
+    set( CMAKE_CXX_EXTENSIONS OFF )
+endif ()
 SET( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 set(BLT_CXX_STD "" CACHE STRING "Version of C++ standard")
