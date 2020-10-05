@@ -85,15 +85,15 @@ modify your source files.  It also creates smaller child build targets that foll
 `<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>`.
 
 If a particular version of a code formatting tool is required, you can configure BLT to enforce
-that version by setting ``BLT_REQD_<CLANGFORMAT|ASTYLE|UNCRUSTIFY>_VER`` to as much of the version
+that version by setting ``BLT_REQUIRED_<CLANGFORMAT|ASTYLE|UNCRUSTIFY>_VER`` to as much of the version
 as you need.  For example:
 
 .. code-block:: cmake
 
   # If astyle major version 3 is required (3.0, 3.1, etc are acceptable)
-  set(BLT_REQD_ASTYLE_VER "3")
+  set(BLT_REQUIRED_ASTYLE_VER "3")
   # Or, if exactly 3.1 is needed
-  set(BLT_REQD_ASTYLE_VER "3.1")
+  set(BLT_REQUIRED_ASTYLE_VER "3.1")
 
 This macro supports the following static analysis tools with their requirements:
 

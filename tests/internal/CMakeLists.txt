@@ -328,7 +328,7 @@ if(CLANGFORMAT_FOUND)
   )
 
   # Specify the major version for astyle
-  set(BLT_REQD_ASTYLE_VER "3")
+  set(BLT_REQUIRED_ASTYLE_VER "3")
 
   blt_add_code_checks(
       PREFIX          smoke_tests
