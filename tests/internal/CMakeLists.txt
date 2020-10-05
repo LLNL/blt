@@ -327,6 +327,9 @@ if(CLANGFORMAT_FOUND)
     src/test_cuda_device_call_from_kernel/Parent.hpp
   )
 
+  # Specify the major version for astyle
+  set(BLT_REQD_ASTYLE_VER "3")
+
   blt_add_code_checks(
       PREFIX          smoke_tests
       SOURCES         ${smoke_tests_srcs}

@@ -505,6 +505,15 @@ macro(blt_add_astyle_target)
                             " Current AStyle executable: '${ASTYLE_EXECUTABLE}' "
                             " Current AStyle version is: ${_astyle_version}."    )
         endif()
+
+        if(BLT_REQD_ASTYLE_VER)
+            # The user may only specify a part of the version (e.g. just the maj ver)
+            # so check for substring
+            string(FIND ${_astyle_version} ${BLT_REQD_ASTYLE_VER} VERSION_MATCHES)
+            if (VERSION_MATCHES EQUAL -1)
+                message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQD_ASTYLE_VER} is required, found ${_astyle_version}")
+            endif()
+        endif()
     endif()
 
     if(_generate_target)
@@ -580,6 +589,21 @@ macro(blt_add_clangformat_target)
         set(_wd ${arg_WORKING_DIRECTORY})
     else()
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    # If a required version was set, check it
+    if(BLT_REQD_CLANGFORMAT_VER)
+        execute_process(COMMAND ${CLANGFORMAT_EXECUTABLE} --version
+                        OUTPUT_VARIABLE _version_str
+                        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        # The version number is the last token - can contain non-numeric
+        string(REGEX MATCH "([0-9a-zA-Z\\-]+(\\.)?)+$" _clangformat_version ${_version_str})
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND ${_clangformat_version} ${BLT_REQD_CLANGFORMAT_VER} VERSION_MATCHES)
+        if (VERSION_MATCHES EQUAL -1)
+            message(FATAL_ERROR "blt_add_clangformat_target: clang-format ${BLT_REQD_CLANGFORMAT_VER} is required, found ${_clangformat_version}")
+        endif()
     endif()
 
     set(_generate_target TRUE)
@@ -684,7 +708,17 @@ macro(blt_add_uncrustify_target)
                             " for style check targets. "
                             " Current uncrustify executable: '${UNCRUSTIFY_EXECUTABLE}' "
                             " Current uncrustify version is: ${_uncrustify_version}."    )
-        endif()        
+        endif()
+
+        if(BLT_REQD_UNCRUSTIFY_VER)
+            # The user may only specify a part of the version (e.g. just the maj ver)
+            # so check for substring
+            string(FIND ${_uncrustify_version} ${BLT_REQD_UNCRUSTIFY_VER} VERSION_MATCHES)
+            if (VERSION_MATCHES EQUAL -1)
+                message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQD_UNCRUSTIFY_VER} is required, found ${_uncrustify_version}")
+            endif()
+        endif()
+    endif() 
     endif()
 
     if(_generate_target)
