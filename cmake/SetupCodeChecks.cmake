@@ -10,6 +10,7 @@ add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
 add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
 if(ASTYLE_FOUND)
+    set(BLT_REQD_ASTYLE_VER "" CACHE STRING "Required version of astyle")
     # targets for verifying formatting
     add_custom_target(astyle_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} astyle_check)
@@ -20,6 +21,7 @@ if(ASTYLE_FOUND)
 endif()
 
 if(CLANGFORMAT_FOUND)
+    set(BLT_REQD_CLANGFORMAT_VER "" CACHE STRING "Required version of clang-format")
     # targets for verifying formatting
     add_custom_target(clangformat_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clangformat_check)
@@ -30,6 +32,7 @@ if(CLANGFORMAT_FOUND)
 endif()
 
 if(UNCRUSTIFY_FOUND)
+    set(BLT_REQD_UNCRUSTIFY_VER "" CACHE STRING "Required version of uncrustify")
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
