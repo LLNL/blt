@@ -487,19 +487,27 @@ macro(blt_add_astyle_target)
 
     set(_generate_target TRUE)
 
+    # Check the version -- output is of the form "Artistic Style Version X.Y.Z"
+    execute_process(
+        COMMAND ${ASTYLE_EXECUTABLE} --version
+        OUTPUT_VARIABLE _version_str
+        ERROR_VARIABLE  _version_str
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
+
+    if(BLT_REQD_ASTYLE_VER)
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND ${_astyle_version} ${BLT_REQD_ASTYLE_VER} VERSION_MATCHES)
+        if (VERSION_MATCHES EQUAL -1)
+            message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQD_ASTYLE_VER} is required, found ${_astyle_version}")
+        endif()
+    endif()
+
     if(${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG --suffix=none)
     else()
         set(MODIFY_FILES_FLAG --dry-run)
-
-        # Check the version -- output is of the form "Artistic Style Version X.Y.Z"
-        execute_process(
-            COMMAND ${ASTYLE_EXECUTABLE} --version
-            OUTPUT_VARIABLE _version_str
-            ERROR_VARIABLE  _version_str
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-        string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
-        
         # Skip 'check' target if version is not high enough 
         if(_astyle_version VERSION_LESS 2.05)
             set(_generate_target FALSE)
@@ -507,15 +515,6 @@ macro(blt_add_astyle_target)
                             " for style check targets. "
                             " Current AStyle executable: '${ASTYLE_EXECUTABLE}' "
                             " Current AStyle version is: ${_astyle_version}."    )
-        endif()
-
-        if(BLT_REQD_ASTYLE_VER)
-            # The user may only specify a part of the version (e.g. just the maj ver)
-            # so check for substring
-            string(FIND ${_astyle_version} ${BLT_REQD_ASTYLE_VER} VERSION_MATCHES)
-            if (VERSION_MATCHES EQUAL -1)
-                message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQD_ASTYLE_VER} is required, found ${_astyle_version}")
-            endif()
         endif()
     endif()
 
@@ -692,17 +691,26 @@ macro(blt_add_uncrustify_target)
 
     set(_generate_target TRUE)
 
+    # Check the version -- output is of the form "uncrustify X.Y.Z"
+    execute_process(
+        COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
+        OUTPUT_VARIABLE _version_str
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
+
+    if(BLT_REQD_UNCRUSTIFY_VER)
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND ${_uncrustify_version} ${BLT_REQD_UNCRUSTIFY_VER} VERSION_MATCHES)
+        if (VERSION_MATCHES EQUAL -1)
+            message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQD_UNCRUSTIFY_VER} is required, found ${_uncrustify_version}")
+        endif()
+    endif()
+
     if(${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG --replace;--no-backup)
     else()
         set(MODIFY_FILES_FLAG "--check")
-
-        # Check the version -- output is of the form "uncrustify X.Y.Z"
-        execute_process(
-            COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
-            OUTPUT_VARIABLE _version_str
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-        string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
 
         # Skip 'check' target if version is not high enough 
         if(_uncrustify_version VERSION_LESS 0.61)
@@ -712,16 +720,6 @@ macro(blt_add_uncrustify_target)
                             " Current uncrustify executable: '${UNCRUSTIFY_EXECUTABLE}' "
                             " Current uncrustify version is: ${_uncrustify_version}."    )
         endif()
-
-        if(BLT_REQD_UNCRUSTIFY_VER)
-            # The user may only specify a part of the version (e.g. just the maj ver)
-            # so check for substring
-            string(FIND ${_uncrustify_version} ${BLT_REQD_UNCRUSTIFY_VER} VERSION_MATCHES)
-            if (VERSION_MATCHES EQUAL -1)
-                message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQD_UNCRUSTIFY_VER} is required, found ${_uncrustify_version}")
-            endif()
-        endif()
-    endif() 
     endif()
 
     if(_generate_target)
