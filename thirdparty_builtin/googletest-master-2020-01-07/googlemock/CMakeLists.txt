@@ -106,14 +106,14 @@ endif()
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
 # in via add_subdirectory() rather than being a standalone build).
-#if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
-#  target_include_directories(gmock SYSTEM INTERFACE
-#    "$<BUILD_INTERFACE:${gmock_build_include_dirs}>"
-#    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-#  target_include_directories(gmock_main SYSTEM INTERFACE
-#    "$<BUILD_INTERFACE:${gmock_build_include_dirs}>"
-#    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-#endif()
+if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
+  target_include_directories(gmock INTERFACE
+    "$<BUILD_INTERFACE:${gmock_build_include_dirs}>"
+    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+  target_include_directories(gmock_main INTERFACE
+    "$<BUILD_INTERFACE:${gmock_build_include_dirs}>"
+    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+endif()
 
 ########################################################################
 #

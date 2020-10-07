@@ -29,7 +29,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Prefixed blt_register_library() internal variables with ``_`` to avoid collision
   with input parameters.
 - Turn off system includes for registered libraries when using the PGI compiler
-- Removed unneeded INTERFACE system includes added by googletest that was causing problems
+- Removed unneeded SYSTEM includes added by googletest that was causing problems
   in PGI builds (BLT was adding them already to the register library calls)
 - Removed variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE, functionality now
   provided for all languages using BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE variable
