@@ -33,6 +33,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   in PGI builds (BLT was adding them already to the register library calls)
 - Removed variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE, functionality now
   provided for all languages using BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE variable
+- ClangQuery was being auto-enabled in cases where no checker directories where defined.
+  This caused a crash. blt_add_clang_query_target learned parameter CHECKER_DIRECTORIES
+  and blt_add_code_checks learned parameter CLANGQUERY_CHECKER_DIRECTORIES.  Both still
+  respect BLT_CLANGQUERY_CHECKER_DIRECTORIES.
 
 ## [Version 0.3.6] - Release date 2020-07-27
 

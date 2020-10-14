@@ -78,7 +78,8 @@ endforeach()
 ##                      ASTYLE_CFG_FILE      <Path to AStyle config file>
 ##                      CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
 ##                      UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
-##                      CPPCHECK_FLAGS       <List of flags added to Cppcheck>)
+##                      CPPCHECK_FLAGS       <List of flags added to Cppcheck>
+##                      CLANGQUERY_CHECKER_DIRECTORIES [dir1 [dir2]])
 ##
 ## This macro adds all enabled code check targets for the given SOURCES. It
 ## filters checks based on file extensions.
@@ -88,7 +89,7 @@ macro(blt_add_code_checks)
 
     set(options )
     set(singleValueArgs PREFIX ASTYLE_CFG_FILE CLANGFORMAT_CFG_FILE UNCRUSTIFY_CFG_FILE)
-    set(multiValueArgs SOURCES CPPCHECK_FLAGS)
+    set(multiValueArgs SOURCES CPPCHECK_FLAGS CLANGQUERY_CHECKER_DIRECTORIES)
 
     cmake_parse_arguments(arg
         "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -200,31 +201,44 @@ macro(blt_add_code_checks)
                                  PREPEND_FLAGS     ${arg_CPPCHECK_FLAGS})
     endif()
 
-    if (CLANGQUERY_FOUND)
+    # Append possible checker directories and only enable clang-query if at least one is provided
+    set(_clangquery_checker_directories)
+    if (DEFINED arg_CLANGQUERY_CHECKER_DIRECTORIES)
+      list(APPEND _clangquery_checker_directories ${arg_CLANGQUERY_CHECKER_DIRECTORIES})
+    endif()
+    if (DEFINED BLT_CLANG_QUERY_CHECKER_DIRECTORIES)
+      list(APPEND _clangquery_checker_directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES})
+    endif()
+    blt_list_remove_duplicates(TO _clangquery_checker_directories)
+    list(LENGTH _clangquery_checker_directories _len)
+
+    if (CLANGQUERY_FOUND AND (_len GREATER 0))
         set(_clang_query_target_name ${arg_PREFIX}_clang_query_check)
         blt_error_if_target_exists(${_clang_query_target_name} ${_error_msg})
-        blt_add_clang_query_target( NAME              ${_clang_query_target_name}
-                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                    SRC_FILES         ${_c_sources})
+        blt_add_clang_query_target( NAME                ${_clang_query_target_name}
+                                    WORKING_DIRECTORY   ${CMAKE_BINARY_DIR}
+                                    SRC_FILES           ${_c_sources}
+                                    CHECKER_DIRECTORIES ${_clangquery_checker_directories})
     endif()
 
     if (CLANGTIDY_FOUND)
         set(_clang_tidy_target_name ${arg_PREFIX}_clang_tidy_check)
         blt_error_if_target_exists(${_clang_tidy_target_name} ${_error_msg})
         blt_add_clang_tidy_target( NAME              ${_clang_tidy_target_name}
-                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                                    SRC_FILES         ${_c_sources})
+                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                   SRC_FILES         ${_c_sources})
     endif()
 
 endmacro(blt_add_code_checks)
 
 ##-----------------------------------------------------------------------------
-## blt_add_clang_query_target( NAME              <Created Target Name>
-##                             WORKING_DIRECTORY <Working Directory>
-##                             COMMENT           <Additional Comment for Target Invocation>
-##                             CHECKERS          <If specified, requires a specific set of checkers>
-##                             DIE_ON_MATCH      <If true, matches stop the build>
-##                             SRC_FILES         [FILE1 [FILE2 ...]] )
+## blt_add_clang_query_target( NAME                <Created Target Name>
+##                             WORKING_DIRECTORY   <Working Directory>
+##                             COMMENT             <Additional Comment for Target Invocation>
+##                             CHECKERS            <If specified, requires a specific set of checkers>
+##                             DIE_ON_MATCH        <If true, matches stop the build>
+##                             SRC_FILES           [FILE1 [FILE2 ...]]
+##                             CHECKER_DIRECTORIES [dir1 [dir2]])
 ##
 ## Creates a new target with the given NAME for running clang_query over the given SRC_FILES
 ##-----------------------------------------------------------------------------
@@ -234,7 +248,7 @@ macro(blt_add_clang_query_target)
         ## parse the arguments to the macro
         set(options)
         set(singleValueArgs NAME COMMENT WORKING_DIRECTORY DIE_ON_MATCH)
-        set(multiValueArgs SRC_FILES CHECKERS)
+        set(multiValueArgs SRC_FILES CHECKERS CHECKER_DIRECTORIES)
 
         cmake_parse_arguments(arg
             "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -253,10 +267,26 @@ macro(blt_add_clang_query_target)
         else()
             set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
         endif()
-   
+
+        # Append possible checker directories and only enable clang-query if at least one is provided
+        set(_checker_directories)
+        if (DEFINED arg_CHECKER_DIRECTORIES)
+            list(APPEND _checker_directories ${arg_CHECKER_DIRECTORIES})
+        endif()
+        if (DEFINED BLT_CLANG_QUERY_CHECKER_DIRECTORIES)
+            list(APPEND _checker_directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES})
+        endif()
+        blt_list_remove_duplicates(TO _checker_directories)
+        list(LENGTH _checker_directories _len)
+
+        if (_len EQUAL 0)
+            message(FATAL_ERROR "blt_add_clang_query_target requires either CLANGQUERY_CHECKER_DIRECTORIES parameter"
+                                "or variable BLT_CLANG_QUERY_CHECKER_DIRECTORIES defined.")
+        endif()
+
         set(interactive_target_name interactive_${arg_NAME})
         set(CLANG_QUERY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/clang-query-wrapper.py)
-        set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${BLT_CLANG_QUERY_CHECKER_DIRECTORIES} --compilation-database-path ${CMAKE_BINARY_DIR})
+        set(CLANG_QUERY_HELPER_COMMAND python ${CLANG_QUERY_HELPER_SCRIPT} --clang-query ${CLANGQUERY_EXECUTABLE} --checker-directories ${_checker_directories} --compilation-database-path ${CMAKE_BINARY_DIR})
 
         if(arg_DIE_ON_MATCH)
             set(CLANG_QUERY_HELPER_COMMAND ${CLANG_QUERY_HELPER_COMMAND} --die-on-match)
