@@ -10,6 +10,7 @@ add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
 add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
 if(ASTYLE_FOUND)
+    set(BLT_REQUIRED_ASTYLE_VERSION "" CACHE STRING "Required version of astyle")
     # targets for verifying formatting
     add_custom_target(astyle_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} astyle_check)
@@ -20,6 +21,7 @@ if(ASTYLE_FOUND)
 endif()
 
 if(CLANGFORMAT_FOUND)
+    set(BLT_REQUIRED_CLANGFORMAT_VERSION "" CACHE STRING "Required version of clang-format")
     # targets for verifying formatting
     add_custom_target(clangformat_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clangformat_check)
@@ -30,6 +32,7 @@ if(CLANGFORMAT_FOUND)
 endif()
 
 if(UNCRUSTIFY_FOUND)
+    set(BLT_REQUIRED_UNCRUSTIFY_VERSION "" CACHE STRING "Required version of uncrustify")
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
@@ -484,19 +487,27 @@ macro(blt_add_astyle_target)
 
     set(_generate_target TRUE)
 
+    # Check the version -- output is of the form "Artistic Style Version X.Y.Z"
+    execute_process(
+        COMMAND ${ASTYLE_EXECUTABLE} --version
+        OUTPUT_VARIABLE _version_str
+        ERROR_VARIABLE  _version_str
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
+
+    if(BLT_REQUIRED_ASTYLE_VERSION)
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND ${_astyle_version} ${BLT_REQUIRED_ASTYLE_VERSION} VERSION_POS)
+        if (NOT VERSION_POS EQUAL 0)
+            message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQUIRED_ASTYLE_VERSION} is required, found ${_astyle_version}")
+        endif()
+    endif()
+
     if(${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG --suffix=none)
     else()
         set(MODIFY_FILES_FLAG --dry-run)
-
-        # Check the version -- output is of the form "Artistic Style Version X.Y.Z"
-        execute_process(
-            COMMAND ${ASTYLE_EXECUTABLE} --version
-            OUTPUT_VARIABLE _version_str
-            ERROR_VARIABLE  _version_str
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-        string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
-        
         # Skip 'check' target if version is not high enough 
         if(_astyle_version VERSION_LESS 2.05)
             set(_generate_target FALSE)
@@ -582,6 +593,21 @@ macro(blt_add_clangformat_target)
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
+    # If a required version was set, check it
+    if(BLT_REQUIRED_CLANGFORMAT_VERSION)
+        execute_process(COMMAND ${CLANGFORMAT_EXECUTABLE} --version
+                        OUTPUT_VARIABLE _version_str
+                        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        # The version number is the last token - can contain non-numeric
+        string(REGEX MATCH "([0-9a-zA-Z\\-]+(\\.)?)+$" _clangformat_version ${_version_str})
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND ${_clangformat_version} ${BLT_REQUIRED_CLANGFORMAT_VERSION} VERSION_POS)
+        if (NOT VERSION_POS EQUAL 0)
+            message(FATAL_ERROR "blt_add_clangformat_target: clang-format ${BLT_REQUIRED_CLANGFORMAT_VERSION} is required, found ${_clangformat_version}")
+        endif()
+    endif()
+
     set(_generate_target TRUE)
 
     # Copy config file to given working directory since ClangFormat doesn't support pointing to one
@@ -665,17 +691,26 @@ macro(blt_add_uncrustify_target)
 
     set(_generate_target TRUE)
 
+    # Check the version -- output is of the form "uncrustify X.Y.Z"
+    execute_process(
+        COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
+        OUTPUT_VARIABLE _version_str
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
+
+    if(BLT_REQUIRED_UNCRUSTIFY_VERSION)
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND ${_uncrustify_version} ${BLT_REQUIRED_UNCRUSTIFY_VERSION} VERSION_POS)
+        if (NOT VERSION_POS EQUAL 0)
+            message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQUIRED_UNCRUSTIFY_VERSION} is required, found ${_uncrustify_version}")
+        endif()
+    endif()
+
     if(${arg_MODIFY_FILES})
         set(MODIFY_FILES_FLAG --replace;--no-backup)
     else()
         set(MODIFY_FILES_FLAG "--check")
-
-        # Check the version -- output is of the form "uncrustify X.Y.Z"
-        execute_process(
-            COMMAND ${UNCRUSTIFY_EXECUTABLE} --version
-            OUTPUT_VARIABLE _version_str
-            OUTPUT_STRIP_TRAILING_WHITESPACE )
-        string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
 
         # Skip 'check' target if version is not high enough 
         if(_uncrustify_version VERSION_LESS 0.61)
@@ -684,7 +719,7 @@ macro(blt_add_uncrustify_target)
                             " for style check targets. "
                             " Current uncrustify executable: '${UNCRUSTIFY_EXECUTABLE}' "
                             " Current uncrustify version is: ${_uncrustify_version}."    )
-        endif()        
+        endif()
     endif()
 
     if(_generate_target)

@@ -18,8 +18,8 @@
 # Compilers
 #---------------------------------------
 
-set(_CLANG_VER "clang-upstream-2019.08.15")
-set(_CLANG_DIR "/usr/tce/packages/clang/${_CLANG_VER}")
+set(_CLANG_VERSION "clang-upstream-2019.08.15")
+set(_CLANG_DIR "/usr/tce/packages/clang/${_CLANG_VERSION}")
 set(_GCC_DIR "/usr/tce/packages/gcc/gcc-8.3.1")
 
 set(CMAKE_C_COMPILER "${_CLANG_DIR}/bin/clang" CACHE PATH "")
@@ -37,7 +37,7 @@ set(BLT_EXE_LINKER_FLAGS " -Wl,-rpath,${_GCC_DIR}/lib" CACHE PATH "Adds a missin
 #---------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(_MPI_BASE_DIR "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${_CLANG_VER}")
+set(_MPI_BASE_DIR "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${_CLANG_VERSION}")
 
 set(MPI_C_COMPILER "${_MPI_BASE_DIR}/bin/mpicc" CACHE PATH "")
 set(MPI_CXX_COMPILER "${_MPI_BASE_DIR}/bin/mpicxx" CACHE PATH "")

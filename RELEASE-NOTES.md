@@ -18,6 +18,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   parameter of blt_add_executable
 - Added variable BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE that will be used to filter
   implicit link directories for all languages
+- Added user option for enforcing specific versions of autoformatters - the new options are
+  ``BLT_REQUIRED_ASTYLE_VERSION``, ``BLT_REQUIRED_CLANGFORMAT_VERSION``, and ``BLT_REQUIRED_UNCRUSTIFY_VERSION``
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
