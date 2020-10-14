@@ -16,7 +16,8 @@ blt_add_code_checks
                          ASTYLE_CFG_FILE      <Path to AStyle config file>
                          CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
                          UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
-                         CPPCHECK_FLAGS       <List of flags added to Cppcheck>)
+                         CPPCHECK_FLAGS       <List of flags added to Cppcheck>
+                         CLANGQUERY_CHECKER_DIRECTORIES [dir1 [dir2]])
 
 This macro adds all enabled code check targets for the given SOURCES.
 
@@ -38,6 +39,9 @@ UNCRUSTIFY_CFG_FILE
 
 CPPCHECK_FLAGS
   List of flags added to Cppcheck
+
+CLANGQUERY_CHECKER_DIRECTORIES
+  List of directories where clang-query's checkers are located
 
 The purpose of this macro is to enable all code checks in the default manner.  It runs
 all code checks from the working directory `CMAKE_BINARY_DIR`.  If you need more specific
@@ -90,6 +94,7 @@ This macro supports the following static analysis tools with their requirements:
 - Clang-Query
 
   * CLANGQUERY_EXECUTABLE is defined and found prior to calling this macro
+  * CLANGQUERY_CHECKER_DIRECTORIES parameter given or BLT_CLANGQUERY_CHECKER_DIRECTORIES is defined 
 
 - clang-tidy
 
@@ -103,12 +108,13 @@ blt_add_clang_query_target
 
 .. code-block:: cmake
 
-    blt_add_clang_query_target( NAME              <Created Target Name>
-                                WORKING_DIRECTORY <Working Directory>
-                                COMMENT           <Additional Comment for Target Invocation>
-                                CHECKERS          <specifies a subset of checkers>
-                                DIE_ON_MATCH      <TRUE | FALSE (default)>
-                                SRC_FILES         [source1 [source2 ...]])
+    blt_add_clang_query_target( NAME                <Created Target Name>
+                                WORKING_DIRECTORY   <Working Directory>
+                                COMMENT             <Additional Comment for Target Invocation>
+                                CHECKERS            <specifies a subset of checkers>
+                                DIE_ON_MATCH        <TRUE | FALSE (default)>
+                                SRC_FILES           [source1 [source2 ...]]
+                                CHECKER_DIRECTORIES [dir1 [dir2]])
 
 Creates a new build target for running clang-query.
 
@@ -130,9 +136,15 @@ DIE_ON_MATCH
 SRC_FILES
   Source list that clang-query will be ran on
 
+CHECKER_DIRECTORIES
+  List of directories where clang-query's checkers are located
+
 Clang-query is a tool used for examining and matching the Clang AST. It is useful for enforcing
 coding standards and rules on your source code.  A good primer on how to use clang-query can be
 found `here <https://devblogs.microsoft.com/cppblog/exploring-clang-tooling-part-2-examining-the-clang-ast-with-clang-query/>`_.
+
+A list of checker directories is required for clang-query, this can be defined either by
+the parameter CHECKER_DIRECTORIES or the variable BLT_CLANGQUERY_CHECKER_DIRECTORIES.
 
 Turning on DIE_ON_MATCH is useful if you're using this in CI to enforce rules about your code.
 
