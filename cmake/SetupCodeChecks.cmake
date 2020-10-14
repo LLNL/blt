@@ -10,7 +10,7 @@ add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
 add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
 if(ASTYLE_FOUND)
-    set(BLT_REQUIRED_ASTYLE_VER "" CACHE STRING "Required version of astyle")
+    set(BLT_REQUIRED_ASTYLE_VERSION "" CACHE STRING "Required version of astyle")
     # targets for verifying formatting
     add_custom_target(astyle_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} astyle_check)
@@ -21,7 +21,7 @@ if(ASTYLE_FOUND)
 endif()
 
 if(CLANGFORMAT_FOUND)
-    set(BLT_REQUIRED_CLANGFORMAT_VER "" CACHE STRING "Required version of clang-format")
+    set(BLT_REQUIRED_CLANGFORMAT_VERSION "" CACHE STRING "Required version of clang-format")
     # targets for verifying formatting
     add_custom_target(clangformat_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clangformat_check)
@@ -32,7 +32,7 @@ if(CLANGFORMAT_FOUND)
 endif()
 
 if(UNCRUSTIFY_FOUND)
-    set(BLT_REQUIRED_UNCRUSTIFY_VER "" CACHE STRING "Required version of uncrustify")
+    set(BLT_REQUIRED_UNCRUSTIFY_VERSION "" CACHE STRING "Required version of uncrustify")
     # targets for verifying formatting
     add_custom_target(uncrustify_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} uncrustify_check)
@@ -495,12 +495,12 @@ macro(blt_add_astyle_target)
         OUTPUT_STRIP_TRAILING_WHITESPACE )
     string(REGEX MATCH "([0-9]+(\\.)?)+$" _astyle_version ${_version_str})
 
-    if(BLT_REQUIRED_ASTYLE_VER)
+    if(BLT_REQUIRED_ASTYLE_VERSION)
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
-        string(FIND ${_astyle_version} ${BLT_REQUIRED_ASTYLE_VER} VERSION_POS)
+        string(FIND ${_astyle_version} ${BLT_REQUIRED_ASTYLE_VERSION} VERSION_POS)
         if (NOT VERSION_POS EQUAL 0)
-            message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQUIRED_ASTYLE_VER} is required, found ${_astyle_version}")
+            message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQUIRED_ASTYLE_VERSION} is required, found ${_astyle_version}")
         endif()
     endif()
 
@@ -594,7 +594,7 @@ macro(blt_add_clangformat_target)
     endif()
 
     # If a required version was set, check it
-    if(BLT_REQUIRED_CLANGFORMAT_VER)
+    if(BLT_REQUIRED_CLANGFORMAT_VERSION)
         execute_process(COMMAND ${CLANGFORMAT_EXECUTABLE} --version
                         OUTPUT_VARIABLE _version_str
                         OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -602,9 +602,9 @@ macro(blt_add_clangformat_target)
         string(REGEX MATCH "([0-9a-zA-Z\\-]+(\\.)?)+$" _clangformat_version ${_version_str})
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
-        string(FIND ${_clangformat_version} ${BLT_REQUIRED_CLANGFORMAT_VER} VERSION_POS)
+        string(FIND ${_clangformat_version} ${BLT_REQUIRED_CLANGFORMAT_VERSION} VERSION_POS)
         if (NOT VERSION_POS EQUAL 0)
-            message(FATAL_ERROR "blt_add_clangformat_target: clang-format ${BLT_REQUIRED_CLANGFORMAT_VER} is required, found ${_clangformat_version}")
+            message(FATAL_ERROR "blt_add_clangformat_target: clang-format ${BLT_REQUIRED_CLANGFORMAT_VERSION} is required, found ${_clangformat_version}")
         endif()
     endif()
 
@@ -698,12 +698,12 @@ macro(blt_add_uncrustify_target)
         OUTPUT_STRIP_TRAILING_WHITESPACE )
     string(REGEX MATCH "([0-9]+(\\.)?)+(_[a-zA-Z])?" _uncrustify_version ${_version_str})
 
-    if(BLT_REQUIRED_UNCRUSTIFY_VER)
+    if(BLT_REQUIRED_UNCRUSTIFY_VERSION)
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
-        string(FIND ${_uncrustify_version} ${BLT_REQUIRED_UNCRUSTIFY_VER} VERSION_POS)
+        string(FIND ${_uncrustify_version} ${BLT_REQUIRED_UNCRUSTIFY_VERSION} VERSION_POS)
         if (NOT VERSION_POS EQUAL 0)
-            message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQUIRED_UNCRUSTIFY_VER} is required, found ${_uncrustify_version}")
+            message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQUIRED_UNCRUSTIFY_VERSION} is required, found ${_uncrustify_version}")
         endif()
     endif()
 
