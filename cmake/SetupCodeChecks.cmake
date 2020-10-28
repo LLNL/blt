@@ -44,6 +44,17 @@ if(UNCRUSTIFY_FOUND)
     add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} uncrustify_style)
 endif()
 
+if(YAPF_FOUND)
+    set(BLT_REQUIRED_YAPF_VERSION "" CACHE STRING "Required version of yapf")
+    # targets for verifying formatting
+    add_custom_target(yapf_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} yapf_check)
+
+    # targets for modifying formatting
+    add_custom_target(yapf_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} yapf_style)
+endif()
+
 if(CPPCHECK_FOUND)
     add_custom_target(cppcheck_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} cppcheck_check)
@@ -67,8 +78,8 @@ endif()
 
 # Code check targets should only be run on demand
 foreach(target 
-        check uncrustify_check astyle_check clangformat_check cppcheck_check
-        style uncrustify_style astyle_style clangformat_style
+        check yapf_check uncrustify_check astyle_check clangformat_check cppcheck_check
+        style yapf_style uncrustify_style astyle_style clangformat_style
         clang_query_check interactive_clang_query_check clang_tidy_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
