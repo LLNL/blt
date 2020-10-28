@@ -126,12 +126,23 @@ macro(blt_add_code_checks)
                                       C_LIST       _c_sources
                                       Fortran_LIST _f_sources)
 
-    # Check that at most one formatting config file was supplied
-    if (DEFINED arg_UNCRUSTIFY_CFG_FILE AND DEFINED arg_ASTYLE_CFG_FILE)
-        message(FATAL_ERROR 
-          "blt_add_code_checks macro does not support multiple "
-          "style config parameters within the same invocation. "
-          "Both UNCRUSTIFY_CFG_FILE and ASTYLE_CFG_FILE were supplied.")
+    # Check that no more than one formatting config file was supplied
+    # for C-style languages.
+    set(_c_formatter_cfgs_supplied)
+    foreach (_c_formatter ASTYLE UNCRUSTIFY CLANGFORMAT)
+      if (DEFINED arg_${_c_formatter}_CFG_FILE)
+        list(APPEND _c_formatter_cfgs_supplied ${_c_formatter}_CFG_FILE)
+      endif()
+    endforeach()
+    list(LENGTH _c_formatter_cfgs_supplied _num_c_formatter_cfgs_supplied)
+    if (_num_c_formatter_cfgs_supplied GREATER 1)
+      message(FATAL_ERROR
+        "blt_add_code_checks macro does not support multiple "
+        "style config parameters within the same invocation. "
+        "At most one of ASTYLE_CFG_FILE, CLANGFORMAT_CFG_FILE, "
+        "and UNCRUSTIFY_CFG_FILE may be supplied. "
+        "The following style config parameters were supplied: "
+        ${_c_formatter_cfgs_supplied})
     endif()
 
     # Add code checks

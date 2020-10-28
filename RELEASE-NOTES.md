@@ -39,6 +39,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   This caused a crash. blt_add_clang_query_target learned parameter CHECKER_DIRECTORIES
   and blt_add_code_checks learned parameter CLANGQUERY_CHECKER_DIRECTORIES.  Both still
   respect BLT_CLANGQUERY_CHECKER_DIRECTORIES.
+- It is now a fatal error to supply CLANGFORMAT_CFG_FILE plus
+  ASTYLE_CFG_FILE or UNCRUSTIFY_CFG_FILE arguments to
+  blt_add_code_checks; previously, these combinations were implied to
+  be errors in BLT documentation, but BLT would not return an error in
+  those cases.
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
@@ -50,8 +55,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added blt_assert_exists() utility macro.
-- Additional link flags for CUDA may now be specified by setting 
-  ``CMAKE_CUDA_LINK_FLAGS`` when configuring CMake either in a host-config 
+- Additional link flags for CUDA may now be specified by setting
+  ``CMAKE_CUDA_LINK_FLAGS`` when configuring CMake either in a host-config
   or at the command-line.
 - Added support for ClangFormat.
 
@@ -119,7 +124,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Handle FindMPI variable MPIEXEC changed to MPIEXEC_EXECUTABLE in CMake 3.10+.
   This now works regardless of which the user defines or what CMake returns.
 - Handle CMake target property LINK_FLAGS changed to LINK_OPTIONS in CMake 3.13+.
-  blt_add_target_link_flags() handles this under the covers and converts the 
+  blt_add_target_link_flags() handles this under the covers and converts the
   users strings to a list (3.13+) or list to a string (<3.13).  New property supports
   generator expressions so thats a plus.
 - Improved how all BLT MPI information is being merged together and reported to users.
