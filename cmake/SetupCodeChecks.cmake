@@ -9,6 +9,8 @@
 add_custom_target(${BLT_CODE_CHECK_TARGET_NAME})
 add_custom_target(${BLT_CODE_STYLE_TARGET_NAME})
 
+set(_BLT_STYLE_VERSION_WARNING_ISSUED FALSE CACHE BOOL "Limits BLT issuing more than one warning for style version")
+
 if(ASTYLE_FOUND)
     set(BLT_REQUIRED_ASTYLE_VERSION "" CACHE STRING "Required version of astyle")
     # targets for verifying formatting
@@ -509,9 +511,13 @@ macro(blt_add_astyle_target)
     if(BLT_REQUIRED_ASTYLE_VERSION)
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
-        string(FIND ${_astyle_version} ${BLT_REQUIRED_ASTYLE_VERSION} VERSION_POS)
+        string(FIND "${_astyle_version}" ${BLT_REQUIRED_ASTYLE_VERSION} VERSION_POS)
         if (NOT VERSION_POS EQUAL 0)
-            message(FATAL_ERROR "blt_add_astyle_target: astyle ${BLT_REQUIRED_ASTYLE_VERSION} is required, found ${_astyle_version}")
+            set(_generate_target FALSE)
+            if(NOT _BLT_STYLE_VERSION_WARNING_ISSUED)
+                message(WARNING "blt_add_astyle_target: astyle '${BLT_REQUIRED_ASTYLE_VERSION}' is required, found '${_astyle_version}'. Disabling 'style' build target.")
+                set(_BLT_STYLE_VERSION_WARNING_ISSUED TRUE CACHE BOOL "Limits BLT issuing more than one warning for style version" FORCE)
+            endif()
         endif()
     endif()
 
@@ -604,6 +610,8 @@ macro(blt_add_clangformat_target)
         set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
+    set(_generate_target TRUE)
+
     # If a required version was set, check it
     if(BLT_REQUIRED_CLANGFORMAT_VERSION)
         execute_process(COMMAND ${CLANGFORMAT_EXECUTABLE} --version
@@ -613,18 +621,20 @@ macro(blt_add_clangformat_target)
         string(REGEX MATCH "([0-9a-zA-Z\\-]+(\\.)?)+$" _clangformat_version ${_version_str})
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
-        string(FIND ${_clangformat_version} ${BLT_REQUIRED_CLANGFORMAT_VERSION} VERSION_POS)
+        string(FIND "${_clangformat_version}" ${BLT_REQUIRED_CLANGFORMAT_VERSION} VERSION_POS)
         if (NOT VERSION_POS EQUAL 0)
-            message(FATAL_ERROR "blt_add_clangformat_target: clang-format ${BLT_REQUIRED_CLANGFORMAT_VERSION} is required, found ${_clangformat_version}")
+            set(_generate_target FALSE)
+            if (NOT _BLT_STYLE_VERSION_WARNING_ISSUED)
+                message(WARNING "blt_add_clangformat_target: clang-format '${BLT_REQUIRED_CLANGFORMAT_VERSION}'' is required, found '${_clangformat_version}'. Disabling 'style' build target.")
+                set(_BLT_STYLE_VERSION_WARNING_ISSUED TRUE CACHE BOOL "Limits BLT issuing more than one warning for style version" FORCE)
+            endif()
         endif()
     endif()
 
-    set(_generate_target TRUE)
-
-    # Copy config file to given working directory since ClangFormat doesn't support pointing to one
-    configure_file(${arg_CFG_FILE} ${arg_WORKING_DIRECTORY}/.clang-format COPYONLY)
-
     if(_generate_target)
+        # Copy config file to given working directory since ClangFormat doesn't support pointing to one
+        configure_file(${arg_CFG_FILE} ${arg_WORKING_DIRECTORY}/.clang-format COPYONLY)
+
         # ClangFormat does not support --dry-run until version 10 which isn't on many machines.
         # For now, use run-clang-format for dry running purposes.
         if(${arg_MODIFY_FILES})
@@ -712,9 +722,13 @@ macro(blt_add_uncrustify_target)
     if(BLT_REQUIRED_UNCRUSTIFY_VERSION)
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
-        string(FIND ${_uncrustify_version} ${BLT_REQUIRED_UNCRUSTIFY_VERSION} VERSION_POS)
+        string(FIND "${_uncrustify_version}" ${BLT_REQUIRED_UNCRUSTIFY_VERSION} VERSION_POS)
         if (NOT VERSION_POS EQUAL 0)
-            message(FATAL_ERROR "blt_add_uncrustify_target: uncrustify ${BLT_REQUIRED_UNCRUSTIFY_VERSION} is required, found ${_uncrustify_version}")
+            set(_generate_target FALSE)
+            if (NOT _BLT_STYLE_VERSION_WARNING_ISSUED)
+                message(WARNING "blt_add_uncrustify_target: uncrustify '${BLT_REQUIRED_UNCRUSTIFY_VERSION}' is required, found '${_uncrustify_version}'. Disabling 'style' build target.")
+                set(_BLT_STYLE_VERSION_WARNING_ISSUED TRUE CACHE BOOL "Limits BLT issuing more than one warning for style version" FORCE)
+            endif()
         endif()
     endif()
 
