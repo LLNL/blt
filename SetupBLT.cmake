@@ -178,6 +178,8 @@ if (NOT BLT_LOADED)
                CACHE STRING "List of known file extensions used for Fortran sources")
     set(BLT_Python_FILE_EXTS ".py"
                CACHE STRING "List of known file extensions used for Python sources")
+    set(BLT_CMAKE_FILE_EXTS ".cmake" # NOTE: CMakeLists.txt handled elsewhere
+               CACHE STRING "List of known file extensions used for CMake sources")           
 
     ################################
     # Setup compiler options
