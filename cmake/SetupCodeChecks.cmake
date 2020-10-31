@@ -106,6 +106,7 @@ endforeach()
 ##                      CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
 ##                      UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
 ##                      YAPF_CFG_FILE        <Path to Yapf config file>
+##                      CMAKEFORMAT_CFG_FILE <Path to CMakeFormat config file>
 ##                      CPPCHECK_FLAGS       <List of flags added to Cppcheck>
 ##                      CLANGQUERY_CHECKER_DIRECTORIES [dir1 [dir2]])
 ##
@@ -116,7 +117,7 @@ endforeach()
 macro(blt_add_code_checks)
 
     set(options )
-    set(singleValueArgs PREFIX ASTYLE_CFG_FILE CLANGFORMAT_CFG_FILE UNCRUSTIFY_CFG_FILE YAPF_CFG_FILE)
+    set(singleValueArgs PREFIX ASTYLE_CFG_FILE CLANGFORMAT_CFG_FILE UNCRUSTIFY_CFG_FILE YAPF_CFG_FILE CMAKEFORMAT_CFG_FILE)
     set(multiValueArgs SOURCES CPPCHECK_FLAGS CLANGQUERY_CHECKER_DIRECTORIES)
 
     cmake_parse_arguments(arg
@@ -251,6 +252,25 @@ macro(blt_add_code_checks)
                              CFG_FILE          ${arg_YAPF_CFG_FILE}
                              WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                              SRC_FILES         ${_py_sources} )
+    endif()
+
+    if (CMAKEFORMAT_FOUND AND DEFINED arg_CMAKEFORMAT_CFG_FILE)
+        set(_check_target_name ${arg_PREFIX}_cmakeformat_check)
+        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
+        set(_style_target_name ${arg_PREFIX}_cmakeformat_style)
+        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
+
+        blt_add_cmakeformat_target( NAME              ${_check_target_name}
+                                    MODIFY_FILES      FALSE
+                                    CFG_FILE          ${arg_CMAKEFORMAT_CFG_FILE}
+                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                    SRC_FILES         ${_cmake_sources} )
+
+        blt_add_cmakeformat_target( NAME              ${_style_target_name}
+                                    MODIFY_FILES       TRUE
+                                    CFG_FILE           ${arg_CMAKEFORMAT_CFG_FILE}
+                                    WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}
+                                    SRC_FILES          ${_cmake_sources} )
     endif()
 
     if (CPPCHECK_FOUND)
