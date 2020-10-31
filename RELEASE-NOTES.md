@@ -25,8 +25,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added support for formatting Python code using YAPF.
 - Added new ``blt_import_library`` macro that creates a real CMake target for imported libraries,
   intended to be used instead of ``blt_register_library`` whenever possible
-- Added new ``blt_patch_target`` macro to simplify modifying properties of an existing CMake target. 
+- Added new ``blt_patch_target`` macro to simplify modifying properties of an existing CMake target.
   This macro accounts for known differences in compilers, target types, and CMake releases.
+- Added support for formatting CMake code using cmake-format.
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
