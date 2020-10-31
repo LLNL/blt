@@ -148,10 +148,12 @@ macro(blt_add_code_checks)
     set(_c_sources)
     set(_f_sources)
     set(_py_sources)
+    set(_cmake_sources)
     blt_split_source_list_by_language(SOURCES      ${_rel_sources}
                                       C_LIST       _c_sources
                                       Fortran_LIST _f_sources
-                                      Python_LIST  _py_sources)
+                                      Python_LIST  _py_sources
+                                      CMAKE_LIST   _cmake_sources)
 
     # Check that no more than one formatting config file was supplied
     # for C-style languages.

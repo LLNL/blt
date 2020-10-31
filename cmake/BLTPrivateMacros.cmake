@@ -581,18 +581,19 @@ endmacro(blt_add_hip_executable)
 ##                                    C_LIST <list name>
 ##                                    Fortran_LIST <list name>
 ##                                    Python_LIST <list name>)
+##                                    CMAKE_LIST <list name>)
 ##
-## Filters source list by file extension into C/C++, Fortran, and
-## Python source lists based on the global BLT variables
-## BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, and BLT_Python_FILE_EXTS,
-## respectively.  Files with no extension or generator expressions
-## that are not object libraries (of the form
+## Filters source list by file extension into C/C++, Fortran, Python, and
+## CMake source lists based on BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS,
+## and BLT_CMAKE_FILE_EXTS (global BLT variables). Files named
+## "CMakeLists.txt" are also filtered here. Files with no extension
+## or generator expressions that are not object libraries (of the form
 ## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
 ## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST Python_LIST)
+    set(singleValueArgs C_LIST Fortran_LIST Python_LIST CMAKE_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -619,6 +620,8 @@ macro(blt_split_source_list_by_language)
             message(FATAL_ERROR "blt_split_source_list_by_language given source file with no extension: ${_file}")
         endif()
 
+        get_filename_component(_name ${_file} NAME)  
+
         string(TOLOWER ${_ext} _ext_lower)
 
         if(${_ext_lower} IN_LIST BLT_C_FILE_EXTS)
@@ -633,8 +636,12 @@ macro(blt_split_source_list_by_language)
             if (DEFINED arg_Python_LIST)
                 list(APPEND ${arg_Python_LIST} ${_file})
             endif()
+        elseif(${_ext_lower} IN_LIST BLT_CMAKE_FILE_EXTS OR ${_name} STREQUAL "CMakeLists.txt")
+            if (DEFINED arg_CMAKE_LIST)
+                list(APPEND ${arg_CMAKE_LIST} ${_file})
+            endif()
         else()
-            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, or BLT_Python_FILE_EXTS).\n Unknown file: ${_file}")
+            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, BLT_Python_FILE_EXTS, or BLT_CMAKE_FILE_EXTS).\n Unknown file: ${_file}")
         endif()
     endforeach()
 
