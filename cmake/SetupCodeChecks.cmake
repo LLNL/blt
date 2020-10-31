@@ -909,3 +909,99 @@ macro(blt_add_yapf_target)
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
     endif()
 endmacro(blt_add_yapf_target)
+
+
+##------------------------------------------------------------------------------
+## blt_add_cmakeformat_target( NAME              <Created Target Name>
+##                             MODIFY_FILES      [TRUE | FALSE (default)]
+##                             CFG_FILE          <cmake-format Configuration File>
+##                             PREPEND_FLAGS     <Additional Flags to cmake-format>
+##                             APPEND_FLAGS      <Additional Flags to cmake-format>
+##                             COMMENT           <Additional Comment for Target Invocation>
+##                             WORKING_DIRECTORY <Working Directory>
+##                             SRC_FILES         [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running cmake-format over the given SRC_FILES.
+##------------------------------------------------------------------------------
+macro(blt_add_cmakeformat_target)
+
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check/Set required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_cmakeformat_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_CFG_FILE)
+        message(FATAL_ERROR "blt_add_cmakeformat_target requires a CFG_FILE parameter")
+    endif()
+
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_cmakeformat_target requires a SRC_FILES parameter")
+    endif()
+
+    if(NOT DEFINED arg_MODIFY_FILES)
+        set(arg_MODIFY_FILES FALSE)
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    set(_generate_target TRUE)
+
+    # Check the version -- output is of the form "X.Y.Z"
+    execute_process(
+        COMMAND ${CMAKEFORMAT_EXECUTABLE} --version
+        OUTPUT_VARIABLE _version_str
+        ERROR_VARIABLE  _version_str
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REGEX MATCH "([0-9]+(\\.)?)+$" _cmakeformat_version ${_version_str})
+
+    if(BLT_REQUIRED_CMAKEFORMAT_VERSION)
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND "${_cmakeformat_version}" ${BLT_REQUIRED_CMAKEFORMAT_VERSION} VERSION_POS)
+        if (NOT VERSION_POS EQUAL 0)
+            set(_generate_target FALSE)
+            if(NOT _BLT_STYLE_VERSION_WARNING_ISSUED)
+                message(WARNING "blt_add_cmakeformat_target: cmake-format '${BLT_REQUIRED_CMAKEFORMAT_VERSION}' is required, found '${_cmakeformat_version}'. Disabling 'style' build target.")
+                set(_BLT_STYLE_VERSION_WARNING_ISSUED TRUE CACHE BOOL "Limits BLT issuing more than one warning for style version" FORCE)
+            endif()
+        endif()
+    endif()
+
+    if(${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG --in-place)
+    else()
+        set(MODIFY_FILES_FLAG --check)
+    endif()
+
+    if(_generate_target)
+        add_custom_target(
+            ${arg_NAME}
+            COMMAND ${CMAKEFORMAT_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                --config-files  ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running CMakeFormat source code formatting checks.")
+        
+        # Hook our new target into the proper dependency chain
+        if(${arg_MODIFY_FILES})
+            add_dependencies(cmakeformat_style ${arg_NAME})
+        else()
+            add_dependencies(cmakeformat_check ${arg_NAME})
+        endif()
+
+        # Code formatting targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    endif()
+endmacro(blt_add_cmakeformat_target)
