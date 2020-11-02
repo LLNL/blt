@@ -69,6 +69,7 @@ blt_add_executable
 
     blt_add_executable( NAME        <name>
                         SOURCES     [source1 [source2 ...]]
+                        HEADERS     [header1 [header2 ...]]
                         INCLUDES    [dir1 [dir2 ...]]
                         DEFINES     [define1 [define2 ...]]
                         DEPENDS_ON  [dep1 [dep2 ...]]
@@ -83,6 +84,9 @@ NAME
 
 SOURCES
   List of all sources to be added
+
+HEADERS
+  List of all headers to be added
 
 INCLUDES
   List of include directories both used by this target and inherited by dependent
