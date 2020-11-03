@@ -380,6 +380,81 @@ macro(blt_register_library)
 
 endmacro(blt_register_library)
 
+##------------------------------------------------------------------------------
+## blt_import_library( NAME <libname>
+##                     PATH <path>
+##                     DEPENDS_ON [dep1 [dep2 ...]]
+##                     INCLUDES [include1 [include2 ...]]
+##                     TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+##                     FORTRAN_MODULES [ path1 [ path2 ..]]
+##                     COMPILE_FLAGS [ flag1 [ flag2 ..]]
+##                     LINK_FLAGS [ flag1 [ flag2 ..]]
+##                     DEFINES [def1 [def2 ...]] )
+##
+## Imports a library as a CMake target
+##------------------------------------------------------------------------------
+macro(blt_import_library)
+    # TODO: Do we want to be able to bundle multiple library files into a single target
+    # If so PATH needs to be multivalued - also IMPORTED_LOCATION doesn't quite work for multiple
+    set(singleValueArgs PATH TREAT_INCLUDES_AS_SYSTEM)
+    set(multiValueArgs INCLUDES 
+                       DEPENDS_ON
+                       # FIXME: FORTRAN_MODULES
+                       COMPILE_FLAGS
+                       LINK_FLAGS
+                       DEFINES )
+
+    ## parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Input checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_import_library() must be called with argument NAME <name>")
+    endif()
+    if( "${arg_PATH}" STREQUAL "" )
+        message(FATAL_ERROR "blt_import_library() must be called with argument PATH <path>")
+    endif()
+
+    get_filename_component(lib_ext "${arg_PATH}" EXT)
+    string(TOLOWER ${lib_ext} lowercase_ext)
+
+    # Check for static or dynamic library
+    if (lowercase_ext MATCHES "\.(lib|a)$")
+        add_library("${arg_NAME}" STATIC IMPORTED GLOBAL)
+    else()
+        add_library("${arg_NAME}" SHARED IMPORTED GLOBAL)
+    endif()
+    set_target_properties("${arg_NAME}" PROPERTIES IMPORTED_LOCATION "${arg_PATH}")
+
+    # TODO: This won't expand BLT-registered libraries
+    if( arg_DEPENDS_ON )
+        target_link_libraries("${arg_NAME}" INTERFACE "${arg_DEPENDS_ON}")
+    endif()
+
+    if( arg_INCLUDES )
+        # PGI does not support -isystem
+        if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+            target_include_directories("${arg_NAME}" SYSTEM INTERFACE "${arg_INCLUDES}")
+        else()
+            target_include_directories("${arg_NAME}" INTERFACE "${arg_INCLUDES}")
+        endif()
+    endif()
+
+    if( arg_COMPILE_FLAGS )
+        target_compile_options("${arg_NAME}" INTERFACE "${arg_COMPILE_FLAGS}")
+    endif()
+
+    if( arg_LINK_FLAGS )
+        target_link_options("${arg_NAME}" INTERFACE "${arg_LINK_FLAGS}")
+    endif()
+
+    if( arg_DEFINES )
+        target_compile_definitions("${arg_NAME}" INTERFACE "${arg_DEFINES}")
+    endif()
+
+endmacro(blt_import_library)
+
 
 ##------------------------------------------------------------------------------
 ## blt_add_library( NAME         <libname>
