@@ -113,7 +113,8 @@ Adds an executable target, called <name>, to be built from the given sources.
 It also adds the given INCLUDES and DEFINES from the parameters to this macro
 and adds all inherited information from the list given by DEPENDS_ON.  This
 macro creates a true CMake target that can be altered by other CMake commands
-like normal, such as `set_target_property()`.
+like normal, such as `set_target_property()`.  It also adds SOURCES and HEADERS
+to the library for build system dependency tracking and IDE folder support.
 
 OUTPUT_NAME is useful when multiple CMake targets with the same name need to be
 created by different targets.
@@ -190,7 +191,8 @@ FOLDER
   Name of the IDE folder to ease organization
 
 This macro creates a true CMake target that can be altered by other CMake commands
-like normal, such as `set_target_property()`.
+like normal, such as `set_target_property()`.  It also adds SOURCES and HEADERS
+to the library for build system dependency tracking and IDE folder support.
 
 This macro supports three types of libraries automatically: normal, header-only,
 or object.
