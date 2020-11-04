@@ -510,9 +510,6 @@ macro(blt_import_library)
     if( "${arg_NAME}" STREQUAL "" )
         message(FATAL_ERROR "blt_import_library() must be called with argument NAME <name>")
     endif()
-    if( "${arg_LIBRARIES}" STREQUAL "" )
-        message(FATAL_ERROR "blt_import_library() must be called with argument LIBRARIES [lib1 [lib2 ...]]")
-    endif()
 
     set(imported_subtargets "")
 
