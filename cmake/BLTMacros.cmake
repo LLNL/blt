@@ -273,26 +273,22 @@ macro(blt_add_target_link_flags)
             get_target_property(target_type ${arg_TO} TYPE)
             if (${target_type} STREQUAL "INTERFACE_LIBRARY")
                 # If it's an interface library, we add the flag via link_libraries
-                get_target_property(_link_flags ${arg_TO} INTERFACE_LINK_LIBRARIES)
+                target_link_libraries(${arg_TO} INTERFACE ${_flags})
             else()
                 get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
-            endif()
+                # Append to existing flags
+                if(NOT _link_flags)
+                    set(_link_flags "")
+                endif()
+                set(_link_flags "${_flags} ${_link_flags}")
 
-            # Append to existing flags
-            if(NOT _link_flags)
-                set(_link_flags "")
-            endif()
-            set(_link_flags "${_flags} ${_link_flags}")
+                # Convert from a CMake ;-list to a string
+                string (REPLACE ";" " " _link_flags_str "${_link_flags}")
 
-            # Convert from a CMake ;-list to a string
-            string (REPLACE ";" " " _link_flags_str "${_link_flags}")
-
-            if (${target_type} STREQUAL "INTERFACE_LIBRARY")
-                target_link_libraries(${arg_TO} INTERFACE "${_link_flags_str}")
-            else()
                 set_target_properties(${arg_TO}
                                       PROPERTIES LINK_FLAGS "${_link_flags_str}")
             endif()
+
         endif()
     endif()
 
@@ -442,11 +438,24 @@ macro(blt_patch_target)
     target_link_libraries(${arg_NAME} INTERFACE ${libs_to_link})
 
     if( arg_INCLUDES )
-        target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
-        # PGI does not support -isystem
-        if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
-            get_target_property(all_include_dirs ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-            target_include_directories(${arg_NAME} SYSTEM INTERFACE ${all_include_dirs})
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0" )
+            target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
+            # PGI does not support -isystem
+            if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+                get_target_property(all_include_dirs ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+                target_include_directories(${arg_NAME} SYSTEM INTERFACE ${all_include_dirs})
+            endif()
+        else()
+            # Interface include directories need to be set manually
+            SET_PROPERTY(TARGET ${arg_NAME}
+                         APPEND PROPERTY 
+                         INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
+            # PGI does not support -isystem
+            if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+                SET_PROPERTY(TARGET ${arg_NAME}
+                         APPEND PROPERTY 
+                         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${arg_INCLUDES})
+            endif()
         endif()
     endif()
 
@@ -515,7 +524,7 @@ macro(blt_import_library)
             string(TOLOWER ${lib_ext} lowercase_ext)
 
             get_filename_component(lib_file_name "${lib_name}" NAME_WE)
-            set(subtarget_name "${arg_NAME}_${lib_file_name}_subtarget")
+            set(subtarget_name "_${arg_NAME}_${lib_file_name}_subtarget")
         
             # Check for static or dynamic library
             if (lowercase_ext MATCHES "\.(lib|a)$")
@@ -532,7 +541,7 @@ macro(blt_import_library)
     endforeach()
 
     # Add all imported targets to a single interface target
-    add_library(${arg_NAME} INTERFACE)
+    add_library(${arg_NAME} INTERFACE IMPORTED GLOBAL)
     target_link_libraries(${arg_NAME} INTERFACE ${imported_subtargets})
 
     blt_patch_target(
