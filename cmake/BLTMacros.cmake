@@ -495,21 +495,27 @@ macro(blt_import_library)
     set(imported_subtargets "")
 
     # For each library (shared or static), build an imported target
-    foreach(lib_file ${arg_LIBRARIES})
-        get_filename_component(lib_ext "${lib_file}" EXT)
-        string(TOLOWER ${lib_ext} lowercase_ext)
+    foreach(lib_name ${arg_LIBRARIES})
+        # Check if it's a file
+        if (EXISTS "${lib_name}")
+            get_filename_component(lib_ext "${lib_name}" EXT)
+            string(TOLOWER ${lib_ext} lowercase_ext)
 
-        get_filename_component(lib_name "${lib_file}" NAME_WE)
-        set(subtarget_name "${arg_NAME}_${lib_name}_subtarget")
-    
-        # Check for static or dynamic library
-        if (lowercase_ext MATCHES "\.(lib|a)$")
-            add_library(${subtarget_name} STATIC IMPORTED GLOBAL)
+            get_filename_component(lib_file_name "${lib_name}" NAME_WE)
+            set(subtarget_name "${arg_NAME}_${lib_file_name}_subtarget")
+        
+            # Check for static or dynamic library
+            if (lowercase_ext MATCHES "\.(lib|a)$")
+                add_library(${subtarget_name} STATIC IMPORTED)
+            else()
+                add_library(${subtarget_name} SHARED IMPORTED)
+            endif()
+            set_target_properties(${subtarget_name} PROPERTIES IMPORTED_LOCATION "${lib_name}")
+            list(APPEND imported_subtargets ${subtarget_name})
         else()
-            add_library(${subtarget_name} SHARED IMPORTED GLOBAL)
+            # Otherwise it's a target or linker flag
+            list(APPEND imported_subtargets ${lib_name})
         endif()
-        set_target_properties(${subtarget_name} PROPERTIES IMPORTED_LOCATION "${lib_file}")
-        list(APPEND imported_subtargets ${subtarget_name})
     endforeach()
 
     # Add all imported targets to a single interface target
