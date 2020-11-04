@@ -270,7 +270,15 @@ macro(blt_add_target_link_flags)
             endif()
         else()
             # In CMake <= 3.12, there is no target_link_flags or target_link_options command
-            get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
+            get_target_property(target_type ${arg_TO} TYPE)
+            if (${target_type} STREQUAL "INTERFACE_LIBRARY")
+                # If it's an interface library, we add the flag via link_libraries
+                get_target_property(_link_flags ${arg_TO} LINK_LIBRARIES)
+            else()
+                get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
+            endif()
+
+            # Append to existing flags
             if(NOT _link_flags)
                 set(_link_flags "")
             endif()
@@ -279,13 +287,11 @@ macro(blt_add_target_link_flags)
             # Convert from a CMake ;-list to a string
             string (REPLACE ";" " " _link_flags_str "${_link_flags}")
 
-            # If it's an interface library, the best we can do is add the flags to link_libraries
-            get_target_property(target_type ${arg_TO} TYPE)
             if (${target_type} STREQUAL "INTERFACE_LIBRARY")
                 target_link_libraries(${arg_TO} "${_link_flags_str}")
             else()
                 set_target_properties(${arg_TO}
-                                    PROPERTIES LINK_FLAGS "${_link_flags_str}")
+                                      PROPERTIES LINK_FLAGS "${_link_flags_str}")
             endif()
         endif()
     endif()
