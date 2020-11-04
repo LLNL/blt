@@ -278,8 +278,15 @@ macro(blt_add_target_link_flags)
 
             # Convert from a CMake ;-list to a string
             string (REPLACE ";" " " _link_flags_str "${_link_flags}")
-            set_target_properties(${arg_TO}
-                                  PROPERTIES LINK_FLAGS "${_link_flags_str}")
+
+            # If it's an interface library, the best we can do is add the flags to link_libraries
+            get_target_property(target_type ${arg_TO} TYPE)
+            if (${target_type} STREQUAL "INTERFACE_LIBRARY")
+                target_link_libraries(${arg_TO} "${_link_flags_str}")
+            else()
+                set_target_properties(${arg_TO}
+                                    PROPERTIES LINK_FLAGS "${_link_flags_str}")
+            endif()
         endif()
     endif()
 
@@ -409,7 +416,7 @@ macro(blt_patch_target)
 
     # Input checks
     if( "${arg_NAME}" STREQUAL "" )
-        message(FATAL_ERROR "blt_import_library() must be called with argument NAME <name>")
+        message(FATAL_ERROR "blt_patch_target() must be called with argument NAME <name>")
     endif()
 
     # Things that need to go into target_link_libraries
