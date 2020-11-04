@@ -288,7 +288,7 @@ macro(blt_add_target_link_flags)
             string (REPLACE ";" " " _link_flags_str "${_link_flags}")
 
             if (${target_type} STREQUAL "INTERFACE_LIBRARY")
-                target_link_libraries(${arg_TO} "${_link_flags_str}")
+                target_link_libraries(${arg_TO} INTERFACE "${_link_flags_str}")
             else()
                 set_target_properties(${arg_TO}
                                       PROPERTIES LINK_FLAGS "${_link_flags_str}")
