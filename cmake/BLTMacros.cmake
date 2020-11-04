@@ -273,7 +273,7 @@ macro(blt_add_target_link_flags)
             get_target_property(target_type ${arg_TO} TYPE)
             if (${target_type} STREQUAL "INTERFACE_LIBRARY")
                 # If it's an interface library, we add the flag via link_libraries
-                get_target_property(_link_flags ${arg_TO} LINK_LIBRARIES)
+                get_target_property(_link_flags ${arg_TO} INTERFACE_LINK_LIBRARIES)
             else()
                 get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
             endif()
