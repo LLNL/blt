@@ -355,3 +355,36 @@ Internally created variables (NAME = "foo"):
 
 Internal variable names are prefixed with ``_`` to avoid collision with input parameters.
 
+.. _blt_import_library:
+
+blt_import_library
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_import_library( NAME                     <libname>
+                        DEPENDS_ON               [dep1 [dep2 ...]]
+                        INCLUDES                 [include1 [include2 ...]]
+                        TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+                        FORTRAN_MODULES          [path1 [path2 ..]]
+                        LIBRARIES                [lib1 [lib2 ...]]
+                        COMPILE_FLAGS            [flag1 [flag2 ..]]
+                        LINK_FLAGS               [flag1 [flag2 ..]]
+                        DEFINES                  [def1 [def2 ...]] )
+
+Creates a CMake library target from a list of existing library files or targets.
+
+This behaves similarly to :ref:`blt_register_library`, but because it defines
+a native CMake target, no internal variable names are defined. This means that it
+is usable in contexts other than those that specifically accept BLT-registered
+libraries.
+
+As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
+when building another target or to ``target_link_libraries`` to transitively add in
+all includes, libraries, flags, and definitions associated with the imported library.
+
+See :ref:`blt_register_library` and :ref:`_blt_add_library` for a full description
+of this macro's parameters.
+
+This does not actually build a library.  This is strictly to ease use after
+discovering it on your system or building it yourself inside your project.

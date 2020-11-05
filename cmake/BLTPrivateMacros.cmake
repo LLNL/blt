@@ -434,6 +434,100 @@ macro(blt_setup_cuda_target)
 endmacro(blt_setup_cuda_target)
 
 ##------------------------------------------------------------------------------
+## blt_patch_target( NAME <targetname>
+##                     DEPENDS_ON [dep1 [dep2 ...]]
+##                     INCLUDES [include1 [include2 ...]]
+##                     LIBRARIES [lib1 [lib2 ...]]
+##                     TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+##                     FORTRAN_MODULES [ path1 [ path2 ..]]
+##                     COMPILE_FLAGS [ flag1 [ flag2 ..]]
+##                     LINK_FLAGS [ flag1 [ flag2 ..]]
+##                     DEFINES [def1 [def2 ...]] )
+##
+## Modifies an existing CMake target
+##------------------------------------------------------------------------------
+macro(blt_patch_target)
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
+    set(multiValueArgs INCLUDES 
+                       DEPENDS_ON
+                       LIBRARIES
+                       # FIXME: FORTRAN_MODULES
+                       COMPILE_FLAGS
+                       LINK_FLAGS
+                       DEFINES )
+
+    ## parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Input checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_patch_target() must be called with argument NAME <name>")
+    endif()
+
+    if (NOT TARGET ${arg_NAME})
+        message(FATAL_ERROR "blt_patch_target() NAME argument must be a native CMake target")
+    endif()
+
+    # Things that need to go into target_link_libraries
+    set(libs_to_link "")
+
+    if( arg_LIBRARIES )
+        message(STATUS "adding libs ${arg_LIBRARIES}")
+        list(APPEND libs_to_link ${arg_LIBRARIES})
+    endif()
+
+    # TODO: This won't expand BLT-registered libraries
+    if( arg_DEPENDS_ON )
+        message(STATUS "adding depends ${arg_DEPENDS_ON}")
+        list(APPEND libs_to_link ${arg_DEPENDS_ON})
+    endif()
+
+    target_link_libraries(${arg_NAME} INTERFACE ${libs_to_link})
+
+    if( arg_INCLUDES )
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0" )
+            target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
+            # PGI does not support -isystem
+            if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+                get_target_property(all_include_dirs ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+                target_include_directories(${arg_NAME} SYSTEM INTERFACE ${all_include_dirs})
+            endif()
+        else()
+            # Interface include directories need to be set manually
+            SET_PROPERTY(TARGET ${arg_NAME}
+                         APPEND PROPERTY 
+                         INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
+            # PGI does not support -isystem
+            if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+                SET_PROPERTY(TARGET ${arg_NAME}
+                         APPEND PROPERTY 
+                         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${arg_INCLUDES})
+            endif()
+        endif()
+    endif()
+
+    if( arg_COMPILE_FLAGS )
+        blt_add_target_compile_flags(TO ${arg_NAME} 
+                                     SCOPE INTERFACE
+                                     FLAGS ${arg_COMPILE_FLAGS})
+    endif()
+    
+    if( arg_LINK_FLAGS )
+        blt_add_target_link_flags(TO ${arg_NAME} 
+                                  SCOPE INTERFACE
+                                  FLAGS ${arg_LINK_FLAGS})
+    endif()
+    
+    if( arg_DEFINES )
+        blt_add_target_definitions(TO ${arg_NAME} 
+                                   SCOPE INTERFACE
+                                   TARGET_DEFINITIONS ${arg_DEFINES})
+    endif()
+
+endmacro(blt_patch_target)
+
+##------------------------------------------------------------------------------
 ## blt_add_hip_library(NAME         <libname>
 ##                     SOURCES      [source1 [source2 ...]]
 ##                     HEADERS      [header1 [header2 ...]]

@@ -36,9 +36,15 @@ Then *axom* is available to be used in the DEPENDS_ON list in the following
 
 This is especially helpful for external libraries that are not built with CMake
 and don't provide CMake-friendly imported targets. Our ultimate goal is to use ``blt_register_library()`` 
-to import all external dependencies as first-class imported CMake targets to take full advanced of CMake's dependency lattice. 
+to import all external dependencies as first-class imported CMake targets to take full advantage of CMake's dependency lattice.
 
-MPI, CUDA, and OpenMP are all registered via ``blt_register_library()``. 
+This first-class importing functionality is provided by ``blt_import_library()``, but ``blt_register_library()`` is
+still available for compatibility.  It is generally usable as a drop-in replacement, though it does not currently support
+the FORTRAN_MODULES option.  Because CMake targets are only accessible from within the directory they were defined (including
+subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
+that create imported library targets needed in other directories. 
+
+MPI, CUDA, and OpenMP are all registered via ``blt_import_library()``. 
 You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.
 
 BLT also supports using ``blt_register_library()`` to provide additional options for existing CMake targets. 
