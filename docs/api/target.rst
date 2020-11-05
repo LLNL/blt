@@ -377,7 +377,7 @@ Creates a CMake library target from a list of existing library files or targets.
 This behaves similarly to :ref:`blt_register_library`, but because it defines
 a native CMake target, no internal variable names are defined. This means that it
 is usable in contexts other than those that specifically accept BLT-registered
-libraries.
+libraries, and can take full advantage of CMake's transitive dependency resolution.
 
 As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
 when building another target or to ``target_link_libraries`` to transitively add in

@@ -39,9 +39,9 @@ and don't provide CMake-friendly imported targets. Our ultimate goal is to use `
 to import all external dependencies as first-class imported CMake targets to take full advantage of CMake's dependency lattice.
 
 This first-class importing functionality is provided by ``blt_import_library()``, but ``blt_register_library()`` is
-still available for compatibility.  It is generally usable as a drop-in replacement, though it does not currently support
-the FORTRAN_MODULES option.  Because CMake targets are only accessible from within the directory they were defined (including
-subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
+still available for compatibility.  It is generally usable as a drop-in replacement. 
+Because CMake targets are only accessible from within the directory they were defined (including subdirectories),
+the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
 that create imported library targets needed in other directories. 
 
 MPI, CUDA, and OpenMP are all registered via ``blt_import_library()``. 

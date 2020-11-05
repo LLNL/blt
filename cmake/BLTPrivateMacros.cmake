@@ -451,7 +451,7 @@ macro(blt_patch_target)
     set(multiValueArgs INCLUDES 
                        DEPENDS_ON
                        LIBRARIES
-                       # FIXME: FORTRAN_MODULES
+                       FORTRAN_MODULES
                        COMPILE_FLAGS
                        LINK_FLAGS
                        DEFINES )
@@ -505,6 +505,11 @@ macro(blt_patch_target)
                          INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${arg_INCLUDES})
             endif()
         endif()
+    endif()
+
+    # FIXME: Is this all that's needed?
+    if( arg_FORTRAN_MODULES )
+        target_include_directories(${arg_NAME} INTERFACE ${arg_FORTRAN_MODULES})
     endif()
 
     if( arg_COMPILE_FLAGS )

@@ -407,7 +407,7 @@ macro(blt_import_library)
     set(multiValueArgs LIBRARIES
                        INCLUDES 
                        DEPENDS_ON
-                       # FIXME: FORTRAN_MODULES
+                       FORTRAN_MODULES
                        COMPILE_FLAGS
                        LINK_FLAGS
                        DEFINES )
@@ -435,6 +435,7 @@ macro(blt_import_library)
         INCLUDES   ${arg_INCLUDES}
         DEFINES    ${arg_DEFINES}
         TREAT_INCLUDES_AS_SYSTEM ${arg_TREAT_INCLUDES_AS_SYSTEM}
+        FORTRAN_MODULES ${arg_FORTRAN_MODULES}
         COMPILE_FLAGS ${arg_COMPILE_FLAGS}
         LINK_FLAGS ${arg_LINK_FLAGS}
         DEFINES ${arg_DEFINES}
