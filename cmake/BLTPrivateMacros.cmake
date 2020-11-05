@@ -228,6 +228,20 @@ macro(blt_inherit_target_info)
         target_compile_definitions( ${arg_TO} PUBLIC ${_interface_defines})
     endif()
 
+    if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+        get_target_property(_interface_link_options
+                            ${arg_FROM} INTERFACE_LINK_OPTIONS)
+        if ( _interface_link_options )
+            target_link_options( ${arg_TO} PUBLIC ${_interface_link_options})
+        endif()
+    endif()
+
+    get_target_property(_interface_compile_options
+                        ${arg_FROM} INTERFACE_COMPILE_OPTIONS)
+    if ( _interface_compile_options )
+        target_compile_options( ${arg_TO} PUBLIC ${_interface_compile_options})
+    endif()
+
     if ( NOT arg_OBJECT )
         get_target_property(_interface_link_directories
                             ${arg_FROM} INTERFACE_LINK_DIRECTORIES)
@@ -352,13 +366,6 @@ macro(blt_setup_target)
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
-
-        # If the expanded dependency is a real target, link it
-        # TODO: Won't need to skip BLT object libraries once 3.12 changes pulled in
-        if (TARGET ${dependency} AND NOT _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY)
-            target_link_libraries(${arg_NAME} PUBLIC ${dependency})
-        endif()
-
     endforeach()
 
 endmacro(blt_setup_target)
