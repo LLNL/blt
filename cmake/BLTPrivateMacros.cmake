@@ -487,23 +487,21 @@ macro(blt_patch_target)
 
     if( arg_INCLUDES )
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0" )
+            target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
             # PGI does not support -isystem
             if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
                 target_include_directories(${arg_NAME} SYSTEM INTERFACE ${arg_INCLUDES})
-            else()
-                target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
             endif()
         else()
-            # Interface include directories need to be set manually in CMake < 3.11
+            # Interface include directories need to be set manually
+            SET_PROPERTY(TARGET ${arg_NAME}
+                         APPEND PROPERTY 
+                         INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
             # PGI does not support -isystem
             if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
                 SET_PROPERTY(TARGET ${arg_NAME}
-                             APPEND PROPERTY 
-                             INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${arg_INCLUDES})
-            else()
-                SET_PROPERTY(TARGET ${arg_NAME}
-                             APPEND PROPERTY 
-                             INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
+                         APPEND PROPERTY 
+                         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${arg_INCLUDES})
             endif()
         endif()
     endif()
