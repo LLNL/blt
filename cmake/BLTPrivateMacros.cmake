@@ -92,8 +92,9 @@ endfunction()
 function(blt_fix_fortran_openmp_flags target_name)
 
     if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
-
-        set(_property_name LINK_FLAGS)
+        # OpenMP is an interface library which doesn't have a LINK_FLAGS property
+        # in versions < 3.13
+        set(_property_name INTERFACE_LINK_LIBRARIES)
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
             # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
             set(_property_name LINK_OPTIONS)
