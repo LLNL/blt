@@ -104,12 +104,14 @@ function(blt_fix_fortran_openmp_flags target_name)
         if ( target_link_flags )
 
             message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
+            message(STATUS "Detected link flags are: ${target_link_flags}")
+            message(STATUS "Replacing ${OpenMP_CXX_FLAGS} with ${OpenMP_Fortran_FLAGS}")
 
             string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
                     correct_link_flags
                     "${target_link_flags}"
                     )
-
+            message(STATUS "Fixed link flags are: ${correct_link_flags}")
             set_target_properties( ${target_name} PROPERTIES ${_property_name}
                                    "${correct_link_flags}" )
         endif()
