@@ -353,6 +353,12 @@ macro(blt_setup_target)
                                       FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
 
+        # If the expanded dependency is a real target, link it
+        # TODO: Won't need to skip BLT object libraries once 3.12 changes pulled in
+        if (TARGET ${dependency} AND NOT _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY)
+            target_link_libraries(${arg_NAME} PUBLIC ${dependency})
+        endif()
+
     endforeach()
 
 endmacro(blt_setup_target)
@@ -473,13 +479,11 @@ macro(blt_patch_target)
     set(libs_to_link "")
 
     if( arg_LIBRARIES )
-        message(STATUS "adding libs ${arg_LIBRARIES}")
         list(APPEND libs_to_link ${arg_LIBRARIES})
     endif()
 
     # TODO: This won't expand BLT-registered libraries
     if( arg_DEPENDS_ON )
-        message(STATUS "adding depends ${arg_DEPENDS_ON}")
         list(APPEND libs_to_link ${arg_DEPENDS_ON})
     endif()
 
