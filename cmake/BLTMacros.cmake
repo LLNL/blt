@@ -422,6 +422,8 @@ macro(blt_import_library)
     endif()
 
     # Add all imported targets to a single interface target
+    # Introducing OBJECT targets for each library file causes issues when exporting as 
+    # dependencies are not transitively included in exports
     add_library(${arg_NAME} INTERFACE)
 
     # This is a separate function as patching a target may later be useful in other contexts
