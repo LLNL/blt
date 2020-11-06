@@ -102,18 +102,37 @@ function(blt_fix_fortran_openmp_flags target_name)
 
         get_target_property(target_link_flags ${target_name} ${_property_name})
         if ( target_link_flags )
+            # Since this is only called on executable targets we can safely convert
+            # from a "real" target back to a "fake" one as this is a sink vertex in
+            # the DAG.  Only the link flags need to be modified.
+            list(FIND target_link_flags "openmp" _omp_index)
+            if(${_omp_index} GREATER -1)
+                message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
+                message(STATUS "Detected link flags are: ${target_link_flags}")
+                message(STATUS "Replacing ${OpenMP_CXX_FLAGS} with ${OpenMP_Fortran_FLAGS}")
+                list(REMOVE_ITEM target_link_flags "openmp")
+                # Copy the compile flags verbatim
+                get_target_property(omp_compile_flags openmp INTERFACE_COMPILE_OPTIONS)
+                target_compile_options(${target_name} ${omp_compile_flags})
 
-            message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
-            message(STATUS "Detected link flags are: ${target_link_flags}")
-            message(STATUS "Replacing ${OpenMP_CXX_FLAGS} with ${OpenMP_Fortran_FLAGS}")
+                # These are set through blt_add_target_link_flags which needs to use
+                # the link_options for interface libraries in CMake < 3.13
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                    get_target_property(omp_link_flags openmp INTERFACE_LINK_OPTIONS)
+                else()
+                    get_target_property(omp_link_flags openmp INTERFACE_LINK_LIBRARIES)
+                endif()
+    
+                string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                        correct_omp_link_flags
+                        "${omp_link_flags}"
+                        )
+                list(APPEND target_link_flags "${correct_omp_link_flags}")    
+                message(STATUS "Fixed link flags are: ${target_link_flags}")
+                set_target_properties( ${target_name} PROPERTIES ${_property_name}
+                                       "${target_link_flags}" )
+            endif()
 
-            string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
-                    correct_link_flags
-                    "${target_link_flags}"
-                    )
-            message(STATUS "Fixed link flags are: ${correct_link_flags}")
-            set_target_properties( ${target_name} PROPERTIES ${_property_name}
-                                   "${correct_link_flags}" )
         endif()
 
     endif()
