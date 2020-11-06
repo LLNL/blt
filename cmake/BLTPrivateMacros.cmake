@@ -111,9 +111,10 @@ function(blt_fix_fortran_openmp_flags target_name)
                 message(STATUS "Detected link flags are: ${target_link_flags}")
                 message(STATUS "Replacing ${OpenMP_CXX_FLAGS} with ${OpenMP_Fortran_FLAGS}")
                 list(REMOVE_ITEM target_link_flags "openmp")
+
                 # Copy the compile flags verbatim
                 get_target_property(omp_compile_flags openmp INTERFACE_COMPILE_OPTIONS)
-                target_compile_options(${target_name} ${omp_compile_flags})
+                target_compile_options(${target_name} PUBLIC ${omp_compile_flags})
 
                 # These are set through blt_add_target_link_flags which needs to use
                 # the link_options for interface libraries in CMake < 3.13
