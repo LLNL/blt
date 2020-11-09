@@ -114,6 +114,7 @@ function(blt_fix_fortran_openmp_flags target_name)
 
                 # Copy the compile flags verbatim
                 get_target_property(omp_compile_flags openmp INTERFACE_COMPILE_OPTIONS)
+                message(STATUS "Setting compile flags to (verbatim): ${omp_compile_flags}")
                 target_compile_options(${target_name} PUBLIC ${omp_compile_flags})
 
                 # These are set through blt_add_target_link_flags which needs to use
