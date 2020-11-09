@@ -92,33 +92,23 @@ endfunction()
 function(blt_fix_fortran_openmp_flags target_name)
 
     if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
-        # OpenMP is an interface library which doesn't have a LINK_FLAGS property
-        # in versions < 3.13
-        set(_property_name LINK_LIBRARIES)
-        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
-            # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
-            set(_property_name LINK_OPTIONS)
-        endif()
-
-        get_target_property(target_link_flags ${target_name} ${_property_name})
-        if ( target_link_flags )
+        # The OpenMP interface library will have been added as a direct
+        # link dependency instead of via flags
+        get_target_property(target_link_libs ${target_name} LINK_LIBRARIES)
+        if ( target_link_libs )
             # Since this is only called on executable targets we can safely convert
             # from a "real" target back to a "fake" one as this is a sink vertex in
             # the DAG.  Only the link flags need to be modified.
-            list(FIND target_link_flags "openmp" _omp_index)
+            list(FIND target_link_libs "openmp" _omp_index)
             if(${_omp_index} GREATER -1)
-                message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
-                message(STATUS "Detected link flags are: ${target_link_flags}")
-                message(STATUS "Replacing ${OpenMP_CXX_FLAGS} with ${OpenMP_Fortran_FLAGS}")
-                list(REMOVE_ITEM target_link_flags "openmp")
+                list(REMOVE_ITEM target_link_libs "openmp")
 
                 # Copy the compile flags verbatim
                 get_target_property(omp_compile_flags openmp INTERFACE_COMPILE_OPTIONS)
-                message(STATUS "Setting compile flags to (verbatim): ${omp_compile_flags}")
                 target_compile_options(${target_name} PUBLIC ${omp_compile_flags})
 
                 # These are set through blt_add_target_link_flags which needs to use
-                # the link_options for interface libraries in CMake < 3.13
+                # the link_libraries for interface libraries in CMake < 3.13
                 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
                     get_target_property(omp_link_flags openmp INTERFACE_LINK_OPTIONS)
                 else()
@@ -129,10 +119,9 @@ function(blt_fix_fortran_openmp_flags target_name)
                         correct_omp_link_flags
                         "${omp_link_flags}"
                         )
-                list(APPEND target_link_flags "${correct_omp_link_flags}")    
-                message(STATUS "Fixed link flags are: ${target_link_flags}")
-                set_target_properties( ${target_name} PROPERTIES ${_property_name}
-                                       "${target_link_flags}" )
+                list(APPEND target_link_libs "${correct_omp_link_flags}")
+                set_target_properties( ${target_name} PROPERTIES
+                                       LINK_LIBRARIES "${target_link_libs}" )
             endif()
 
         endif()
