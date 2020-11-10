@@ -470,7 +470,7 @@ endmacro(blt_setup_cuda_target)
 ##                     LINK_FLAGS [ flag1 [ flag2 ..]]
 ##                     DEFINES [def1 [def2 ...]] )
 ##
-## Modifies an existing CMake target
+## Modifies an existing CMake target - currently only sets INTERFACE visibility
 ##------------------------------------------------------------------------------
 macro(blt_patch_target)
     set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
@@ -495,19 +495,16 @@ macro(blt_patch_target)
         message(FATAL_ERROR "blt_patch_target() NAME argument must be a native CMake target")
     endif()
 
-    # Things that need to go into target_link_libraries
-    set(libs_to_link "")
-
+    # LIBRARIES and DEPENDS_ON are kept separate in case different logic is needed for
+    # the library itself versus its dependencies
     if( arg_LIBRARIES )
-        list(APPEND libs_to_link ${arg_LIBRARIES})
+        target_link_libraries(${arg_NAME} INTERFACE ${arg_LIBRARIES})
     endif()
 
     # TODO: This won't expand BLT-registered libraries
     if( arg_DEPENDS_ON )
-        list(APPEND libs_to_link ${arg_DEPENDS_ON})
+        target_link_libraries(${arg_NAME} INTERFACE ${arg_DEPENDS_ON})
     endif()
-
-    target_link_libraries(${arg_NAME} INTERFACE ${libs_to_link})
 
     if( arg_INCLUDES )
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0" )
@@ -518,12 +515,12 @@ macro(blt_patch_target)
             endif()
         else()
             # Interface include directories need to be set manually
-            SET_PROPERTY(TARGET ${arg_NAME}
+            set_property(TARGET ${arg_NAME}
                          APPEND PROPERTY 
                          INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
             # PGI does not support -isystem
             if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
-                SET_PROPERTY(TARGET ${arg_NAME}
+                set_property(TARGET ${arg_NAME}
                          APPEND PROPERTY 
                          INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${arg_INCLUDES})
             endif()
