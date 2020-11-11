@@ -185,7 +185,7 @@ macro(blt_add_target_compile_flags)
     string(STRIP "${arg_FLAGS}" _strippedFlags)
     if(NOT "${_strippedFlags}" STREQUAL "")
         get_target_property(_target_type ${arg_TO} TYPE)
-        if ((${_target_type} STREQUAL "INTERFACE_LIBRARY") AND (${CMAKE_VERSION} VERSION_LESS "3.11.0"))
+        if (("${_target_type}" STREQUAL "INTERFACE_LIBRARY") AND (${CMAKE_VERSION} VERSION_LESS "3.11.0"))
             set_property(TARGET ${arg_NAME} APPEND PROPERTY
                          INTERFACE_COMPILE_OPTIONS ${_strippedFlags})
         else()
@@ -277,7 +277,7 @@ macro(blt_add_target_link_flags)
         else()
             # In CMake <= 3.12, there is no target_link_flags or target_link_options command
             get_target_property(_target_type ${arg_TO} TYPE)
-            if (${_target_type} STREQUAL "INTERFACE_LIBRARY")
+            if ("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
                 # If it's an interface library, we add the flag via link_libraries
                 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
                     target_link_libraries(${arg_TO} INTERFACE ${_flags})
@@ -440,13 +440,13 @@ macro(blt_patch_target)
     # Default to public scope, unless it's an interface library
     set(_scope PUBLIC)
     get_target_property(_target_type ${arg_NAME} TYPE)
-    if(${_target_type} STREQUAL "INTERFACE_LIBRARY")
+    if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
         set(_scope INTERFACE)
     endif()
 
     # Interface libraries were heavily restricted pre-3.11
     set(_standard_lib_interface FALSE)
-    if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${_target_type} STREQUAL "INTERFACE_LIBRARY"))
+    if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY"))
         set(_standard_lib_interface TRUE)
     endif()
 
@@ -1320,7 +1320,7 @@ macro(blt_print_target_properties)
 
         ## For interface targets, filter against whitelist of valid properties
         get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
-        if(${_target_type} STREQUAL "INTERFACE_LIBRARY")
+        if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
             blt_filter_list(TO _property_list
                             REGEX "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$"
                             OPERATION "include")
