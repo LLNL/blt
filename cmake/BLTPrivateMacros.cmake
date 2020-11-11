@@ -495,13 +495,14 @@ endmacro(blt_add_hip_library)
 ##------------------------------------------------------------------------------
 ## blt_add_hip_executable(NAME         <libname>
 ##                        SOURCES      [source1 [source2 ...]]
+##                        HEADERS      [header1 [header2 ...]]
 ##                        DEPENDS_ON   [dep1 ...]
 ##------------------------------------------------------------------------------
 macro(blt_add_hip_executable)
 
     set(options)
     set(singleValueArgs NAME)
-    set(multiValueArgs SOURCES DEPENDS_ON)
+    set(multiValueArgs HEADERS SOURCES DEPENDS_ON)
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
@@ -544,7 +545,7 @@ macro(blt_add_hip_executable)
 
         hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
     else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} )
+        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
     endif()
 
 endmacro(blt_add_hip_executable)
