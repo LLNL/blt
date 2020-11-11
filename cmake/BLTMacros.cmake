@@ -485,8 +485,8 @@ macro(blt_patch_target)
         if(_standard_lib_interface)
             target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
         else()
-            set_target_properties(${arg_NAME} PROPERTIES
-                                INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
+            set_property(TARGET ${arg_NAME} PROPERTY
+                         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
         endif()
     endif()
 
