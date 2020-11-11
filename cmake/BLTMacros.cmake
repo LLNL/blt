@@ -184,7 +184,13 @@ macro(blt_add_target_compile_flags)
     # Only add the flag if it is not empty
     string(STRIP "${arg_FLAGS}" _strippedFlags)
     if(NOT "${_strippedFlags}" STREQUAL "")
-        target_compile_options(${arg_TO} ${_scope} ${_strippedFlags})
+        get_target_property(_target_type ${arg_TO} TYPE)
+        if ((${_target_type} STREQUAL "INTERFACE_LIBRARY") AND (${CMAKE_VERSION} VERSION_LESS "3.11.0"))
+            set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                         INTERFACE_COMPILE_OPTIONS ${_libs_to_link})
+        else()
+            target_compile_options(${arg_TO} ${_scope} ${_strippedFlags})
+        endif()
     endif()
 
     unset(_strippedFlags)
@@ -270,8 +276,8 @@ macro(blt_add_target_link_flags)
             endif()
         else()
             # In CMake <= 3.12, there is no target_link_flags or target_link_options command
-            get_target_property(target_type ${arg_TO} TYPE)
-            if (${target_type} STREQUAL "INTERFACE_LIBRARY")
+            get_target_property(_target_type ${arg_TO} TYPE)
+            if (${_target_type} STREQUAL "INTERFACE_LIBRARY")
                 # If it's an interface library, we add the flag via link_libraries
                 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
                     target_link_libraries(${arg_TO} INTERFACE ${_flags})
