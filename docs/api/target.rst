@@ -322,7 +322,9 @@ blt_patch_target
                       LINK_FLAGS               [flag1 [flag2 ..]]
                       DEFINES                  [def1 [def2 ...]] )
 
-Modifies the ``INTERFACE`` properties of an existing target.
+Modifies the properties of an existing target.  ``PUBLIC`` visibility
+is used unless the target is an ``INTERFACE`` library, in which case
+``INTERFACE`` visibility is used.
 
 NAME
   Name of the CMake target to patch
@@ -425,6 +427,8 @@ options to be associated with the library.
 As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
 when building another target or to ``target_link_libraries`` to transitively add in
 all includes, libraries, flags, and definitions associated with the imported library.
+
+In CMake terms, the imported libraries will be ``INTERFACE`` libraries.
 
 This does not actually build a library.  This is strictly to ease use after
 discovering it on your system or building it yourself inside your project.

@@ -400,7 +400,8 @@ endmacro(blt_register_library)
 ##                   LINK_FLAGS [ flag1 [ flag2 ..]]
 ##                   DEFINES [def1 [def2 ...]] )
 ##
-## Modifies an existing CMake target - currently only sets INTERFACE visibility
+## Modifies an existing CMake target - sets PUBLIC visibility except for INTERFACE
+## libraries, which use INTERFACE visibility
 ##------------------------------------------------------------------------------
 macro(blt_patch_target)
     set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
@@ -425,59 +426,65 @@ macro(blt_patch_target)
         message(FATAL_ERROR "blt_patch_target() NAME argument must be a native CMake target")
     endif()
 
+    # Default to public scope, unless it's an interface library
+    set(_scope PUBLIC)
+    get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
+    if(${arg_TARGET} STREQUAL "INTERFACE_LIBRARY")
+        set(_scope INTERFACE)
+    endif()
+
     # LIBRARIES and DEPENDS_ON are kept separate in case different logic is needed for
     # the library itself versus its dependencies
     if( arg_LIBRARIES )
-        target_link_libraries(${arg_NAME} INTERFACE ${arg_LIBRARIES})
+        target_link_libraries(${arg_NAME} ${_scope} ${arg_LIBRARIES})
     endif()
 
     # TODO: This won't expand BLT-registered libraries
     if( arg_DEPENDS_ON )
-        target_link_libraries(${arg_NAME} INTERFACE ${arg_DEPENDS_ON})
+        target_link_libraries(${arg_NAME} ${_scope} ${arg_DEPENDS_ON})
     endif()
 
     if( arg_INCLUDES )
-        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0" )
-            target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
-            # PGI does not support -isystem
-            if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
-                get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-                target_include_directories(${arg_NAME} SYSTEM INTERFACE ${_target_includes})
-            endif()
+        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${arg_TARGET} STREQUAL "INTERFACE_LIBRARY"))
+            target_include_directories(${arg_NAME} ${_scope} ${arg_INCLUDES})
         else()
             # Interface include directories need to be set manually
-            set_property(TARGET ${arg_NAME}
-                         APPEND PROPERTY 
+            set_property(TARGET ${arg_NAME} APPEND PROPERTY 
                          INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
-            # PGI does not support -isystem
-            if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
-                get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-                set_target_properties(${arg_NAME} PROPERTIES
-                                      INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
-            endif()
+        endif()
+    endif()
+
+    # PGI does not support -isystem
+    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+        get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${arg_TARGET} STREQUAL "INTERFACE_LIBRARY"))
+            target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
+        else()
+            set_target_properties(${arg_NAME} PROPERTIES
+                                INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
         endif()
     endif()
 
     # FIXME: Is this all that's needed?
     if( arg_FORTRAN_MODULES )
-        target_include_directories(${arg_NAME} INTERFACE ${arg_FORTRAN_MODULES})
+        target_include_directories(${arg_NAME} ${_scope} ${arg_FORTRAN_MODULES})
     endif()
 
     if( arg_COMPILE_FLAGS )
         blt_add_target_compile_flags(TO ${arg_NAME} 
-                                     SCOPE INTERFACE
+                                     SCOPE ${_scope}
                                      FLAGS ${arg_COMPILE_FLAGS})
     endif()
     
     if( arg_LINK_FLAGS )
         blt_add_target_link_flags(TO ${arg_NAME} 
-                                  SCOPE INTERFACE
+                                  SCOPE ${_scope}
                                   FLAGS ${arg_LINK_FLAGS})
     endif()
     
     if( arg_DEFINES )
         blt_add_target_definitions(TO ${arg_NAME} 
-                                   SCOPE INTERFACE
+                                   SCOPE ${_scope}
                                    TARGET_DEFINITIONS ${arg_DEFINES})
     endif()
 
