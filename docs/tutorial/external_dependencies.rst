@@ -18,7 +18,7 @@ directories, libraries, compile flags, link flags, defines, etc.  You can also
 hide any warnings created by their headers by setting the
 ``TREAT_INCLUDES_AS_SYSTEM`` argument.
 
-For example, to find and register the external dependency *axom* as a CMake target, you can simply use:
+For example, to find and add the external dependency *axom* as a CMake target, you can simply use:
 
 .. code-block:: cmake
 
@@ -39,20 +39,21 @@ and exported.
 This is especially helpful for "converting" external libraries that are not built with CMake
 into CMake-friendly imported targets.
 
-This first-class importing functionality provided by ``blt_import_library()`` should be preferred, but ``blt_register_library()`` is
-still available for compatibility.  It is generally usable as a drop-in replacement, though it does not support the creation
-of targets with the same name as a target that already exists.  
-
-Because CMake targets are only accessible from within the directory they were defined (including
-subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
-that create imported library targets needed in other directories. 
-
-MPI, CUDA, and OpenMP are all registered via ``blt_import_library()``. 
-You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.
-
 BLT also supports using ``blt_register_library()`` to provide additional options for existing CMake targets. 
 The implementation doesn't modify the properties of the existing targets, 
 it just exposes these options via BLT's support for  ``DEPENDS_ON``.
+
+This first-class importing functionality provided by ``blt_import_library()`` should be preferred, but ``blt_register_library()`` is
+still available for compatibility.  ``blt_import_library()`` is generally usable as a drop-in replacement, 
+though it does not support the creation of targets with the same name as a target that already exists.  
+
+.. note::
+    Because CMake targets are only accessible from within the directory they were defined (including
+    subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
+    that create imported library targets needed in other directories. 
+
+BLT's ``mpi``, ``cuda``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
+You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.
 
 .. admonition:: blt_register_library
    :class: hint
