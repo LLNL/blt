@@ -20,6 +20,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   implicit link directories for all languages
 - Added user option for enforcing specific versions of autoformatters - the new options are
   ``BLT_REQUIRED_ASTYLE_VERSION``, ``BLT_REQUIRED_CLANGFORMAT_VERSION``, and ``BLT_REQUIRED_UNCRUSTIFY_VERSION``
+- Added ``HEADERS`` to ``blt_add_executable``.  This is important for build system dependency tracking
+  and IDE folder support.
+- Added support for formatting Python code using YAPF.
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed

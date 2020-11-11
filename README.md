@@ -4,25 +4,25 @@
 Status](https://dev.azure.com/llnl-blt/blt/_apis/build/status/LLNL.blt?branchName=develop)](https://dev.azure.com/llnl-blt/blt/_build/latest?definitionId=1&branchName=develop)
 [![Documentation Status](https://readthedocs.org/projects/llnl-blt/badge/?version=develop)](https://llnl-blt.readthedocs.io/en/develop/?badge=develop)
 
-BLT is a streamlined [CMake](https://cmake.org)-based foundation for 
+BLT is a streamlined [CMake](https://cmake.org)-based foundation for
 <b>B</b>uilding, <b>L</b>inking and <b>T</b>esting large-scale high performance computing (HPC) applications.
 
-BLT makes it easy to get up and running on a wide range of HPC compilers, 
+BLT makes it easy to get up and running on a wide range of HPC compilers,
 operating systems and technologies:
  * Compiler families:
-      [gcc](https://gcc.gnu.org), 
-      [clang](https://clang.llvm.org), 
-      [Intel](https://software.intel.com/en-us/compilers), 
-      [XL](https://www.ibm.com/us-en/marketplace/ibm-c-and-c-plus-plus-compiler-family), 
+      [gcc](https://gcc.gnu.org),
+      [clang](https://clang.llvm.org),
+      [Intel](https://software.intel.com/en-us/compilers),
+      [XL](https://www.ibm.com/us-en/marketplace/ibm-c-and-c-plus-plus-compiler-family),
       [Visual Studio](https://visualstudio.microsoft.com/vs/features/cplusplus)
- * Operating systems: 
-      Linux, 
-      Mac OS, 
+ * Operating systems:
+      Linux,
+      Mac OS,
       Windows
  * HPC programming models:
-      [MPI](https://www.mpi-forum.org/), 
-      [OpenMP](https://www.openmp.org/), 
-      [CUDA](https://developer.nvidia.com/cuda-zone), 
+      [MPI](https://www.mpi-forum.org/),
+      [OpenMP](https://www.openmp.org/),
+      [CUDA](https://developer.nvidia.com/cuda-zone),
       [HIP](https://gpuopen.com/compute-product/hip-convert-cuda-to-portable-c-code)
  * Unit testing and benchmarking (built-in):
       [Google Test (gtest and gmock)](https://github.com/google/googletest),
@@ -35,11 +35,12 @@ operating systems and technologies:
       [AStyle](http://astyle.sourceforge.net),
       [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html),
       [Uncrustify](http://uncrustify.sourceforge.net)
+      [YAPF](https://github.com/google/yapf)
  * Code quality
       [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
       [clang-tidy](https://clang.llvm.org/extra/clang-tidy),
       [Cppcheck](http://cppcheck.sourceforge.net)
- 
+
 
 Getting started
 ---------------
@@ -73,10 +74,10 @@ Developers include:
  * Richard Hornung, LLNL
  * Randolph Settgast, LLNL
 
-Please see our [contributing guide](https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md) 
+Please see our [contributing guide](https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md)
 for details about how to contribute to the project.
 
-The full list of project contributors can be found on the 
+The full list of project contributors can be found on the
 [BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors).
 
 Open-Source Projects using BLT
@@ -103,7 +104,7 @@ Copyrights and patents in the BLT project are retained by contributors.
 No copyright assignment is required to contribute to BLT.
 
 See [LICENSE](./LICENSE) for details.
- 
+
 Unlimited Open Source - BSD 3-clause Distribution
 `LLNL-CODE-725085`  `OCEC-17-023`
 
@@ -125,22 +126,22 @@ BLT bundles its external dependencies in thirdparty_builtin/.  These
 packages are covered by various permissive licenses.  A summary listing
 follows.  See the license included with each package for full details.
 
-PackageName: fruit  
-PackageHomePage: https://sourceforge.net/projects/fortranxunit/  
-PackageLicenseDeclared: BSD-3-Clause  
+PackageName: fruit
+PackageHomePage: https://sourceforge.net/projects/fortranxunit/
+PackageLicenseDeclared: BSD-3-Clause
 
-PackageName: gbenchmark  
-PackageHomePage: https://github.com/google/benchmark  
-PackageLicenseDeclared: Apache-2.0  
+PackageName: gbenchmark
+PackageHomePage: https://github.com/google/benchmark
+PackageLicenseDeclared: Apache-2.0
 
-PackageName: gmock  
-PackageHomePage: https://github.com/google/googlemock  
-PackageLicenseDeclared: BSD-3-Clause  
+PackageName: gmock
+PackageHomePage: https://github.com/google/googlemock
+PackageLicenseDeclared: BSD-3-Clause
 
-PackageName: gtest  
-PackageHomePage: https://github.com/google/googletest  
-PackageLicenseDeclared: BSD-3-Clause  
+PackageName: gtest
+PackageHomePage: https://github.com/google/googletest
+PackageLicenseDeclared: BSD-3-Clause
 
-PackageName: run-clang-format  
-PackageHomePage: https://github.com/Sarcasm/run-clang-format  
-PackageLicenseDeclared: MIT  
+PackageName: run-clang-format
+PackageHomePage: https://github.com/Sarcasm/run-clang-format
+PackageLicenseDeclared: MIT

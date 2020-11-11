@@ -495,13 +495,14 @@ endmacro(blt_add_hip_library)
 ##------------------------------------------------------------------------------
 ## blt_add_hip_executable(NAME         <libname>
 ##                        SOURCES      [source1 [source2 ...]]
+##                        HEADERS      [header1 [header2 ...]]
 ##                        DEPENDS_ON   [dep1 ...]
 ##------------------------------------------------------------------------------
 macro(blt_add_hip_executable)
 
     set(options)
     set(singleValueArgs NAME)
-    set(multiValueArgs SOURCES DEPENDS_ON)
+    set(multiValueArgs HEADERS SOURCES DEPENDS_ON)
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
@@ -544,7 +545,7 @@ macro(blt_add_hip_executable)
 
         hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
     else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} )
+        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
     endif()
 
 endmacro(blt_add_hip_executable)
@@ -552,17 +553,20 @@ endmacro(blt_add_hip_executable)
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
-##                                    Fortran_LIST <list name>)
+##                                    Fortran_LIST <list name>
+##                                    Python_LIST <list name>)
 ##
-## Filters source list by file extension into C/C++ and Fortran source lists
-## based on BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS (global BLT variables).
-## Files with no extension or generator expressions that are not object libraries
-## (of the form "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
-##------------------------------------------------------------------------------
+## Filters source list by file extension into C/C++, Fortran, and
+## Python source lists based on the global BLT variables
+## BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, and BLT_Python_FILE_EXTS,
+## respectively.  Files with no extension or generator expressions
+## that are not object libraries (of the form
+## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
+## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST)
+    set(singleValueArgs C_LIST Fortran_LIST Python_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -599,8 +603,12 @@ macro(blt_split_source_list_by_language)
             if (DEFINED arg_Fortran_LIST)
                 list(APPEND ${arg_Fortran_LIST} ${_file})
             endif()
+        elseif(${_ext_lower} IN_LIST BLT_Python_FILE_EXTS)
+            if (DEFINED arg_Python_LIST)
+                list(APPEND ${arg_Python_LIST} ${_file})
+            endif()
         else()
-            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS or BLT_Fortran_FILE_EXTS).\n Unknown file: ${_file}")
+            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, or BLT_Python_FILE_EXTS).\n Unknown file: ${_file}")
         endif()
     endforeach()
 

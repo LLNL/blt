@@ -549,6 +549,7 @@ endmacro(blt_add_library)
 ##------------------------------------------------------------------------------
 ## blt_add_executable( NAME        <name>
 ##                     SOURCES     [source1 [source2 ...]]
+##                     HEADERS     [header1 [header2 ...]]
 ##                     INCLUDES    [dir1 [dir2 ...]]
 ##                     DEFINES     [define1 [define2 ...]]
 ##                     DEPENDS_ON  [dep1 [dep2 ...]]
@@ -562,7 +563,7 @@ macro(blt_add_executable)
 
     set(options )
     set(singleValueArgs NAME OUTPUT_DIR OUTPUT_NAME FOLDER)
-    set(multiValueArgs SOURCES INCLUDES DEFINES DEPENDS_ON)
+    set(multiValueArgs HEADERS SOURCES INCLUDES DEFINES DEPENDS_ON)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -580,9 +581,10 @@ macro(blt_add_executable)
     if (ENABLE_HIP)
         blt_add_hip_executable(NAME         ${arg_NAME}
                                SOURCES      ${arg_SOURCES}
+                               HEADERS      ${arg_HEADERS}
                                DEPENDS_ON   ${arg_DEPENDS_ON})
     else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} )
+        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
 
         if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
             blt_setup_cuda_target(
@@ -639,7 +641,7 @@ macro(blt_add_executable)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
-    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
+    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS} )
 
     blt_clean_target(TARGET ${arg_NAME})
 
