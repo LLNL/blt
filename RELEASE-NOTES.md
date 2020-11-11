@@ -24,7 +24,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   and IDE folder support.
 - Added new ``blt_import_library`` macro that creates a real CMake target for imported libraries,
   intended to be used instead of ``blt_register_library`` whenever possible
-- Added new ``blt_patch_target`` macro for modifying the properties of a CMake target in bulk
+- Added new ``blt_patch_target`` macro to simplify modifying properties of an existing CMake target. 
+  This macro accounts for known differences in compilers, target types, and CMake releases.
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed

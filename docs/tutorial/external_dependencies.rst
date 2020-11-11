@@ -50,9 +50,10 @@ though it does not support the creation of targets with the same name as a targe
 .. note::
     Because CMake targets are only accessible from within the directory they were defined (including
     subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
-    that create imported library targets needed in other directories. 
+    that create imported library targets needed in other directories. The GLOBAL option to ``blt_import_library()``
+    can also be used to manage visibility.
 
-BLT's ``mpi``, ``cuda``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
+BLT's ``mpi``, ``cuda``, ``cuda_runtime``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
 You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.
 
 .. admonition:: blt_register_library

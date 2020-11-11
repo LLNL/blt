@@ -499,12 +499,13 @@ endmacro(blt_patch_target)
 ##                     FORTRAN_MODULES [ path1 [ path2 ..]]
 ##                     COMPILE_FLAGS [ flag1 [ flag2 ..]]
 ##                     LINK_FLAGS [ flag1 [ flag2 ..]]
-##                     DEFINES [def1 [def2 ...]] )
+##                     DEFINES [def1 [def2 ...]] 
+##                     GLOBAL [ON|OFF])
 ##
 ## Imports a library as a CMake target
 ##------------------------------------------------------------------------------
 macro(blt_import_library)
-    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM GLOBAL)
     set(multiValueArgs LIBRARIES
                        INCLUDES 
                        DEPENDS_ON
@@ -522,10 +523,12 @@ macro(blt_import_library)
         message(FATAL_ERROR "blt_import_library() must be called with argument NAME <name>")
     endif()
 
-    # Add all imported targets to a single interface target
-    # Introducing OBJECT targets for each library file causes issues when exporting as 
-    # dependencies are not transitively included in exports
-    add_library(${arg_NAME} INTERFACE)
+    # Add all imported targets to a single imported interface target
+    if(${arg_GLOBAL})
+        add_library(${arg_NAME} INTERFACE IMPORTED GLOBAL)
+    else()
+        add_library(${arg_NAME} INTERFACE IMPORTED)
+    endif()
 
     blt_patch_target(
         NAME       ${arg_NAME}
