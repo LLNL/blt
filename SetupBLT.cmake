@@ -176,7 +176,8 @@ if (NOT BLT_LOADED)
                CACHE STRING "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
                CACHE STRING "List of known file extensions used for Fortran sources")
-
+    set(BLT_Python_FILE_EXTS ".py"
+               CACHE STRING "List of known file extensions used for Python sources")
 
     ################################
     # Setup compiler options

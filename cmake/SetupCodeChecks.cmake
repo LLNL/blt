@@ -44,6 +44,17 @@ if(UNCRUSTIFY_FOUND)
     add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} uncrustify_style)
 endif()
 
+if(YAPF_FOUND)
+    set(BLT_REQUIRED_YAPF_VERSION "" CACHE STRING "Required version of yapf")
+    # targets for verifying formatting
+    add_custom_target(yapf_check)
+    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} yapf_check)
+
+    # targets for modifying formatting
+    add_custom_target(yapf_style)
+    add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} yapf_style)
+endif()
+
 if(CPPCHECK_FOUND)
     add_custom_target(cppcheck_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} cppcheck_check)
@@ -67,8 +78,8 @@ endif()
 
 # Code check targets should only be run on demand
 foreach(target 
-        check uncrustify_check astyle_check clangformat_check cppcheck_check
-        style uncrustify_style astyle_style clangformat_style
+        check yapf_check uncrustify_check astyle_check clangformat_check cppcheck_check
+        style yapf_style uncrustify_style astyle_style clangformat_style
         clang_query_check interactive_clang_query_check clang_tidy_check)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
@@ -83,6 +94,7 @@ endforeach()
 ##                      ASTYLE_CFG_FILE      <Path to AStyle config file>
 ##                      CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
 ##                      UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
+##                      YAPF_CFG_FILE        <Path to Yapf config file>
 ##                      CPPCHECK_FLAGS       <List of flags added to Cppcheck>
 ##                      CLANGQUERY_CHECKER_DIRECTORIES [dir1 [dir2]])
 ##
@@ -93,7 +105,7 @@ endforeach()
 macro(blt_add_code_checks)
 
     set(options )
-    set(singleValueArgs PREFIX ASTYLE_CFG_FILE CLANGFORMAT_CFG_FILE UNCRUSTIFY_CFG_FILE)
+    set(singleValueArgs PREFIX ASTYLE_CFG_FILE CLANGFORMAT_CFG_FILE UNCRUSTIFY_CFG_FILE YAPF_CFG_FILE)
     set(multiValueArgs SOURCES CPPCHECK_FLAGS CLANGQUERY_CHECKER_DIRECTORIES)
 
     cmake_parse_arguments(arg
@@ -124,9 +136,11 @@ macro(blt_add_code_checks)
     # Generate source lists based on language
     set(_c_sources)
     set(_f_sources)
+    set(_py_sources)
     blt_split_source_list_by_language(SOURCES      ${_rel_sources}
                                       C_LIST       _c_sources
-                                      Fortran_LIST _f_sources)
+                                      Fortran_LIST _f_sources
+                                      Python_LIST  _py_sources)
 
     # Check that no more than one formatting config file was supplied
     # for C-style languages.
@@ -205,6 +219,25 @@ macro(blt_add_code_checks)
                                    CFG_FILE          ${arg_UNCRUSTIFY_CFG_FILE} 
                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                                    SRC_FILES         ${_c_sources} )
+    endif()
+
+    if (YAPF_FOUND AND DEFINED arg_YAPF_CFG_FILE)
+        set(_check_target_name ${arg_PREFIX}_yapf_check)
+        blt_error_if_target_exists(${_check_target_name} ${_error_msg})
+        set(_style_target_name ${arg_PREFIX}_yapf_style)
+        blt_error_if_target_exists(${_style_target_name} ${_error_msg})
+
+        blt_add_yapf_target( NAME              ${_check_target_name}
+                             MODIFY_FILES      FALSE
+                             CFG_FILE          ${arg_YAPF_CFG_FILE}
+                             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                             SRC_FILES         ${_py_sources} )
+
+        blt_add_yapf_target( NAME              ${_style_target_name}
+                             MODIFY_FILES      TRUE
+                             CFG_FILE          ${arg_YAPF_CFG_FILE}
+                             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                             SRC_FILES         ${_py_sources} )
     endif()
 
     if (CPPCHECK_FOUND)
@@ -767,3 +800,99 @@ macro(blt_add_uncrustify_target)
     endif()
 
 endmacro(blt_add_uncrustify_target)
+
+
+##------------------------------------------------------------------------------
+## blt_add_yapf_target( NAME              <Created Target Name>
+##                      MODIFY_FILES      [TRUE | FALSE (default)]
+##                      CFG_FILE          <Yapf Configuration File>
+##                      PREPEND_FLAGS     <Additional Flags to Yapf>
+##                      APPEND_FLAGS      <Additional Flags to Yapf>
+##                      COMMENT           <Additional Comment for Target Invocation>
+##                      WORKING_DIRECTORY <Working Directory>
+##                      SRC_FILES         [FILE1 [FILE2 ...]] )
+##
+## Creates a new target with the given NAME for running yapf over the given SRC_FILES.
+##------------------------------------------------------------------------------
+macro(blt_add_yapf_target)
+
+    ## parse the arguments to the macro
+    set(options)
+    set(singleValueArgs NAME MODIFY_FILES CFG_FILE COMMENT WORKING_DIRECTORY)
+    set(multiValueArgs SRC_FILES PREPEND_FLAGS APPEND_FLAGS)
+
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check/Set required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_yapf_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_CFG_FILE)
+        message(FATAL_ERROR "blt_add_yapf_target requires a CFG_FILE parameter")
+    endif()
+
+    if(NOT DEFINED arg_SRC_FILES)
+        message(FATAL_ERROR "blt_add_yapf_target requires a SRC_FILES parameter")
+    endif()
+
+    if(NOT DEFINED arg_MODIFY_FILES)
+        set(arg_MODIFY_FILES FALSE)
+    endif()
+
+    if(DEFINED arg_WORKING_DIRECTORY)
+        set(_wd ${arg_WORKING_DIRECTORY})
+    else()
+        set(_wd ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    set(_generate_target TRUE)
+
+    # Check the version -- output is of the form "yapf X.Y.Z"
+    execute_process(
+        COMMAND ${YAPF_EXECUTABLE} --version
+        OUTPUT_VARIABLE _version_str
+        ERROR_VARIABLE  _version_str
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REGEX MATCH "([0-9]+(\\.)?)+$" _yapf_version ${_version_str})
+
+    if(BLT_REQUIRED_YAPF_VERSION)
+        # The user may only specify a part of the version (e.g. just the maj ver)
+        # so check for substring
+        string(FIND "${_yapf_version}" ${BLT_REQUIRED_YAPF_VERSION} VERSION_POS)
+        if (NOT VERSION_POS EQUAL 0)
+            set(_generate_target FALSE)
+            if (NOT _BLT_STYLE_VERSION_WARNING_ISSUED)
+                message(WARNING "blt_add_yapf_target: yapf ${BLT_REQUIRED_YAPF_VERSION} is required, found ${_yapf_version}.  Disabling 'style' build target.")
+                set(_BLT_STYLE_VERSION_WARNING_ISSUED TRUE CACHE BOOL "Limits BLT issuing more than one warning for style version" FORCE)
+            endif()
+        endif()
+    endif()
+
+    if(${arg_MODIFY_FILES})
+        set(MODIFY_FILES_FLAG --in-place)
+    else()
+        set(MODIFY_FILES_FLAG --diff)
+    endif()
+
+    if(_generate_target)
+        add_custom_target(
+            ${arg_NAME}
+            COMMAND ${YAPF_EXECUTABLE} ${arg_PREPEND_FLAGS}
+                --style ${arg_CFG_FILE} ${MODIFY_FILES_FLAG} ${arg_SRC_FILES} ${arg_APPEND_FLAGS}
+            WORKING_DIRECTORY ${_wd}
+            COMMENT "${arg_COMMENT}Running Yapf source code formatting checks.")
+
+        # Hook our new target into the proper dependency chain
+        if(${arg_MODIFY_FILES})
+            add_dependencies(yapf_style ${arg_NAME})
+        else()
+            add_dependencies(yapf_check ${arg_NAME})
+        endif()
+
+        # Code formatting targets should only be run on demand
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
+        set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+    endif()
+endmacro(blt_add_yapf_target)

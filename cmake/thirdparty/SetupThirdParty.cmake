@@ -95,6 +95,8 @@ blt_find_executable(NAME        ClangFormat
 blt_find_executable(NAME        Uncrustify
                     EXECUTABLES uncrustify)
 
+blt_find_executable(NAME        Yapf
+                    EXECUTABLES yapf)
 
 #------------------------------------
 # Static analysis via Cppcheck
