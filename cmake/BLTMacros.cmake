@@ -273,7 +273,12 @@ macro(blt_add_target_link_flags)
             get_target_property(target_type ${arg_TO} TYPE)
             if (${target_type} STREQUAL "INTERFACE_LIBRARY")
                 # If it's an interface library, we add the flag via link_libraries
-                target_link_libraries(${arg_TO} INTERFACE ${_flags})
+                if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
+                    target_link_libraries(${arg_TO} INTERFACE ${_flags})
+                else()
+                    set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                                 INTERFACE_LINK_LIBRARIES ${_libs_to_link})
+                endif()
             else()
                 get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
                 # Append to existing flags
