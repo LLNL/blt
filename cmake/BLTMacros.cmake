@@ -428,24 +428,38 @@ macro(blt_patch_target)
 
     # Default to public scope, unless it's an interface library
     set(_scope PUBLIC)
-    get_target_property(_targetType ${arg_NAME} TYPE)
-    if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+    get_target_property(_target_type ${arg_NAME} TYPE)
+    if(${_target_type} STREQUAL "INTERFACE_LIBRARY")
         set(_scope INTERFACE)
+    endif()
+
+    # Interface libraries were heavily restricted pre-3.11
+    set(_standard_lib_interface FALSE)
+    if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${_target_type} STREQUAL "INTERFACE_LIBRARY"))
+        set(_standard_lib_interface TRUE)
     endif()
 
     # LIBRARIES and DEPENDS_ON are kept separate in case different logic is needed for
     # the library itself versus its dependencies
+    set(_libs_to_link "")
     if( arg_LIBRARIES )
-        target_link_libraries(${arg_NAME} ${_scope} ${arg_LIBRARIES})
+        list(APPEND _libs_to_link ${arg_LIBRARIES})
     endif()
 
     # TODO: This won't expand BLT-registered libraries
     if( arg_DEPENDS_ON )
-        target_link_libraries(${arg_NAME} ${_scope} ${arg_DEPENDS_ON})
+        list(APPEND _libs_to_link ${arg_DEPENDS_ON})
     endif()
 
+    if(_standard_lib_interface)
+        target_link_libraries(${arg_NAME} ${_scope} ${_libs_to_link})
+    else()
+        set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                     INTERFACE_LINK_LIBRARIES ${_libs_to_link})
+    endif()
+        
     if( arg_INCLUDES )
-        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${_targetType} STREQUAL "INTERFACE_LIBRARY"))
+        if(_standard_lib_interface)
             target_include_directories(${arg_NAME} ${_scope} ${arg_INCLUDES})
         else()
             # Interface include directories need to be set manually
@@ -457,7 +471,7 @@ macro(blt_patch_target)
     # PGI does not support -isystem
     if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
         get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${_targetType} STREQUAL "INTERFACE_LIBRARY"))
+        if(_standard_lib_interface)
             target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
         else()
             set_target_properties(${arg_NAME} PROPERTIES
@@ -1294,8 +1308,8 @@ macro(blt_print_target_properties)
         blt_list_remove_duplicates(TO _property_list)   
 
         ## For interface targets, filter against whitelist of valid properties
-        get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
-        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
+        if(${_target_type} STREQUAL "INTERFACE_LIBRARY")
             blt_filter_list(TO _property_list
                             REGEX "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$"
                             OPERATION "include")
