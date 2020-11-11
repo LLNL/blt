@@ -428,8 +428,8 @@ macro(blt_patch_target)
 
     # Default to public scope, unless it's an interface library
     set(_scope PUBLIC)
-    get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
-    if(${arg_TARGET} STREQUAL "INTERFACE_LIBRARY")
+    get_target_property(_targetType ${arg_NAME} TYPE)
+    if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
         set(_scope INTERFACE)
     endif()
 
@@ -445,7 +445,7 @@ macro(blt_patch_target)
     endif()
 
     if( arg_INCLUDES )
-        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${arg_TARGET} STREQUAL "INTERFACE_LIBRARY"))
+        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${_targetType} STREQUAL "INTERFACE_LIBRARY"))
             target_include_directories(${arg_NAME} ${_scope} ${arg_INCLUDES})
         else()
             # Interface include directories need to be set manually
@@ -457,7 +457,7 @@ macro(blt_patch_target)
     # PGI does not support -isystem
     if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
         get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${arg_TARGET} STREQUAL "INTERFACE_LIBRARY"))
+        if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT ${_targetType} STREQUAL "INTERFACE_LIBRARY"))
             target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
         else()
             set_target_properties(${arg_NAME} PROPERTIES
