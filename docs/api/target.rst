@@ -374,6 +374,35 @@ blt_import_library
 
 Creates a CMake library target from a list of existing library files or targets.
 
+NAME
+  Name of the created CMake target
+
+DEPENDS_ON
+  List of CMake targets that this library depends on
+
+INCLUDES
+  List of include directories to be inherited by dependent targets
+
+TREAT_INCLUDES_AS_SYSTEM
+  Whether to inform the compiler to treat this library's include paths
+  as system headers
+
+FORTRAN_MODULES
+  FORTRAN module directories to be inherited by dependent targets
+
+LIBRARIES
+  List of CMake targets and library files (.a/.so/.lib/.dll) that make up
+  this library
+
+COMPILE_FLAGS
+  List of compiler flags to be inherited by dependent targets
+
+LINK_FLAGS
+  List of linker flags to be inherited by dependent targets
+
+DEFINES
+  List of compiler defines to be inherited by dependent targets
+
 This behaves similarly to :ref:`blt_register_library`, but because it defines
 a native CMake target, no internal variable names are defined. This means that it
 is usable in contexts other than those that specifically accept BLT-registered
@@ -382,9 +411,6 @@ libraries.
 As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
 when building another target or to ``target_link_libraries`` to transitively add in
 all includes, libraries, flags, and definitions associated with the imported library.
-
-See :ref:`blt_register_library` and :ref:`_blt_add_library` for a full description
-of this macro's parameters.
 
 This does not actually build a library.  This is strictly to ease use after
 discovering it on your system or building it yourself inside your project.

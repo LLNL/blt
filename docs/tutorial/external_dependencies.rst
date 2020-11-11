@@ -12,35 +12,38 @@ To accomplish this BLT provides a ``DEPENDS_ON`` option for the
 ``blt_add_library()`` and ``blt_add_executable()`` macros that supports both CMake targets 
 and external dependencies registered using the ``blt_register_library()`` macro.
 
-The ``blt_register_library()`` macro allows you to reuse all information needed
+The ``blt_import_library()`` macro allows you to reuse all information needed
 for an external dependency under a single name.  This includes any include
 directories, libraries, compile flags, link flags, defines, etc.  You can also
 hide any warnings created by their headers by setting the
 ``TREAT_INCLUDES_AS_SYSTEM`` argument.
 
-For example, to find and register the external dependency *axom* as a BLT registered library, you can simply use:
+For example, to find and register the external dependency *axom* as a CMake target, you can simply use:
 
 .. code-block:: cmake
 
     # FindAxom.cmake takes in AXOM_DIR, which is a installed Axom build and
     # sets variables AXOM_INCLUDES, AXOM_LIBRARIES
     include(FindAxom.cmake)
-    blt_register_library(NAME      axom
-                         TREAT_INCLUDES_AS_SYSTEM ON
-                         DEFINES   HAVE_AXOM=1
-                         INCLUDES  ${AXOM_INCLUDES}
-                         LIBRARIES ${AXOM_LIBRARIES})
+    blt_import_library(NAME      axom
+                       TREAT_INCLUDES_AS_SYSTEM ON
+                       DEFINES   HAVE_AXOM=1
+                       INCLUDES  ${AXOM_INCLUDES}
+                       LIBRARIES ${AXOM_LIBRARIES})
 
 Then *axom* is available to be used in the DEPENDS_ON list in the following
-``blt_add_executable()`` or ``blt_add_library()`` calls.
+``blt_add_executable()`` or ``blt_add_library()`` calls, or in any CMake command that accepts a target.
+CMake targets created by ``blt_import_library()`` are ``INTERFACE`` libraries that can be installed
+and exported.
 
-This is especially helpful for external libraries that are not built with CMake
-and don't provide CMake-friendly imported targets. Our ultimate goal is to use ``blt_register_library()`` 
-to import all external dependencies as first-class imported CMake targets to take full advantage of CMake's dependency lattice.
+This is especially helpful for "converting" external libraries that are not built with CMake
+into CMake-friendly imported targets.
 
-This first-class importing functionality is provided by ``blt_import_library()``, but ``blt_register_library()`` is
-still available for compatibility.  It is generally usable as a drop-in replacement, though it does not currently support
-the FORTRAN_MODULES option.  Because CMake targets are only accessible from within the directory they were defined (including
+This first-class importing functionality provided by ``blt_import_library()`` should be preferred, but ``blt_register_library()`` is
+still available for compatibility.  It is generally usable as a drop-in replacement, though it does not support the creation
+of targets with the same name as a target that already exists.  
+
+Because CMake targets are only accessible from within the directory they were defined (including
 subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command for adding CMake files
 that create imported library targets needed in other directories. 
 
