@@ -22,6 +22,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   ``BLT_REQUIRED_ASTYLE_VERSION``, ``BLT_REQUIRED_CLANGFORMAT_VERSION``, and ``BLT_REQUIRED_UNCRUSTIFY_VERSION``
 - Added ``HEADERS`` to ``blt_add_executable``.  This is important for build system dependency tracking
   and IDE folder support.
+- Added support for formatting Python code using YAPF.
 - Added new ``blt_import_library`` macro that creates a real CMake target for imported libraries,
   intended to be used instead of ``blt_register_library`` whenever possible
 - Added new ``blt_patch_target`` macro to simplify modifying properties of an existing CMake target. 

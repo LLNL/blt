@@ -1,6 +1,6 @@
 .. # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level COPYRIGHT file for details
-.. # 
+.. #
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
 Code Check Macros
@@ -16,6 +16,7 @@ blt_add_code_checks
                          ASTYLE_CFG_FILE      <Path to AStyle config file>
                          CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
                          UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
+                         YAPF_CFG_FILE        <Path to Yapf config file>
                          CPPCHECK_FLAGS       <List of flags added to Cppcheck>
                          CLANGQUERY_CHECKER_DIRECTORIES [dir1 [dir2]])
 
@@ -37,6 +38,9 @@ CLANGFORMAT_CFG_FILE
 UNCRUSTIFY_CFG_FILE
   Path to Uncrustify config file
 
+YAPF_CFG_FILE
+  Path to Yapf config file
+
 CPPCHECK_FLAGS
   List of flags added to Cppcheck
 
@@ -54,10 +58,11 @@ functionality you will need to call the individual code check macros yourself.
   will stop your code checks from running unless you are the main CMake project.
 
 Sources are filtered based on file extensions for use in these code checks.  If you need
-additional file extensions defined add them to BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS.
-Currently this macro only has code checks for C/C++ and simply filters out the Fortran files.
+additional file extensions defined add them to BLT_C_FILE_EXTS, BLT_Python_FILE_EXTS, and
+BLT_Fortran_FILE_EXTS. Currently this macro only has code checks for C/C++ and Python; it
+simply filters out the Fortran files.
 
-This macro supports code formatting with either AStyle, ClangFormat, or Uncrustify
+This macro supports C/C++ code formatting with either AStyle, ClangFormat, or Uncrustify
 (but not all at the same time) only if the following requirements are met:
 
 - AStyle
@@ -79,13 +84,19 @@ This macro supports code formatting with either AStyle, ClangFormat, or Uncrusti
   ClangFormat does not support a command line option for config files.  To work around this,
   we copy the given config file to the build directory where this macro runs from.
 
+This macro also supports Python code formatting with Yapf only if the following requirements
+are met:
+
+* YAPF_CFG_FILE is given
+* YAPF_EXECUTABLE is defined and found prior to calling this macro
+
 Enabled code formatting checks produce a `check` build target that will test to see if you
 are out of compliance with your code formatting and a `style` build target that will actually
 modify your source files.  It also creates smaller child build targets that follow the pattern
 `<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>`.
 
 If a particular version of a code formatting tool is required, you can configure BLT to enforce
-that version by setting ``BLT_REQUIRED_<CLANGFORMAT|ASTYLE|UNCRUSTIFY>_VERSION`` to as much of the version
+that version by setting ``BLT_REQUIRED_<CLANGFORMAT|ASTYLE|UNCRUSTIFY|YAPF>_VERSION`` to as much of the version
 as you need.  For example:
 
 .. code-block:: cmake
@@ -105,7 +116,7 @@ This macro supports the following static analysis tools with their requirements:
 - Clang-Query
 
   * CLANGQUERY_EXECUTABLE is defined and found prior to calling this macro
-  * CLANGQUERY_CHECKER_DIRECTORIES parameter given or BLT_CLANGQUERY_CHECKER_DIRECTORIES is defined 
+  * CLANGQUERY_CHECKER_DIRECTORIES parameter given or BLT_CLANGQUERY_CHECKER_DIRECTORIES is defined
 
 - clang-tidy
 
@@ -239,7 +250,7 @@ SRC_FILES
 Clang-tidy is a tool used for diagnosing and fixing typical programming errors. It is useful for enforcing
 coding standards and rules on your source code.  Clang-tidy is documented `here <https://clang.llvm.org/extra/clang-tidy/index.html>`_.
 
-CHECKS are the static analysis "rules" to specifically run on the target. 
+CHECKS are the static analysis "rules" to specifically run on the target.
 If no checks are specified, clang-tidy will run the default available static analysis checks.
 
 
@@ -250,7 +261,7 @@ blt_add_astyle_target
 
     blt_add_astyle_target( NAME              <Created Target Name>
                            MODIFY_FILES      [TRUE | FALSE (default)]
-                           CFG_FILE          <AStyle Configuration File> 
+                           CFG_FILE          <AStyle Configuration File>
                            PREPEND_FLAGS     <Additional Flags to AStyle>
                            APPEND_FLAGS      <Additional Flags to AStyle>
                            COMMENT           <Additional Comment for Target Invocation>
@@ -302,7 +313,7 @@ blt_add_clangformat_target
 
     blt_add_clangformat_target( NAME              <Created Target Name>
                                 MODIFY_FILES      [TRUE | FALSE (default)]
-                                CFG_FILE          <ClangFormat Configuration File> 
+                                CFG_FILE          <ClangFormat Configuration File>
                                 PREPEND_FLAGS     <Additional Flags to ClangFormat>
                                 APPEND_FLAGS      <Additional Flags to ClangFormat>
                                 COMMENT           <Additional Comment for Target Invocation>
@@ -352,7 +363,7 @@ which files do not conform to your style guide.
 
 .. note::
   ClangFormat does not support a command line option for check (--dry-run) until version 10.
-  This version is not widely used or available at this time. To work around this, we use an 
+  This version is not widely used or available at this time. To work around this, we use an
   included script called run-clang-format.py that does not use PREPEND_FLAGS or APPEND_FLAGS
   in the `check` build target because the script does not support command line flags passed
   to `clang-format`. This script is not used in the `style` build target.
@@ -364,7 +375,7 @@ blt_add_uncrustify_target
 
     blt_add_uncrustify_target( NAME              <Created Target Name>
                                MODIFY_FILES      [TRUE | FALSE (default)]
-                               CFG_FILE          <Uncrustify Configuration File> 
+                               CFG_FILE          <Uncrustify Configuration File>
                                PREPEND_FLAGS     <Additional Flags to Uncrustify>
                                APPEND_FLAGS      <Additional Flags to Uncrustify>
                                COMMENT           <Additional Comment for Target Invocation>
@@ -406,3 +417,51 @@ created target is added to the parent `check` build target. This target will not
 which files do not conform to your style guide.
 .. Note::
   Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
+
+blt_add_yapf_target
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_yapf_target( NAME              <Created Target Name>
+                         MODIFY_FILES      [TRUE | FALSE (default)]
+                         CFG_FILE          <Yapf Configuration File>
+                         PREPEND_FLAGS     <Additional Flags to Yapf>
+                         APPEND_FLAGS      <Additional Flags to Yapf>
+                         COMMENT           <Additional Comment for Target Invocation>
+                         WORKING_DIRECTORY <Working Directory>
+                         SRC_FILES         [source1 [source2 ...]] )
+
+Creates a new build target for running Yapf
+
+NAME
+  Name of created build target
+
+MODIFY_FILES
+  Modify the files in place. Defaults to FALSE.
+
+CFG_FILE
+  Path to Yapf config file
+
+PREPEND_FLAGS
+  Additional flags added to the front of the Yapf flags
+
+APPEND_FLAGS
+ Additional flags added to the end of the Yapf flags
+
+COMMENT
+  Comment prepended to the build target output
+
+WORKING_DIRECTORY
+  Directory in which the Yapf command is run. Defaults to where macro is called.
+
+SRC_FILES
+  Source list that Yapf will be ran on
+
+Yapf is a Source Code Beautifier for Python code. More information about
+Yapf can be found `here <https://github.com/google/yapf>`_.
+
+When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+target to the parent `style` build target.  Otherwise the files are not modified and the
+created target is added to the parent `check` build target. This target will notify you
+which files do not conform to your style guide.
