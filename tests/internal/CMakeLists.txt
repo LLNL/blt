@@ -363,7 +363,7 @@ if(YAPF_FOUND)
 
   blt_add_code_checks(
     PREFIX           yapf_nonconformant_tests
-    SOURCES          ${internal_nonconformant_python_srcs
+    SOURCES          ${internal_nonconformant_python_srcs}
     YAPF_CFG_FILE    ${CMAKE_CURRENT_SOURCE_DIR}/yapf.cfg)
 endif() # end if(YAPF_FOUND)
 
