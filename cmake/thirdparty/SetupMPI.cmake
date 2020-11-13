@@ -177,10 +177,9 @@ if (ENABLE_FORTRAN)
     endif()
 endif()
 
-# Create the registered library
-blt_register_library(NAME          mpi
-                     INCLUDES      ${_mpi_includes}
-                     TREAT_INCLUDES_AS_SYSTEM ON
-                     LIBRARIES     ${_mpi_libraries}
-                     COMPILE_FLAGS ${_mpi_compile_flags}
-                     LINK_FLAGS    ${_mpi_link_flags} )
+blt_import_library(NAME          mpi
+                   INCLUDES      ${_mpi_includes}
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   LIBRARIES     ${_mpi_libraries}
+                   COMPILE_FLAGS ${_mpi_compile_flags}
+                   LINK_FLAGS    ${_mpi_link_flags} )

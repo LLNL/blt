@@ -82,7 +82,7 @@ if(ENABLE_TESTS)
 
         set (INSTALL_GMOCK OFF CACHE BOOL "")
         set (INSTALL_GTEST OFF CACHE BOOL "")
-                
+
         # Enable builtin google test 
         add_subdirectory(googletest-master-2020-01-07
                          ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2020-01-07)
@@ -99,7 +99,7 @@ if(ENABLE_TESTS)
                              DEFINES  ${gtest_defines} ${gtest_export_defines}
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
-                             
+
         blt_add_target_definitions(TO gtest TARGET_DEFINITIONS ${gtest_defines})
 
         list(APPEND _blt_tpl_targets gtest gtest_main)
@@ -168,5 +168,3 @@ if(ENABLE_FOLDERS)
         blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
     endforeach()
 endif()
-
-

@@ -305,6 +305,137 @@ is always on in your build project.
                      COMMAND my_test --with-some-argument)
     endif()
 
+.. _blt_patch_target:
+
+blt_patch_target
+~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_patch_target( NAME                     <libname>
+                      DEPENDS_ON               [dep1 [dep2 ...]]
+                      INCLUDES                 [include1 [include2 ...]]
+                      TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+                      FORTRAN_MODULES          [path1 [path2 ..]]
+                      LIBRARIES                [lib1 [lib2 ...]]
+                      COMPILE_FLAGS            [flag1 [flag2 ..]]
+                      LINK_FLAGS               [flag1 [flag2 ..]]
+                      DEFINES                  [def1 [def2 ...]] )
+
+Modifies the properties of an existing target.  ``PUBLIC`` visibility
+is used unless the target is an ``INTERFACE`` library, in which case
+``INTERFACE`` visibility is used.
+
+NAME
+  Name of the CMake target to patch
+
+DEPENDS_ON
+  List of CMake targets that this target depends on
+
+INCLUDES
+  List of include directories to be inherited by dependent targets
+
+TREAT_INCLUDES_AS_SYSTEM
+  Whether to inform the compiler to treat this target's include paths
+  as system headers - this applies to all include paths for the target,
+  not just those specifies in the INCLUDES parameter.  Only some 
+  compilers support this. This is useful if the headers generate warnings
+  you want to not have them reported in your build. This defaults to OFF.
+
+FORTRAN_MODULES
+  FORTRAN module directories to be inherited by dependent targets
+
+LIBRARIES
+  List of CMake targets and library files (.a/.so/.lib/.dll) that make up
+  this target, used for libraries
+
+COMPILE_FLAGS
+  List of compiler flags to be inherited by dependent targets
+
+LINK_FLAGS
+  List of linker flags to be inherited by dependent targets
+
+DEFINES
+  List of compiler defines to be inherited by dependent targets
+
+This macro does not create a target - it is intended to be used with CMake
+targets created via another BLT macro or CMake command.  Unlike ``blt_register_library``,
+it modifies the specified target, updating the CMake properties of the target that correspond
+to each of the parameters.
+
+.. warning:: The DEPENDS_ON and LIBRARIES parameters cannot be used when patching a target
+  declared in a separate directory unless CMake policy CMP0079 has been set.
+
+.. _blt_import_library:
+
+blt_import_library
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_import_library( NAME                     <libname>
+                        DEPENDS_ON               [dep1 [dep2 ...]]
+                        INCLUDES                 [include1 [include2 ...]]
+                        TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+                        FORTRAN_MODULES          [path1 [path2 ..]]
+                        LIBRARIES                [lib1 [lib2 ...]]
+                        COMPILE_FLAGS            [flag1 [flag2 ..]]
+                        LINK_FLAGS               [flag1 [flag2 ..]]
+                        DEFINES                  [def1 [def2 ...]]
+                        GLOBAL                   [ON|OFF])
+
+Creates a CMake target from build artifacts and system files generated outside of this build system.
+
+NAME
+  Name of the created CMake target
+
+DEPENDS_ON
+  List of CMake targets that this library depends on
+
+INCLUDES
+  List of include directories to be inherited by dependent targets
+
+TREAT_INCLUDES_AS_SYSTEM
+  Whether to inform the compiler to treat this library's include paths
+  as system headers
+
+FORTRAN_MODULES
+  FORTRAN module directories to be inherited by dependent targets
+
+LIBRARIES
+  List of CMake targets and library files (.a/.so/.lib/.dll) that make up
+  this library
+
+COMPILE_FLAGS
+  List of compiler flags to be inherited by dependent targets
+
+LINK_FLAGS
+  List of linker flags to be inherited by dependent targets
+
+DEFINES
+  List of compiler defines to be inherited by dependent targets
+
+GLOBAL
+  Whether to extend the visibility of the created library to global scope
+
+Allows libraries not built with CMake to be imported as native CMake targets
+in order to take full advantage of CMake's transitive dependency resolution.
+
+For example, a ``Find<library>.cmake`` may set only the variables ``<library>_LIBRARIES``
+(which might contain the .a/.so/.lib/.dll file for the library itself, and the libraries it
+depends on) and ``<library>_INCLUDES`` (which might contain the include directories required
+to use the library).  Instead of using these variables directly every time they are needed,
+they could instead be built into a CMake target.  It also allows for compiler and linker
+options to be associated with the library.
+
+As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
+when building another target or to ``target_link_libraries`` to transitively add in
+all includes, libraries, flags, and definitions associated with the imported library.
+
+In CMake terms, the imported libraries will be ``INTERFACE`` libraries.
+
+This does not actually build a library.  This is strictly to ease use after
+discovering it on your system or building it yourself inside your project.
 
 .. _blt_register_library:
 
@@ -330,13 +461,14 @@ in other macros.  For example, after registering gtest, you can add gtest to
 the DEPENDS_ON in your blt_add_executable call and it will add the INCLUDES
 and LIBRARIES to that executable.
 
-TREAT_INCLUDES_AS_SYSTEM informs the compiler to treat this library's include paths
-as system headers.  Only some compilers support this. This is useful if the headers
-generate warnings you want to not have them reported in your build. This defaults
-to OFF.
+.. note:: In general, this macro should be avoided unless absolutely necessary, as it
+  does not create a native CMake target.  If the library to register already exists
+  as a CMake target, consider using ``blt_patch_target``. Otherwise, consider using
+  ``blt_import_library``.  These options are insufficient in some circumstances, for example,
+  if it is necessary to add libraries to a CMake library target declared in another
+  directory while keeping the modified target usable with the same name as the original
+  target.  In this case ``blt_register_library`` is the only option.
 
-This does not actually build the library.  This is strictly to ease use after
-discovering it on your system or building it yourself inside your project.
 
 Note: The OBJECT parameter is for internal BLT support for object libraries
 and is not for users.  Object libraries are created using blt_add_library().
@@ -354,4 +486,3 @@ Internally created variables (NAME = "foo"):
     | _BLT_FOO_DEFINES
 
 Internal variable names are prefixed with ``_`` to avoid collision with input parameters.
-
