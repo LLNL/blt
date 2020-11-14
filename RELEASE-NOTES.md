@@ -32,6 +32,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
   as single string prefixed by ``SHELL:`` to prevent de-duplication of flags
   passed to ``target_link_options``.
+- For HIP-dependent builds, only add HCC include directory if it exists.
 
 ### Fixed
 - ClangFormat checks now support multiple Python executable names
