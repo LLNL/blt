@@ -147,10 +147,10 @@ if (ENABLE_CUDA)
 
     if(ENABLE_GTEST)
         blt_add_executable(NAME blt_cuda_gtest_smoke
-                        SOURCES blt_cuda_gtest_smoke.cpp
-                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                        DEPENDS_ON cuda gtest
-                        FOLDER blt/tests )
+                           SOURCES blt_cuda_gtest_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                           DEPENDS_ON cuda gtest
+                           FOLDER blt/tests )
 
         blt_add_test(NAME    blt_cuda_gtest_smoke
                      COMMAND blt_cuda_gtest_smoke)
@@ -206,10 +206,10 @@ if (ENABLE_HIP)
 
     if(ENABLE_GTEST)
         blt_add_executable(NAME blt_hip_gtest_smoke
-                        SOURCES blt_hip_gtest_smoke.cpp
-                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                        DEPENDS_ON gtest hip
-                        FOLDER blt/tests )
+                           SOURCES blt_hip_gtest_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                           DEPENDS_ON gtest hip
+                           FOLDER blt/tests )
 
         blt_add_test(NAME    blt_hip_gtest_smoke
                      COMMAND blt_hip_gtest_smoke)
