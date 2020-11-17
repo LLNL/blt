@@ -789,7 +789,7 @@ macro(blt_add_executable)
     get_source_file_property(_lang ${_first} LANGUAGE)
     #Check to see if HIP is enabled before resetting 
     if(_lang STREQUAL Fortran)
-        if (NOT CUDA_LINK_WITH_NVCC OR NOT ENABLE_HIP)
+        if (NOT (CUDA_LINK_WITH_NVCC OR ENABLE_HIP))
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         endif()
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
