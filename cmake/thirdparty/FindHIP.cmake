@@ -456,6 +456,10 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     set(include_directories_generator "$<TARGET_PROPERTY:${_target},INCLUDE_DIRECTORIES>")
     list(APPEND HIP_HIPCC_INCLUDE_ARGS "$<$<BOOL:${include_directories_generator}>:-I$<JOIN:${include_directories_generator}, -I>>")
 
+    # Add the interface include directories
+    set(interface_include_directories_generator "$<TARGET_PROPERTY:${_target},INTERFACE_INCLUDE_DIRECTORIES>")
+    list(APPEND HIP_HIPCC_INCLUDE_ARGS "$<$<BOOL:${interface_include_directories_generator}>:-I$<JOIN:${interface_include_directories_generator}, -I>>")
+
     get_directory_property(_hip_include_directories INCLUDE_DIRECTORIES)
     list(REMOVE_DUPLICATES _hip_include_directories)
     if(_hip_include_directories)

@@ -144,6 +144,17 @@ if (ENABLE_CUDA)
                      COMMAND blt_cuda_mpi_smoke
                      NUM_MPI_TASKS 4)
     endif()
+
+    if(ENABLE_GTEST)
+        blt_add_executable(NAME blt_cuda_gtest_smoke
+                        SOURCES blt_cuda_gtest_smoke.cpp
+                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                        DEPENDS_ON cuda gtest
+                        FOLDER blt/tests )
+
+        blt_add_test(NAME    blt_cuda_gtest_smoke
+                     COMMAND blt_cuda_gtest_smoke)
+    endif()
 endif()
 
 ################
@@ -192,5 +203,16 @@ if (ENABLE_HIP)
 
     blt_add_test(NAME blt_hip_runtime_smoke
                  COMMAND blt_hip_runtime_smoke)
+
+    if(ENABLE_GTEST)
+        blt_add_executable(NAME blt_hip_gtest_smoke
+                        SOURCES blt_hip_gtest_smoke.cpp
+                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                        DEPENDS_ON gtest hip
+                        FOLDER blt/tests )
+
+        blt_add_test(NAME    blt_hip_gtest_smoke
+                     COMMAND blt_hip_gtest_smoke)
+    endif()
 
 endif()
