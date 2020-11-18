@@ -62,12 +62,12 @@ function(add_code_coverage_target _targetname _testrunner)
         # Cleanup lcov
         ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/components --zerocounters
 
-        # Run tests
-        COMMAND ${_testrunner} ${ARGV2}
+        # Run tests - allow for failing tests
+        COMMAND ${_testrunner} ${ARGV2} || (exit 0)
 
         # Capture lcov counters and generating report
-        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/components --capture --output-file ${_targetname}.info
-        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/components --remove ${_targetname}.info '/usr/include/*' --output-file ${_targetname}.info.cleaned
+        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/src --capture --output-file ${_targetname}.info
+        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/src --remove ${_targetname}.info '/usr/include/*' --output-file ${_targetname}.info.cleaned
         COMMAND ${GENHTML_EXECUTABLE} -o ${_targetname} ${_targetname}.info.cleaned
         COMMAND ${CMAKE_COMMAND} -E remove ${_targetname}.info ${_targetname}.info.cleaned
 
@@ -88,4 +88,3 @@ if(BLT_CODE_COVERAGE_REPORTS)
         add_code_coverage_target(coverage make test)
         message(STATUS "Code coverage: reports enabled via lcov, genthml, and gcov.")
 endif()
-
