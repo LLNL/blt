@@ -33,6 +33,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   as single string prefixed by ``SHELL:`` to prevent de-duplication of flags
   passed to ``target_link_options``.
 - For HIP-dependent builds, only add HCC include directory if it exists.
+- HIP CMake utilities updated to AMD's latest version
 
 ### Fixed
 - ClangFormat checks now support multiple Python executable names
