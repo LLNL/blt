@@ -52,6 +52,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   blt_add_code_checks; previously, these combinations were implied to
   be errors in BLT documentation, but BLT would not return an error in
   those cases.
+- Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
+  is not changed back to Fortran.
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
