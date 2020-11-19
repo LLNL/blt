@@ -112,8 +112,6 @@ endfunction()
 
 if(BLT_CODE_COVERAGE_REPORTS)
         # Add code coverage target
-        blt_add_code_coverage_target(NAME coverage 
-                                     RUNNER make test
-                                     SOURCE_DIRECTORIES ${CMAKE_SOURCE_DIR}/src)
+        blt_add_code_coverage_target(NAME coverage RUNNER make test)
         message(STATUS "Code coverage: reports enabled via lcov, genthml, and gcov.")
 endif()
