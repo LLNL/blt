@@ -203,7 +203,7 @@ library and have headers that go along with them (unless it's a Fortran library)
 Header-only libraries are useful when you do not want the library separately compiled or 
 are using C++ templates that require the library's user to instantiate them. These libraries
 have headers but no sources. To create a header-only library (CMake calls them INTERFACE libraries),
-simply list all headers under the HEADER argument and do not specify SOURCES (because there aren't any).
+simply list all headers under the HEADERS argument and do not specify SOURCES (because there aren't any).
 
 Object libraries are basically a collection of compiled source files that are not
 archived or linked. They are sometimes useful when you want to solve compilicated linking
