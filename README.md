@@ -34,8 +34,9 @@ operating systems and technologies:
  * Code style:
       [AStyle](http://astyle.sourceforge.net),
       [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html),
-      [Uncrustify](http://uncrustify.sourceforge.net)
-      [YAPF](https://github.com/google/yapf)
+      [cmake-format](https://github.com/cheshirekow/cmake_format),
+      [Uncrustify](http://uncrustify.sourceforge.net),
+      [YAPF (Yet Another Python Formatter)](https://github.com/google/yapf)
  * Code quality
       [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
       [clang-tidy](https://clang.llvm.org/extra/clang-tidy),
