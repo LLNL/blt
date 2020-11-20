@@ -367,8 +367,31 @@ if(YAPF_FOUND)
     YAPF_CFG_FILE    ${CMAKE_CURRENT_SOURCE_DIR}/yapf.cfg)
 endif() # end if(YAPF_FOUND)
 
+if (CMAKEFORMAT_FOUND)
+  # Test case where a style target running cmake-format should do nothing, and
+  # a corresponding check target should return 0
+  set(internal_conformant_cmake_srcs
+    src/test_cmake_format_conformant.cmake)
 
+  blt_add_code_checks(
+    PREFIX               cmake_format_conformant_tests
+    SOURCES              ${internal_conformant_cmake_srcs}
+    CMAKEFORMAT_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake-format-style.py )
 
+  # Test case where a style target running cmake-format should reformat the source file,
+  # and a corresponding check target should return a nonzero code
+  #
+  # After styling, cmake_format_conformant.cmake and
+  # cmake_format_nonconformant.cmake should have the same contents
+  set(internal_nonconformant_cmake_srcs
+    src/test_cmake_format_nonconformant.cmake)
+
+  blt_add_code_checks(
+    PREFIX               cmake_format_nonconformant_tests
+    SOURCES              ${internal_nonconformant_cmake_srcs}
+    CMAKEFORMAT_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake-format-style.py )
+endif() # end if(CMAKEFORMAT_FOUND)
+  
 # Check blt_add_test with a command that is not a target
 if(WIN32)
     configure_file(return_true_win32.in tests/return_true.bat COPYONLY)
