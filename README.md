@@ -67,11 +67,12 @@ Developers include:
 
  * Chris White, LLNL
  * Kenneth Weiss, LLNL
+ * David A. Beckingsale, LLNL
+ * Josh Essman, LLNL
  * Cyrus Harrison, LLNL
  * George Zagaris, LLNL
  * Lee Taylor, LLNL
  * Aaron Black, LLNL
- * David A. Beckingsale, LLNL
  * Richard Hornung, LLNL
  * Randolph Settgast, LLNL
 
