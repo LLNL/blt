@@ -37,6 +37,7 @@ option(ENABLE_ASTYLE       "Enables AStyle support" ON)
 option(ENABLE_CLANGFORMAT  "Enables ClangFormat support" ON)
 option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
 option(ENABLE_YAPF         "Enables Yapf support" ON)
+option(ENABLE_CMAKEFORMAT  "Enables CMakeFormat support" ON)
 
 #------------------------------------------------------------------------------
 # Build Options

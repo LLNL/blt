@@ -34,8 +34,9 @@ operating systems and technologies:
  * Code style:
       [AStyle](http://astyle.sourceforge.net),
       [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html),
-      [Uncrustify](http://uncrustify.sourceforge.net)
-      [YAPF](https://github.com/google/yapf)
+      [cmake-format](https://github.com/cheshirekow/cmake_format),
+      [Uncrustify](http://uncrustify.sourceforge.net),
+      [YAPF (Yet Another Python Formatter)](https://github.com/google/yapf)
  * Code quality
       [clang-query](http://clang.llvm.org/docs/LibASTMatchers.html),
       [clang-tidy](https://clang.llvm.org/extra/clang-tidy),
@@ -66,11 +67,12 @@ Developers include:
 
  * Chris White, LLNL
  * Kenneth Weiss, LLNL
+ * David A. Beckingsale, LLNL
+ * Josh Essman, LLNL
  * Cyrus Harrison, LLNL
  * George Zagaris, LLNL
  * Lee Taylor, LLNL
  * Aaron Black, LLNL
- * David A. Beckingsale, LLNL
  * Richard Hornung, LLNL
  * Randolph Settgast, LLNL
 
@@ -83,11 +85,17 @@ The full list of project contributors can be found on the
 Open-Source Projects using BLT
 ------------------------------
 
+ * [Adiak](https://github.com/LLNL/Adiak): Library for collecting metadata from HPC application runs
  * [Ascent](https://github.com/Alpine-DAV/ascent): A flyweight in-situ visualization and analysis runtime for multi-physics HPC simulations
  * [Axom](https://github.com/LLNL/axom): Software infrastructure for the development of multi-physics applications and computational tools
+ * [CARE](https://github.com/LLNL/CARE): CHAI and RAJA extensions
  * [CHAI](https://github.com/LLNL/CHAI): Copy-hiding array abstraction to automatically migrate data between memory spaces
  * [Conduit](https://github.com/LLNL/conduit): Simplified data exchange for HPC simulations
+ * [Kripke](https://github.com/LLNL/Kripke): Simple, scalable, 3D Sn deterministic particle transport code
  * [RAJA](https://github.com/LLNL/raja): Performance portability layer for HPC
+ * [SAMRAI](https://github.com/LLNL/SAMRAI): Structured Adaptive Mesh Refinement Application Infrastructure
+ * [Serac](https://github.com/LLNL/serac): 3D implicit nonlinear thermal-structural simulation code
+ * [Spheral](https://github.com/LLNL/spheral): Steerable parallel environment for performing coupled hydrodynamical & gravitational numerical simulations
  * [Umpire](https://github.com/LLNL/Umpire): Application-focused API for memory management on NUMA and GPU architectures
  * [VTK-h](https://github.com/Alpine-DAV/vtk-h): Scientific visualization algorithms for emerging processor architectures
 
@@ -126,22 +134,24 @@ BLT bundles its external dependencies in thirdparty_builtin/.  These
 packages are covered by various permissive licenses.  A summary listing
 follows.  See the license included with each package for full details.
 
-PackageName: fruit
-PackageHomePage: https://sourceforge.net/projects/fortranxunit/
-PackageLicenseDeclared: BSD-3-Clause
+[//]: # (Note: The spaces at the end of each line below add line breaks)
 
-PackageName: gbenchmark
-PackageHomePage: https://github.com/google/benchmark
-PackageLicenseDeclared: Apache-2.0
+PackageName: fruit  
+PackageHomePage: https://sourceforge.net/projects/fortranxunit/  
+PackageLicenseDeclared: BSD-3-Clause  
 
-PackageName: gmock
-PackageHomePage: https://github.com/google/googlemock
-PackageLicenseDeclared: BSD-3-Clause
+PackageName: gbenchmark  
+PackageHomePage: https://github.com/google/benchmark  
+PackageLicenseDeclared: Apache-2.0  
 
-PackageName: gtest
-PackageHomePage: https://github.com/google/googletest
-PackageLicenseDeclared: BSD-3-Clause
+PackageName: gmock  
+PackageHomePage: https://github.com/google/googlemock  
+PackageLicenseDeclared: BSD-3-Clause  
 
-PackageName: run-clang-format
-PackageHomePage: https://github.com/Sarcasm/run-clang-format
-PackageLicenseDeclared: MIT
+PackageName: gtest  
+PackageHomePage: https://github.com/google/googletest  
+PackageLicenseDeclared: BSD-3-Clause  
+
+PackageName: run-clang-format  
+PackageHomePage: https://github.com/Sarcasm/run-clang-format  
+PackageLicenseDeclared: MIT  

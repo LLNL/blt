@@ -98,6 +98,10 @@ blt_find_executable(NAME        Uncrustify
 blt_find_executable(NAME        Yapf
                     EXECUTABLES yapf)
 
+blt_find_executable(NAME        CMakeFormat
+                    EXECUTABLES cmake-format)
+
+
 #------------------------------------
 # Static analysis via Cppcheck
 #------------------------------------

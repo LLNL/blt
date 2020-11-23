@@ -17,6 +17,7 @@ blt_add_code_checks
                          CLANGFORMAT_CFG_FILE <Path to ClangFormat config file>
                          UNCRUSTIFY_CFG_FILE  <Path to Uncrustify config file>
                          YAPF_CFG_FILE        <Path to Yapf config file>
+                         CMAKEFORMAT_CFG_FILE <Path to CMakeFormat config file>
                          CPPCHECK_FLAGS       <List of flags added to Cppcheck>
                          CLANGQUERY_CHECKER_DIRECTORIES [dir1 [dir2]])
 
@@ -41,6 +42,9 @@ UNCRUSTIFY_CFG_FILE
 YAPF_CFG_FILE
   Path to Yapf config file
 
+CMAKEFORMAT_CFG_FILE
+  Path to CMakeFormat config file
+
 CPPCHECK_FLAGS
   List of flags added to Cppcheck
 
@@ -57,10 +61,11 @@ functionality you will need to call the individual code check macros yourself.
   other codes.  The following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`
   will stop your code checks from running unless you are the main CMake project.
 
-Sources are filtered based on file extensions for use in these code checks.  If you need
-additional file extensions defined add them to BLT_C_FILE_EXTS, BLT_Python_FILE_EXTS, and
-BLT_Fortran_FILE_EXTS. Currently this macro only has code checks for C/C++ and Python; it
-simply filters out the Fortran files.
+Sources are filtered based on file extensions for use in these code
+checks.  If you need additional file extensions defined add them to
+BLT_C_FILE_EXTS, BLT_Python_FILE_EXTS, BLT_CMAKE_FILE_EXTS, and
+BLT_Fortran_FILE_EXTS. Currently this macro only has code checks for
+C/C++ and Python; it simply filters out the Fortran files.
 
 This macro supports C/C++ code formatting with either AStyle, ClangFormat, or Uncrustify
 (but not all at the same time) only if the following requirements are met:
@@ -90,14 +95,20 @@ are met:
 * YAPF_CFG_FILE is given
 * YAPF_EXECUTABLE is defined and found prior to calling this macro
 
+This macro also supports CMake code formatting with CMakeFormat only if the following requirements are met:
+
+* CMAKEFORMAT_CFG_FILE is given
+* CMAKEFORMAT_EXECUTABLE is defined and found prior to calling this macro
+
 Enabled code formatting checks produce a `check` build target that will test to see if you
 are out of compliance with your code formatting and a `style` build target that will actually
 modify your source files.  It also creates smaller child build targets that follow the pattern
 `<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>`.
 
-If a particular version of a code formatting tool is required, you can configure BLT to enforce
-that version by setting ``BLT_REQUIRED_<CLANGFORMAT|ASTYLE|UNCRUSTIFY|YAPF>_VERSION`` to as much of the version
-as you need.  For example:
+If a particular version of a code formatting tool is required, you can
+configure BLT to enforce that version by setting
+``BLT_REQUIRED_<CLANGFORMAT|ASTYLE|UNCRUSTIFY|YAPF|CMAKEFORMAT>_VERSION``
+to as much of the version as you need.  For example:
 
 .. code-block:: cmake
 
@@ -418,6 +429,7 @@ which files do not conform to your style guide.
 .. Note::
   Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
 
+
 blt_add_yapf_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -460,6 +472,55 @@ SRC_FILES
 
 Yapf is a Source Code Beautifier for Python code. More information about
 Yapf can be found `here <https://github.com/google/yapf>`_.
+
+When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+target to the parent `style` build target.  Otherwise the files are not modified and the
+created target is added to the parent `check` build target. This target will notify you
+which files do not conform to your style guide.
+
+
+blt_add_cmakeformat_target
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_add_cmakeformat_target( NAME              <Created Target Name>
+                                MODIFY_FILES      [TRUE | FALSE (default)]
+                                CFG_FILE          <CMakeFormat Configuration File>
+                                PREPEND_FLAGS     <Additional Flags to CMakeFormat>
+                                APPEND_FLAGS      <Additional Flags to CMakeFormat>
+                                COMMENT           <Additional Comment for Target Invocation>
+                                WORKING_DIRECTORY <Working Directory>
+                                SRC_FILES         [FILE1 [FILE2 ...]] )
+
+Creates a new build target for running CMakeFormat
+
+NAME
+  Name of created build target
+
+MODIFY_FILES
+  Modify the files in place. Defaults to FALSE.
+
+CFG_FILE
+  Path to CMakeFormat config file
+
+PREPEND_FLAGS
+  Additional flags added to the front of the CMakeFormat flags
+
+APPEND_FLAGS
+ Additional flags added to the end of the CMakeFormat flags
+
+COMMENT
+  Comment prepended to the build target output
+
+WORKING_DIRECTORY
+  Directory in which the CMakeFormat command is run. Defaults to where macro is called.
+
+SRC_FILES
+  Source list that CMakeFormat will be ran on
+
+CMakeFormat is a Source Code Beautifier for CMake code. More information about
+CMakeFormat can be found `here <https://cmake-format.readthedocs.io/en/latest/index.html>`_.
 
 When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
 target to the parent `style` build target.  Otherwise the files are not modified and the
