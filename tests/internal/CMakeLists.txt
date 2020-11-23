@@ -67,8 +67,12 @@ if(ENABLE_GTEST)
     #  Header-only test
     #------------------------------------------------------
 
+    blt_add_target_definitions(TO                 example
+                               TARGET_DEFINITIONS BLT_EXAMPLE_LIB)
+
     blt_add_library(NAME blt_header_only
-                    HEADERS "src/HeaderOnly.hpp")
+                    HEADERS "src/HeaderOnly.hpp"
+                    DEPENDS_ON example)
 
     # This executable depends on the header-only library
 
