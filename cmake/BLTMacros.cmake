@@ -482,11 +482,14 @@ macro(blt_patch_target)
     # PGI does not support -isystem
     if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
         get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-        if(_standard_lib_interface)
-            target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
-        else()
-            set_property(TARGET ${arg_NAME} PROPERTY
-                         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
+        # Don't copy if the target had no include directories
+        if(_target_includes)
+            if(_standard_lib_interface)
+                target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
+            else()
+                set_property(TARGET ${arg_NAME} PROPERTY
+                            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
+            endif()
         endif()
     endif()
 
