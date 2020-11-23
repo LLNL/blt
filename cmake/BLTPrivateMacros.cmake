@@ -293,6 +293,15 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
+    # Default to "real" scope, unless it's an interface library
+    set(_private_scope PRIVATE)
+    set(_public_scope  PUBLIC)
+    get_target_property(_target_type ${arg_NAME} TYPE)
+    if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+        set(_private_scope INTERFACE)
+        set(_public_scope  INTERFACE)
+    endif()
+
     # Expand dependency list
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
     foreach( i RANGE 50 )
@@ -314,21 +323,21 @@ macro(blt_setup_target)
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-            target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
+            target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
             if ( _BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
-                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                target_include_directories( ${arg_NAME} SYSTEM ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
             else()
-                target_include_directories( ${arg_NAME} PUBLIC
+                target_include_directories( ${arg_NAME} ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
             endif()
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_FORTRAN_MODULES )
-            target_include_directories( ${arg_NAME} PUBLIC
+            target_include_directories( ${arg_NAME} ${_public_scope}
                 ${_BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
@@ -359,15 +368,15 @@ macro(blt_setup_target)
             # actual CMake targets
             if(NOT "${_BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME} PUBLIC
+                target_link_libraries( ${arg_NAME} ${_public_scope}
                     ${_BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
         else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
+            target_link_libraries( ${arg_NAME} ${_public_scope} ${dependency} )
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_DEFINES )
-            target_compile_definitions( ${arg_NAME} PUBLIC
+            target_compile_definitions( ${arg_NAME} ${_public_scope}
                 ${_BLT_${uppercase_dependency}_DEFINES} )
         endif()
 
