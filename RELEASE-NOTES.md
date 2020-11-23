@@ -56,6 +56,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   blt_add_code_checks; previously, these combinations were implied to
   be errors in BLT documentation, but BLT would not return an error in
   those cases.
+- ``blt_patch_target`` no longer attempts to set system include directories when a target
+  has no include directories
 
 ## [Version 0.3.6] - Release date 2020-07-27
 

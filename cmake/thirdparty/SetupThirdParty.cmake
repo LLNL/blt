@@ -125,7 +125,7 @@ endif()
 #------------------------------------
 if (ENABLE_COVERAGE)
     # Attempt to find the executables associated with gcov, lcov and genhtml.
-    # This requires that the associate features are enabled.
+    # This requires that the associated features are enabled.
     set(ENABLE_GCOV ON CACHE BOOL "")
     set(ENABLE_LCOV ON CACHE BOOL "")
     set(ENABLE_GENHTML ON CACHE BOOL "")
