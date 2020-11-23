@@ -25,7 +25,7 @@ endif()
 #        2. The header hsa.h is found redundantly in both /opt/rocm/include/hsa/hsa.h
 #           and /opt/rocm/hsa/include/hsa/hsa.h . I only listed ${HIP_ROOT_DIR}/../include
 #           (pointing us to /opt/rocm/include/hsa/) below.
-if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
+if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" )
         set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/../include;${HIP_ROOT_DIR}/hcc/include" CACHE STRING "")
 else()
         set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/../include" CACHE STRING "")
