@@ -34,7 +34,7 @@ set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-D${HIP_RUNTIME_DEFI
 # through a hip compiler (hipcc)
 # This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
 # of all required HIP-related includes/libraries/flags.
-blt_import_library(NAME      hip TREAT_INCLUDES_AS_SYSTEM ON)
+blt_import_library(NAME      hip)
 
 # depend on 'hip_runtime', if you only need to use hip
 # headers or link to hip libs, but don't need to run your source
