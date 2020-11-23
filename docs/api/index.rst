@@ -14,4 +14,5 @@ API Documentation
     utility
     git
     code_check
+    code_metric
     documentation
