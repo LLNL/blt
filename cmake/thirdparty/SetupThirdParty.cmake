@@ -120,10 +120,11 @@ endif()
 # Code coverage
 #------------------------------------
 if (ENABLE_COVERAGE)
-    # find_executable requires that the executables be enabled
-    set(ENABLE_GCOV ON)
-    set(ENABLE_LCOV ON)
-    set(ENABLE_GENHTML ON)
+    # Attempt to find the executables associated with gcov, lcov and genhtml.
+    # This requires that the associate features are enabled.
+    set(ENABLE_GCOV ON CACHE BOOL "")
+    set(ENABLE_LCOV ON CACHE BOOL "")
+    set(ENABLE_GENHTML ON CACHE BOOL "")
     blt_find_executable(NAME        gcov
                         EXECUTABLES gcov)
 

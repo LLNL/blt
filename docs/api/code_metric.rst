@@ -11,9 +11,9 @@ blt_add_code_coverage_target
 
 .. code-block:: cmake
 
-    blt_add_code_coverage_target( NAME              <Created Target Name>
-                                  RUNNER            <The command to run the tests>
-                                  SOURCE_DIRECTORIES [dir1 [dir2 ...]])
+    blt_add_code_coverage_target( NAME               <Created Target Name>
+                                  RUNNER             <The command to run the tests>
+                                  SOURCE_DIRECTORIES [dir1 [dir2 ...]] )
 
 Creates a new build target for generating a code coverage report.
 
@@ -36,7 +36,8 @@ highlighted source code that indicates which code was or was not executed as par
   Coverage analysis is only supported by GNU/Clang compilers.
 
 This functionality requires that BLT's ``ENABLE_COVERAGE`` option is enabled and that ``gcov``, ``lcov``,
-and ``genhtml`` are present on your system.
+and ``genhtml`` are present on your system.  To use a specific version of one of these tools, you can set
+``GCOV_EXECUTABLE``, ``LCOV_EXECUTABLE``, and ``GENHTML_EXECUTABLE`` to point at the desired version(s).
 
 .. note::
   The ``ENABLE_COVERAGE`` option will add compiler flags that instrument your code (and slow it down).
