@@ -136,7 +136,8 @@ endfunction()
 ##
 ## This macro attempts to find the given executable via either a previously defined
 ## <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
-## if EXECUTABLES is left empty, then NAME is used.
+## if EXECUTABLES is left empty, then NAME is used.  This macro will only attempt
+## to locate the executable if <UPPERCASE_NAME>_ENABLED is TRUE.
 ##
 ## If successful the following variables will be defined:
 ## <UPPERCASE_NAME>_FOUND

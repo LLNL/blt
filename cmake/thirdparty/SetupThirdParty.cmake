@@ -119,3 +119,22 @@ if(CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "Ninja"
     blt_find_executable(NAME        ClangTidy
                         EXECUTABLES clang-tidy)
 endif()
+
+#------------------------------------
+# Code coverage
+#------------------------------------
+if (ENABLE_COVERAGE)
+    # Attempt to find the executables associated with gcov, lcov and genhtml.
+    # This requires that the associated features are enabled.
+    set(ENABLE_GCOV ON CACHE BOOL "")
+    set(ENABLE_LCOV ON CACHE BOOL "")
+    set(ENABLE_GENHTML ON CACHE BOOL "")
+    blt_find_executable(NAME        gcov
+                        EXECUTABLES gcov)
+
+    blt_find_executable(NAME        lcov
+                        EXECUTABLES lcov)
+
+    blt_find_executable(NAME        genhtml
+                        EXECUTABLES genhtml)
+endif()

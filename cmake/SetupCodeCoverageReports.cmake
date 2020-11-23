@@ -21,6 +21,8 @@
 # 2017-07-25, Cyrus Harrison
 # - Refactored to only include report gen logic, not coverage flags
 #
+# 2020-11-18, Josh Essman
+# - Continue generation after failing tests, allow user to specify src dir
 
 set(BLT_CODE_COVERAGE_REPORTS ON)
 
@@ -45,47 +47,71 @@ endif()
 mark_as_advanced(BLT_CODE_COVERAGE_REPORTS)
 
 
-######################################################################
-# Function that adds target that generates code coverage reports
-#####################################################################
-# Param _targetname     The name of new the custom make target and output file name.
-# Param _testrunner     The name of the target which runs the tests.
-#                        MUST return ZERO always, even on errors.
-#                        If not, no coverage report will be created!
-# Optional fourth parameter is passed as arguments to _testrunner
-#   Pass them in list form, e.g.: "-j;2" for -j 2
-function(add_code_coverage_target _targetname _testrunner)
+##------------------------------------------------------------------------------
+## blt_add_code_coverage_target( NAME              <Created Target Name>
+##                               RUNNER            <The command to run the tests>
+##                               SOURCE_DIRECTORIES [dir1 [dir2 ...]])
+##
+## Creates a new target with the given NAME that generates a code coverage report.
+##------------------------------------------------------------------------------
+function(blt_add_code_coverage_target)
+
+    set(options)
+    set(singleValueArgs NAME)
+    set(multiValueArgs RUNNER SOURCE_DIRECTORIES)
+
+    # parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Check/Set required parameters
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_add_code_coverage_target requires a NAME parameter")
+    endif()
+
+    if(NOT DEFINED arg_RUNNER)
+        message(FATAL_ERROR "blt_add_code_coverage_target requires a RUNNER parameter")
+    endif()
+
+    set(_coverage_directories "--directory=${CMAKE_BINARY_DIR}")
+    if(DEFINED arg_SOURCE_DIRECTORIES)
+        foreach(_src_dir ${arg_SOURCE_DIRECTORIES})
+            list(APPEND _coverage_directories "--directory=${_src_dir}")
+        endforeach()
+    else()
+        # Default to everything
+        list(APPEND _coverage_directories "--directory=${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 
     # Setup target
-    add_custom_target(${_targetname}
+    add_custom_target(${arg_NAME}
 
         # Cleanup lcov
-        ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/components --zerocounters
+        ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} ${_coverage_directories} --zerocounters
 
-        # Run tests
-        COMMAND ${_testrunner} ${ARGV2}
+        # Run tests - allow for failing tests
+        COMMAND ${arg_RUNNER} || (exit 0)
 
         # Capture lcov counters and generating report
-        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/components --capture --output-file ${_targetname}.info
-        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --directory ${CMAKE_SOURCE_DIR}/components --remove ${_targetname}.info '/usr/include/*' --output-file ${_targetname}.info.cleaned
-        COMMAND ${GENHTML_EXECUTABLE} -o ${_targetname} ${_targetname}.info.cleaned
-        COMMAND ${CMAKE_COMMAND} -E remove ${_targetname}.info ${_targetname}.info.cleaned
+        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} ${_coverage_directories} --capture --output-file ${arg_NAME}.info
+        COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} ${_coverage_directories} --remove ${arg_NAME}.info '/usr/include/*' --output-file ${arg_NAME}.info.cleaned
+        COMMAND ${GENHTML_EXECUTABLE} -o ${arg_NAME} ${arg_NAME}.info.cleaned
+        COMMAND ${CMAKE_COMMAND} -E remove ${arg_NAME}.info ${arg_NAME}.info.cleaned
 
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
     )
 
     # Show info where to find the report
-    add_custom_command(TARGET ${_targetname} POST_BUILD
+    add_custom_command(TARGET ${arg_NAME} POST_BUILD
         COMMAND ;
-        COMMENT "Open ./${_targetname}/index.html in your browser to view the coverage report."
+        COMMENT "Open ./${arg_NAME}/index.html in your browser to view the coverage report."
     )
 endfunction()
 
 
 if(BLT_CODE_COVERAGE_REPORTS)
         # Add code coverage target
-        add_code_coverage_target(coverage make test)
+        blt_add_code_coverage_target(NAME coverage RUNNER make test)
         message(STATUS "Code coverage: reports enabled via lcov, genthml, and gcov.")
 endif()
-
