@@ -58,6 +58,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   those cases.
 - ``blt_patch_target`` no longer attempts to set system include directories when a target
   has no include directories
+- Header-only libraries now can have dependencies via DEPENDS_ON in ``blt_add_library``
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
