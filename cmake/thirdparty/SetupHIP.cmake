@@ -20,10 +20,15 @@ if(${HIP_PLATFORM} STREQUAL "hcc")
 elseif(${HIP_PLATFORM} STREQUAL "nvcc")
 	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_NVCC__")
 endif()
+
+# Notes: 1. the ${HIP_ROOT_DIR}/hcc/include only exists on older rocm installs, hence a check is required
+#        2. The header hsa.h is found redundantly in both /opt/rocm/include/hsa/hsa.h
+#           and /opt/rocm/hsa/include/hsa/hsa.h . I only listed ${HIP_ROOT_DIR}/../include
+#           (pointing us to /opt/rocm/include/hsa/) below.
 if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
-        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/hcc/include" CACHE STRING "")
+        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/../include;${HIP_ROOT_DIR}/hcc/include" CACHE STRING "")
 else()
-        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" CACHE STRING "")
+        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/../include" CACHE STRING "")
 endif()
 set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-D${HIP_RUNTIME_DEFINE};-Wno-unused-parameter")
 # set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
