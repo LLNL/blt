@@ -503,7 +503,7 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     if(_hip_build_shared_libs)
         list(APPEND HIP_HCC_FLAGS "-fPIC")
         list(APPEND HIP_CLANG_FLAGS "-fPIC")
-        list(APPEND HIP_NVCC_FLAGS "--shared -Xcompiler '-fPIC'")
+        list(APPEND HIP_NVCC_FLAGS "--shared -Xcompiler -fPIC")
     endif()
 
     # Set host compiler
