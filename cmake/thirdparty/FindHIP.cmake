@@ -503,7 +503,11 @@ macro(HIP_PREPARE_TARGET_COMMANDS _target _format _generated_files _source_files
     if(_hip_build_shared_libs)
         list(APPEND HIP_HCC_FLAGS "-fPIC")
         list(APPEND HIP_CLANG_FLAGS "-fPIC")
-        list(APPEND HIP_NVCC_FLAGS "--shared -Xcompiler -fPIC")
+        if("x${HIP_PLATFORM}" STREQUAL "xnvcc") # hip using nvcc cuda underneath
+           list(APPEND HIP_NVCC_FLAGS "--shared -Xcompiler '-fPIC'")
+        else() # platform is hcc
+            list(APPEND HIP_HIPCC_FLAGS "-fPIC")
+        endif()
     endif()
 
     # Set host compiler
