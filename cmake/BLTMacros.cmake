@@ -628,11 +628,6 @@ macro(blt_add_library)
 
         if ( ${arg_OBJECT} )
             set(_lib_type "OBJECT")
-            blt_register_library( NAME       ${arg_NAME}
-                                  DEPENDS_ON ${arg_DEPENDS_ON}
-                                  INCLUDES   ${arg_INCLUDES}
-                                  OBJECT     TRUE
-                                  DEFINES    ${arg_DEFINES} )
         elseif ( ${_build_shared_library} )
             set(_lib_type "SHARED")
         else()
