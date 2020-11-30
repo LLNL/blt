@@ -44,4 +44,5 @@ blt_import_library(NAME          hip_runtime
                    DEFINES       ${HIP_RUNTIME_DEFINES}
                    COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
                    LIBRARIES     ${HIP_RUNTIME_LIBRARIES}
-                   TREAT_INCLUDES_AS_SYSTEM ON)
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

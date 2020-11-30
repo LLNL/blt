@@ -107,6 +107,11 @@ mark_as_advanced(BLT_ENABLE_MSVC_STATIC_MD_TO_MT)
 option(ENABLE_FOLDERS "Organize projects using folders (in generators that support this)" OFF)
 
 #------------------------------------------------------------------------------
+# Export/Install Options
+#------------------------------------------------------------------------------
+option(BLT_EXPORT_THIRDPARTY "Configure the third-party targets created by BLT to be exportable" OFF)
+
+#------------------------------------------------------------------------------
 # Advanced configuration options
 #------------------------------------------------------------------------------
 
