@@ -340,15 +340,18 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
-        if ( NOT arg_OBJECT )
-            if (_BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY)
-                target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
-            elseif(TARGET ${dependency})
-                get_target_property(_dep_type "${dependency}" TYPE)
-                if("${_dep_type}" STREQUAL "OBJECT_LIBRARY")
-                    target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
-                endif()
+        set(_dep_is_object FALSE)
+        if (_BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY)
+            set(_dep_is_object TRUE)
+        elseif(TARGET ${dependency})
+            get_target_property(_dep_type "${dependency}" TYPE)
+            if("${_dep_type}" STREQUAL "OBJECT_LIBRARY")
+                set(_dep_is_object TRUE)
             endif()
+        endif()
+
+        if ( NOT arg_OBJECT AND _dep_is_object)
+            target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
@@ -378,7 +381,7 @@ macro(blt_setup_target)
             endforeach()
         endif()
 
-        if ( arg_OBJECT OR _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+        if ( arg_OBJECT OR _dep_is_object )
             # We want object libraries to inherit the vital info but not call
             # target_link_libraries() otherwise you have to install the object
             # files associated with the object library which noone wants.
