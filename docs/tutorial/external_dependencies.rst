@@ -54,7 +54,10 @@ though it does not support the creation of targets with the same name as a targe
     can also be used to manage visibility.
 
 BLT's ``mpi``, ``cuda``, ``cuda_runtime``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
-You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.
+You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.  If your project exports targets and you would like
+BLT's provided third-party targets to also be exported (for example, if a project that imports your project does not
+use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.
+
 
 .. admonition:: blt_register_library
    :class: hint
