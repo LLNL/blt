@@ -384,7 +384,8 @@ blt_import_library
                         COMPILE_FLAGS            [flag1 [flag2 ..]]
                         LINK_FLAGS               [flag1 [flag2 ..]]
                         DEFINES                  [def1 [def2 ...]]
-                        GLOBAL                   [ON|OFF])
+                        GLOBAL                   [ON|OFF]
+                        EXPORTABLE               [ON|OFF])
 
 Creates a CMake target from build artifacts and system files generated outside of this build system.
 
@@ -419,6 +420,10 @@ DEFINES
 
 GLOBAL
   Whether to extend the visibility of the created library to global scope
+
+EXPORTABLE
+  Whether the created target should be exportable and ``install``able - mutually
+  exclusive with the GLOBAL option
 
 Allows libraries not built with CMake to be imported as native CMake targets
 in order to take full advantage of CMake's transitive dependency resolution.
