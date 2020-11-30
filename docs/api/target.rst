@@ -422,7 +422,7 @@ GLOBAL
   Whether to extend the visibility of the created library to global scope
 
 EXPORTABLE
-  Whether the created target should be exportable and ``install``able - mutually
+  Whether the created target should be exportable and ``install``-able - mutually
   exclusive with the GLOBAL option
 
 Allows libraries not built with CMake to be imported as native CMake targets
