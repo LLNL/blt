@@ -37,6 +37,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - HIP CMake utilities updated to AMD's latest version
 - Updated ``add_code_coverage_target`` to ``blt_add_code_coverage_target``, which now supports
   user-specified source directories
+- Code coverage targets leave LCOV-generated files intact for later use; these files will
+  still be removed by ``make clean``
 
 ### Fixed
 - ClangFormat checks now support multiple Python executable names
