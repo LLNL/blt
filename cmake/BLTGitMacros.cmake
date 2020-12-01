@@ -144,7 +144,7 @@ macro(blt_git_tag)
     endif()
 
     ## set working directory
-    if ( NOT DEFINED arg_SOURCE_DIR} )
+    if ( NOT DEFINED arg_SOURCE_DIR )
       set(git_dir ${CMAKE_CURRENT_SOURCE_DIR})
     else()
       set(git_dir ${arg_SOURCE_DIR})
