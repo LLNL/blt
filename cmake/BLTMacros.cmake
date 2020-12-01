@@ -326,7 +326,7 @@ endmacro(blt_add_target_link_flags)
 ##------------------------------------------------------------------------------
 macro(blt_register_library)
 
-    set(singleValueArgs NAME OBJECT TREAT_INCLUDES_AS_SYSTEM)
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
     set(multiValueArgs INCLUDES 
                        DEPENDS_ON
                        FORTRAN_MODULES
@@ -352,13 +352,6 @@ macro(blt_register_library)
         set(_BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE STRING "" FORCE)
         mark_as_advanced(_BLT_${uppercase_name}_INCLUDES)
     endif()
-
-    if( ${arg_OBJECT} )
-        set(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY TRUE CACHE BOOL "" FORCE)
-    else()
-        set(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY FALSE CACHE BOOL "" FORCE)
-    endif()
-    mark_as_advanced(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
 
     # PGI does not support -isystem
     if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
@@ -691,8 +684,7 @@ macro(blt_add_library)
     endif()
 
     blt_setup_target( NAME       ${arg_NAME}
-                      DEPENDS_ON ${arg_DEPENDS_ON} 
-                      OBJECT     ${arg_OBJECT})
+                      DEPENDS_ON ${arg_DEPENDS_ON})
 
     if ( arg_INCLUDES )
         if (NOT arg_SOURCES )
@@ -798,8 +790,7 @@ macro(blt_add_executable)
     endif()
        
     blt_setup_target(NAME       ${arg_NAME}
-                     DEPENDS_ON ${arg_DEPENDS_ON} 
-                     OBJECT     FALSE)
+                     DEPENDS_ON ${arg_DEPENDS_ON})
 
     # fix the openmp flags for fortran if needed
     # NOTE: this needs to be called after blt_setup_target()

@@ -275,8 +275,7 @@ endmacro(blt_inherit_target_info)
 
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME       [name]
-##                   DEPENDS_ON [dep1 ...]
-##                   OBJECT     [TRUE | FALSE])
+##                   DEPENDS_ON [dep1 ...])
 ##------------------------------------------------------------------------------
 macro(blt_setup_target)
 
@@ -302,25 +301,41 @@ macro(blt_setup_target)
         set(_public_scope  INTERFACE)
     endif()
 
+    set(_target_is_object FALSE)
+    if("${_target_type}" STREQUAL "OBJECT_LIBRARY")
+        set(_target_is_object TRUE)
+    endif()
+
     # Expand dependency list
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
     set(_already_proccessed_depends)
     foreach( i RANGE 50 )
         foreach( dependency ${_expanded_DEPENDS_ON} )
-            if (NOT ${dependency} IN_LIST _already_proccessed_depends)
+            if(NOT ${dependency} IN_LIST _already_proccessed_depends)
                 list(APPEND _already_proccessed_depends ${dependency})
                 if(TARGET ${dependency})
                     get_target_property(_dep_type "${dependency}" TYPE)
                     if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
                         # Need to check all targets for dependencies on object libraries
                         get_target_property(_dep_srcs "${dependency}" SOURCES)
-                        foreach(_dep_src ${_dep_srcs})
-                            if ("${_dep_src}" MATCHES "\\$<TARGET_OBJECTS:(.*)>")
-                                if (NOT ${CMAKE_MATCH_1} IN_LIST _expanded_DEPENDS_ON)
-                                    list(APPEND _expanded_DEPENDS_ON ${CMAKE_MATCH_1})
+                        if(_dep_srcs)
+                            foreach(_dep_src ${_dep_srcs})
+                                if("${_dep_src}" MATCHES "\\$<TARGET_OBJECTS:(.*)>")
+                                    if(NOT ${CMAKE_MATCH_1} IN_LIST _expanded_DEPENDS_ON)
+                                        list(APPEND _expanded_DEPENDS_ON ${CMAKE_MATCH_1})
+                                    endif()
                                 endif()
-                            endif()
-                        endforeach()
+                            endforeach()
+                        endif()
+                    endif()
+                    # Hack to add object libraries to object libraries pre-3.12
+                    if(${CMAKE_VERSION} VERSION_LESS "3.12.0" AND "${_dep_type}" STREQUAL "OBJECT_LIBRARY")
+                        get_target_property(_dep_objlibs "${dependency}" BLT_OBJECT_DEPENDENCIES)
+                        if(_dep_objlibs)
+                            foreach(_dep_objlib ${_dep_objlibs})
+                                list(APPEND _expanded_DEPENDS_ON ${_dep_objlib})
+                            endforeach()
+                        endif()
                     endif()
                 endif()
 
@@ -340,18 +355,17 @@ macro(blt_setup_target)
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
-        set(_dep_is_object FALSE)
-        if (_BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY)
-            set(_dep_is_object TRUE)
-        elseif(TARGET ${dependency})
+        if(TARGET ${dependency})
             get_target_property(_dep_type "${dependency}" TYPE)
-            if("${_dep_type}" STREQUAL "OBJECT_LIBRARY")
-                set(_dep_is_object TRUE)
+            if ("${_dep_type}" STREQUAL "OBJECT_LIBRARY")
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0" OR NOT _target_is_object)
+                    target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
+                else()
+                    # This is a less-than ideal way of adding object libs to object libs pre-3.12
+                    set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                                BLT_OBJECT_DEPENDENCIES "${dependency}")
+                endif()
             endif()
-        endif()
-
-        if ( NOT arg_OBJECT AND _dep_is_object)
-            target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
@@ -369,26 +383,26 @@ macro(blt_setup_target)
                 ${_BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
-        if ( arg_OBJECT )
+        if ( _target_is_object )
             # Object libraries need to inherit info from their CMake targets listed
             # in their LIBRARIES
             foreach( _library ${_BLT_${uppercase_dependency}_LIBRARIES} )
                 if(TARGET ${_library})
                     blt_inherit_target_info(TO     ${arg_NAME}
                                             FROM   ${_library}
-                                            OBJECT ${arg_OBJECT})
+                                            OBJECT ${_target_is_object})
                 endif()
             endforeach()
         endif()
 
-        if ( arg_OBJECT OR _dep_is_object )
+        if ( _target_is_object OR "${_dep_type}" STREQUAL "OBJECT_LIBRARY" )
             # We want object libraries to inherit the vital info but not call
             # target_link_libraries() otherwise you have to install the object
             # files associated with the object library which noone wants.
             if ( TARGET ${dependency} )
                 blt_inherit_target_info(TO     ${arg_NAME}
                                         FROM   ${dependency}
-                                        OBJECT ${arg_OBJECT})
+                                        OBJECT ${_target_is_object})
             endif()
         elseif (DEFINED _BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the
@@ -413,7 +427,7 @@ macro(blt_setup_target)
                                          FLAGS ${_BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( NOT arg_OBJECT AND DEFINED _BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT _target_is_object AND DEFINED _BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
