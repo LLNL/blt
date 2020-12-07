@@ -101,14 +101,6 @@ if (NOT BLT_LOADED)
     ################################
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-
-    ################################
-    # PGI doesn't support the SYSTEM flag, which is the default for imported targets.
-    ################################
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
-        set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE)
-    endif()
-
     ################################
     # Macros
     ################################
