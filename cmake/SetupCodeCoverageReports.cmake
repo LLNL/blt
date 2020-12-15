@@ -96,8 +96,7 @@ function(blt_add_code_coverage_target)
         COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} ${_coverage_directories} --capture --output-file ${arg_NAME}.info
         COMMAND ${LCOV_EXECUTABLE} --no-external --gcov-tool ${GCOV_EXECUTABLE} ${_coverage_directories} --remove ${arg_NAME}.info '/usr/include/*' --output-file ${arg_NAME}.info.cleaned
         COMMAND ${GENHTML_EXECUTABLE} -o ${arg_NAME} ${arg_NAME}.info.cleaned
-        COMMAND ${CMAKE_COMMAND} -E remove ${arg_NAME}.info ${arg_NAME}.info.cleaned
-
+        BYPRODUCTS ${arg_NAME}.info ${arg_NAME}.info.cleaned
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
     )
