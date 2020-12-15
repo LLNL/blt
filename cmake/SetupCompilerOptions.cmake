@@ -84,6 +84,14 @@ else()
 endif()
 
 
+#################################################################################
+# PGI doesn't support a SYSTEM flag for include directories. Since this is CMake's
+# default for imported targets, we need to disable this feature for PGI.
+#################################################################################
+if(${C_COMPILER_FAMILY_IS_PGI})
+    set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE)
+endif()
+
 ################################################
 # Support for extra compiler flags and defines
 ################################################
