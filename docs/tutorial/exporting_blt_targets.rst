@@ -3,7 +3,7 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-Exporting BLT-created Targets
+Exporting BLT Created Targets
 =============================
 
 BLT provides several built-in targets for commonly used libraries:
