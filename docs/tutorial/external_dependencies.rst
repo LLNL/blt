@@ -64,7 +64,7 @@ BLT's provided third-party targets to also be exported (for example, if a projec
 use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other EXPORTABLE targets created by
 ``blt_import_library()``, these targets should be prefixed with the name of the project.  Either the ``EXPORT_NAME``
 target property or the ``NAMESPACE`` option to CMake's ``install`` command can be used to modify the name of an
-installed target.
+installed target.  See the "Exporting BLT Targets" page for more info.
 
 
 .. admonition:: blt_register_library
