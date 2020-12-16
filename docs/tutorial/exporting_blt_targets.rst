@@ -31,6 +31,7 @@ Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
     # and mark the subsequently created MPI target as exportable
     set(BLT_EXPORT_THIRDPARTY ON CACHE BOOL "")
     # Both of the above must happen before SetupBLT.cmake is included
+    include(/path/to/SetupBLT.cmake)
 
     # Later, a project might mark a target as dependent on MPI
     blt_add_executable( NAME    example_1
@@ -43,11 +44,6 @@ Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
     # Add the MPI target to the same export set - this is required
     # because the mpi target was marked exportable
     install(TARGETS mpi EXPORT example-targets)
-
-    # To avoid collisions with projects that import "example-targets",
-    # one option is to prefix the name of the MPI target
-    # With this approach the exported name of example_1 is unchanged
-    set_target_properties(mpi PROPERTIES EXPORT_NAME example::mpi)
 
 To avoid collisions with projects that import "example-targets", there are
 two options for adjusting the exported name of the ``mpi`` target.
