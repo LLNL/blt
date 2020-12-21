@@ -33,5 +33,6 @@ Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
     using_flags
     unit_testing
     external_dependencies
+    exporting_blt_targets
     creating_documentation
     recommendations

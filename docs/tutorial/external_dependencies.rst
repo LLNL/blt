@@ -27,14 +27,19 @@ For example, to find and add the external dependency *axom* as a CMake target, y
     include(FindAxom.cmake)
     blt_import_library(NAME      axom
                        TREAT_INCLUDES_AS_SYSTEM ON
-                       DEFINES   HAVE_AXOM=1
-                       INCLUDES  ${AXOM_INCLUDES}
-                       LIBRARIES ${AXOM_LIBRARIES})
+                       DEFINES    HAVE_AXOM=1
+                       INCLUDES   ${AXOM_INCLUDES}
+                       LIBRARIES  ${AXOM_LIBRARIES}
+                       EXPORTABLE ON)
 
 Then *axom* is available to be used in the DEPENDS_ON list in the following
 ``blt_add_executable()`` or ``blt_add_library()`` calls, or in any CMake command that accepts a target.
+
 CMake targets created by ``blt_import_library()`` are ``INTERFACE`` libraries that can be installed
-and exported.
+and exported if the ``EXPORTABLE`` option is enabled.  For example, if the ``calc_pi`` project depends on
+Axom, it could export its ``axom`` target.  To avoid introducing target name conflicts for users of the
+``calc_pi`` project who might also create a target called ``axom``, ``axom`` should be exported as
+``calc_pi::axom``.
 
 This is especially helpful for "converting" external libraries that are not built with CMake
 into CMake-friendly imported targets.
@@ -54,7 +59,13 @@ though it does not support the creation of targets with the same name as a targe
     can also be used to manage visibility.
 
 BLT's ``mpi``, ``cuda``, ``cuda_runtime``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
-You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.
+You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.  If your project exports targets and you would like
+BLT's provided third-party targets to also be exported (for example, if a project that imports your project does not
+use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other EXPORTABLE targets created by
+``blt_import_library()``, these targets should be prefixed with the name of the project.  Either the ``EXPORT_NAME``
+target property or the ``NAMESPACE`` option to CMake's ``install`` command can be used to modify the name of an
+installed target.  See the "Exporting BLT Targets" page for more info.
+
 
 .. admonition:: blt_register_library
    :class: hint

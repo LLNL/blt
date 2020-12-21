@@ -37,6 +37,7 @@ option(ENABLE_ASTYLE       "Enables AStyle support" ON)
 option(ENABLE_CLANGFORMAT  "Enables ClangFormat support" ON)
 option(ENABLE_UNCRUSTIFY   "Enables Uncrustify support" ON)
 option(ENABLE_YAPF         "Enables Yapf support" ON)
+option(ENABLE_CMAKEFORMAT  "Enables CMakeFormat support" ON)
 
 #------------------------------------------------------------------------------
 # Build Options
@@ -104,6 +105,11 @@ mark_as_advanced(BLT_ENABLE_MSVC_STATIC_MD_TO_MT)
 # Generator Options
 #------------------------------------------------------------------------------
 option(ENABLE_FOLDERS "Organize projects using folders (in generators that support this)" OFF)
+
+#------------------------------------------------------------------------------
+# Export/Install Options
+#------------------------------------------------------------------------------
+option(BLT_EXPORT_THIRDPARTY "Configure the third-party targets created by BLT to be exportable" OFF)
 
 #------------------------------------------------------------------------------
 # Advanced configuration options

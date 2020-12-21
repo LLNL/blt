@@ -203,7 +203,9 @@ library and have headers that go along with them (unless it's a Fortran library)
 Header-only libraries are useful when you do not want the library separately compiled or 
 are using C++ templates that require the library's user to instantiate them. These libraries
 have headers but no sources. To create a header-only library (CMake calls them INTERFACE libraries),
-simply list all headers under the HEADER argument and do not specify SOURCES (because there aren't any).
+simply list all headers under the HEADERS argument and do not specify SOURCES (because there aren't any).
+Header-only libraries can have dependencies like compiled libraries - these will be propagated to targets
+that depend on the header-only library.
 
 Object libraries are basically a collection of compiled source files that are not
 archived or linked. They are sometimes useful when you want to solve compilicated linking
@@ -382,7 +384,8 @@ blt_import_library
                         COMPILE_FLAGS            [flag1 [flag2 ..]]
                         LINK_FLAGS               [flag1 [flag2 ..]]
                         DEFINES                  [def1 [def2 ...]]
-                        GLOBAL                   [ON|OFF])
+                        GLOBAL                   [ON|OFF]
+                        EXPORTABLE               [ON|OFF])
 
 Creates a CMake target from build artifacts and system files generated outside of this build system.
 
@@ -418,6 +421,9 @@ DEFINES
 GLOBAL
   Whether to extend the visibility of the created library to global scope
 
+EXPORTABLE
+  Whether the created target should be exportable and ``install``-able
+
 Allows libraries not built with CMake to be imported as native CMake targets
 in order to take full advantage of CMake's transitive dependency resolution.
 
@@ -431,6 +437,18 @@ options to be associated with the library.
 As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
 when building another target or to ``target_link_libraries`` to transitively add in
 all includes, libraries, flags, and definitions associated with the imported library.
+
+The EXPORTABLE option is intended to be used to simplify the process of exporting a project.
+Instead of handwriting package location logic in a CMake package configuration file, the
+EXPORTABLE targets can be exported with the targets defined by the project.
+
+.. note:: Libraries marked EXPORTABLE cannot also be marked GLOBAL.  They also
+  must be added to any export set that includes a target that depends on the 
+  EXPORTABLE library.
+
+.. note:: It is highly recommended that EXPORTABLE imported targets be installed with a
+  project-specific namespace/prefix, either with the NAMESPACE option of CMake's install() command,
+  or the EXPORT_NAME target property.  This mitigates the risk of conflicting target names.
 
 In CMake terms, the imported libraries will be ``INTERFACE`` libraries.
 

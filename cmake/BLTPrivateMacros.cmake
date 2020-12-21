@@ -136,7 +136,8 @@ endfunction()
 ##
 ## This macro attempts to find the given executable via either a previously defined
 ## <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
-## if EXECUTABLES is left empty, then NAME is used.
+## if EXECUTABLES is left empty, then NAME is used.  This macro will only attempt
+## to locate the executable if <UPPERCASE_NAME>_ENABLED is TRUE.
 ##
 ## If successful the following variables will be defined:
 ## <UPPERCASE_NAME>_FOUND
@@ -292,6 +293,15 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
+    # Default to "real" scope, unless it's an interface library
+    set(_private_scope PRIVATE)
+    set(_public_scope  PUBLIC)
+    get_target_property(_target_type ${arg_NAME} TYPE)
+    if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+        set(_private_scope INTERFACE)
+        set(_public_scope  INTERFACE)
+    endif()
+
     # Expand dependency list
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
     foreach( i RANGE 50 )
@@ -313,21 +323,21 @@ macro(blt_setup_target)
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-            target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
+            target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
             if ( _BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
-                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
+                target_include_directories( ${arg_NAME} SYSTEM ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
             else()
-                target_include_directories( ${arg_NAME} PUBLIC
+                target_include_directories( ${arg_NAME} ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
             endif()
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_FORTRAN_MODULES )
-            target_include_directories( ${arg_NAME} PUBLIC
+            target_include_directories( ${arg_NAME} ${_public_scope}
                 ${_BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
@@ -358,15 +368,15 @@ macro(blt_setup_target)
             # actual CMake targets
             if(NOT "${_BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME} PUBLIC
+                target_link_libraries( ${arg_NAME} ${_public_scope}
                     ${_BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
         else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
+            target_link_libraries( ${arg_NAME} ${_public_scope} ${dependency} )
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_DEFINES )
-            target_compile_definitions( ${arg_NAME} PUBLIC
+            target_compile_definitions( ${arg_NAME} ${_public_scope}
                 ${_BLT_${uppercase_dependency}_DEFINES} )
         endif()
 
@@ -581,18 +591,19 @@ endmacro(blt_add_hip_executable)
 ##                                    C_LIST <list name>
 ##                                    Fortran_LIST <list name>
 ##                                    Python_LIST <list name>)
+##                                    CMAKE_LIST <list name>)
 ##
-## Filters source list by file extension into C/C++, Fortran, and
-## Python source lists based on the global BLT variables
-## BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, and BLT_Python_FILE_EXTS,
-## respectively.  Files with no extension or generator expressions
-## that are not object libraries (of the form
+## Filters source list by file extension into C/C++, Fortran, Python, and
+## CMake source lists based on BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS,
+## and BLT_CMAKE_FILE_EXTS (global BLT variables). Files named
+## "CMakeLists.txt" are also filtered here. Files with no extension
+## or generator expressions that are not object libraries (of the form
 ## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
 ## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST Python_LIST)
+    set(singleValueArgs C_LIST Fortran_LIST Python_LIST CMAKE_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -614,27 +625,33 @@ macro(blt_split_source_list_by_language)
             message(FATAL_ERROR "blt_split_source_list_by_language macro does not support generator expressions because CMake does not provide a way to evaluate them. Given generator expression: ${_file}")
         endif()
 
-        get_filename_component(_ext ${_file} EXT)
+        get_filename_component(_ext "${_file}" EXT)
         if("${_ext}" STREQUAL "")
             message(FATAL_ERROR "blt_split_source_list_by_language given source file with no extension: ${_file}")
         endif()
 
-        string(TOLOWER ${_ext} _ext_lower)
+        get_filename_component(_name "${_file}" NAME)  
 
-        if(${_ext_lower} IN_LIST BLT_C_FILE_EXTS)
+        string(TOLOWER "${_ext}" _ext_lower)
+
+        if("${_ext_lower}" IN_LIST BLT_C_FILE_EXTS)
             if (DEFINED arg_C_LIST)
-                list(APPEND ${arg_C_LIST} ${_file})
+                list(APPEND ${arg_C_LIST} "${_file}")
             endif()
-        elseif(${_ext_lower} IN_LIST BLT_Fortran_FILE_EXTS)
+        elseif("${_ext_lower}" IN_LIST BLT_Fortran_FILE_EXTS)
             if (DEFINED arg_Fortran_LIST)
-                list(APPEND ${arg_Fortran_LIST} ${_file})
+                list(APPEND ${arg_Fortran_LIST} "${_file}")
             endif()
-        elseif(${_ext_lower} IN_LIST BLT_Python_FILE_EXTS)
+        elseif("${_ext_lower}" IN_LIST BLT_Python_FILE_EXTS)
             if (DEFINED arg_Python_LIST)
-                list(APPEND ${arg_Python_LIST} ${_file})
+                list(APPEND ${arg_Python_LIST} "${_file}")
+            endif()
+        elseif("${_ext_lower}" IN_LIST BLT_CMAKE_FILE_EXTS OR "${_name}" STREQUAL "CMakeLists.txt")
+            if (DEFINED arg_CMAKE_LIST)
+                list(APPEND ${arg_CMAKE_LIST} "${_file}")
             endif()
         else()
-            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, or BLT_Python_FILE_EXTS).\n Unknown file: ${_file}")
+            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, BLT_Python_FILE_EXTS, or BLT_CMAKE_FILE_EXTS).\n Unknown file: ${_file}")
         endif()
     endforeach()
 
