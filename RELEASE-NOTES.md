@@ -65,8 +65,6 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Header-only libraries now can have dependencies via DEPENDS_ON in ``blt_add_library``
 - Added a workaround for include directories of imported targets on PGI. CMake was 
   erroneously marking them as SYSTEM but this is not supported by PGI.
-- Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
-  is not changed back to Fortran.
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
