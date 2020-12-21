@@ -797,7 +797,7 @@ macro(blt_add_executable)
     get_source_file_property(_lang ${_first} HIP_SOURCE_PROPERTY_FORMAT)
     if(_lang STREQUAL Fortran)
         #Don't reset the linker if the NVCC or HIP linker is required
-        if (CUDA_LINK_WITH_NVCC)
+        if (NOT CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         endif()
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
