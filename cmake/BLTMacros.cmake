@@ -794,10 +794,10 @@ macro(blt_add_executable)
     # CMake wants to load with C++ if any of the libraries are C++.
     # Force to load with Fortran if the first file is Fortran.
     list(GET arg_SOURCES 0 _first)
-    get_source_file_property(_lang ${_first} LANGUAGE)
+    get_source_file_property(_lang ${_first} HIP_SOURCE_PROPERTY_FORMAT)
     if(_lang STREQUAL Fortran)
-        #Check to see if HIP is enabled before resetting 
-        if (NOT (CUDA_LINK_WITH_NVCC OR ENABLE_HIP))
+        #Don't reset the linker if the NVCC or HIP linker is required
+        if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         endif()
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
