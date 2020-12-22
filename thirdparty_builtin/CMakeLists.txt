@@ -123,7 +123,7 @@ if(ENABLE_TESTS)
             add_subdirectory(fruit-3.4.1
                              ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.1)
 	    list(APPEND _blt_tpl_targets fruit)
-	    if(ENABLE_MPI) # TODO(oxberry1@llnl.gov): Replace with ENABLE_FRUIT_MPI
+	    if(ENABLE_FRUIT_MPI)
 	        list(APPEND _blt_tpl_targets fruit_mpi)
 	    endif()
         endif()
