@@ -22,7 +22,7 @@ if(ENABLE_FRUIT_MPI)
         SOURCES fruit_mpi.f90
     )
     blt_register_library( NAME fruit_mpi
-                          DEPENDS_ON fruit MPI::Fortran
+                          DEPENDS_ON fruit MPI::MPI_Fortran
                           FORTRAN_MODULES ${CMAKE_Fortran_MODULE_DIRECTORY}
                           INCLUDES ${CMAKE_Fortran_MODULE_DIRECTORY}
                           LIBRARIES fruit_mpi
