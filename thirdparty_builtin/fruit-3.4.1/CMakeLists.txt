@@ -16,7 +16,7 @@ blt_register_library( NAME fruit
                       LIBRARIES fruit 
 )
 
-if(ENABLE_MPI) # TODO(oxberry1@llnl.gov): Replace with ENABLE_FRUIT_MPI
+if(ENABLE_FRUIT_MPI) 
     blt_add_library(
         NAME fruit_mpi
         SOURCES fruit_mpi.f90
