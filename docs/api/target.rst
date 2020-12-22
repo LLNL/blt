@@ -424,10 +424,6 @@ GLOBAL
 EXPORTABLE
   Whether the created target should be exportable and ``install``-able
 
-.. note:: Libraries marked EXPORTABLE cannot also be marked GLOBAL.  They also
-  must be added to any export set that includes a target that depends on the 
-  EXPORTABLE library.
-
 Allows libraries not built with CMake to be imported as native CMake targets
 in order to take full advantage of CMake's transitive dependency resolution.
 
@@ -441,6 +437,18 @@ options to be associated with the library.
 As with BLT-registered libraries, it can be added to the DEPENDS_ON parameter
 when building another target or to ``target_link_libraries`` to transitively add in
 all includes, libraries, flags, and definitions associated with the imported library.
+
+The EXPORTABLE option is intended to be used to simplify the process of exporting a project.
+Instead of handwriting package location logic in a CMake package configuration file, the
+EXPORTABLE targets can be exported with the targets defined by the project.
+
+.. note:: Libraries marked EXPORTABLE cannot also be marked GLOBAL.  They also
+  must be added to any export set that includes a target that depends on the 
+  EXPORTABLE library.
+
+.. note:: It is highly recommended that EXPORTABLE imported targets be installed with a
+  project-specific namespace/prefix, either with the NAMESPACE option of CMake's install() command,
+  or the EXPORT_NAME target property.  This mitigates the risk of conflicting target names.
 
 In CMake terms, the imported libraries will be ``INTERFACE`` libraries.
 
