@@ -319,7 +319,7 @@ macro(blt_setup_target)
     endforeach()
 
     # Add dependency's information
-    foreach(     ${_expanded_DEPENDS_ON} )
+    foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
@@ -391,10 +391,13 @@ macro(blt_setup_target)
         endif()
         # Propagate the overridden linker language, if applicable
         if(TARGET ${dependency})
-            get_target_property(_blt_link_lang ${dependency} BLT_LINKER_LANGUAGE)
-            # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
-            if(_blt_link_lang)
-                set_target_properties(${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE ${_blt_link_lang})
+            get_target_property(_dep_type ${dependency} TYPE)
+            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                get_target_property(_blt_link_lang ${dependency} BLT_LINKER_LANGUAGE)
+                # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
+                if(_blt_link_lang)
+                    set_target_properties(${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE ${_blt_link_lang})
+                endif()
             endif()
         endif()
     endforeach()
