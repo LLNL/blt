@@ -319,7 +319,7 @@ macro(blt_setup_target)
     endforeach()
 
     # Add dependency's information
-    foreach( dependency ${_expanded_DEPENDS_ON} )
+    foreach(     ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
         if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
@@ -389,6 +389,14 @@ macro(blt_setup_target)
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
+        # Propagate the overridden linker language, if applicable
+        if(TARGET ${dependency})
+            get_target_property(_blt_link_lang ${dependency} BLT_LINKER_LANGUAGE)
+            # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
+            if(_blt_link_lang)
+                set_target_properties(${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE ${_blt_link_lang})
+            endif()
+        endif()
     endforeach()
 
 endmacro(blt_setup_target)
@@ -434,6 +442,9 @@ macro(blt_setup_cuda_target)
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
         if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+            # This will be propagated up to the final executable target, which will
+            # need the NVCC linker
+            set_target_properties( ${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE CUDA)
         endif()
     endif()
 
@@ -522,6 +533,11 @@ macro(blt_add_hip_library)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
+        # Link to the hip_runtime target so it gets pulled in by targets
+        # depending on this target
+        target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
+        # An executable depending on this library needs to use the HIP linker
+        set_target_properties(${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE HIP)
     else()
         add_library( ${arg_NAME} ${arg_LIBRARY_TYPE} ${arg_SOURCES} ${arg_HEADERS} )
     endif()
