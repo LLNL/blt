@@ -67,8 +67,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   erroneously marking them as SYSTEM but this is not supported by PGI.
 - Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
   is not changed back to Fortran.
-- Executables that link to libraries that depend on `hip`/`cuda`(`_runtime`) will automatically
-  be linked with the HIP or CUDA (NVCC) linker
+- Executables that link to libraries that depend on `hip`/`hip_runtime`/`cuda`/`cuda_runtime`
+  will automatically be linked with the HIP or CUDA (NVCC) linker
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
