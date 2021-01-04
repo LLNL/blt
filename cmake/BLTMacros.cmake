@@ -804,9 +804,9 @@ macro(blt_add_executable)
                      DEPENDS_ON ${arg_DEPENDS_ON} 
                      OBJECT     FALSE)
 
-    # Override the linker language with BLT_LINKER_LANGUAGE_OVERRIDE, if applicable
+    # Override the linker language with INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE, if applicable
     # Will have just been populated by blt_setup_target
-    get_target_property(_blt_link_lang ${arg_NAME} BLT_LINKER_LANGUAGE_OVERRIDE)
+    get_target_property(_blt_link_lang ${arg_NAME} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
     if(_blt_link_lang)
         # This is the final link (b/c executable), so override the actual LINKER_LANGUAGE
         # BLT currently uses this to override for HIP and CUDA linkers

@@ -394,10 +394,10 @@ macro(blt_setup_target)
             # If it's an interface library CMake doesn't even allow us to query the property
             get_target_property(_dep_type ${dependency} TYPE)
             if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
-                get_target_property(_blt_link_lang ${dependency} BLT_LINKER_LANGUAGE_OVERRIDE)
+                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
                 # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
                 if(_blt_link_lang)
-                    set_target_properties(${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE_OVERRIDE ${_blt_link_lang})
+                    set_target_properties(${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE ${_blt_link_lang})
                 endif()
             endif()
         endif()
@@ -448,7 +448,7 @@ macro(blt_setup_cuda_target)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
             # This will be propagated up to executable targets that depend on this
             # library, which will need the HIP linker
-            set_target_properties( ${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE_OVERRIDE CUDA)
+            set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE CUDA)
         endif()
     endif()
 
@@ -548,7 +548,7 @@ macro(blt_add_hip_library)
     if (${_depends_on_hip_runtime} OR ${_depends_on_hip})
         # This will be propagated up to executable targets that depend on this
         # library, which will need the HIP linker
-        set_target_properties( ${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE_OVERRIDE HIP)
+        set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE HIP)
     endif()
 
 endmacro(blt_add_hip_library)
