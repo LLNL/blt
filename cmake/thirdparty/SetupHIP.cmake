@@ -26,8 +26,6 @@ else()
         set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" CACHE STRING "")
 endif()
 set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-D${HIP_RUNTIME_DEFINE};-Wno-unused-parameter")
-# set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
-# set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
 
 # depend on 'hip', if you need to use hip
 # headers, link to hip libs, and need to run your source
@@ -43,6 +41,5 @@ blt_import_library(NAME          hip_runtime
                    INCLUDES      ${HIP_RUNTIME_INCLUDE_DIRS}
                    DEFINES       ${HIP_RUNTIME_DEFINES}
                    COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
-                   LIBRARIES     ${HIP_RUNTIME_LIBRARIES}
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

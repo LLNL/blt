@@ -446,8 +446,8 @@ macro(blt_setup_cuda_target)
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
         if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
-            # This will be propagated up to the final executable target, which will
-            # need the NVCC linker
+            # This will be propagated up to executable targets that depend on this
+            # library, which will need the HIP linker
             set_target_properties( ${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE_OVERRIDE CUDA)
         endif()
     endif()
@@ -522,6 +522,7 @@ macro(blt_add_hip_library)
         set(_depends_on_hip_runtime TRUE)
     endif()
 
+
     if (${_depends_on_hip})
         # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
@@ -540,10 +541,14 @@ macro(blt_add_hip_library)
         # Link to the hip_runtime target so it gets pulled in by targets
         # depending on this target
         target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
-        # An executable depending on this library needs to use the HIP linker
-        set_target_properties(${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE_OVERRIDE HIP)
     else()
         add_library( ${arg_NAME} ${arg_LIBRARY_TYPE} ${arg_SOURCES} ${arg_HEADERS} )
+    endif()
+
+    if (${_depends_on_hip_runtime} OR ${_depends_on_hip})
+        # This will be propagated up to executable targets that depend on this
+        # library, which will need the HIP linker
+        set_target_properties( ${arg_NAME} PROPERTIES BLT_LINKER_LANGUAGE_OVERRIDE HIP)
     endif()
 
 endmacro(blt_add_hip_library)
