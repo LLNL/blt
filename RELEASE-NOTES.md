@@ -68,7 +68,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
   is not changed back to Fortran.
 - If an executable needs to be linked with the HIP or CUDA (NVCC) linker, this information
-  is internally propagated up the dependency graph and used to override the LINK_LANGUAGE
+  is internally propagated up the dependency graph and used to override the LINKER_LANGUAGE
+  target property for executable targets
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
