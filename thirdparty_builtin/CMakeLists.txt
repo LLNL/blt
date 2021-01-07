@@ -119,10 +119,14 @@ if(ENABLE_TESTS)
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
         message(STATUS "Fruit Support is ${ENABLE_FRUIT}")
+        message(STATUS "Fruit MPI Support is ${ENABLE_FRUIT_MPI}")
         if(ENABLE_FRUIT)
             add_subdirectory(fruit-3.4.1
                              ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.1)
-            list(APPEND _blt_tpl_targets fruit)
+	    list(APPEND _blt_tpl_targets fruit)
+	    if(ENABLE_MPI AND ENABLE_FRUIT_MPI)
+	        list(APPEND _blt_tpl_targets fruit_mpi)
+	    endif()
         endif()
     endif()
 

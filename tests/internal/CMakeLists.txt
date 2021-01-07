@@ -290,6 +290,7 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_mpi_smoke.cpp
     ../smoke/blt_openmp_smoke.cpp
     ../smoke/fortran_driver.cpp
+    ../smoke/fortran_mpi_driver.cpp
   )
 
   set(internal_tests_srcs
