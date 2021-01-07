@@ -389,15 +389,36 @@ macro(blt_setup_target)
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
-        # Propagate the overridden linker language, if applicable
+
         if(TARGET ${dependency})
             # If it's an interface library CMake doesn't even allow us to query the property
             get_target_property(_dep_type ${dependency} TYPE)
             if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                # Propagate the overridden linker language, if applicable
                 get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
                 # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
                 if(_blt_link_lang)
                     set_target_properties(${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE ${_blt_link_lang})
+                endif()
+            endif()
+
+            # Check if a separate device link is needed
+            if(ENABLE_CUDA AND "${_dep_type}" STREQUAL "OBJECT_LIBRARY")
+                get_target_property(_device_link ${dependency} CUDA_RESOLVE_DEVICE_SYMBOLS)
+                if((_device_link OR BLT_CUDA_RESOLVE_DEVICE_SYMBOLS) AND CUDA_LINK_WITH_NVCC)
+                    set(_dlink_obj "${dependency}_device_link${CMAKE_CUDA_OUTPUT_EXTENSION}")
+                    # Make sure a target wasn't already added
+                    get_source_file_property(_generated ${_dlink_obj} GENERATED)
+                    if(NOT _generated)
+                        # FIXME: Standardize a cuda_arch flag??
+                        add_custom_command(
+                            OUTPUT ${_dlink_obj}
+                            COMMAND ${CMAKE_CUDA_COMPILER} --device-link $<TARGET_OBJECTS:${dependency}> -o ${_dlink_obj}
+                            DEPENDS $<TARGET_OBJECTS:${dependency}>
+                            COMMAND_EXPAND_LISTS
+                        )
+                    endif()
+                    target_sources(${arg_NAME} PRIVATE ${_dlink_obj})
                 endif()
             endif()
         endif()
