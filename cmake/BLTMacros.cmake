@@ -796,17 +796,22 @@ macro(blt_add_executable)
     list(GET arg_SOURCES 0 _first)
     get_source_file_property(_lang ${_first} LANGUAGE)
     if(_lang STREQUAL Fortran)
-        get_source_file_property(_is_hip ${_first} HIP_SOURCE_PROPERTY_FORMAT)
-        #Don't reset the linker if the NVCC or HIP linker is required
-        if (NOT (CUDA_LINK_WITH_NVCC OR ${_is_hip}))
-            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
-        endif()
+        set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
        
     blt_setup_target(NAME       ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} 
                      OBJECT     FALSE)
+
+    # Override the linker language with INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE, if applicable
+    # Will have just been populated by blt_setup_target
+    get_target_property(_blt_link_lang ${arg_NAME} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+    if(_blt_link_lang)
+        # This is the final link (b/c executable), so override the actual LINKER_LANGUAGE
+        # BLT currently uses this to override for HIP and CUDA linkers
+        set_target_properties(${arg_NAME} PROPERTIES LINKER_LANGUAGE ${_blt_link_lang})
+    endif()
 
     # fix the openmp flags for fortran if needed
     # NOTE: this needs to be called after blt_setup_target()

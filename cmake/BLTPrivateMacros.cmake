@@ -389,6 +389,18 @@ macro(blt_setup_target)
             blt_add_target_link_flags(TO ${arg_NAME}
                                       FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
+        # Propagate the overridden linker language, if applicable
+        if(TARGET ${dependency})
+            # If it's an interface library CMake doesn't even allow us to query the property
+            get_target_property(_dep_type ${dependency} TYPE)
+            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+                # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
+                if(_blt_link_lang)
+                    set_target_properties(${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE ${_blt_link_lang})
+                endif()
+            endif()
+        endif()
     endforeach()
 
 endmacro(blt_setup_target)
@@ -434,6 +446,9 @@ macro(blt_setup_cuda_target)
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
         if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+            # This will be propagated up to executable targets that depend on this
+            # library, which will need the HIP linker
+            set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE CUDA)
         endif()
     endif()
 
@@ -507,6 +522,7 @@ macro(blt_add_hip_library)
         set(_depends_on_hip_runtime TRUE)
     endif()
 
+
     if (${_depends_on_hip})
         # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
@@ -522,8 +538,17 @@ macro(blt_add_hip_library)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
+        # Link to the hip_runtime target so it gets pulled in by targets
+        # depending on this target
+        target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
     else()
         add_library( ${arg_NAME} ${arg_LIBRARY_TYPE} ${arg_SOURCES} ${arg_HEADERS} )
+    endif()
+
+    if (${_depends_on_hip_runtime} OR ${_depends_on_hip})
+        # This will be propagated up to executable targets that depend on this
+        # library, which will need the HIP linker
+        set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE HIP)
     endif()
 
 endmacro(blt_add_hip_library)
