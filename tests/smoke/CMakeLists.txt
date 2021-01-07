@@ -72,7 +72,7 @@ if (ENABLE_FORTRAN AND ENABLE_FRUIT AND ENABLE_MPI AND ENABLE_FRUIT_MPI)
     blt_add_executable(NAME blt_fruit_mpi_smoke
                        SOURCES blt_fruit_mpi_smoke.f90
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON fruit fruit_mpi MPI::MPI_Fortran
+                       DEPENDS_ON fruit_mpi
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_fruit_mpi_smoke
