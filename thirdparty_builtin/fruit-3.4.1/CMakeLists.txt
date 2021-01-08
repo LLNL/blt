@@ -20,6 +20,7 @@ if(ENABLE_FRUIT_MPI)
     blt_add_library(
         NAME fruit_mpi
         SOURCES fruit_mpi.f90
+        DEPENDS_ON fruit MPI::MPI_Fortran
     )
     blt_register_library( NAME fruit_mpi
                           DEPENDS_ON fruit MPI::MPI_Fortran
