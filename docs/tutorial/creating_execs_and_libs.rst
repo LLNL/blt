@@ -135,3 +135,9 @@ an object library:
 
 To enable this device linking step for all object libraries in your project, you
 can set the ``BLT_CUDA_RESOLVE_DEVICE_SYMBOLS`` option to ``ON``.
+
+.. note::
+  These options only apply when an object library in your project is linked later
+  into a shared or static library, in which case a separate object file containing
+  device symbols is created and added to the "final" library.  Object libraries
+  provided directly to users of your project will still require a device link step.
