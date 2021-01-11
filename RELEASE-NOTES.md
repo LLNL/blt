@@ -30,6 +30,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added support for formatting CMake code using cmake-format.
 - Added an EXPORTABLE option to ``blt_import_library`` that allows imported libraries to be
   added to an export set and installed.
+- CUDA device links for object libraries can be enabled with the ``CUDA_RESOLVE_DEVICE_SYMBOLS``
+  target property or the global ``BLT_CUDA_RESOLVE_DEVICE_SYMBOLS`` option.
 
 ### Changed
 - MPI Support when using CMake 3.13 and newer: MPI linker flags are now passed
