@@ -141,3 +141,6 @@ can set the ``BLT_CUDA_RESOLVE_DEVICE_SYMBOLS`` option to ``ON``.
   into a shared or static library, in which case a separate object file containing
   device symbols is created and added to the "final" library.  Object libraries
   provided directly to users of your project will still require a device link step.
+
+The ``CUDA_RESOLVE_DEVICE_SYMBOLS`` property is also supported for static and shared libraries.
+By default, it is enabled for shared libraries but disabled for static libraries.
