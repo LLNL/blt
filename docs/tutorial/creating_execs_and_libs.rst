@@ -122,3 +122,16 @@ the linker removing unused symbols in the larger library.
   Due to record keeping on BLT's part to make object libraries as easy to use
   as possible, you need to define object libraries before you use them
   if you need their inheritable information to be correct.
+
+If you are using separable CUDA compilation (relocatable device code) in your
+object library, users of that library will be required to use NVCC to link their
+executables - in general, only NVCC can perform the "device link" step.  To remove
+this restriction, you can enable the ``CUDA_RESOLVE_DEVICE_SYMBOLS`` property on
+an object library:
+
+.. code-block:: cmake
+
+   set_target_properties(myObjectLibrary PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+
+To enable this device linking step for all object libraries in your project, you
+can set the ``BLT_CUDA_RESOLVE_DEVICE_SYMBOLS`` option to ``ON``.

@@ -57,6 +57,9 @@ option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
 mark_as_advanced(ENABLE_CLANG_CUDA)
 set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
 mark_as_advanced(BLT_CLANG_CUDA_ARCH)
+cmake_dependent_option(BLT_CUDA_RESOLVE_DEVICE_SYMBOLS
+                       "Add a manual CUDA device link step for all object libraries" OFF
+                       "ENABLE_CUDA AND CUDA_LINK_WITH_NVCC" OFF)
 option(ENABLE_HIP         "Enable HIP support" OFF)
 option(ENABLE_HCC         "Enable HCC support" OFF)
 set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")

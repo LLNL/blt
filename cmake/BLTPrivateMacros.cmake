@@ -411,9 +411,10 @@ macro(blt_setup_target)
                     get_source_file_property(_generated ${_dlink_obj} GENERATED)
                     if(NOT _generated)
                         # FIXME: Standardize a cuda_arch flag??
+                        set(_cuda_flags ${CMAKE_CUDA_FLAGS})
                         add_custom_command(
                             OUTPUT ${_dlink_obj}
-                            COMMAND ${CMAKE_CUDA_COMPILER} --device-link $<TARGET_OBJECTS:${dependency}> -o ${_dlink_obj}
+                            COMMAND ${CMAKE_CUDA_COMPILER} --device-link ${_cuda_flags} $<TARGET_OBJECTS:${dependency}> -o ${_dlink_obj}
                             DEPENDS $<TARGET_OBJECTS:${dependency}>
                             COMMAND_EXPAND_LISTS
                         )
