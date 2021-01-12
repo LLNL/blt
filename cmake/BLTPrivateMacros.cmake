@@ -272,6 +272,44 @@ macro(blt_inherit_target_info)
 
 endmacro(blt_inherit_target_info)
 
+##------------------------------------------------------------------------------
+## blt_expand_depends( DEPENDS_ON [dep1 ...]
+##                     RESULT [variable] )
+##------------------------------------------------------------------------------
+macro(blt_expand_depends)
+    set(options)
+    set(singleValueArgs RESULT)
+    set(multiValueArgs DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                        "${multiValueArgs}" ${ARGN} )
+
+    # Expand dependency list
+    set(_already_proccessed_depends)
+    set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
+    foreach( i RANGE 50 )
+        foreach( dependency ${_expanded_DEPENDS_ON} )
+            # Avoid "visiting" the same dependency multiple times
+            if(NOT ${dependency} IN_LIST _already_proccessed_depends)
+                list(APPEND _already_proccessed_depends ${dependency})
+                string(TOUPPER ${dependency} uppercase_dependency )
+
+                if ( DEFINED _BLT_${uppercase_dependency}_DEPENDS_ON )
+                    foreach(new_dependency ${_BLT_${uppercase_dependency}_DEPENDS_ON})
+                        if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
+                            list(APPEND _expanded_DEPENDS_ON ${new_dependency})
+                        endif()
+                    endforeach()
+                endif()
+            endif()
+        endforeach()
+    endforeach()
+
+    # Write the output to the requested variable
+    set(${arg_RESULT} ${_expanded_DEPENDS_ON})
+endmacro()
+
 
 ##------------------------------------------------------------------------------
 ## blt_setup_target( NAME       [name]
@@ -302,21 +340,11 @@ macro(blt_setup_target)
         set(_public_scope  INTERFACE)
     endif()
 
-    # Expand dependency list
-    set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
-    foreach( i RANGE 50 )
-        foreach( dependency ${_expanded_DEPENDS_ON} )
-            string(TOUPPER ${dependency} uppercase_dependency )
-
-            if ( DEFINED _BLT_${uppercase_dependency}_DEPENDS_ON )
-                foreach(new_dependency ${_BLT_${uppercase_dependency}_DEPENDS_ON})
-                    if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
-                        list(APPEND _expanded_DEPENDS_ON ${new_dependency})
-                    endif()
-                endforeach()
-            endif()
-        endforeach()
-    endforeach()
+    # Expand dependency list - avoid "recalculating" if the information already exists
+    get_target_property(_expanded_DEPENDS_ON ${arg_NAME} BLT_EXPANDED_DEPENDENCIES)
+    if(NOT _expanded_DEPENDS_ON)
+        blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
+    endif()
 
     # Add dependency's information
     foreach( dependency ${_expanded_DEPENDS_ON} )
@@ -521,6 +549,21 @@ macro(blt_add_hip_library)
     if(${_hip_runtime_index} GREATER -1)
         set(_depends_on_hip_runtime TRUE)
     endif()
+
+    blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
+    foreach( dependency ${_expanded_DEPENDS_ON} )
+        if(TARGET ${dependency})
+            get_target_property(_dep_type ${dependency} TYPE)
+            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                # Propagate the overridden linker language, if applicable
+                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+                # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
+                if(_blt_link_lang STREQUAL "HIP")
+                    set(_depends_on_hip_runtime TRUE)
+                endif()
+            endif()
+        endif()
+    endforeach()
 
 
     if (${_depends_on_hip})
