@@ -286,25 +286,27 @@ macro(blt_expand_depends)
                         "${multiValueArgs}" ${ARGN} )
 
     # Expand dependency list
-    set(_already_proccessed_depends)
+    set(_deps_to_process ${arg_DEPENDS_ON})
     set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
-    foreach( i RANGE 50 )
-        foreach( dependency ${_expanded_DEPENDS_ON} )
-            # Avoid "visiting" the same dependency multiple times
-            if(NOT ${dependency} IN_LIST _already_proccessed_depends)
-                list(APPEND _already_proccessed_depends ${dependency})
-                string(TOUPPER ${dependency} uppercase_dependency )
-
-                if ( DEFINED _BLT_${uppercase_dependency}_DEPENDS_ON )
-                    foreach(new_dependency ${_BLT_${uppercase_dependency}_DEPENDS_ON})
-                        if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
-                            list(APPEND _expanded_DEPENDS_ON ${new_dependency})
-                        endif()
-                    endforeach()
-                endif()
+    while(_deps_to_process)
+        # Copy the current set of dependencies to process
+        set(_current_deps_to_process ${_deps_to_process})
+        # and add them to the full expanded list
+        list(APPEND _expanded_DEPENDS_ON ${_deps_to_process})
+        # Then clear it so we can check if new ones were added
+        set(_deps_to_process)
+        foreach( dependency ${_current_deps_to_process} )
+            string(TOUPPER ${dependency} uppercase_dependency )
+            if ( DEFINED _BLT_${uppercase_dependency}_DEPENDS_ON )
+                foreach(new_dependency ${_BLT_${uppercase_dependency}_DEPENDS_ON})
+                    # Don't add duplicates
+                    if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
+                        list(APPEND _deps_to_process ${new_dependency})
+                    endif()
+                endforeach()
             endif()
         endforeach()
-    endforeach()
+    endwhile()
 
     # Write the output to the requested variable
     set(${arg_RESULT} ${_expanded_DEPENDS_ON})
