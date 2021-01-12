@@ -341,7 +341,10 @@ macro(blt_setup_target)
     endif()
 
     # Expand dependency list - avoid "recalculating" if the information already exists
-    get_target_property(_expanded_DEPENDS_ON ${arg_NAME} BLT_EXPANDED_DEPENDENCIES)
+    set(_expanded_DEPENDS_ON)
+    if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+        get_target_property(_expanded_DEPENDS_ON ${arg_NAME} BLT_EXPANDED_DEPENDENCIES)
+    endif()
     if(NOT _expanded_DEPENDS_ON)
         blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
     endif()
@@ -550,22 +553,6 @@ macro(blt_add_hip_library)
         set(_depends_on_hip_runtime TRUE)
     endif()
 
-    blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
-    foreach( dependency ${_expanded_DEPENDS_ON} )
-        if(TARGET ${dependency})
-            get_target_property(_dep_type ${dependency} TYPE)
-            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
-                # Propagate the overridden linker language, if applicable
-                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
-                # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
-                if(_blt_link_lang STREQUAL "HIP")
-                    set(_depends_on_hip_runtime TRUE)
-                endif()
-            endif()
-        endif()
-    endforeach()
-
-
     if (${_depends_on_hip})
         # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
@@ -633,6 +620,20 @@ macro(blt_add_hip_executable)
         set(_depends_on_hip_runtime TRUE)
     endif()
 
+    blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
+    foreach( dependency ${_expanded_DEPENDS_ON} )
+        if(TARGET ${dependency})
+            get_target_property(_dep_type ${dependency} TYPE)
+            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                # Propagate the overridden linker language, if applicable
+                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+                if(_blt_link_lang STREQUAL "HIP")
+                    set(_depends_on_hip_runtime TRUE)
+                endif()
+            endif()
+        endif()
+    endforeach()
+
     if (${_depends_on_hip} OR ${_depends_on_hip_runtime})
         # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
@@ -651,6 +652,10 @@ macro(blt_add_hip_executable)
     else()
         add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
     endif()
+
+    # Save the expanded dependencies to avoid recalculating later
+    set_target_properties(${arg_NAME} PROPERTIES
+                          BLT_EXPANDED_DEPENDENCIES "${_expanded_DEPENDS_ON}")
 
 endmacro(blt_add_hip_executable)
 
