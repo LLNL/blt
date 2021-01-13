@@ -287,7 +287,7 @@ macro(blt_expand_depends)
 
     # Expand dependency list
     set(_deps_to_process ${arg_DEPENDS_ON})
-    set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
+    set(_expanded_DEPENDS_ON)
     while(_deps_to_process)
         # Copy the current set of dependencies to process
         set(_current_deps_to_process ${_deps_to_process})
