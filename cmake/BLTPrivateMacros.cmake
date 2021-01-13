@@ -438,7 +438,7 @@ macro(blt_setup_target)
             # Check if a separate device link is needed
             if(ENABLE_CUDA AND "${_dep_type}" STREQUAL "OBJECT_LIBRARY")
                 get_target_property(_device_link ${dependency} CUDA_RESOLVE_DEVICE_SYMBOLS)
-                if((_device_link OR BLT_CUDA_RESOLVE_DEVICE_SYMBOLS) AND CUDA_LINK_WITH_NVCC)
+                if(_device_link AND CUDA_LINK_WITH_NVCC)
                     set(_dlink_obj "${dependency}_device_link${CMAKE_CUDA_OUTPUT_EXTENSION}")
                     # Make sure a target wasn't already added
                     get_source_file_property(_generated ${_dlink_obj} GENERATED)
@@ -535,6 +535,12 @@ macro(blt_setup_cuda_target)
                 set_target_properties( ${arg_NAME} PROPERTIES
                                        CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
             endif()
+        endif()
+
+        # Replicate the behavior of CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS
+        if(${CMAKE_VERSION} VERSION_LESS "3.16.0" AND CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS)
+            set_target_properties( ${arg_NAME} PROPERTIES
+                                   CUDA_RESOLVE_DEVICE_SYMBOLS ON)
         endif()
     endif()
 endmacro(blt_setup_cuda_target)

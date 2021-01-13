@@ -133,8 +133,12 @@ an object library:
 
    set_target_properties(myObjectLibrary PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 
-To enable this device linking step for all object libraries in your project, you
-can set the ``BLT_CUDA_RESOLVE_DEVICE_SYMBOLS`` option to ``ON``.
+To enable this device linking step for all libraries in your project (including object libraries), you
+can set the ``CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS`` option to ``ON``.  This defaults the
+``CUDA_RESOLVE_DEVICE_SYMBOLS`` target property to ``ON`` for all targets created by BLT.
+
+You can read more about this property in the
+`CMake documentation <https://cmake.org/cmake/help/latest/prop_tgt/CUDA_RESOLVE_DEVICE_SYMBOLS.html>`_.
 
 .. note::
   These options only apply when an object library in your project is linked later
