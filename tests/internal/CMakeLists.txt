@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level COPYRIGHT file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -290,6 +290,7 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_mpi_smoke.cpp
     ../smoke/blt_openmp_smoke.cpp
     ../smoke/fortran_driver.cpp
+    ../smoke/fortran_mpi_driver.cpp
   )
 
   set(internal_tests_srcs
