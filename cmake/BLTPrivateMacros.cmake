@@ -518,6 +518,38 @@ macro(blt_setup_cuda_target)
 endmacro(blt_setup_cuda_target)
 
 ##------------------------------------------------------------------------------
+## blt_cleanup_hip_globals(FROM_TARGET <target>)
+##
+## Needed as the SetupHIP macros (specifically, HIP_PREPARE_TARGET_COMMANDS)
+## "pollutes" the global HIP_HIPCC_FLAGS with target-specific options.  This
+## macro removes the target-specific generator expressions from the global flags
+## which have already been copied to source-file-specific instances of the
+## run_hipcc script.  Other global flags in HIP_HIPCC_FLAGS, e.g., those set by
+## the user, are left untouched.
+##------------------------------------------------------------------------------
+macro(blt_cleanup_hip_globals)
+    set(options)
+    set(singleValueArgs FROM_TARGET)
+    set(multiValueArgs)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_FROM_TARGET )
+        message( FATAL_ERROR "Must provide a FROM_TARGET argument to the 'blt_cleanup_hip_globals' macro")
+    endif()
+
+    # Remove the compile definitions generator expression
+    # This must be copied verbatim from HIP_PREPARE_TARGET_COMMANDS,
+    # which would have just added it to HIP_HIPCC_FLAGS
+    set(_defines_genexpr "$<TARGET_PROPERTY:${arg_FROM_TARGET},COMPILE_DEFINITIONS>")
+    set(_defines_flags_genexpr "$<$<BOOL:${_defines_genexpr}>:-D$<JOIN:${_defines_genexpr}, -D>>")
+    list(REMOVE_ITEM HIP_HIPCC_FLAGS ${_defines_flags_genexpr})
+endmacro(blt_cleanup_hip_globals)
+
+##------------------------------------------------------------------------------
 ## blt_add_hip_library(NAME         <libname>
 ##                     SOURCES      [source1 [source2 ...]]
 ##                     HEADERS      [header1 [header2 ...]]
@@ -570,6 +602,7 @@ macro(blt_add_hip_library)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
+        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
         # Link to the hip_runtime target so it gets pulled in by targets
         # depending on this target
         target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
@@ -651,6 +684,7 @@ macro(blt_add_hip_executable)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
+        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
     else()
         add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
     endif()
