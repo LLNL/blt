@@ -70,6 +70,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   is not changed back to Fortran.
 - Executables that link to libraries that depend on `hip`/`hip_runtime`/`cuda`/`cuda_runtime`
   will automatically be linked with the HIP or CUDA (NVCC) linker
+- Patched an issue with the FindHIP macros that added the inclusive scan of specified
+  DEFINEs to compile commands
 
 ## [Version 0.3.6] - Release date 2020-07-27
 
