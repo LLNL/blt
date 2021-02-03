@@ -10,14 +10,12 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ## [Unreleased] - Release date yyyy-mm-dd
 
 ## Added
-- Added variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE to allow removing
-  implicit link directories added to CUDA executables by CMake. See the following example host-config:
-  host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
+- Added variable ``BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE`` for filtering
+  link directories implicitly added by CMake. See the following example host-config:
+  ``host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake``
 - Added support for clang-tidy static analysis check
 - Added ability to change the output name of an executable via the OUTPUT_NAME
   parameter of blt_add_executable
-- Added variable BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE that will be used to filter
-  implicit link directories for all languages
 - Added user option for enforcing specific versions of autoformatters - the new options are
   ``BLT_REQUIRED_ASTYLE_VERSION``, ``BLT_REQUIRED_CLANGFORMAT_VERSION``, and ``BLT_REQUIRED_UNCRUSTIFY_VERSION``
 - Added ``HEADERS`` to ``blt_add_executable``.  This is important for build system dependency tracking
@@ -50,8 +48,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Turn off system includes for registered libraries when using the PGI compiler
 - Removed unneeded SYSTEM includes added by googletest that was causing problems
   in PGI builds (BLT was adding them already to the register library calls)
-- Removed variable BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE, functionality now
-  provided for all languages using BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE variable
+- Removed variable ``BLT_CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES_EXCLUDE``, functionality now
+  provided for all languages using ``BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE`` variable
 - ClangQuery was being auto-enabled in cases where no checker directories where defined.
   This caused a crash. blt_add_clang_query_target learned parameter CHECKER_DIRECTORIES
   and blt_add_code_checks learned parameter CLANGQUERY_CHECKER_DIRECTORIES.  Both still
