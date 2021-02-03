@@ -249,3 +249,29 @@ are working, for example.
     -VV
       (Very verbose) Dump test output to stdout
 
+
+Converting CTest XML to JUnit
+-----------------------------
+
+It is often useful to convert CTest's XML output to JUnit for various
+reporting tools such as CI.  This is a two step process.
+
+First run your test suite with one of the following commands to output with
+CTest's XML and to turn off compressed output:
+
+.. code-block:: bash
+
+  make CTEST_OUTPUT_ON_FAILURE=1 test ARGS="--no-compress-output -T Test -VV -j8"
+  ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8 
+
+Then convert the CTest XML file to JUnit's format with the XSL file included
+in BLT.  This can be done in many ways, but most *nix machines come with
+a program called ``xsltproc``
+
+
+.. code-block:: bash
+
+  cd build-dir 
+  xsltproc -o junit.xml path/to/blt/tests/ctest-to-junit.xsl Testing/*/Test.xml
+
+Then point the reporting tool to the outputted ``junit.xml`` file.
