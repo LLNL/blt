@@ -1,0 +1,53 @@
+# This file defines the CI for running on LLNL CZ and RZ machines.
+# Currently only runs on Toss machines.  BlueOS will be enabled next.
+
+before_script:
+  - echo "Before script section"
+  - python2 -V  # Print out python version for debugging
+  - python3 -V  # Print out python version for debugging
+
+after_script:
+  - echo "After script section"
+
+build_and_test_cz:
+  extends: 
+    - .cz_job
+    - .build_and_test_script
+
+build_and_test_rz:
+  extends:
+    - .rz_job
+    - .build_and_test_script
+
+# Templates
+.build_and_test_script:
+  stage: build
+  script:
+#     Build and test blt
+    - gitlab/scripts/build_and_test.sh > buildandtest.txt
+    - gitlab/scripts/convertToJunit.sh > converttests.txt
+  artifacts:
+    paths:
+     - buildandtest.txt
+     - converttests.txt
+     - ./Artifacts/*.*
+    reports:
+      junit: 
+        - ./testresults.xml 
+
+.cz_job:
+  variables:
+    LLNL_SLURM_SCHEDULER_PARAMETERS: "--nodes=1 -p pdebug"
+  tags:
+    - quartz
+    - shell
+  rules:
+    - if: '$LC_ZONE == "CZ"' # run only if ...
+
+.rz_job:
+  tags:
+    - rzgenie
+    - shell
+  rules:
+    - if: '$LC_ZONE == "RZ"' # run only if ...
+
