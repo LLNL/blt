@@ -25,15 +25,12 @@ build_and_test_rz:
   script:
 #     Build and test blt
     - gitlab/scripts/build_and_test.sh > buildandtest.txt
-    - gitlab/scripts/convertToJunit.sh > converttests.txt
   artifacts:
     paths:
      - buildandtest.txt
-     - converttests.txt
-     - ./Artifacts/*.*
     reports:
       junit: 
-        - ./testresults.xml 
+        - build_*/junit.xml 
 
 .cz_job:
   variables:

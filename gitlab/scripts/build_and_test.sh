@@ -85,7 +85,8 @@ for path in ./host-configs/llnl/*; do
     ssh $host "cd $CUR_DIR && $module && $display && \
       $alloc cmake -C $hc_path -D CMAKE_INSTALL_PREFIX=../install_$compiler ../tests/internal && \
       $alloc make && \
-      $alloc ctest"
+      $alloc ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8 && \
+      xsltproc -o junit.xml ../tests/ctest-to-junit.xsl Testing/*/Test.xml"
     
     cd $BBD
     echo "--"
