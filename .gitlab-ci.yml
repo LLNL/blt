@@ -24,7 +24,7 @@ stages:
    #BUILD + TEST
     - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
       Build and test ${CI_PROJECT_NAME}"
-    - ${EXEC_PREFIX} gitlab/build_and_test.sh
+    - ${EXEC_PREFIX} .gitlab/build_and_test.sh
     - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
   artifacts:
     reports:
@@ -37,7 +37,7 @@ stages:
     #BUILD + TEST
     - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
       Build and test ${CI_PROJECT_NAME}"
-    - ${EXEC_PREFIX} gitlab/build_and_test.sh
+    - ${EXEC_PREFIX} .gitlab/build_and_test.sh
     - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
   artifacts:
     reports:
