@@ -1,37 +1,58 @@
-# This file defines the CI for running on LLNL CZ and RZ machines.
-# Currently only runs on Toss machines.  BlueOS will be enabled next.
+##############################################################################
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and BLT
+# project contributors. See the LICENSE file for details.
+##############################################################################
 
-before_script:
-  - echo "Before script section"
-  - python2 -V  # Print out python version for debugging
-  - python3 -V  # Print out python version for debugging
+variables:
+  PROJECT_ALLOC_NAME: ${CI_PROJECT_NAME}_ci_${CI_PIPELINE_ID}
+  BUILD_ROOT: ${CI_PROJECT_DIR}
 
-after_script:
-  - echo "After script section"
+stages:
+  - l_build
+  - q_allocate_resources
+  - q_build
+  - q_release_resources
 
-build_and_test_cz:
-  extends: 
-    - .cz_job
-    - .build_and_test_script
-
-# Templates
-.build_and_test_script:
-  stage: build
+####
+# Template
+.srun_build_script:
   script:
-#     Build and test blt
-    - gitlab/scripts/build_and_test.sh > buildandtest.txt
+    #Use pre-existing allocation if any
+    - JOBID=$(squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A)
+    - ASSIGN_ID=$(if [[ -n "${JOBID}" ]]; then echo "--jobid=${JOBID}"; fi)
+    - EXEC_PREFIX="srun -p pdebug ${ASSIGN_ID} -t 10 -N 1"
+   #BUILD + TEST
+    - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
+      Build and test ${CI_PROJECT_NAME}"
+    - mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
+    - ${EXEC_PREFIX} cmake -C ${HOST_CONFIG} ../tests/internal
+    - ${EXEC_PREFIX} make -j8
+    - ${EXEC_PREFIX} ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8
+    - xsltproc -o junit.xml ../tests/ctest-to-junit.xsl Testing/*/Test.xml"
+    - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
   artifacts:
-    paths:
-     - buildandtest.txt
     reports:
-      junit: 
-        - build_*/junit.xml 
+      junit: */junit.xml
 
-.cz_job:
-  variables:
-    LLNL_SLURM_SCHEDULER_PARAMETERS: "--nodes=1 -p pdebug"
-  tags:
-    - quartz
-    - shell
-  rules:
-    - if: '$LC_ZONE == "CZ"' # run only if ...
+
+.build_blueos_3_ppc64le_ib_p9_script:
+  script:
+    - EXEC_PREFIX="lalloc 1 -W 10 -q pdebug"
+    #BUILD + TEST
+    - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
+      Build and test ${CI_PROJECT_NAME}"
+    - mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
+    - ${EXEC_PREFIX} cmake -C ${HOST_CONFIG} ../tests/internal
+    - ${EXEC_PREFIX} make -j8
+    - ${EXEC_PREFIX} ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8
+    - xsltproc -o junit.xml ../tests/ctest-to-junit.xsl Testing/*/Test.xml"
+    - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
+  artifacts:
+    reports:
+      junit: */junit.xml
+
+
+# This is where jobs are included
+include:
+  - local: .gitlab/build_quartz.yml
+  - local: .gitlab/build_lassen.yml
