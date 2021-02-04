@@ -43,8 +43,11 @@ for path in ./host-configs/llnl/*; do
       echo "LC Zone not recognized"
       exit 5
     fi
+  elif [[ "$sys" == "windows" ]]; then
+    echo "Skipping windows"
+    continue
   else
-    echo "OS not recognized"
+    echo "OS not supported for this CI"
     exit 6
   fi
   
