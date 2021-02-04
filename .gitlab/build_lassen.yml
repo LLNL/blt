@@ -11,9 +11,10 @@
     - when: on_success
 
 ####
-# Load required CUDA module
+# Load required modules
 .with_cuda:
   before_script:
+    - module load cmake/3.18.0
     - module load cuda/11.1.1
 
 ####
