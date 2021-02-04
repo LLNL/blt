@@ -44,24 +44,20 @@ release_resources_build_quartz:
 # Build jobs
 clang_4_0_0_libcxx (quartz):
   variables:
-    BUILD_DIR: "build_clang_4_0_0_libcxx"
     HOST_CONFIG: "clang@4.0.0-libcxx.cmake"
   extends: [.build_on_quartz]
 
 clang_6_0_0_static_analysis (quartz):
   variables:
-    BUILD_DIR: "build_clang_6_0_0_static_analysis"
     HOST_CONFIG: "clang@6.0.0-static-analysis.cmake"
   extends: [.build_on_quartz]
 
 gcc_4_9_3 (quartz):
   variables:
-    BUILD_DIR: "build_gcc_4_9_3"
     HOST_CONFIG: "gcc@4.9.3.cmake"
   extends: [.build_on_quartz]
 
 pgi_18_5 (quartz):
   variables:
-    BUILD_DIR: "build_pgi_18_5"
     HOST_CONFIG: "pgi@18.5.cmake"
   extends: [.build_on_quartz]

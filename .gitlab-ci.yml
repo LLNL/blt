@@ -24,15 +24,11 @@ stages:
    #BUILD + TEST
     - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
       Build and test ${CI_PROJECT_NAME}"
-    - mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
-    - ${EXEC_PREFIX} cmake -C ${HOST_CONFIG} ../tests/internal
-    - ${EXEC_PREFIX} make -j8
-    - ${EXEC_PREFIX} ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8
-    - xsltproc -o junit.xml ../tests/ctest-to-junit.xsl Testing/*/Test.xml"
+    - ${EXEC_PREFIX} gitlab/build_and_test.sh
     - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
   artifacts:
     reports:
-      junit: */junit.xml
+      junit: build/junit.xml
 
 
 .build_blueos_3_ppc64le_ib_p9_script:
@@ -41,15 +37,11 @@ stages:
     #BUILD + TEST
     - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
       Build and test ${CI_PROJECT_NAME}"
-    - mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
-    - ${EXEC_PREFIX} cmake -C ${HOST_CONFIG} ../tests/internal
-    - ${EXEC_PREFIX} make -j8
-    - ${EXEC_PREFIX} ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8
-    - xsltproc -o junit.xml ../tests/ctest-to-junit.xsl Testing/*/Test.xml"
+    - ${EXEC_PREFIX} gitlab/build_and_test.sh
     - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
   artifacts:
     reports:
-      junit: */junit.xml
+      junit: build/junit.xml
 
 
 # This is where jobs are included
