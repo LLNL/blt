@@ -19,7 +19,7 @@ allocate_resources_build_quartz:
   extends: [.on_quartz]
   stage: q_allocate_resources
   script:
-    - salloc -p pdebug -N 1 -c 36 -t 30 --no-shell --job-name=${PROJECT_ALLOC_NAME}
+    - salloc -p pdebug -N 1 -c 36 -t 30 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
   needs: []
 
 ####
