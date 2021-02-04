@@ -18,41 +18,34 @@ for path in ./host-configs/llnl/*; do
   # echo -e "--\nSys: $sys"
 
   if [[ "$sys" == "toss_3_x86_64_ib" ]]; then
-
+    alloc="salloc -N1 --exclusive -p pdebug --mpibind=off"
     if [[ "$LC_ZONE" == "CZ" ]]; then
       host=quartz
-    elif [[ "$LC_ZONE" == "RZ" ]]; then
-      host=rzgenie
     else
       echo "LC Zone not recognized"
-      continue
+      exit 5
     fi
-    alloc="salloc -N1 --exclusive -p pdebug --mpibind=off"
   elif [[ "$sys" == "blueos_3_ppc64le_ib" ]]; then
     alloc="lalloc 1 -W 60 -G guests"
     display="setenv DISPLAY ':0.0'"
     if [[ "$LC_ZONE" == "CZ" ]]; then
       host=ray
-    elif [[ "$LC_ZONE" == "RZ" ]]; then
-      host=rzmanta
     else
       echo "LC Zone not recognized"
-      continue
+      exit 5
     fi
   elif [[ "$sys" == "blueos_3_ppc64le_ib_p9" ]]; then
     alloc="lalloc 1 -W 60 -G guests"
     display="setenv DISPLAY ':0.0'"
     if [[ "$LC_ZONE" == "CZ" ]]; then
       host=lassen
-    elif [[ "$LC_ZONE" == "RZ" ]]; then
-      host=rzansel
     else
       echo "LC Zone not recognized"
-      continue
+      exit 5
     fi
   else
     echo "OS not recognized"
-    continue
+    exit 6
   fi
   
   echo "[Testing host-configs for $sys]"

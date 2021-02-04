@@ -14,11 +14,6 @@ build_and_test_cz:
     - .cz_job
     - .build_and_test_script
 
-build_and_test_rz:
-  extends:
-    - .rz_job
-    - .build_and_test_script
-
 # Templates
 .build_and_test_script:
   stage: build
@@ -40,11 +35,3 @@ build_and_test_rz:
     - shell
   rules:
     - if: '$LC_ZONE == "CZ"' # run only if ...
-
-.rz_job:
-  tags:
-    - rzgenie
-    - shell
-  rules:
-    - if: '$LC_ZONE == "RZ"' # run only if ...
-
