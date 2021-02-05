@@ -52,9 +52,9 @@ clang_6_0_0_static_analysis (quartz):
     HOST_CONFIG: "clang@6.0.0-static-analysis.cmake"
   extends: [.build_on_quartz]
 
-gcc_4_9_3 (quartz):
+gcc_8_3_1 (quartz):
   variables:
-    HOST_CONFIG: "gcc@4.9.3.cmake"
+    HOST_CONFIG: "gcc@8.3.1.cmake"
   extends: [.build_on_quartz]
 
 pgi_20_1 (quartz):
