@@ -57,7 +57,7 @@ gcc_4_9_3 (quartz):
     HOST_CONFIG: "gcc@4.9.3.cmake"
   extends: [.build_on_quartz]
 
-pgi_18_5 (quartz):
+pgi_20_1 (quartz):
   variables:
-    HOST_CONFIG: "pgi@18.5.cmake"
+    HOST_CONFIG: "pgi@20.1.cmake"
   extends: [.build_on_quartz]
