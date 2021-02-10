@@ -127,7 +127,11 @@ function(blt_fix_fortran_openmp_flags target_name)
                         correct_omp_link_flags
                         "${omp_link_flags}"
                         )
-                target_link_options(${target_name} PRIVATE "${correct_omp_link_flags}")
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                    target_link_options(${target_name} PRIVATE "${correct_omp_link_flags}")
+                else()
+                    set_property(TARGET ${target_name} APPEND PROPERTY LINK_FLAGS "${correct_omp_link_flags}")
+                endif()
             endif()
 
             # Handle registered library general case
