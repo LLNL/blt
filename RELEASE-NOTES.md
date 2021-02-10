@@ -70,6 +70,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   will automatically be linked with the HIP or CUDA (NVCC) linker
 - Patched an issue with the FindHIP macros that added the inclusive scan of specified
   DEFINEs to compile commands
+- Re-added previous OpenMP flag patching logic to maintain compatibility with BLT-registered libraries
 
 ## [Version 0.3.6] - Release date 2020-07-27
 

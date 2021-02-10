@@ -124,6 +124,29 @@ function(blt_fix_fortran_openmp_flags target_name)
                                        LINK_LIBRARIES "${target_link_libs}" )
             endif()
 
+            # OpenMP is an interface library which doesn't have a LINK_FLAGS property
+            # in versions < 3.13
+            set(_property_name INTERFACE_LINK_LIBRARIES)
+            if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
+                set(_property_name LINK_OPTIONS)
+            endif()
+
+            get_target_property(target_link_flags ${target_name} ${_property_name})
+            if ( target_link_flags )
+
+                message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
+                message(STATUS "Detected link flags are: ${target_link_flags}")
+                message(STATUS "Replacing ${OpenMP_CXX_FLAGS} with ${OpenMP_Fortran_FLAGS}")
+
+                string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                        correct_link_flags
+                        "${target_link_flags}"
+                        )
+                message(STATUS "Fixed link flags are: ${correct_link_flags}")
+                set_target_properties( ${target_name} PROPERTIES ${_property_name}
+                                    "${correct_link_flags}" )
+            endif()
         endif()
 
     endif()
