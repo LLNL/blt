@@ -92,6 +92,7 @@ endfunction()
 function(blt_fix_fortran_openmp_flags target_name)
 
     if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
+
         # The OpenMP interface library will have been added as a direct
         # link dependency instead of via flags
         get_target_property(target_link_libs ${target_name} LINK_LIBRARIES)
@@ -101,11 +102,18 @@ function(blt_fix_fortran_openmp_flags target_name)
             # the DAG.  Only the link flags need to be modified.
             list(FIND target_link_libs "openmp" _omp_index)
             if(${_omp_index} GREATER -1)
-                list(REMOVE_ITEM target_link_libs "openmp")
+                message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
 
-                # Copy the compile flags verbatim
+                # Remove openmp from libraries
+                list(REMOVE_ITEM target_link_libs "openmp")
+                set_target_properties( ${target_name} PROPERTIES
+                                       LINK_LIBRARIES "${target_link_libs}" )
+
+                # Add openmp compile flags verbatim w/ generator expression
                 get_target_property(omp_compile_flags openmp INTERFACE_COMPILE_OPTIONS)
                 target_compile_options(${target_name} PUBLIC ${omp_compile_flags})
+
+                # Change CXX flags to Fortran flags
 
                 # These are set through blt_add_target_link_flags which needs to use
                 # the link_libraries for interface libraries in CMake < 3.13
@@ -114,16 +122,37 @@ function(blt_fix_fortran_openmp_flags target_name)
                 else()
                     get_target_property(omp_link_flags openmp INTERFACE_LINK_LIBRARIES)
                 endif()
-    
+
                 string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
                         correct_omp_link_flags
                         "${omp_link_flags}"
                         )
-                list(APPEND target_link_libs "${correct_omp_link_flags}")
-                set_target_properties( ${target_name} PROPERTIES
-                                       LINK_LIBRARIES "${target_link_libs}" )
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                    target_link_options(${target_name} PRIVATE "${correct_omp_link_flags}")
+                else()
+                    set_property(TARGET ${target_name} APPEND PROPERTY LINK_FLAGS "${correct_omp_link_flags}")
+                endif()
             endif()
 
+            # Handle registered library general case
+
+            # OpenMP is an interface library which doesn't have a LINK_FLAGS property
+            # in versions < 3.13
+            set(_property_name LINK_FLAGS)
+            if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
+                set(_property_name LINK_OPTIONS)
+            endif()
+            get_target_property(target_link_flags ${target_name} ${_property_name})
+            if ( target_link_flags )
+
+                string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                        correct_link_flags
+                        "${target_link_flags}"
+                        )
+                set_target_properties( ${target_name} PROPERTIES ${_property_name}
+                                    "${correct_link_flags}" )
+            endif()
         endif()
 
     endif()
@@ -546,6 +575,38 @@ macro(blt_setup_cuda_target)
 endmacro(blt_setup_cuda_target)
 
 ##------------------------------------------------------------------------------
+## blt_cleanup_hip_globals(FROM_TARGET <target>)
+##
+## Needed as the SetupHIP macros (specifically, HIP_PREPARE_TARGET_COMMANDS)
+## "pollutes" the global HIP_HIPCC_FLAGS with target-specific options.  This
+## macro removes the target-specific generator expressions from the global flags
+## which have already been copied to source-file-specific instances of the
+## run_hipcc script.  Other global flags in HIP_HIPCC_FLAGS, e.g., those set by
+## the user, are left untouched.
+##------------------------------------------------------------------------------
+macro(blt_cleanup_hip_globals)
+    set(options)
+    set(singleValueArgs FROM_TARGET)
+    set(multiValueArgs)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_FROM_TARGET )
+        message( FATAL_ERROR "Must provide a FROM_TARGET argument to the 'blt_cleanup_hip_globals' macro")
+    endif()
+
+    # Remove the compile definitions generator expression
+    # This must be copied verbatim from HIP_PREPARE_TARGET_COMMANDS,
+    # which would have just added it to HIP_HIPCC_FLAGS
+    set(_defines_genexpr "$<TARGET_PROPERTY:${arg_FROM_TARGET},COMPILE_DEFINITIONS>")
+    set(_defines_flags_genexpr "$<$<BOOL:${_defines_genexpr}>:-D$<JOIN:${_defines_genexpr}, -D>>")
+    list(REMOVE_ITEM HIP_HIPCC_FLAGS ${_defines_flags_genexpr})
+endmacro(blt_cleanup_hip_globals)
+
+##------------------------------------------------------------------------------
 ## blt_add_hip_library(NAME         <libname>
 ##                     SOURCES      [source1 [source2 ...]]
 ##                     HEADERS      [header1 [header2 ...]]
@@ -598,6 +659,7 @@ macro(blt_add_hip_library)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
+        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
         # Link to the hip_runtime target so it gets pulled in by targets
         # depending on this target
         target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
@@ -679,6 +741,7 @@ macro(blt_add_hip_executable)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
+        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
     else()
         add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
     endif()

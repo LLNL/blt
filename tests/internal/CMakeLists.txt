@@ -269,6 +269,10 @@ if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)
   add_subdirectory(src/static_analysis)
 endif()
 
+if(ENABLE_HIP)
+  add_subdirectory(src/hip_defines_test)
+endif()
+
 #------------------------------------------------------------------------------
 # Format the testing code using ClangFormat
 #------------------------------------------------------------------------------
@@ -278,6 +282,7 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_cuda_mpi_smoke.cpp
     ../smoke/blt_cuda_openmp_smoke.cpp
     ../smoke/blt_cuda_runtime_smoke.cpp
+    ../smoke/blt_cuda_gtest_smoke.cpp
     ../smoke/blt_cuda_smoke.cpp
     ../smoke/blt_fruit_smoke.f90
     ../smoke/blt_gbenchmark_smoke.cpp
@@ -286,6 +291,7 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_hcc_runtime_smoke.cpp
     ../smoke/blt_hcc_smoke.cpp
     ../smoke/blt_hip_runtime_smoke.cpp
+    ../smoke/blt_hip_gtest_smoke.cpp
     ../smoke/blt_hip_smoke.cpp
     ../smoke/blt_mpi_smoke.cpp
     ../smoke/blt_openmp_smoke.cpp
@@ -330,6 +336,9 @@ if(CLANGFORMAT_FOUND)
     src/test_cuda_device_call_from_kernel/CudaTests.cpp
     src/test_cuda_device_call_from_kernel/Parent.cpp
     src/test_cuda_device_call_from_kernel/Parent.hpp
+
+    src/hip_defines_test/foo.cpp
+    src/hip_defines_test/bar.cpp
   )
 
   # Specify the major version for astyle
