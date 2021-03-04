@@ -60,6 +60,7 @@ mark_as_advanced(BLT_CLANG_CUDA_ARCH)
 option(ENABLE_HIP         "Enable HIP support" OFF)
 option(ENABLE_HCC         "Enable HCC support" OFF)
 set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")
+option(ENABLE_CCACHE        "Enable ccache support" OFF)
 
 #------------------------------------------------------------------------------
 # Test Options
