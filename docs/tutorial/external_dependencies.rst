@@ -183,15 +183,10 @@ compile each source file with ``nvcc``.
 
 Some other useful CUDA flags are:
 
-.. code-block:: cmake
-
-    # Enable separable compilation of all CUDA files for given target or all following targets
-    set(CUDA_SEPARABLE_COMPILIATION ON CACHE BOOL “”)
-    set(CUDA_ARCH “sm_60” CACHE STRING “”)
-    set(CMAKE_CUDA_FLAGS “-restrict –arch ${CUDA_ARCH} –std=c++11” CACHE STRING “”)
-    set(CMAKE_CUDA_LINK_FLAGS “-Xlinker –rpath –Xlinker /path/to/mpi” CACHE STRING “”)
-    # Needed when you have CUDA decorations exposed in libraries
-    set(CUDA_LINK_WITH_NVCC ON CACHE BOOL “”)
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake
+   :start-after: _blt_tutorial_useful_cuda_flags_start
+   :end-before:  _blt_tutorial_useful_cuda_flags_end
+   :language: cmake
 
 
 OpenMP
@@ -203,10 +198,10 @@ executable's ``DEPENDS_ON`` list.
 
 Here is an example of how to add an OpenMP enabled executable:
 
-   .. literalinclude:: ../../tests/smoke/CMakeLists.txt
-     :start-after: _blt_tutorial_openmp_executable_start
-     :end-before:  _blt_tutorial_openmp_executable_end
-     :language: cmake
+.. literalinclude:: ../../tests/smoke/CMakeLists.txt
+   :start-after: _blt_tutorial_openmp_executable_start
+   :end-before:  _blt_tutorial_openmp_executable_end
+   :language: cmake
 
 .. note::
   While we have tried to ensure that BLT chooses the correct compile and link flags for
@@ -221,10 +216,10 @@ Here is an example of how to add an OpenMP enabled executable:
 
 Here is an example of how to add an OpenMP enabled test that sets the amount of threads used:
 
-   .. literalinclude:: ../../tests/smoke/CMakeLists.txt
-     :start-after: _blt_tutorial_openmp_test_start
-     :end-before:  _blt_tutorial_openmp_test_end
-     :language: cmake
+.. literalinclude:: ../../tests/smoke/CMakeLists.txt
+   :start-after: _blt_tutorial_openmp_test_start
+   :end-before:  _blt_tutorial_openmp_test_end
+   :language: cmake
 
 
 Example Host-configs

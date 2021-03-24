@@ -60,18 +60,19 @@ set(BLT_FORTRAN_FLAGS "-WF,-C!" CACHE PATH "Converts C-style comments to Fortran
 #------------------------------------------------------------------------------
 # CUDA support
 #------------------------------------------------------------------------------
-
+#_blt_tutorial_useful_cuda_flags_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
 set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-10.1.168" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
 set(CMAKE_CUDA_HOST_COMPILER "${MPI_CXX_COMPILER}" CACHE PATH "")
 
-set(_cuda_arch "sm_70")
+set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
+set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
 set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G" CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
-
+#_blt_tutorial_useful_cuda_flags_end
