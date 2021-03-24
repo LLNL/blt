@@ -21,7 +21,7 @@ set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
 
 # Fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
-set(CMAKE_Fortran_COMPILER "${GCC_HOME}/gfortran" CACHE PATH "")
+set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
 # _blt_tutorial_surface_compiler_config_end
 
 #------------------------------------------------------------------------------
