@@ -21,6 +21,7 @@ if(ENABLE_GTEST)
                   COMMAND blt_gtest_smoke)
 endif()
 
+
 ################
 # gmock test
 ################
@@ -136,6 +137,14 @@ if (ENABLE_CUDA)
     blt_add_test(NAME blt_cuda_runtime_smoke
                  COMMAND blt_cuda_runtime_smoke)
 
+    blt_add_executable(NAME blt_cuda_version_smoke
+                       SOURCES blt_cuda_version_smoke.cpp
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
+                       DEPENDS_ON cuda_runtime
+                       FOLDER blt/tests )
+
+    blt_add_test(NAME blt_cuda_version_smoke
+                 COMMAND blt_cuda_version_smoke)
     if (ENABLE_OPENMP)
         blt_add_executable(NAME blt_cuda_openmp_smoke
                            SOURCES blt_cuda_openmp_smoke.cpp
