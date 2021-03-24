@@ -15,12 +15,13 @@
 # gcc@4.9.3 compilers
 #------------------------------------------------------------------------------
 # _blt_tutorial_surface_compiler_config_start
-set(CMAKE_C_COMPILER   "/usr/apps/gnu/4.9.3/bin/gcc" CACHE PATH "")
-set(CMAKE_CXX_COMPILER "/usr/apps/gnu/4.9.3/bin/g++" CACHE PATH "")
+set(GCC_HOME "/usr/tce")
+set(CMAKE_C_COMPILER   "${GCC_HOME}/bin/gcc" CACHE PATH "")
+set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
 
 # Fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
-set(CMAKE_Fortran_COMPILER "/usr/apps/gnu/4.9.3/bin/gfortran" CACHE PATH "")
+set(CMAKE_Fortran_COMPILER "${GCC_HOME}/gfortran" CACHE PATH "")
 # _blt_tutorial_surface_compiler_config_end
 
 #------------------------------------------------------------------------------
@@ -29,11 +30,12 @@ set(CMAKE_Fortran_COMPILER "/usr/apps/gnu/4.9.3/bin/gfortran" CACHE PATH "")
 # _blt_tutorial_surface_mpi_config_start
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_C_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpicc" CACHE PATH "")
+set(MPI_HOME "/usr/tce/packages/mvapich2/mvapich2-2.3-gcc-4.9.3/")
+set(MPI_C_COMPILER "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 
-set(MPI_CXX_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpicc" CACHE PATH "")
+set(MPI_CXX_COMPILER "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
 
-set(MPI_Fortran_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpif90" CACHE PATH "")
+set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 # _blt_tutorial_surface_mpi_config_end
 
 #------------------------------------------------------------------------------
@@ -42,9 +44,15 @@ set(MPI_Fortran_COMPILER "/usr/local/tools/mvapich2-gnu-2.0/bin/mpif90" CACHE PA
 # _blt_tutorial_surface_cuda_config_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
-set(CUDA_TOOLKIT_ROOT_DIR "/opt/cudatoolkit-8.0" CACHE PATH "")
-set(CMAKE_CUDA_COMPILER "/opt/cudatoolkit-8.0/bin/nvcc" CACHE PATH "")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-10.2.89" CACHE PATH "")
+set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
 set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}" CACHE PATH "")
+
+set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
+set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
+set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G" CACHE STRING "")
+
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "")
+
 # _blt_tutorial_surface_cuda_config_end
 
