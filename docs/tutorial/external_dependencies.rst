@@ -97,11 +97,12 @@ Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
 which uses MPI to parallelize the calculation over the integration intervals.
 
 
-To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
+To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
+in our host config file. Here is a snippet with these settings for LLNL's Pascal Cluster:
 
 .. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
-   :start-after: _blt_tutorial_surface_mpi_config_start
-   :end-before:  _blt_tutorial_surface_mpi_config_end
+   :start-after: _blt_tutorial_mpi_config_start
+   :end-before:  _blt_tutorial_mpi_config_end
    :language: cmake
 
 
@@ -160,11 +161,11 @@ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call
 ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable
 for you and enable the CUDA language.
 
-Here is a snippet with these settings for LLNL's Surface Cluster:
+Here is a snippet with these settings for LLNL's Pascal Cluster:
 
 .. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
-   :start-after: _blt_tutorial_surface_cuda_config_start
-   :end-before:  _blt_tutorial_surface_cuda_config_end
+   :start-after: _blt_tutorial_cuda_config_start
+   :end-before:  _blt_tutorial_cuda_config_end
    :language: cmake
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
@@ -225,7 +226,7 @@ Here is an example of how to add an OpenMP enabled test that sets the amount of 
 Example Host-configs
 ~~~~~~~~~~~~~~~~~~~~
 
-Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
+Here are the full example host-config files that use gcc 4.9.3 for LLNL's Pascal, Ray, and Quartz Clusters.
 
 :download:`llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake>`
 
@@ -240,10 +241,10 @@ Here is a full example host-config file for an OSX laptop, using a set of depend
 :download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
 
 
-Building and testing on Surface
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Building and testing on Pascal
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Surface:
+Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Pascal:
 
 .. code-block:: bash
     

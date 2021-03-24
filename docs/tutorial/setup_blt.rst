@@ -217,11 +217,11 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
 Here is a snippet from a host-config file that specifies compiler details for
-using gcc 4.9.3 on LLNL's surface cluster. 
+using gcc 4.9.3 on LLNL's Pascal cluster. 
 
 .. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
-   :start-after: _blt_tutorial_surface_compiler_config_start
-   :end-before:  _blt_tutorial_surface_compiler_config_end
+   :start-after: _blt_tutorial_compiler_config_start
+   :end-before:  _blt_tutorial_compiler_config_end
    :language: cmake
 
 
