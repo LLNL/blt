@@ -99,7 +99,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
    :start-after: _blt_tutorial_surface_mpi_config_start
    :end-before:  _blt_tutorial_surface_mpi_config_end
    :language: cmake
@@ -162,7 +162,7 @@ for you and enable the CUDA language.
 
 Here is a snippet with these settings for LLNL's Surface Cluster:
 
-.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
    :start-after: _blt_tutorial_surface_cuda_config_start
    :end-before:  _blt_tutorial_surface_cuda_config_end
    :language: cmake
@@ -227,11 +227,11 @@ Example Host-configs
 
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
 
-:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
+:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake>`
 
-:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf <../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
+:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake <../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
 
-:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake>`
+:download:`llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
 
@@ -247,13 +247,11 @@ Here is how you can use the host-config file to configure a build of the ``calc_
 
 .. code-block:: bash
     
-    # load new cmake b/c default on surface is too old
-    ml cmake/3.9.2
     # create build dir
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  \
+    cmake -C ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake  \
           -DBLT_SOURCE_DIR=../../../../blt  ..
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) 
