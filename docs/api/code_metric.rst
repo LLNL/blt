@@ -6,6 +6,8 @@
 Code Metric Macros
 ==================
 
+.. _blt_add_code_coverage_target:
+
 blt_add_code_coverage_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

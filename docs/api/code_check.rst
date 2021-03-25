@@ -6,6 +6,8 @@
 Code Check Macros
 ==================
 
+.. _blt_add_code_checks:
+
 blt_add_code_checks
 ~~~~~~~~~~~~~~~~~~~
 
@@ -136,6 +138,9 @@ This macro supports the following static analysis tools with their requirements:
 These are added as children to the ``check`` build target and produce child build targets
 that follow the pattern ``<PREFIX>_<cppcheck|clang_query|clang_tidy>_check``.
 
+
+.. _blt_add_clang_query_target:
+
 blt_add_clang_query_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -181,13 +186,15 @@ the parameter ``CHECKER_DIRECTORIES`` or the variable ``BLT_CLANGQUERY_CHECKER_D
 
 Turning on ``DIE_ON_MATCH`` is useful if you're using this in CI to enforce rules about your code.
 
-CHECKERS are the static analysis passes to specifically run on the target. The following checker options
-can be given:
+``CHECKERS`` are the static analysis passes to specifically run on the target. The following checker
+options can be given:
 
     * (no value)          : run all available static analysis checks found
     * (checker1:checker2) : run checker1 and checker2
     * (interpreter)       : run the clang-query interpeter to interactively develop queries
 
+
+.. _blt_add_cppcheck_target:
 
 blt_add_cppcheck_target
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -225,6 +232,8 @@ Cppcheck is a static analysis tool for C/C++ code. More information about
 Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`_.
 
 
+.. _blt_add_clang_tidy_target:
+
 blt_add_clang_tidy_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -249,7 +258,7 @@ COMMENT
   Comment prepended to the build target output
 
 CHECKS
-  list of checks to be run on the selected source files, available checks are listed
+  List of checks to be run on the selected source files, available checks are listed
   `here <https://clang.llvm.org/extra/clang-tidy/checks/list.html>`_.
 
 FIX
@@ -261,9 +270,11 @@ SRC_FILES
 Clang-tidy is a tool used for diagnosing and fixing typical programming errors. It is useful for enforcing
 coding standards and rules on your source code.  Clang-tidy is documented `here <https://clang.llvm.org/extra/clang-tidy/index.html>`_.
 
-CHECKS are the static analysis "rules" to specifically run on the target.
+``CHECKS`` are the static analysis "rules" to specifically run on the target.
 If no checks are specified, clang-tidy will run the default available static analysis checks.
 
+
+.. _blt_add_astyle_target:
 
 blt_add_astyle_target
 ~~~~~~~~~~~~~~~~~~~~~
@@ -316,6 +327,8 @@ which files do not conform to your style guide.
 .. Note::
   Setting ``MODIFY_FILES`` to ``FALSE`` is only supported in AStyle v2.05 or greater.
 
+
+.. _blt_add_clangformat_target:
 
 blt_add_clangformat_target
 ~~~~~~~~~~~~~~~~~~~~~
@@ -379,6 +392,9 @@ which files do not conform to your style guide.
   in the ``check`` build target because the script does not support command line flags passed
   to ``clang-format``. This script is not used in the ``style`` build target.
 
+
+.. _blt_add_uncrustify_target:
+
 blt_add_uncrustify_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -431,6 +447,8 @@ which files do not conform to your style guide.
   Setting ``MODIFY_FILES`` to ``FALSE`` is only supported in Uncrustify v0.61 or greater.
 
 
+.. _blt_add_yapf_target:
+
 blt_add_yapf_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -479,6 +497,8 @@ target to the parent ``style`` build target.  Otherwise the files are not modifi
 created target is added to the parent ``check`` build target. This target will notify you
 which files do not conform to your style guide.
 
+
+.. _blt_add_cmake_format_target:
 
 blt_add_cmakeformat_target
 ~~~~~~~~~~~~~~~~~~~~~

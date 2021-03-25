@@ -6,6 +6,7 @@
 Git Macros
 ==========
 
+.. _blt_git:
 
 blt_git
 ~~~~~~~
@@ -20,23 +21,23 @@ blt_git
 
 Runs the supplied git command on the given Git repository.
 
-This macro runs the user-supplied Git command, given by GIT_COMMAND, on the
-given Git repository corresponding to SOURCE_DIR. The supplied GIT_COMMAND
+This macro runs the user-supplied Git command, given by ``GIT_COMMAND``, on the
+given Git repository corresponding to ``SOURCE_DIR``. The supplied ``GIT_COMMAND``
 is just a string consisting of the Git command and its arguments. The
 resulting output is returned to the supplied CMake variable provided by
-the OUTPUT_VARIABLE argument.
+the ``OUTPUT_VARIABLE`` argument.
 
 A return code for the Git command is returned to the caller via the CMake
-variable provided with the RETURN_CODE argument. A non-zero return code
+variable provided with the ``RETURN_CODE`` argument. A non-zero return code
 indicates that an error has occured.
 
-Note, this macro assumes FindGit() was invoked and was successful. It relies
-on the following variables set by FindGit():
+Note, this macro assumes ``FindGit()`` was invoked and was successful. It relies
+on the following variables set by ``FindGit()``:
 
-    * Git_FOUND flag that indicates if git is found
-    * GIT_EXECUTABLE points to the Git binary
+    * ``Git_FOUND`` flag that indicates if git is found
+    * ``GIT_EXECUTABLE`` points to the Git binary
 
-If Git_FOUND is "false" this macro will throw a FATAL_ERROR message.
+If ``Git_FOUND`` is ``False`` this macro will throw a ``FATAL_ERROR`` message.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -51,6 +52,8 @@ If Git_FOUND is "false" this macro will throw a FATAL_ERROR message.
     endif()
 
 
+.. _blt_is_git_repo:
+
 blt_is_git_repo
 ~~~~~~~~~~~~~~~
 
@@ -63,11 +66,11 @@ Checks if we are working with a valid Git repository.
 
 This macro checks if the corresponding source directory is a valid Git repo.
 Nominally, the corresponding source directory that is used is set to
-${CMAKE_CURRENT_SOURCE_DIR}. A different source directory may be optionally
-specified using the SOURCE_DIR argument.
+``CMAKE_CURRENT_SOURCE_DIR``. A different source directory may be optionally
+specified using the ``SOURCE_DIR`` argument.
 
 The resulting state is stored in the CMake variable specified by the caller
-using the OUTPUT_STATE parameter.
+using the ``OUTPUT_STATE`` parameter.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -80,6 +83,8 @@ using the OUTPUT_STATE parameter.
         message(STATUS "Not a Git repo!")
     endif()
 
+
+.. _blt_git_tag:
 
 blt_git_tag
 ~~~~~~~~~~~
@@ -94,16 +99,16 @@ blt_git_tag
 Returns the latest tag on a corresponding Git repository.
 
 This macro gets the latest tag from a Git repository that can be specified
-via the SOURCE_DIR argument. If SOURCE_DIR is not supplied, the macro will
-use ${CMAKE_CURRENT_SOURCE_DIR}. By default the macro will return the latest
+via the ``SOURCE_DIR`` argument. If ``SOURCE_DIR`` is not supplied, the macro will
+use ``CMAKE_CURRENT_SOURCE_DIR``. By default the macro will return the latest
 tag on the branch that is currently checked out. A particular branch may be
-specified using the ON_BRANCH option.
+specified using the ``ON_BRANCH`` option.
 
 The tag is stored in the CMake variable specified by the caller using the
-the OUTPUT_TAG parameter.
+the ``OUTPUT_TAG`` parameter.
 
 A return code for the Git command is returned to the caller via the CMake
-variable provided with the RETURN_CODE argument. A non-zero return code
+variable provided with the ``RETURN_CODE`` argument. A non-zero return code
 indicates that an error has occured.
 
 .. code-block:: cmake
@@ -117,6 +122,8 @@ indicates that an error has occured.
     message( STATUS "tag=${tag}" )
 
 
+.. _blt_git_branch:
+
 blt_git_branch
 ~~~~~~~~~~~~~~
 
@@ -129,12 +136,12 @@ blt_git_branch
 Returns the name of the active branch in the checkout space.
 
 This macro gets the name of the current active branch in the checkout space
-that can be specified using the SOURCE_DIR argument. If SOURCE_DIR is not
+that can be specified using the ``SOURCE_DIR`` argument. If ``SOURCE_DIR`` is not
 supplied by the caller, this macro will point to the checkout space
-corresponding to ${CMAKE_CURRENT_SOURCE_DIR}.
+corresponding to ``CMAKE_CURRENT_SOURCE_DIR``.
 
 A return code for the Git command is returned to the caller via the CMake
-variable provided with the RETURN_CODE argument. A non-zero return code
+variable provided with the ``RETURN_CODE`` argument. A non-zero return code
 indicates that an error has occured.
 
 .. code-block:: cmake
@@ -147,6 +154,8 @@ indicates that an error has occured.
     endif()
     message( STATUS "active_branch=${active_branch}" )
 
+
+.. _blt_git_hashcode:
 
 blt_git_hashcode
 ~~~~~~~~~~~~~~~~
@@ -161,14 +170,14 @@ blt_git_hashcode
 Returns the SHA-1 hashcode at the tip of a branch.
 
 This macro returns the SHA-1 hashcode at the tip of a branch that may be
-specified with the ON_BRANCH argument. If the ON_BRANCH argument is not
+specified with the ``ON_BRANCH`` argument. If the ``ON_BRANCH`` argument is not
 supplied, the macro will return the SHA-1 hash at the tip of the current
 branch. In addition, the caller may specify the target Git repository using
-the SOURCE_DIR argument. Otherwise, if SOURCE_DIR is not specified, the
-macro will use ${CMAKE_CURRENT_SOURCE_DIR}.
+the ``SOURCE_DIR`` argument. Otherwise, if ``SOURCE_DIR`` is not specified, the
+macro will use ``CMAKE_CURRENT_SOURCE_DIR``.
 
 A return code for the Git command is returned to the caller via the CMake
-variable provided with the RETURN_CODE argument. A non-zero return code
+variable provided with the ``RETURN_CODE`` argument. A non-zero return code
 indicates that an error has occured.
 
 .. code-block:: cmake
