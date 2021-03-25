@@ -37,7 +37,7 @@ TEST(calc_pi_mpi, compare_mpi_serial)
 }
 
 // _blt_tutorial_calcpi_test2_main_start
-// main driver that allows using mpi w/ google test
+// main driver that allows using mpi w/ GoogleTest
 int main(int argc, char * argv[])
 {
     int result = 0;

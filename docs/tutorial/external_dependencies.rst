@@ -84,8 +84,8 @@ registered dependency in test_1:  ``gtest``
    :language: cmake
 
 
-``gtest`` is the name for the Google Test dependency in BLT registered via 
-``blt_register_library()``. Even though Google Test is built-in and uses CMake,
+``gtest`` is the name for the GoogleTest dependency in BLT registered via 
+``blt_register_library()``. Even though GoogleTest is built-in and uses CMake,
 ``blt_register_library()`` allows us to easily set defines needed by all dependent
 targets.
 
@@ -123,10 +123,10 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test()`` macro.
    :language: cmake
 
 
-As mentioned in :ref:`UnitTesting`, google test provides a default ``main()``
+As mentioned in :ref:`UnitTesting`, GoogleTest provides a default ``main()``
 driver that will execute all unit tests defined in the source. To test MPI code,
 we need to create a main that initializes and finalizes MPI in addition to Google
-Test. ``test_2.cpp`` provides an example driver for MPI with Google Test.
+Test. ``test_2.cpp`` provides an example driver for MPI with GoogleTest.
 
 .. literalinclude:: calc_pi/test_2.cpp
    :start-after: _blt_tutorial_calcpi_test2_main_start
