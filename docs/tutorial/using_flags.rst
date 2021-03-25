@@ -3,7 +3,7 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-Portable compiler flags
+Portable Compiler Flags
 =========================
 
 To simplify the development of code that is portable across different architectures
@@ -39,7 +39,7 @@ Here is an example for setting the appropriate flag to treat warnings as errors:
       )
 
 Since values for ``GNU``, ``CLANG`` and ``INTEL`` are not supplied, 
-they will get the default value (``-Werror``)
+they will get the default value, ``-Werror``,
 which is supplied by the macro's ``DEFAULT`` argument.
 
 BLT also provides a simple macro to add compiler flags to a target.  
@@ -64,6 +64,6 @@ Here is another example to disable warnings about unknown OpenMP pragmas in the 
         MSVC    "/wd4068"
         )
 
-Note that GNU does not have a way to only disable warnings about openmp pragmas, 
-so one must disable warnings about all unknown pragmas on this compiler.
-
+.. note::
+    GNU does not have a way to only disable warnings about OpenMP pragmas, 
+    so you must disable warnings about all unknown pragmas on this compiler.
