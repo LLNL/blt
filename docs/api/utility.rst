@@ -155,7 +155,7 @@ blt_list_remove_duplicates
 
     blt_list_remove_duplicates(TO <list>)
 
-Removes duplicate elements from the given TO list.
+Removes duplicate elements from the given ``TO`` list.
 
 This macro is essentially a wrapper around CMake's ``list(REMOVE_DUPLICATES ...)``
 command but doesn't throw an error if the list is empty or not defined.

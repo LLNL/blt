@@ -34,7 +34,7 @@ provides more fine-grained scoping for the compile flags on a
 per target basis.
 
 The given target must be added via CMake's ``add_executable()`` or ``add_library()`` commands
-or with the corresponding ``blt_add_executable()`` and ``blt_add_library()`` macros.
+or with the corresponding :ref:`blt_add_executable` and :ref:`blt_add_library` macros.
 
 ``PRIVATE`` flags are used for the given target. ``INTERFACE`` flags are inherited
 by any target that depends on this target. ``PUBLIC`` flags are both ``INTERFACE`` and ``PRIVATE``.
@@ -73,7 +73,7 @@ definitions to the compiler command for the given target, i.e., it will pass
 ``-DFOO`` and ``-DBAR``.
 
 The given target must be added via CMake's ``add_executable()`` or ``add_library()`` commands
-or with the corresponding ``blt_add_executable()`` and ``blt_add_library()`` macros.
+or with the corresponding :ref:`blt_add_executable` and :ref:`blt_add_library` macros.
 
 ``PRIVATE`` flags are used for the given target. ``INTERFACE`` flags are inherited
 by any target that depends on this target. ``PUBLIC`` flags are both ``INTERFACE`` and ``PRIVATE``.
@@ -123,7 +123,7 @@ This macro provides very similar functionality to CMake's native
 more fine-grained scoping for the compile definitions on a per target basis.
 
 The given target must be added via CMake's ``add_executable()`` or ``add_library()`` commands
-or with the corresponding ``blt_add_executable()`` and ``blt_add_library()`` macros.
+or with the corresponding :ref:`blt_add_executable` and :ref:`blt_add_library` macros.
 
 ``PRIVATE`` flags are used for the given target. ``INTERFACE`` flags are inherited
 by any target that depends on this target. ``PUBLIC`` flags are both ``INTERFACE`` and ``PRIVATE``.
@@ -163,8 +163,8 @@ TARGET
   Name of CMake target
 
 The given target must be added via ``add_executable()`` or ``add_library()`` or
-with the corresponding ``blt_add_executable()``, ``blt_add_library()``, 
-``blt_import_library()``, or ``blt_register_library()`` macros.
+with the corresponding :ref:`blt_add_executable`, :ref:`blt_add_library`, 
+:ref:`blt_import_library`, or :ref:`blt_register_library` macros.
 
 Output is of the form for each property:
  | [<target> property] <property>: <value>

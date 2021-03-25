@@ -38,14 +38,14 @@ information see :ref:`blt_add_test`.
 
 The underlying executable should be previously added to the build system
 with :ref:`blt_add_executable`. It should include the necessary benchmarking 
-library in its DEPENDS_ON list.
+library in its ``DEPENDS_ON`` list.
 
-Any calls to this macro should be guarded with ENABLE_BENCHMARKS unless this option
+Any calls to this macro should be guarded with ``ENABLE_BENCHMARKS`` unless this option
 is always on in your build project.
 
 .. note::
   BLT provides a built-in Google Benchmark that is enabled by default if you set
-  ENABLE_BENCHMARKS=ON and can be turned off with the option ENABLE_GBENCHMARK.
+  ``ENABLE_BENCHMARKS=ON`` and can be turned off with the option ``ENABLE_GBENCHMARK``.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -105,28 +105,28 @@ OUTPUT_DIR
   Directory that this target will built to, defaults to bin
 
 OUTPUT_NAME
-  Override built file name of the executable (defaults to <NAME>)  
+  Override built file name of the executable (defaults to ``<name>``)  
 
 FOLDER
   Name of the IDE folder to ease organization
 
-Adds an executable target, called <name>, to be built from the given sources.
-It also adds the given INCLUDES and DEFINES from the parameters to this macro
-and adds all inherited information from the list given by DEPENDS_ON.  This
+Adds an executable target, called ``<name>``, to be built from the given sources.
+It also adds the given ``INCLUDES`` and ``DEFINES`` from the parameters to this macro
+and adds all inherited information from the list given by ``DEPENDS_ON``.  This
 macro creates a true CMake target that can be altered by other CMake commands
-like normal, such as `set_target_property()`.  It also adds SOURCES and HEADERS
+like normal, such as ``set_target_property()``.  It also adds ``SOURCES`` and ``HEADERS``
 to the library for build system dependency tracking and IDE folder support.
 
-OUTPUT_NAME is useful when multiple CMake targets with the same name need to be
+``OUTPUT_NAME`` is useful when multiple CMake targets with the same name need to be
 created by different targets.
 
 .. note::
   If the first entry in ``SOURCES`` is a Fortran source file, the fortran linker 
-  is used. (via setting the CMake target property ``LINKER_LANGUAGE`` to Fortran )
+  is used, via setting the CMake target property ``LINKER_LANGUAGE`` to Fortran.
 
 .. note::
-  The ``FOLDER`` option is only used when ENABLE_FOLDERS is ON and when the CMake generator
-  supports this feature and will otherwise be ignored. 
+  The ``FOLDER`` option is only used when ``ENABLE_FOLDERS`` is ``ON`` and when the
+  CMake generator supports this feature and will otherwise be ignored. 
 
 
 .. _blt_add_library:
@@ -173,7 +173,7 @@ DEPENDS_ON
   depends on
 
 OUTPUT_NAME
-  Override built file name of the library (defaults to <NAME>)  
+  Override built file name of the library (defaults to ``<name>``)  
 
 OUTPUT_DIR
   Directory that this target will built to
@@ -203,19 +203,19 @@ library and have headers that go along with them (unless it's a Fortran library)
 Header-only libraries are useful when you do not want the library separately compiled or 
 are using C++ templates that require the library's user to instantiate them. These libraries
 have headers but no sources. To create a header-only library (CMake calls them ``INTERFACE`` libraries),
-simply list all headers under the HEADERS argument and do not specify ``SOURCES`` (because there aren't any).
-Header-only libraries can have dependencies like compiled libraries - these will be propagated to targets
-that depend on the header-only library.
+simply list all headers under the ``HEADERS`` argument and do not specify ``SOURCES``
+(because there aren't any). Header-only libraries can have dependencies like compiled libraries. 
+These will be propagated to targets that depend on the header-only library.
 
 Object libraries are basically a collection of compiled source files that are not
 archived or linked. They are sometimes useful when you want to solve compilicated linking
 problems (like circular dependencies) or when you want to combine smaller libraries into
 one larger library but don't want the linker to remove unused symbols. Unlike regular CMake
 object libraries you do not have to use the ``$<TARGET_OBJECTS:<libname>>`` syntax, you can just
-use <libname> with BLT macros.  Unless you have a good reason don't use Object libraries.
+use ``<libname>`` with BLT macros.  Unless you have a good reason don't use Object libraries.
 
 .. note::
-  Due to necessary record keeping, BLT Object libraries need to be defined by ``blt_add_library`` before
+  Due to necessary record keeping, BLT Object libraries need to be defined by :ref:`blt_add_library` before
   they are used in any ``DEPENDS_ON`` list. They also do not follow CMake's normal transitivity rules.
   This is due to CMake requiring you install the individual object files if you install the 
   target that uses them. BLT manually adds the ``INTERFACE`` target properties to get around this.
@@ -265,7 +265,8 @@ NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
 
 NUM_OMP_THREADS
-  Indicates this test requires the defined environment variable OMP_NUM_THREADS set to the given variable.
+  Indicates this test requires the defined environment variable ``OMP_NUM_THREADS``
+  set to the given variable.
 
 CONFIGURATIONS
   Set the CTest configuration for this test.  When not specified, the test
@@ -344,7 +345,7 @@ TREAT_INCLUDES_AS_SYSTEM
   as system headers - this applies to all include paths for the target,
   not just those specifies in the ``INCLUDES`` parameter.  Only some 
   compilers support this. This is useful if the headers generate warnings
-  you want to not have them reported in your build. This defaults to OFF.
+  you want to not have them reported in your build. This defaults to ``OFF``.
 
 FORTRAN_MODULES
   Fortran module directories to be inherited by dependent targets
@@ -362,8 +363,8 @@ LINK_FLAGS
 DEFINES
   List of compiler defines to be inherited by dependent targets
 
-This macro does not create a target - it is intended to be used with CMake
-targets created via another BLT macro or CMake command.  Unlike ``blt_register_library``,
+This macro does not create a target, it is intended to be used with CMake
+targets created via another BLT macro or CMake command.  Unlike :ref:`blt_register_library`,
 it modifies the specified target, updating the CMake properties of the target that correspond
 to each of the parameters.
 
@@ -439,12 +440,12 @@ they could instead be built into a CMake target.  It also allows for compiler an
 options to be associated with the library.
 
 As with BLT-registered libraries, it can be added to the ``DEPENDS_ON`` parameter
-when building another target or to ``target_link_libraries`` to transitively add in
+when building another target or to ``target_link_libraries()`` to transitively add in
 all includes, libraries, flags, and definitions associated with the imported library.
 
 The ``EXPORTABLE`` option is intended to be used to simplify the process of exporting a project.
 Instead of handwriting package location logic in a CMake package configuration file, the
-EXPORTABLE targets can be exported with the targets defined by the project.
+``EXPORTABLE`` targets can be exported with the targets defined by the project.
 
 .. note::
   Libraries marked ``EXPORTABLE`` cannot also be marked ``GLOBAL``.  They also
@@ -484,21 +485,21 @@ Registers a library to the project to ease use in other BLT macro calls.
 
 Stores information about a library in a specific way that is easily recalled
 in other macros.  For example, after registering gtest, you can add gtest to
-the ``DEPENDS_ON`` in your ``blt_add_executable()`` call and it will add the
+the ``DEPENDS_ON`` in your :ref:`blt_add_executable` call and it will add the
 ``INCLUDES`` and ``LIBRARIES`` to that executable.
 
 .. note::
   In general, this macro should be avoided unless absolutely necessary, as it
   does not create a native CMake target.  If the library to register already exists
-  as a CMake target, consider using ``blt_patch_target``. Otherwise, consider using
-  ``blt_import_library``.  These options are insufficient in some circumstances, for example,
+  as a CMake target, consider using :ref:`blt_patch_target`. Otherwise, consider using
+  :ref:`blt_import_library`.  These options are insufficient in some circumstances, for example,
   if it is necessary to add libraries to a CMake library target declared in another
   directory while keeping the modified target usable with the same name as the original
-  target.  In this case ``blt_register_library`` is the only option.
+  target.  In this case :ref:`blt_register_library` is the only option.
 
 Note:
   The ``OBJECT`` parameter is for internal BLT support for object libraries
-  and is not for users.  Object libraries are created using ``blt_add_library()``.
+  and is not for users.  Object libraries are created using :ref:`blt_add_library`.
 
 Internally created variables (NAME = "foo"):
     | _BLT_FOO_IS_REGISTERED_LIBRARY
