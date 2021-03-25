@@ -9,14 +9,15 @@ Creating Libraries and Executables
 ==================================
 
 In the previous section, we learned the basics about how to create a CMake
-project with BLT, how to configure the project and how to build and test BLT's built-in third party libraries.  
+project with BLT, how to configure the project and how to build, and test
+BLT's built-in third party libraries.  
 
 We now move on to creating libraries and executables
 using two of BLT's core macros: ``blt_add_library()`` and ``blt_add_executable()``.
 
-We begin with a simple executable that calculates :math:`\pi` by numerical integration
-(``example_1``). We will then extract that code into a library, which we link
-into a new executable (``example_2``).
+We begin with a simple executable that calculates :math:`\pi` by numerical integration,
+``example_1``. We will then extract that code into a library, which we link
+into a new executable, ``example_2``.
 
 
 Example 1: Basic executable
