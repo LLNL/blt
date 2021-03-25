@@ -27,7 +27,7 @@ Avoid using Globs to Identify Source Files
 Globs are evaluated at CMake configure time - not build time. This means CMake will not detect new source files 
 when they are added to the file system unless there are other changes that trigger CMake to reconfigure. 
 
-The CMake documentation also warns against `this <https://cmake.org/cmake/help/v3.10/command/file.html?highlight=glob#file>`_.
+The CMake documentation also warns against `this <https://cmake.org/cmake/help/v3.20/command/file.html?highlight=glob#filesystem>`_.
 
 
 Use Arguments instead of Options in CMake Macros and Functions
