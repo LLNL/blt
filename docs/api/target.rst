@@ -215,9 +215,10 @@ object libraries you do not have to use the ``$<TARGET_OBJECTS:<libname>>`` synt
 use <libname> with BLT macros.  Unless you have a good reason don't use Object libraries.
 
 .. note::
-  BLT Object libraries do not follow CMake's normal transitivity rules. Due to CMake requiring
-  you install the individual object files if you install the target that uses them. BLT manually
-  adds the INTERFACE target properties to get around this.
+  Due to necessary record keeping, BLT Object libraries need to be defined by `blt_add_library` before
+  they are used in any `DEPENDS_ON` list. They also do not follow CMake's normal transitivity rules.
+  This is due to CMake requiring you install the individual object files if you install the 
+  target that uses them. BLT manually adds the INTERFACE target properties to get around this.
 
 This macro uses the BUILD_SHARED_LIBS, which is defaulted to OFF, to determine
 whether the library will be built as shared or static. The optional boolean
