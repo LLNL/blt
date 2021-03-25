@@ -17,8 +17,7 @@ This tutorial provides instructions for:
 
 The tutorial provides several examples that calculate the value of :math:`\pi` 
 by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
-integration. The code is adapted from:
-https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
+integration. The code is adapted from ANL `here <https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html>`_.
 
 The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. 
 Parts of the tutorial also require MPI, CUDA, Sphinx, and Doxygen.
