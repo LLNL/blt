@@ -32,7 +32,7 @@ For example, to find and add the external dependency *axom* as a CMake target, y
                        LIBRARIES  ${AXOM_LIBRARIES}
                        EXPORTABLE ON)
 
-Then *axom* is available to be used in the DEPENDS_ON list in the following
+Then ``axom`` is available to be used in the ``DEPENDS_ON`` list in the following
 ``blt_add_executable()`` or ``blt_add_library()`` calls, or in any CMake command that accepts a target.
 
 CMake targets created by ``blt_import_library()`` are ``INTERFACE`` libraries that can be installed
@@ -48,9 +48,10 @@ BLT also supports using ``blt_register_library()`` to provide additional options
 The implementation doesn't modify the properties of the existing targets, 
 it just exposes these options via BLT's support for  ``DEPENDS_ON``.
 
-This first-class importing functionality provided by ``blt_import_library()`` should be preferred, but ``blt_register_library()`` is
-still available for compatibility.  ``blt_import_library()`` is generally usable as a drop-in replacement, 
-though it does not support the creation of targets with the same name as a target that already exists.  
+This first-class importing functionality provided by ``blt_import_library()`` should be preferred,
+but ``blt_register_library()`` is still available for compatibility.  ``blt_import_library()``
+is generally usable as a drop-in replacement, though it does not support the creation of targets
+with the same name as a target that already exists.  
 
 .. note::
     Because CMake targets are only accessible from within the directory they were defined (including
@@ -59,21 +60,13 @@ though it does not support the creation of targets with the same name as a targe
     can also be used to manage visibility.
 
 BLT's ``mpi``, ``cuda``, ``cuda_runtime``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
-You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.  If your project exports targets and you would like
-BLT's provided third-party targets to also be exported (for example, if a project that imports your project does not
-use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other EXPORTABLE targets created by
-``blt_import_library()``, these targets should be prefixed with the name of the project.  Either the ``EXPORT_NAME``
-target property or the ``NAMESPACE`` option to CMake's ``install`` command can be used to modify the name of an
-installed target.  See the "Exporting BLT Targets" page for more info.
-
-
-.. admonition:: blt_register_library
-   :class: hint
-
-   A macro to register external libraries and dependencies with BLT.
-   The named target can be added to the ``DEPENDS_ON`` argument of other BLT macros, 
-   like ``blt_add_library()`` and ``blt_add_executable()``.  
-
+You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.  If your project exports targets and you
+would like BLT's provided third-party targets to also be exported (for example, if a project that imports
+your project does not use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other
+EXPORTABLE targets created by ``blt_import_library()``, these targets should be prefixed with the name of
+the project.  Either the ``EXPORT_NAME`` target property or the ``NAMESPACE`` option to CMake's ``install``
+command can be used to modify the name of an installed target.  See  :ref:`ExportingBLTCreatedTargetsE:`
+for more info.
 
 You have already seen one use of ``DEPENDS_ON`` for a BLT
 registered dependency in test_1:  ``gtest``
@@ -291,7 +284,7 @@ Building and testing on Ray
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
-enabled on the blue_os Ray cluster:
+enabled on the LLNL BlueOS Ray cluster:
 
 .. code-block:: bash
     

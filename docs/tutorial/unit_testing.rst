@@ -176,7 +176,7 @@ by first generating an executable for the test using the
    and allows users to pass in command line arguments.
 
 
-Returning to our running example (see  :ref:`AddTarget`), 
+Returning to our running example (see  :ref:`CreatingLibrariesAndExecutables:`), 
 let's add a simple test for the ``calc_pi`` library, 
 which has a single function with signature:
 

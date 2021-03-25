@@ -3,7 +3,7 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _AddTarget:
+.. _CreatingLibrariesAndExecutables:
 
 Creating Libraries and Executables
 ==================================
