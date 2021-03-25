@@ -69,7 +69,7 @@ Thanks to all of BLT's `contributors <https://github.com/LLNL/blt/graphs/contrib
 
 
 .. toctree::
-    :Table of Contents:
+    :caption: Table of Contents
     :maxdepth: 2
 
     User Tutorial <tutorial/index>
