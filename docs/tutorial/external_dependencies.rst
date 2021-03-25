@@ -170,7 +170,7 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
 The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, 
 along with adding the normal CUDA library and headers to your library or executable,
-it also tells BLT that this target's C/CXX/CUDA source files need to be compiled via
+it also tells BLT that this target's C/C++/CUDA source files need to be compiled via
 ``nvcc`` or ``cuda-clang``. If this is not a requirement, you can use the dependency
 ``cuda_runtime`` which also adds the CUDA runtime library and headers but will not
 compile each source file with ``nvcc``.
