@@ -3,10 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-BLT
-===
-
-**Build, Link, and Test**
+BLT: Build, Link, and Test
+==========================
 
 BLT is a composition of CMake macros and several widely used open source tools 
 assembled to simplify HPC software development. 
@@ -20,7 +18,7 @@ It is developed on GitHub under `LLNL's GitHub organization <https://github.com/
 
 
 BLT at a Glance
-~~~~~~~~~~~~~~~~~~
+---------------
 
 * Simplifies setting up a CMake-based build system
 
@@ -70,10 +68,8 @@ Authors
 Thanks to all of BLT's `contributors <https://github.com/LLNL/blt/graphs/contributors>`_.
 
 
-Documentation
-~~~~~~~~~~~~~
-
 .. toctree::
+    :Table of Contents:
     :maxdepth: 2
 
     User Tutorial <tutorial/index>
