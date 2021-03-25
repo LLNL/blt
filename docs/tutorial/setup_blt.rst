@@ -179,7 +179,7 @@ If everything went correctly, you should have the following output:
 Note that the default options for ``blank_project`` only include a single test
 ``blt_gtest_smoke``. As we will see later on, BLT includes additional smoke
 tests that are activated when BLT is configured with other options enabled,
-like Fortran, MPI, OpenMP, and Cuda. 
+like Fortran, MPI, OpenMP, and CUDA. 
 
 Host-configs
 ------------
