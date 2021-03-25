@@ -49,7 +49,8 @@ set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}" CACHE PATH "")
 
 set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
 set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
-set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G" CACHE STRING "")
+set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G"
+    CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "")
 
