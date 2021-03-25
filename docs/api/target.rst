@@ -497,7 +497,7 @@ the ``DEPENDS_ON`` in your :ref:`blt_add_executable` call and it will add the
   directory while keeping the modified target usable with the same name as the original
   target.  In this case :ref:`blt_register_library` is the only option.
 
-Note:
+.. note::
   The ``OBJECT`` parameter is for internal BLT support for object libraries
   and is not for users.  Object libraries are created using :ref:`blt_add_library`.
 
