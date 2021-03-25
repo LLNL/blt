@@ -3,6 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
+.. _SetupBLTInYourCMakeProject:
+
 Setup BLT in your CMake Project
 ===============================
 

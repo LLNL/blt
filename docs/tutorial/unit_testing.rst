@@ -41,8 +41,8 @@ options are available when ``ENABLE_TESTS`` is on:
   Option to control FRUIT (Default ``ON``). It is only active when ``ENABLE_FORTRAN`` is enabled.
 
 
-GoogleTest (C++/C Tests)
---------------------------
+GoogleTest (C/C++ Tests)
+------------------------
 
 The contents of a typical GoogleTest file look like this:
 
@@ -93,7 +93,7 @@ for a discussion of GoogleTest concepts, how to use them, and a listing of
 available assertion macros, etc.
 
 FRUIT (Fortran Tests)
---------------------------
+---------------------
 
 Fortran unit tests using the FRUIT framework are similar in structure to 
 the GoogleTest tests for C and C++ described above.
@@ -217,7 +217,7 @@ We then register this executable as a test:
    which is passed in through the ``COMMAND`` parameter.
 
 
-Running tests and examples
+Running Tests and Examples
 --------------------------
 
 To run the tests, type the following command in the build directory:

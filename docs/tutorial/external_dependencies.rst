@@ -3,6 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
+.. _ExternalDependencies:
+
 External Dependencies
 =====================
 
@@ -84,7 +86,7 @@ targets.
 
 
 MPI Example
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
 which uses MPI to parallelize the calculation over the integration intervals.
@@ -142,7 +144,7 @@ Test. ``test_2.cpp`` provides an example driver for MPI with GoogleTest.
 
 
 CUDA Example
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation over the integration intervals.
@@ -217,7 +219,7 @@ Here is an example of how to add an OpenMP enabled test that sets the amount of 
 
 
 Example Host-configs
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 Here are the full example host-config files that use gcc 4.9.3 for LLNL's Pascal, Ray, and Quartz Clusters.
 
@@ -234,8 +236,8 @@ Here is a full example host-config file for an OSX laptop, using a set of depend
 :download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
 
 
-Building and testing on Pascal
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Building and Testing on Pascal
+------------------------------
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Pascal:
 
@@ -280,8 +282,8 @@ to run the unit tests that are using MPI and CUDA:
   Total Test time (real) =   6.80 sec
 
 
-Building and testing on Ray
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Building and Testing on Ray
+---------------------------
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
 enabled on the LLNL BlueOS Ray cluster:

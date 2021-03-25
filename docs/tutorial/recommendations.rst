@@ -3,10 +3,10 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _Recommendations:
+.. _CMakeRecommendations:
 
-CMake Recommendations 
-====================== 
+CMake Recommendations
+=====================
 
 This section includes several recommendations for how to wield CMake. 
 Some of them are embodied in BLT, others are broader suggestions for CMake bliss.
