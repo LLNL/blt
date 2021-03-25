@@ -252,8 +252,7 @@ Here is how you can use the host-config file to configure a build of the ``calc_
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake  \
-          -DBLT_SOURCE_DIR=../../../../blt  ..
+    cmake -C ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake  ..
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) 
 to run the unit tests that are using MPI and CUDA:
@@ -296,14 +295,11 @@ enabled on the blue_os Ray cluster:
 
 .. code-block:: bash
     
-    # load new cmake b/c default on ray is too old
-    ml cmake
     # create build dir
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake \
-          -DBLT_SOURCE_DIR=../../../../blt  ..
+    cmake -C ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake  ..
 
 And here is how to build and test the code on Ray:
 
