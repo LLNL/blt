@@ -60,27 +60,21 @@ Questions
 Any questions can be sent to blt-dev@llnl.gov.  If you are an LLNL employee or collaborator, we have an
 internal Microsoft Teams group chat named "BLT" as well.
 
+Contributions
+-------------
+
+We welcome all kinds of contributions: new features, bug fixes, documentation edits.
+
+To contribute, make a [pull request](https://github.com/LLNL/blt/pulls), with `develop`
+as the destination branch. We use CI testing and your branch must pass these tests before
+being merged.
+
+For more information, see the [contributing guide](https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md).
+
 Authors
 -------
 
-Developers include:
-
- * Chris White, LLNL
- * Kenneth Weiss, LLNL
- * David A. Beckingsale, LLNL
- * Josh Essman, LLNL
- * Cyrus Harrison, LLNL
- * George Zagaris, LLNL
- * Lee Taylor, LLNL
- * Aaron Black, LLNL
- * Richard Hornung, LLNL
- * Randolph Settgast, LLNL
-
-Please see our [contributing guide](https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md)
-for details about how to contribute to the project.
-
-The full list of project contributors can be found on the
-[BLT Contributors Page](https://github.com/LLNL/BLT/graphs/contributors).
+Thanks to all of BLT's [contributors](https://github.com/LLNL/blt/graphs/contributors).
 
 Open-Source Projects using BLT
 ------------------------------
@@ -91,6 +85,8 @@ Open-Source Projects using BLT
  * [CARE](https://github.com/LLNL/CARE): CHAI and RAJA extensions
  * [CHAI](https://github.com/LLNL/CHAI): Copy-hiding array abstraction to automatically migrate data between memory spaces
  * [Conduit](https://github.com/LLNL/conduit): Simplified data exchange for HPC simulations
+ * [Comb](https://github.com/LLNL/Comb): Communication performance benchmarking tool
+ * [ExaCMech](https://github.com/LLNL/ExaCMech): GPU-friendly library of constitutive models
  * [Kripke](https://github.com/LLNL/Kripke): Simple, scalable, 3D Sn deterministic particle transport code
  * [RAJA](https://github.com/LLNL/raja): Performance portability layer for HPC
  * [SAMRAI](https://github.com/LLNL/SAMRAI): Structured Adaptive Mesh Refinement Application Infrastructure
@@ -98,6 +94,7 @@ Open-Source Projects using BLT
  * [Spheral](https://github.com/LLNL/spheral): Steerable parallel environment for performing coupled hydrodynamical & gravitational numerical simulations
  * [Umpire](https://github.com/LLNL/Umpire): Application-focused API for memory management on NUMA and GPU architectures
  * [VTK-h](https://github.com/Alpine-DAV/vtk-h): Scientific visualization algorithms for emerging processor architectures
+ * [WCS](https://github.com/LLNL/wcs): Computational environment for simulating a whole cell model
 
 If you would like to add a library to this list, please let us know via [email](mailto:blt-dev@llnl.gov)
 or by submitting an [issue](https://github.com/LLNL/blt/issues) or [pull-request](https://github.com/LLNL/blt/pulls).
