@@ -21,7 +21,7 @@ integration. The code is adapted from:
 https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html.
 
 The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. 
-Parts of the tutorial also require MPI, CUDA, Sphinx and Doxygen.
+Parts of the tutorial also require MPI, CUDA, Sphinx, and Doxygen.
 
 
 .. toctree::
