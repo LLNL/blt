@@ -3,6 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
+.. _ExternalDependencies:
+
 External Dependencies
 =====================
 
@@ -32,7 +34,7 @@ For example, to find and add the external dependency *axom* as a CMake target, y
                        LIBRARIES  ${AXOM_LIBRARIES}
                        EXPORTABLE ON)
 
-Then *axom* is available to be used in the DEPENDS_ON list in the following
+Then ``axom`` is available to be used in the ``DEPENDS_ON`` list in the following
 ``blt_add_executable()`` or ``blt_add_library()`` calls, or in any CMake command that accepts a target.
 
 CMake targets created by ``blt_import_library()`` are ``INTERFACE`` libraries that can be installed
@@ -48,9 +50,10 @@ BLT also supports using ``blt_register_library()`` to provide additional options
 The implementation doesn't modify the properties of the existing targets, 
 it just exposes these options via BLT's support for  ``DEPENDS_ON``.
 
-This first-class importing functionality provided by ``blt_import_library()`` should be preferred, but ``blt_register_library()`` is
-still available for compatibility.  ``blt_import_library()`` is generally usable as a drop-in replacement, 
-though it does not support the creation of targets with the same name as a target that already exists.  
+This first-class importing functionality provided by ``blt_import_library()`` should be preferred,
+but ``blt_register_library()`` is still available for compatibility.  ``blt_import_library()``
+is generally usable as a drop-in replacement, though it does not support the creation of targets
+with the same name as a target that already exists.  
 
 .. note::
     Because CMake targets are only accessible from within the directory they were defined (including
@@ -59,21 +62,13 @@ though it does not support the creation of targets with the same name as a targe
     can also be used to manage visibility.
 
 BLT's ``mpi``, ``cuda``, ``cuda_runtime``, and ``openmp`` targets are all defined via ``blt_import_library()``. 
-You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.  If your project exports targets and you would like
-BLT's provided third-party targets to also be exported (for example, if a project that imports your project does not
-use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other EXPORTABLE targets created by
-``blt_import_library()``, these targets should be prefixed with the name of the project.  Either the ``EXPORT_NAME``
-target property or the ``NAMESPACE`` option to CMake's ``install`` command can be used to modify the name of an
-installed target.  See the "Exporting BLT Targets" page for more info.
-
-
-.. admonition:: blt_register_library
-   :class: hint
-
-   A macro to register external libraries and dependencies with BLT.
-   The named target can be added to the ``DEPENDS_ON`` argument of other BLT macros, 
-   like ``blt_add_library()`` and ``blt_add_executable()``.  
-
+You can see how in ``blt/thirdparty_builtin/CMakelists.txt``.  If your project exports targets and you
+would like BLT's provided third-party targets to also be exported (for example, if a project that imports
+your project does not use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other
+EXPORTABLE targets created by ``blt_import_library()``, these targets should be prefixed with the name of
+the project.  Either the ``EXPORT_NAME`` target property or the ``NAMESPACE`` option to CMake's ``install``
+command can be used to modify the name of an installed target.  See  :ref:`ExportingBLTCreatedTargets:`
+for more info.
 
 You have already seen one use of ``DEPENDS_ON`` for a BLT
 registered dependency in test_1:  ``gtest``
@@ -84,24 +79,25 @@ registered dependency in test_1:  ``gtest``
    :language: cmake
 
 
-``gtest`` is the name for the Google Test dependency in BLT registered via 
-``blt_register_library()``. Even though Google Test is built-in and uses CMake,
+``gtest`` is the name for the GoogleTest dependency in BLT registered via 
+``blt_register_library()``. Even though GoogleTest is built-in and uses CMake,
 ``blt_register_library()`` allows us to easily set defines needed by all dependent
 targets.
 
 
 MPI Example
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
 which uses MPI to parallelize the calculation over the integration intervals.
 
 
-To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER`` in our host config file. Here is a snippet with these settings for LLNL's Surface Cluster:
+To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
+in our host config file. Here is a snippet with these settings for LLNL's Pascal Cluster:
 
-.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
-   :start-after: _blt_tutorial_surface_mpi_config_start
-   :end-before:  _blt_tutorial_surface_mpi_config_end
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+   :start-after: _blt_tutorial_mpi_config_start
+   :end-before:  _blt_tutorial_mpi_config_end
    :language: cmake
 
 
@@ -122,10 +118,10 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test()`` macro.
    :language: cmake
 
 
-As mentioned in :ref:`UnitTesting`, google test provides a default ``main()``
+As mentioned in :ref:`UnitTesting`, GoogleTest provides a default ``main()``
 driver that will execute all unit tests defined in the source. To test MPI code,
 we need to create a main that initializes and finalizes MPI in addition to Google
-Test. ``test_2.cpp`` provides an example driver for MPI with Google Test.
+Test. ``test_2.cpp`` provides an example driver for MPI with GoogleTest.
 
 .. literalinclude:: calc_pi/test_2.cpp
    :start-after: _blt_tutorial_calcpi_test2_main_start
@@ -148,7 +144,7 @@ Test. ``test_2.cpp`` provides an example driver for MPI with Google Test.
 
 
 CUDA Example
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation over the integration intervals.
@@ -160,11 +156,11 @@ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call
 ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable
 for you and enable the CUDA language.
 
-Here is a snippet with these settings for LLNL's Surface Cluster:
+Here is a snippet with these settings for LLNL's Pascal Cluster:
 
-.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
-   :start-after: _blt_tutorial_surface_cuda_config_start
-   :end-before:  _blt_tutorial_surface_cuda_config_end
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+   :start-after: _blt_tutorial_cuda_config_start
+   :end-before:  _blt_tutorial_cuda_config_end
    :language: cmake
 
 Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
@@ -176,22 +172,17 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
 
 The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, 
 along with adding the normal CUDA library and headers to your library or executable,
-it also tells BLT that this target's C/CXX/CUDA source files need to be compiled via
+it also tells BLT that this target's C/C++/CUDA source files need to be compiled via
 ``nvcc`` or ``cuda-clang``. If this is not a requirement, you can use the dependency
 ``cuda_runtime`` which also adds the CUDA runtime library and headers but will not
 compile each source file with ``nvcc``.
 
 Some other useful CUDA flags are:
 
-.. code-block:: cmake
-
-    # Enable separable compilation of all CUDA files for given target or all following targets
-    set(CUDA_SEPARABLE_COMPILIATION ON CACHE BOOL “”)
-    set(CUDA_ARCH “sm_60” CACHE STRING “”)
-    set(CMAKE_CUDA_FLAGS “-restrict –arch ${CUDA_ARCH} –std=c++11” CACHE STRING “”)
-    set(CMAKE_CUDA_LINK_FLAGS “-Xlinker –rpath –Xlinker /path/to/mpi” CACHE STRING “”)
-    # Needed when you have CUDA decorations exposed in libraries
-    set(CUDA_LINK_WITH_NVCC ON CACHE BOOL “”)
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake
+   :start-after: _blt_tutorial_useful_cuda_flags_start
+   :end-before:  _blt_tutorial_useful_cuda_flags_end
+   :language: cmake
 
 
 OpenMP
@@ -203,10 +194,10 @@ executable's ``DEPENDS_ON`` list.
 
 Here is an example of how to add an OpenMP enabled executable:
 
-   .. literalinclude:: ../../tests/smoke/CMakeLists.txt
-     :start-after: _blt_tutorial_openmp_executable_start
-     :end-before:  _blt_tutorial_openmp_executable_end
-     :language: cmake
+.. literalinclude:: ../../tests/smoke/CMakeLists.txt
+   :start-after: _blt_tutorial_openmp_executable_start
+   :end-before:  _blt_tutorial_openmp_executable_end
+   :language: cmake
 
 .. note::
   While we have tried to ensure that BLT chooses the correct compile and link flags for
@@ -221,22 +212,22 @@ Here is an example of how to add an OpenMP enabled executable:
 
 Here is an example of how to add an OpenMP enabled test that sets the amount of threads used:
 
-   .. literalinclude:: ../../tests/smoke/CMakeLists.txt
-     :start-after: _blt_tutorial_openmp_test_start
-     :end-before:  _blt_tutorial_openmp_test_end
-     :language: cmake
+.. literalinclude:: ../../tests/smoke/CMakeLists.txt
+   :start-after: _blt_tutorial_openmp_test_start
+   :end-before:  _blt_tutorial_openmp_test_end
+   :language: cmake
 
 
 Example Host-configs
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
-Here are the full example host-config files that use gcc 4.9.3 for LLNL's Surface, Ray and Quartz Clusters.
+Here are the full example host-config files that use gcc 4.9.3 for LLNL's Pascal, Ray, and Quartz Clusters.
 
-:download:`llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake <../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake>`
+:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake>`
 
-:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf <../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
+:download:`llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake <../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake>`
 
-:download:`llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3.cmake>`
+:download:`llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
 
@@ -245,21 +236,18 @@ Here is a full example host-config file for an OSX laptop, using a set of depend
 :download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
 
 
-Building and testing on Surface
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Building and Testing on Pascal
+------------------------------
 
-Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Surface:
+Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Pascal:
 
 .. code-block:: bash
     
-    # load new cmake b/c default on surface is too old
-    ml cmake/3.9.2
     # create build dir
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake  \
-          -DBLT_SOURCE_DIR=../../../../blt  ..
+    cmake -C ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake  ..
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) 
 to run the unit tests that are using MPI and CUDA:
@@ -294,22 +282,19 @@ to run the unit tests that are using MPI and CUDA:
   Total Test time (real) =   6.80 sec
 
 
-Building and testing on Ray
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Building and Testing on Ray
+---------------------------
 
 Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
-enabled on the blue_os Ray cluster:
+enabled on the LLNL BlueOS Ray cluster:
 
 .. code-block:: bash
     
-    # load new cmake b/c default on ray is too old
-    ml cmake
     # create build dir
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake \
-          -DBLT_SOURCE_DIR=../../../../blt  ..
+    cmake -C ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake  ..
 
 And here is how to build and test the code on Ray:
 

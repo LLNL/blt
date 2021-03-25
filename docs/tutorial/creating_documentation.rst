@@ -3,6 +3,8 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
+.. _CreatingDocumentation:
+
 Creating Documentation
 ======================
 
@@ -34,7 +36,7 @@ The ``calc_pi`` example provides examples of both Sphinx and Doxygen documentati
 
 
 Calc Pi Sphinx Example
-~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Sphinx is a python package that depends on several other packages.  
 It can be installed via `spack <https://spack.io>`_, pip, anaconda, etc... 
@@ -69,7 +71,7 @@ Here is the example reStructuredText file that contains documentation for the *c
    
 
 Calc Pi Doxygen Example
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 Doxygen is a compiled executable that can be installed via spack, built-by-hand, etc...
 
@@ -100,10 +102,8 @@ Here is the example ``Doxyfile.in`` file that is configured by CMake and passed 
    :language: rst
 
 
-
 Building the Calc Pi Example Documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+------------------------------------------
 
 Here is an example of building both the calc_pi Sphinx and Doxygen docs using the ``docs`` CMake target:
 
@@ -128,13 +128,7 @@ Here is an example of building both the calc_pi Sphinx and Doxygen docs using th
    [100%] Built target docs
 
 
+After this your local build directory will contain the following for viewing:
 
-
-After this, you can view the Sphinx docs at:
-
-* ``build-calc-pi/docs/sphinx/html/index.html``
-
-and the Doxygen docs at:
-
-* ``build-calc-pi/docs/doxygen/html/index.html``
-
+* Sphinx: ``build-calc-pi/docs/sphinx/html/index.html``
+* Doxygen: ``build-calc-pi/docs/doxygen/html/index.html``

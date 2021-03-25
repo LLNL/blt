@@ -3,29 +3,22 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
+.. _SetupBLTInYourCMakeProject:
+
 Setup BLT in your CMake Project
-=================================
+===============================
 
 BLT is easy to include in your CMake project whether it is an existing project or
-you are starting from scratch. You simply pull it into your project using a CMake
-``include()`` command.
+you are starting from scratch.  This tutorial assumes you are using git but those
+commands can easily changed or ignored.
 
-.. code-block:: cmake
 
-    include(path/to/blt/SetupBLT.cmake)
-
-You can include the BLT source in your repository or pass the location 
-of BLT at CMake configure time through the optional ``BLT_SOURCE_DIR``
-CMake variable. 
+Include BLT in your Git Repository
+----------------------------------
 
 There are two standard choices for including the BLT source in your repository:
 
-1. Add BLT as a git submodule
-2. Copy BLT into a subdirectory in your repository
-
-
-BLT as a Git Submodule
---------------------------
+**Add BLT as a git submodule**
 
 This example adds BLT as a submodule, commits, and pushes the changes to your repository.
 
@@ -36,8 +29,7 @@ This example adds BLT as a submodule, commits, and pushes the changes to your re
     git commit -m "Adding BLT"
     git push
 
-Copy BLT into your repository
------------------------------
+**Copy BLT into a subdirectory in your repository**
 
 This example will clone BLT into your repository and remove the unneeded 
 git files from the clone. It then commits and pushes the changes to your
@@ -52,8 +44,8 @@ repository.
     git push
 
 
-Include BLT in your project
----------------------------
+Include BLT in your CMake Project
+---------------------------------
 
 In most projects, including BLT is as simple as including the following CMake
 line in your base ``CMakeLists.txt`` after your ``project()`` call.
@@ -73,15 +65,9 @@ is recommended:
    :language: cmake
 
 This is a robust way of setting up BLT and supports an optional external BLT source
-directory. This allows the use of a common BLT across large projects. There are some
-helpful error messages if the BLT submodule is missing as well as the commands to solve
-it. 
-
-.. note::
-  Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
-  our tutorial is part of the blt repository and we want this project to be 
-  automatically tested using a single clone of our repository.
-
+directory via the command line option ``BLT_SOURCE_DIR``. This allows the use of a common
+BLT across large projects. There are some helpful error messages if the BLT submodule 
+is missing as well as the commands to solve it. 
 
 
 Running CMake
@@ -106,6 +92,7 @@ If you are using BLT outside of your project pass the location of BLT as follows
     cd build
     cmake -DBLT_SOURCE_DIR="path/to/blt" ..
 
+
 Example: blank_project
 ----------------------
 
@@ -114,8 +101,13 @@ features. It demonstrates the bare minimum required for testing purposes.
 
 Here is the entire CMakeLists.txt file for ``blank_project``:
 
-.. literalinclude:: blank_project/CMakeLists.txt
-   :language: cmake
+.. code-block:: cmake
+
+    cmake_minimum_required(VERSION 3.8)
+    project( blank )
+
+    include(/path/to/blt/SetupBLT.cmake)
+
 
 BLT also enforces some best practices for building, such as not allowing
 in-source builds.  This means that BLT prevents you from generating a
@@ -126,7 +118,7 @@ For example if you run the following commands:
 .. code-block:: bash
 
     cd <BLT repository>/docs/tutorial/blank_project
-    cmake -DBLT_SOURCE_DIR=../..
+    cmake .
 
 you will get the following error:
 
@@ -148,7 +140,7 @@ To correctly run cmake, create a build directory and run cmake from there:
     cd <BLT repository>/docs/blank_project
     mkdir build
     cd build
-    cmake -DBLT_SOURCE_DIR=../../.. ..
+    cmake ..
 
 This will generate a configured ``Makefile`` in your build directory to build
 ``blank_project``.  The generated makefile includes gtest and several built-in
@@ -189,7 +181,7 @@ If everything went correctly, you should have the following output:
 Note that the default options for ``blank_project`` only include a single test
 ``blt_gtest_smoke``. As we will see later on, BLT includes additional smoke
 tests that are activated when BLT is configured with other options enabled,
-like Fortran, MPI, OpenMP, and Cuda. 
+like Fortran, MPI, OpenMP, and CUDA. 
 
 Host-configs
 ------------
@@ -217,11 +209,11 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
 Here is a snippet from a host-config file that specifies compiler details for
-using gcc 4.9.3 on LLNL's surface cluster. 
+using gcc 4.9.3 on LLNL's Pascal cluster. 
 
-.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
-   :start-after: _blt_tutorial_surface_compiler_config_start
-   :end-before:  _blt_tutorial_surface_compiler_config_end
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+   :start-after: _blt_tutorial_compiler_config_start
+   :end-before:  _blt_tutorial_compiler_config_end
    :language: cmake
 
 

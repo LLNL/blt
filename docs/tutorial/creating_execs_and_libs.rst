@@ -3,20 +3,21 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _AddTarget:
+.. _CreatingLibrariesAndExecutables:
 
 Creating Libraries and Executables
 ==================================
 
 In the previous section, we learned the basics about how to create a CMake
-project with BLT, how to configure the project and how to build and test BLT's built-in third party libraries.  
+project with BLT, how to configure the project and how to build, and test
+BLT's built-in third party libraries.  
 
 We now move on to creating libraries and executables
 using two of BLT's core macros: ``blt_add_library()`` and ``blt_add_executable()``.
 
-We begin with a simple executable that calculates :math:`\pi` by numerical integration
-(``example_1``). We will then extract that code into a library, which we link
-into a new executable (``example_2``).
+We begin with a simple executable that calculates :math:`\pi` by numerical integration,
+``example_1``. We will then extract that code into a library, which we link
+into a new executable, ``example_2``.
 
 
 Example 1: Basic executable
@@ -24,6 +25,7 @@ Example 1: Basic executable
 
 This example is as basic as it gets. After setting up a BLT CMake project, 
 like ``blank_project`` in the previous section, we can start using BLT's macros.  
+
 Creating an executable is as simple as calling the following macro:
 
 .. literalinclude:: calc_pi/CMakeLists.txt
@@ -31,13 +33,13 @@ Creating an executable is as simple as calling the following macro:
    :end-before:  _blt_tutorial_example_executable_end
    :language: cmake
 
-This tells CMake to create an executable named ``example_1`` with one source file
-(``example_1.cpp``).
+This tells CMake to create an executable, named ``example_1``, with one source file,
+``example_1.cpp``.
 
 You can create this project yourself or you can run the already provided
 ``tutorial/calc_pi`` project. For ease of use, we have combined many examples
-into this one CMake project.  After running the following commands, you will
-create the executable ``<build dir>/bin/example_1``:
+into this one CMake project.  You can create the executable ``<build dir>/bin/example_1``,
+by running the following commands:
 
 .. code-block:: bash
 
@@ -84,7 +86,7 @@ created library target:
    :language: cmake
 
 The ``DEPENDS_ON`` parameter properly links the previously defined library
-into this executable without any more work or CMake function calls.
+into this executable without any more work or extra CMake function calls.
 
 
 .. admonition:: blt_add_library
@@ -92,7 +94,7 @@ into this executable without any more work or CMake function calls.
 
    This is another core BLT macro. It creates a CMake library target and associates
    the given sources and headers along with handling dependencies the same way as
-   ``blt_add_executable`` does. It also provides a few commonly used build options,
+   ``blt_add_executable()`` does. It also provides a few commonly used build options,
    such as overriding the output name of the library and the output directory. 
    It defaults to building a static library unless you override it with
    ``SHARED`` or with the global CMake option ``BUILD_SHARED_LIBS``.
@@ -101,7 +103,7 @@ Object Libraries
 ----------------
 
 BLT has simplified the use of CMake object libraries through the 
-``blt_add_library`` macro. Object libraries are a collection of object files
+``blt_add_library()`` macro. Object libraries are a collection of object files
 that are not linked or archived into a library. They are used in other libraries
 or executables through the ``DEPENDS_ON`` macro argument. This is generally
 useful for combining smaller libraries into a larger library without 

@@ -15,17 +15,6 @@ The BLT project uses git's commit history to track contributions from individual
 
 Since we want everyone to feel they are getting the proper attribution for their contributions, please add your name to the list below as part of your commit.
 
-# Contributors (In Alphabetical Order)
+# Contributors
 
-* Izaak Beekman
-* Robert Blake, LLNL
-* Jason Burmark, LLNL
-* Ben Corbett, LLNL
-* Johann Dahm
-* Chip Freitag, AMD, Inc.
-* Elsa Gonsiorowski, LLNL
-* Burl Hall, LLNL
-* Matt Larsen, LLNL
-* Martin McFadden, LLNL
-* Mark Miller, LLNL
-* David Poliakoff, Sandia National Laboratories
+Thanks to all of BLT's [contributors](https://github.com/LLNL/blt/graphs/contributors).

@@ -94,10 +94,6 @@ if(ENABLE_GTEST)
         set(_try_combine_static_libs OFF)
     endif()
 
-    if ("$ENV{SYS_TYPE}" STREQUAL "bgqos_0")
-        set(_try_combine_static_libs OFF)
-    endif()
-
     if ( ${_try_combine_static_libs} )
         add_subdirectory( src/combine_static_library_test )
     endif ()

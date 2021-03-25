@@ -6,6 +6,8 @@
 Code Check Macros
 ==================
 
+.. _blt_add_code_checks:
+
 blt_add_code_checks
 ~~~~~~~~~~~~~~~~~~~
 
@@ -52,19 +54,19 @@ CLANGQUERY_CHECKER_DIRECTORIES
   List of directories where clang-query's checkers are located
 
 The purpose of this macro is to enable all code checks in the default manner.  It runs
-all code checks from the working directory `CMAKE_BINARY_DIR`.  If you need more specific
+all code checks from the working directory ``CMAKE_BINARY_DIR``.  If you need more specific
 functionality you will need to call the individual code check macros yourself.
 
 .. note::
   For library projects that may be included as a subproject of another code via CMake's
-  add_subproject(), we recommend guarding "code check" targets against being included in
-  other codes.  The following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`
+  ``add_subproject()``, we recommend guarding "code check" targets against being included in
+  other codes.  The following check ``if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")``
   will stop your code checks from running unless you are the main CMake project.
 
 Sources are filtered based on file extensions for use in these code
 checks.  If you need additional file extensions defined add them to
-BLT_C_FILE_EXTS, BLT_Python_FILE_EXTS, BLT_CMAKE_FILE_EXTS, and
-BLT_Fortran_FILE_EXTS. Currently this macro only has code checks for
+``BLT_C_FILE_EXTS``, ``BLT_Python_FILE_EXTS``, ``BLT_CMAKE_FILE_EXTS``, and
+``BLT_Fortran_FILE_EXTS``. Currently this macro only has code checks for
 C/C++ and Python; it simply filters out the Fortran files.
 
 This macro supports C/C++ code formatting with either AStyle, ClangFormat, or Uncrustify
@@ -72,18 +74,18 @@ This macro supports C/C++ code formatting with either AStyle, ClangFormat, or Un
 
 - AStyle
 
-  * ASTYLE_CFG_FILE is given
-  * ASTYLE_EXECUTABLE is defined and found prior to calling this macro
+  * ``ASTYLE_CFG_FILE`` is given
+  * ``ASTYLE_EXECUTABLE`` is defined and found prior to calling this macro
 
 - ClangFormat
 
-  * CLANGFORMAT_CFG_FILE is given
-  * CLANGFORMAT_EXECUTABLE is defined and found prior to calling this macro
+  * ``CLANGFORMAT_CFG_FILE`` is given
+  * ``CLANGFORMAT_EXECUTABLE`` is defined and found prior to calling this macro
 
 - Uncrustify
 
-  * UNCRUSTIFY_CFG_FILE is given
-  * UNCRUSTIFY_EXECUTABLE is defined and found prior to calling this macro
+  * ``UNCRUSTIFY_CFG_FILE`` is given
+  * ``UNCRUSTIFY_EXECUTABLE`` is defined and found prior to calling this macro
 
 .. note::
   ClangFormat does not support a command line option for config files.  To work around this,
@@ -92,18 +94,18 @@ This macro supports C/C++ code formatting with either AStyle, ClangFormat, or Un
 This macro also supports Python code formatting with Yapf only if the following requirements
 are met:
 
-* YAPF_CFG_FILE is given
-* YAPF_EXECUTABLE is defined and found prior to calling this macro
+* ``YAPF_CFG_FILE`` is given
+* ``YAPF_EXECUTABLE`` is defined and found prior to calling this macro
 
 This macro also supports CMake code formatting with CMakeFormat only if the following requirements are met:
 
-* CMAKEFORMAT_CFG_FILE is given
-* CMAKEFORMAT_EXECUTABLE is defined and found prior to calling this macro
+* ``CMAKEFORMAT_CFG_FILE`` is given
+* ``CMAKEFORMAT_EXECUTABLE`` is defined and found prior to calling this macro
 
-Enabled code formatting checks produce a `check` build target that will test to see if you
-are out of compliance with your code formatting and a `style` build target that will actually
+Enabled code formatting checks produce a ``check`` build target that will test to see if you
+are out of compliance with your code formatting and a ``style`` build target that will actually
 modify your source files.  It also creates smaller child build targets that follow the pattern
-`<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>`.
+``<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>``.
 
 If a particular version of a code formatting tool is required, you can
 configure BLT to enforce that version by setting
@@ -121,20 +123,23 @@ This macro supports the following static analysis tools with their requirements:
 
 - CppCheck
 
-  * CPPCHECK_EXECUTABLE is defined and found prior to calling this macro
-  * <optional> CPPCHECK_FLAGS added to the cppcheck command line before the sources
+  * ``CPPCHECK_EXECUTABLE`` is defined and found prior to calling this macro
+  * <optional> ``CPPCHECK_FLAGS`` added to the cppcheck command line before the sources
 
 - Clang-Query
 
-  * CLANGQUERY_EXECUTABLE is defined and found prior to calling this macro
-  * CLANGQUERY_CHECKER_DIRECTORIES parameter given or BLT_CLANGQUERY_CHECKER_DIRECTORIES is defined
+  * ``CLANGQUERY_EXECUTABLE`` is defined and found prior to calling this macro
+  * ``CLANGQUERY_CHECKER_DIRECTORIES`` parameter given or ``BLT_CLANGQUERY_CHECKER_DIRECTORIES`` is defined
 
 - clang-tidy
 
-  * CLANGTIDY_EXECUTABLE is defined and found prior to calling this macro
+  * ``CLANGTIDY_EXECUTABLE`` is defined and found prior to calling this macro
 
-These are added as children to the `check` build target and produce child build targets
-that follow the pattern `<PREFIX>_<cppcheck|clang_query|clang_tidy>_check`.
+These are added as children to the ``check`` build target and produce child build targets
+that follow the pattern ``<PREFIX>_<cppcheck|clang_query|clang_tidy>_check``.
+
+
+.. _blt_add_clang_query_target:
 
 blt_add_clang_query_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,17 +182,19 @@ coding standards and rules on your source code.  A good primer on how to use cla
 found `here <https://devblogs.microsoft.com/cppblog/exploring-clang-tooling-part-2-examining-the-clang-ast-with-clang-query/>`_.
 
 A list of checker directories is required for clang-query, this can be defined either by
-the parameter CHECKER_DIRECTORIES or the variable BLT_CLANGQUERY_CHECKER_DIRECTORIES.
+the parameter ``CHECKER_DIRECTORIES`` or the variable ``BLT_CLANGQUERY_CHECKER_DIRECTORIES``.
 
-Turning on DIE_ON_MATCH is useful if you're using this in CI to enforce rules about your code.
+Turning on ``DIE_ON_MATCH`` is useful if you're using this in CI to enforce rules about your code.
 
-CHECKERS are the static analysis passes to specifically run on the target. The following checker options
-can be given:
+``CHECKERS`` are the static analysis passes to specifically run on the target. The following checker
+options can be given:
 
     * (no value)          : run all available static analysis checks found
     * (checker1:checker2) : run checker1 and checker2
     * (interpreter)       : run the clang-query interpeter to interactively develop queries
 
+
+.. _blt_add_cppcheck_target:
 
 blt_add_cppcheck_target
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -225,6 +232,8 @@ Cppcheck is a static analysis tool for C/C++ code. More information about
 Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`_.
 
 
+.. _blt_add_clang_tidy_target:
+
 blt_add_clang_tidy_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -249,7 +258,7 @@ COMMENT
   Comment prepended to the build target output
 
 CHECKS
-  list of checks to be run on the selected source files, available checks are listed
+  List of checks to be run on the selected source files, available checks are listed
   `here <https://clang.llvm.org/extra/clang-tidy/checks/list.html>`_.
 
 FIX
@@ -261,9 +270,11 @@ SRC_FILES
 Clang-tidy is a tool used for diagnosing and fixing typical programming errors. It is useful for enforcing
 coding standards and rules on your source code.  Clang-tidy is documented `here <https://clang.llvm.org/extra/clang-tidy/index.html>`_.
 
-CHECKS are the static analysis "rules" to specifically run on the target.
+``CHECKS`` are the static analysis "rules" to specifically run on the target.
 If no checks are specified, clang-tidy will run the default available static analysis checks.
 
+
+.. _blt_add_astyle_target:
 
 blt_add_astyle_target
 ~~~~~~~~~~~~~~~~~~~~~
@@ -308,14 +319,16 @@ SRC_FILES
 AStyle is a Source Code Beautifier for C/C++ code. More information about
 AStyle can be found `here <http://astyle.sourceforge.net/>`_.
 
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
+When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
 target to the parent `style` build target.  Otherwise the files are not modified and the
-created target is added to the parent `check` build target. This target will notify you
+created target is added to the parent ``check`` build target. This target will notify you
 which files do not conform to your style guide.
 
 .. Note::
-  Setting MODIFY_FILES to FALSE is only supported in AStyle v2.05 or greater.
+  Setting ``MODIFY_FILES`` to ``FALSE`` is only supported in AStyle v2.05 or greater.
 
+
+.. _blt_add_clangformat_target:
 
 blt_add_clangformat_target
 ~~~~~~~~~~~~~~~~~~~~~
@@ -360,24 +373,27 @@ SRC_FILES
 ClangFormat is a Source Code Beautifier for C/C++ code. More information about
 ClangFormat can be found `here <https://clang.llvm.org/docs/ClangFormat.html>`_.
 
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
-target to the parent `style` build target.  Otherwise the files are not modified and the
+When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
+target to the parent ``style`` build target.  Otherwise the files are not modified and the
 created target is added to the parent `check` build target. This target will notify you
 which files do not conform to your style guide.
 
 .. note::
   ClangFormat does not support a command line option for config files.  To work around this,
   we copy the given config file to the given working directory. We recommend using the build
-  directory `${PROJECT_BINARY_DIR}`. Also if someone is directly including your CMake project
+  directory ``${PROJECT_BINARY_DIR}``. Also if someone is directly including your CMake project
   in theirs, you may conflict with theirs.  We recommend guarding your code checks against this
-  with the following check `if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")`.
+  with the following check ``if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")``.
 
 .. note::
-  ClangFormat does not support a command line option for check (--dry-run) until version 10.
+  ClangFormat does not support a command line option for check ``--dry-run`` until version 10.
   This version is not widely used or available at this time. To work around this, we use an
-  included script called run-clang-format.py that does not use PREPEND_FLAGS or APPEND_FLAGS
-  in the `check` build target because the script does not support command line flags passed
-  to `clang-format`. This script is not used in the `style` build target.
+  included script called ``run-clang-format.py`` that does not use ``PREPEND_FLAGS`` or ``APPEND_FLAGS``
+  in the ``check`` build target because the script does not support command line flags passed
+  to ``clang-format``. This script is not used in the ``style`` build target.
+
+
+.. _blt_add_uncrustify_target:
 
 blt_add_uncrustify_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -422,13 +438,16 @@ SRC_FILES
 Uncrustify is a Source Code Beautifier for C/C++ code. More information about
 Uncrustify can be found `here <http://uncrustify.sourceforge.net/>`_.
 
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
-target to the parent `style` build target.  Otherwise the files are not modified and the
-created target is added to the parent `check` build target. This target will notify you
+When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
+target to the parent ``style`` build target.  Otherwise the files are not modified and the
+created target is added to the parent ``check`` build target. This target will notify you
 which files do not conform to your style guide.
-.. Note::
-  Setting MODIFY_FILES to FALSE is only supported in Uncrustify v0.61 or greater.
 
+.. Note::
+  Setting ``MODIFY_FILES`` to ``FALSE`` is only supported in Uncrustify v0.61 or greater.
+
+
+.. _blt_add_yapf_target:
 
 blt_add_yapf_target
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -473,11 +492,13 @@ SRC_FILES
 Yapf is a Source Code Beautifier for Python code. More information about
 Yapf can be found `here <https://github.com/google/yapf>`_.
 
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
-target to the parent `style` build target.  Otherwise the files are not modified and the
-created target is added to the parent `check` build target. This target will notify you
+When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
+target to the parent ``style`` build target.  Otherwise the files are not modified and the
+created target is added to the parent ``check`` build target. This target will notify you
 which files do not conform to your style guide.
 
+
+.. _blt_add_cmake_format_target:
 
 blt_add_cmakeformat_target
 ~~~~~~~~~~~~~~~~~~~~~
@@ -522,7 +543,7 @@ SRC_FILES
 CMakeFormat is a Source Code Beautifier for CMake code. More information about
 CMakeFormat can be found `here <https://cmake-format.readthedocs.io/en/latest/index.html>`_.
 
-When MODIFY_FILES is set to TRUE, modifies the files in place and adds the created build
-target to the parent `style` build target.  Otherwise the files are not modified and the
+When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
+target to the parent ``style`` build target.  Otherwise the files are not modified and the
 created target is added to the parent `check` build target. This target will notify you
 which files do not conform to your style guide.
