@@ -179,7 +179,7 @@ CHECKER_DIRECTORIES
 
 Clang-query is a tool used for examining and matching the Clang AST. It is useful for enforcing
 coding standards and rules on your source code.  A good primer on how to use clang-query can be
-found `here <https://devblogs.microsoft.com/cppblog/exploring-clang-tooling-part-2-examining-the-clang-ast-with-clang-query/>`_.
+found `here <https://devblogs.microsoft.com/cppblog/exploring-clang-tooling-part-2-examining-the-clang-ast-with-clang-query/>`__.
 
 A list of checker directories is required for clang-query, this can be defined either by
 the parameter ``CHECKER_DIRECTORIES`` or the variable ``BLT_CLANGQUERY_CHECKER_DIRECTORIES``.
@@ -229,7 +229,7 @@ SRC_FILES
   Source list that cppcheck will be ran on
 
 Cppcheck is a static analysis tool for C/C++ code. More information about
-Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`_.
+Cppcheck can be found `here <http://cppcheck.sourceforge.net/>`__.
 
 
 .. _blt_add_clang_tidy_target:
@@ -259,7 +259,7 @@ COMMENT
 
 CHECKS
   List of checks to be run on the selected source files, available checks are listed
-  `here <https://clang.llvm.org/extra/clang-tidy/checks/list.html>`_.
+  `here <https://clang.llvm.org/extra/clang-tidy/checks/list.html>`__.
 
 FIX
   Applies fixes for checks (a subset of clang-tidy checks specify how they should be resolved)
@@ -268,7 +268,7 @@ SRC_FILES
   Source list that clang-tidy will be ran on
 
 Clang-tidy is a tool used for diagnosing and fixing typical programming errors. It is useful for enforcing
-coding standards and rules on your source code.  Clang-tidy is documented `here <https://clang.llvm.org/extra/clang-tidy/index.html>`_.
+coding standards and rules on your source code.  Clang-tidy is documented `here <https://clang.llvm.org/extra/clang-tidy/index.html>`__.
 
 ``CHECKS`` are the static analysis "rules" to specifically run on the target.
 If no checks are specified, clang-tidy will run the default available static analysis checks.
@@ -317,7 +317,7 @@ SRC_FILES
   Source list that AStyle will be ran on
 
 AStyle is a Source Code Beautifier for C/C++ code. More information about
-AStyle can be found `here <http://astyle.sourceforge.net/>`_.
+AStyle can be found `here <http://astyle.sourceforge.net/>`__.
 
 When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
 target to the parent `style` build target.  Otherwise the files are not modified and the
@@ -331,7 +331,7 @@ which files do not conform to your style guide.
 .. _blt_add_clangformat_target:
 
 blt_add_clangformat_target
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
@@ -371,7 +371,7 @@ SRC_FILES
   Source list that ClangFormat will be ran on
 
 ClangFormat is a Source Code Beautifier for C/C++ code. More information about
-ClangFormat can be found `here <https://clang.llvm.org/docs/ClangFormat.html>`_.
+ClangFormat can be found `here <https://clang.llvm.org/docs/ClangFormat.html>`__.
 
 When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
 target to the parent ``style`` build target.  Otherwise the files are not modified and the
@@ -436,7 +436,7 @@ SRC_FILES
   Source list that Uncrustify will be ran on
 
 Uncrustify is a Source Code Beautifier for C/C++ code. More information about
-Uncrustify can be found `here <http://uncrustify.sourceforge.net/>`_.
+Uncrustify can be found `here <http://uncrustify.sourceforge.net/>`__.
 
 When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
 target to the parent ``style`` build target.  Otherwise the files are not modified and the
@@ -450,7 +450,7 @@ which files do not conform to your style guide.
 .. _blt_add_yapf_target:
 
 blt_add_yapf_target
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
@@ -490,7 +490,7 @@ SRC_FILES
   Source list that Yapf will be ran on
 
 Yapf is a Source Code Beautifier for Python code. More information about
-Yapf can be found `here <https://github.com/google/yapf>`_.
+Yapf can be found `here <https://github.com/google/yapf>`__.
 
 When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
 target to the parent ``style`` build target.  Otherwise the files are not modified and the
@@ -501,7 +501,7 @@ which files do not conform to your style guide.
 .. _blt_add_cmake_format_target:
 
 blt_add_cmakeformat_target
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
@@ -541,7 +541,7 @@ SRC_FILES
   Source list that CMakeFormat will be ran on
 
 CMakeFormat is a Source Code Beautifier for CMake code. More information about
-CMakeFormat can be found `here <https://cmake-format.readthedocs.io/en/latest/index.html>`_.
+CMakeFormat can be found `here <https://cmake-format.readthedocs.io/en/latest/index.html>`__.
 
 When ``MODIFY_FILES`` is set to ``TRUE``, modifies the files in place and adds the created build
 target to the parent ``style`` build target.  Otherwise the files are not modified and the
