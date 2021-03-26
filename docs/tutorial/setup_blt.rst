@@ -220,30 +220,24 @@ using gcc 4.9.3 on LLNL's Pascal cluster.
 Example files
 -------------
 
-.. container:: toggle expanded
+Files related to setting up `blank_project`:
+
+.. container:: toggle
 
     .. container:: label
 
-       Files related to setting up `blank_project`
+        ``CMakeLists.txt``
 
-    ..
+    .. literalinclude::  ./blank_project/CMakeLists.txt
+        :language: cmake
+        :linenos:
 
-       .. container:: toggle
+.. container:: toggle
 
-          .. container:: label
+    .. container:: label
 
-              ``CMakeLists.txt``
+        ``gcc@4.9.3_nvcc host config``
 
-          .. literalinclude::  ./blank_project/CMakeLists.txt
-             :language: cmake
-             :linenos:
-
-       .. container:: toggle
-
-          .. container:: label
-
-             ``gcc@4.9.3_nvcc host config``
-
-          .. literalinclude::  ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
-             :language: cmake
-             :linenos:
+    .. literalinclude::  ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+        :language: cmake
+        :linenos:
