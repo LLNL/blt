@@ -26,3 +26,8 @@
 .linebreak {
   opacity: 0.0;
 }
+
+/* Sidebar header (and topbar for mobile) */
+.wy-side-nav-search, .wy-nav-top {
+  background: #404040;
+}
