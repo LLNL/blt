@@ -13,7 +13,7 @@ project( blt_docs )
 
 # Set BLT_SOURCE_DIR to default location, if not set by user 
 if(NOT BLT_SOURCE_DIR)
-    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../..")
+    set(BLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/..")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
@@ -21,7 +21,7 @@ include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 #------------------------------------------------------------------------------
 # Calc PI Tutorial
 #------------------------------------------------------------------------------
-add_subdirectory(calc_pi)
+add_subdirectory(tutorial/calc_pi)
 
 #------------------------------------------------------------------------------
 # Docs
