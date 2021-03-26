@@ -29,5 +29,9 @@
 
 /* Sidebar header (and topbar for mobile) */
 .wy-side-nav-search, .wy-nav-top {
-  background: #404040;
+  background: #343131;
+}
+
+a img.logo {
+  scale: 75%
 }
