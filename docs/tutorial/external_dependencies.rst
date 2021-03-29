@@ -226,7 +226,7 @@ Here is an example of how to add an OpenMP enabled test that sets the amount of 
 Example Host-configs
 --------------------
 
-Here are the full example host-config files that use gcc 4.9.3 for LLNL's Pascal, Ray, and Quartz Clusters.
+Here are the full example host-config files for LLNL's Pascal, Ray, and Quartz Clusters.
 
 :download:`llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake>`
 
