@@ -238,6 +238,9 @@ Here are the full example host-config files for LLNL's Pascal, Ray, and Quartz C
 
 Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
 
+
+Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
+
 :download:`darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake  <../../host-configs/darwin/elcapitan-x86_64/naples-clang@7.3.0.cmake>`
 
 
@@ -334,7 +337,55 @@ And here is how to build and test the code on Ray:
 Building and Testing on Summit
 -------------------------------
 
-.. warning::
+Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
+enabled on the OLCF Summit cluster:
 
-  CYRUS ADD THIS
+.. code-block:: bash
+    
+    # load the cmake module
+    module load cmake
+    # create build dir
+    mkdir build
+    cd build
+    # configure using host-config
+    cmake -C ../../host-configs/olcf/summit/gcc@6.4.0_nvcc.cmake  ..
+
+ 
+And here is how to build and test the code on Summit:
+
+.. code-block:: console
+
+  bash-4.2$ bsub -W 30 -nnodes 1 -P <valid project>  -Is /bin/bash
+  bash-4.2$ module load gcc cuda
+  bash-4.2$ make
+  bash-4.2$ make test
+
+  Running tests...
+  Test project /projects/blt/docs/tutorial/calc_pi/build
+        Start  1: test_1
+   1/11 Test  #1: test_1 ...........................   Passed    0.00 sec
+        Start  2: test_2
+   2/11 Test  #2: test_2 ...........................   Passed    1.03 sec
+        Start  3: test_3
+   3/11 Test  #3: test_3 ...........................   Passed    0.21 sec
+        Start  4: blt_gtest_smoke
+   4/11 Test  #4: blt_gtest_smoke ..................   Passed    0.00 sec
+        Start  5: blt_fruit_smoke
+   5/11 Test  #5: blt_fruit_smoke ..................   Passed    0.00 sec
+        Start  6: blt_mpi_smoke
+   6/11 Test  #6: blt_mpi_smoke ....................   Passed    0.76 sec
+        Start  7: blt_cuda_smoke
+   7/11 Test  #7: blt_cuda_smoke ...................   Passed    0.22 sec
+        Start  8: blt_cuda_runtime_smoke
+   8/11 Test  #8: blt_cuda_runtime_smoke ...........   Passed    0.07 sec
+        Start  9: blt_cuda_version_smoke
+   9/11 Test  #9: blt_cuda_version_smoke ...........   Passed    0.06 sec
+        Start 10: blt_cuda_mpi_smoke
+  10/11 Test #10: blt_cuda_mpi_smoke ...............   Passed    0.80 sec
+        Start 11: blt_cuda_gtest_smoke
+  11/11 Test #11: blt_cuda_gtest_smoke .............   Passed    0.21 sec
+
+  100% tests passed, 0 tests failed out of 11
+
+  Total Test time (real) =   3.39 sec
 
