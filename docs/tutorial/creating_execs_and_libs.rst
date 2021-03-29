@@ -16,7 +16,7 @@ We now move on to creating libraries and executables
 using two of BLT's core macros: ``blt_add_library()`` and ``blt_add_executable()``.
 
 We begin with a simple executable that calculates :math:`\pi` by numerical integration,
-``example_1``. We will then extract that code into a library, which we link
+``example_1``. We then extract that code into a library, which we link
 into a new executable, ``example_2``.
 
 
@@ -124,6 +124,15 @@ the linker removing unused symbols in the larger library.
   Due to record keeping on BLT's part to make object libraries as easy to use
   as possible, you need to define object libraries before you use them
   if you need their inheritable information to be correct.
+
+..
+.. ------------------------------------
+.. CYRUS NOTE: 
+.. Object Libraries CUDA Considerations
+.. this seems like a detour given we haven't talked about CUDA yet
+.. ------------------------------------
+..
+
 
 If you are using separable CUDA compilation (relocatable device code) in your
 object library, users of that library will be required to use NVCC to link their

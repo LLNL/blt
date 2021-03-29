@@ -44,7 +44,8 @@ Axom, it could export its ``axom`` target.  To avoid introducing target name con
 ``calc_pi::axom``.
 
 This is especially helpful for "converting" external libraries that are not built with CMake
-into CMake-friendly imported targets.
+into CMake-friendly imported targets. 
+
 
 BLT also supports using ``blt_register_library()`` to provide additional options for existing CMake targets. 
 The implementation doesn't modify the properties of the existing targets, 
@@ -54,6 +55,10 @@ This first-class importing functionality provided by ``blt_import_library()`` sh
 but ``blt_register_library()`` is still available for compatibility.  ``blt_import_library()``
 is generally usable as a drop-in replacement, though it does not support the creation of targets
 with the same name as a target that already exists.  
+
+
+Both ``blt_import_library()`` and ``blt_register_library()`` are compatible with 
+libraries that *do* provide CMake-friendly targets.
 
 .. note::
     Because CMake targets are only accessible from within the directory they were defined (including
@@ -324,3 +329,12 @@ And here is how to build and test the code on Ray:
   100% tests passed, 0 tests failed out of 7
   
   Total Test time (real) =   2.47 sec  
+
+
+Building and Testing on Summit
+-------------------------------
+
+.. warning::
+
+  CYRUS ADD THIS
+
