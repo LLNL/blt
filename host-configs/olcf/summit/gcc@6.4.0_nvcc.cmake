@@ -42,6 +42,9 @@ set(MPI_C_COMPILER "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 set(MPI_CXX_COMPILER "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
 
 set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
+
+set(MPIEXEC_EXECUTABLE "/sw/summit/xalt/1.2.1/bin/jsrun" CACHE PATH "")
+
 # _blt_tutorial_mpi_config_end
 
 #------------------------------------------------------------------------------
