@@ -44,7 +44,8 @@ Axom, it could export its ``axom`` target.  To avoid introducing target name con
 ``calc_pi::axom``.
 
 This is especially helpful for "converting" external libraries that are not built with CMake
-into CMake-friendly imported targets.
+into CMake-friendly imported targets. 
+
 
 BLT also supports using ``blt_register_library()`` to provide additional options for existing CMake targets. 
 The implementation doesn't modify the properties of the existing targets, 
@@ -54,6 +55,10 @@ This first-class importing functionality provided by ``blt_import_library()`` sh
 but ``blt_register_library()`` is still available for compatibility.  ``blt_import_library()``
 is generally usable as a drop-in replacement, though it does not support the creation of targets
 with the same name as a target that already exists.  
+
+
+Both ``blt_import_library()`` and ``blt_register_library()`` are compatible with 
+libraries that *do* provide CMake-friendly targets.
 
 .. note::
     Because CMake targets are only accessible from within the directory they were defined (including
@@ -221,7 +226,7 @@ Here is an example of how to add an OpenMP enabled test that sets the amount of 
 Example Host-configs
 --------------------
 
-Here are the full example host-config files that use gcc 4.9.3 for LLNL's Pascal, Ray, and Quartz Clusters.
+Here are the full example host-config files for LLNL's Pascal, Ray, and Quartz Clusters.
 
 :download:`llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake>`
 
@@ -230,6 +235,9 @@ Here are the full example host-config files that use gcc 4.9.3 for LLNL's Pascal
 :download:`llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake <../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake>`
 
 .. note::  Quartz does not have GPUs, so CUDA is not enabled in the Quartz host-config.
+
+Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
+
 
 Here is a full example host-config file for an OSX laptop, using a set of dependencies built with spack.
 
@@ -324,3 +332,60 @@ And here is how to build and test the code on Ray:
   100% tests passed, 0 tests failed out of 7
   
   Total Test time (real) =   2.47 sec  
+
+
+Building and Testing on Summit
+-------------------------------
+
+Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
+enabled on the OLCF Summit cluster:
+
+.. code-block:: bash
+    
+    # load the cmake module
+    module load cmake
+    # create build dir
+    mkdir build
+    cd build
+    # configure using host-config
+    cmake -C ../../host-configs/olcf/summit/gcc@6.4.0_nvcc.cmake  ..
+
+ 
+And here is how to build and test the code on Summit:
+
+.. code-block:: console
+
+  bash-4.2$ bsub -W 30 -nnodes 1 -P <valid project>  -Is /bin/bash
+  bash-4.2$ module load gcc cuda
+  bash-4.2$ make
+  bash-4.2$ make test
+
+  Running tests...
+  Test project /projects/blt/docs/tutorial/calc_pi/build
+        Start  1: test_1
+   1/11 Test  #1: test_1 ...........................   Passed    0.00 sec
+        Start  2: test_2
+   2/11 Test  #2: test_2 ...........................   Passed    1.03 sec
+        Start  3: test_3
+   3/11 Test  #3: test_3 ...........................   Passed    0.21 sec
+        Start  4: blt_gtest_smoke
+   4/11 Test  #4: blt_gtest_smoke ..................   Passed    0.00 sec
+        Start  5: blt_fruit_smoke
+   5/11 Test  #5: blt_fruit_smoke ..................   Passed    0.00 sec
+        Start  6: blt_mpi_smoke
+   6/11 Test  #6: blt_mpi_smoke ....................   Passed    0.76 sec
+        Start  7: blt_cuda_smoke
+   7/11 Test  #7: blt_cuda_smoke ...................   Passed    0.22 sec
+        Start  8: blt_cuda_runtime_smoke
+   8/11 Test  #8: blt_cuda_runtime_smoke ...........   Passed    0.07 sec
+        Start  9: blt_cuda_version_smoke
+   9/11 Test  #9: blt_cuda_version_smoke ...........   Passed    0.06 sec
+        Start 10: blt_cuda_mpi_smoke
+  10/11 Test #10: blt_cuda_mpi_smoke ...............   Passed    0.80 sec
+        Start 11: blt_cuda_gtest_smoke
+  11/11 Test #11: blt_cuda_gtest_smoke .............   Passed    0.21 sec
+
+  100% tests passed, 0 tests failed out of 11
+
+  Total Test time (real) =   3.39 sec
+

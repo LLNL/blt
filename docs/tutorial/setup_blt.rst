@@ -10,7 +10,7 @@ Setup BLT in your CMake Project
 
 BLT is easy to include in your CMake project whether it is an existing project or
 you are starting from scratch.  This tutorial assumes you are using git but those
-commands can easily changed or ignored.
+commands can easily be changed or ignored.
 
 
 Include BLT in your Git Repository
@@ -31,7 +31,7 @@ This example adds BLT as a submodule, commits, and pushes the changes to your re
 
 **Copy BLT into a subdirectory in your repository**
 
-This example will clone BLT into your repository and remove the unneeded 
+This example will clone a copy of BLT into your repository and remove the unneeded 
 git files from the clone. It then commits and pushes the changes to your
 repository.
 
@@ -54,7 +54,7 @@ line in your base ``CMakeLists.txt`` after your ``project()`` call.
 
     include(blt/SetupBLT.cmake)
 
-This enables all of BLT's features in your project. 
+This enables all of BLT's features in your project.
 
 However if your project is likely to be used by other projects.  The following
 is recommended:
@@ -65,9 +65,11 @@ is recommended:
    :language: cmake
 
 This is a robust way of setting up BLT and supports an optional external BLT source
-directory via the command line option ``BLT_SOURCE_DIR``. This allows the use of a common
-BLT across large projects. There are some helpful error messages if the BLT submodule 
-is missing as well as the commands to solve it. 
+directory via the command line option ``BLT_SOURCE_DIR``.
+Using the external BLT source directory allows you to use single BLT
+instance across multiple independent CMake projects.
+This also adds helpful error messages if the BLT submodule is missing
+as well as the commands to solve it. 
 
 
 Running CMake
@@ -96,7 +98,7 @@ If you are using BLT outside of your project pass the location of BLT as follows
 Example: blank_project
 ----------------------
 
-The ``blank_project`` example is provided to show you some of BLT's built-in
+The ``blank_project`` example shows you some of BLT's built-in
 features. It demonstrates the bare minimum required for testing purposes.
 
 Here is the entire CMakeLists.txt file for ``blank_project``:
