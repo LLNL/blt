@@ -15,12 +15,34 @@ This tutorial provides instructions for:
     * Using external project dependencies
     * Creating documentation with Sphinx and Doxygen
 
-The tutorial provides several examples that calculate the value of :math:`\pi` 
-by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
-integration. The code is adapted from ANL `here <https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html>`_.
+The two example CMake projects used are included in BLT's source tree at:
 
-The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer. 
+* ``<blt-dir>/cmake/docs/tutorial/blank_project``
+* ``<blt-dir>/cmake/docs/tutorial/calc_pi``
+
+Here are direct links to the projects in BLT's GitHub repo:
+
+* https://github.com/LLNL/blt/tree/develop/docs/tutorial/blank_project
+* https://github.com/LLNL/blt/tree/develop/docs/tutorial/calc_pi
+
+
+``blank_project`` provides a minimum template for starting a new project and
+``calc_pi`` provides several examples that calculate the value of :math:`\pi` 
+by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
+integration. The code is adapted from ANL's `using mpi examples <https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html>`_.
+
+
+Most of the tutorial focuses on the BLT features used to create the complete
+``calc_pi`` project.
+
+
+The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 or newer.
 Parts of the tutorial also require MPI, CUDA, Sphinx, and Doxygen.
+
+We provide instructions to build and run these projects on several
+LLNL HPC platforms and ORNL's Summit platform.
+
+.. CYRUS NOTE: IF WE SEPARATE THE HOST CONFIG EXAMPLES, WE SHOULD CROSS LINK HERE.
 
 
 .. toctree::
