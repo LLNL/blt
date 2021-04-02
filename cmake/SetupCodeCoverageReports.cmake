@@ -1,4 +1,4 @@
-# Copyright (c) 2012 - 2015, Lars Bilke. See the top-level COPYRIGHT file for details
+# Copyright (c) 2012 - 2015, Lars Bilke. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
