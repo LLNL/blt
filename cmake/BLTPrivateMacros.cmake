@@ -253,49 +253,51 @@ macro(blt_inherit_target_info)
         message( FATAL_ERROR "Must provide a FROM argument to the 'blt_inherit_target' macro" )
     endif()
 
+    blt_determine_scope(TARGET ${arg_TO} OUT _scope)
+
     get_target_property(_interface_system_includes
                         ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
     if ( _interface_system_includes )
-        target_include_directories(${arg_TO} SYSTEM PUBLIC ${_interface_system_includes})
+        target_include_directories(${arg_TO} SYSTEM ${_scope} ${_interface_system_includes})
     endif()
 
     get_target_property(_interface_includes
                         ${arg_FROM} INTERFACE_INCLUDE_DIRECTORIES)
     if ( _interface_includes )
-        target_include_directories(${arg_TO} PUBLIC ${_interface_includes})
+        target_include_directories(${arg_TO} ${_scope} ${_interface_includes})
     endif()
 
     get_target_property(_interface_defines
                         ${arg_FROM} INTERFACE_COMPILE_DEFINITIONS)
     if ( _interface_defines )
-        target_compile_definitions( ${arg_TO} PUBLIC ${_interface_defines})
+        target_compile_definitions( ${arg_TO} ${_scope} ${_interface_defines})
     endif()
 
     if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
         get_target_property(_interface_link_options
                             ${arg_FROM} INTERFACE_LINK_OPTIONS)
         if ( _interface_link_options )
-            target_link_options( ${arg_TO} PUBLIC ${_interface_link_options})
+            target_link_options( ${arg_TO} ${_scope} ${_interface_link_options})
         endif()
     endif()
 
     get_target_property(_interface_compile_options
                         ${arg_FROM} INTERFACE_COMPILE_OPTIONS)
     if ( _interface_compile_options )
-        target_compile_options( ${arg_TO} PUBLIC ${_interface_compile_options})
+        target_compile_options( ${arg_TO} ${_scope} ${_interface_compile_options})
     endif()
 
     if ( NOT arg_OBJECT )
         get_target_property(_interface_link_directories
                             ${arg_FROM} INTERFACE_LINK_DIRECTORIES)
         if ( _interface_link_directories )
-            target_link_directories( ${arg_TO} PUBLIC ${_interface_link_directories})
+            target_link_directories( ${arg_TO} ${_scope} ${_interface_link_directories})
         endif()
 
         get_target_property(_interface_link_libraries
                             ${arg_FROM} INTERFACE_LINK_LIBRARIES)
         if ( _interface_link_libraries )
-            target_link_libraries( ${arg_TO} PUBLIC ${_interface_link_libraries})
+            target_link_libraries( ${arg_TO} ${_scope} ${_interface_link_libraries})
         endif()
     endif()
 
