@@ -15,9 +15,9 @@ find_package(HIP REQUIRED)
 message(STATUS "HIP version:      ${HIP_VERSION_STRING}")
 message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
-if(${HIP_PLATFORM} STREQUAL "hcc")
+if("${HIP_PLATFORM}" STREQUAL "hcc" OR "${HIP_PLATFORM}" STREQUAL "amd")
 	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_HCC__")
-elseif(${HIP_PLATFORM} STREQUAL "nvcc")
+elseif("${HIP_PLATFORM}" STREQUAL "nvcc")
 	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_NVCC__")
 endif()
 if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
