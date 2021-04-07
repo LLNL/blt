@@ -20,13 +20,13 @@ We begin with a simple executable that calculates :math:`\pi` by numerical integ
 into a new executable, ``example_2``.
 
 
-Example 1: Basic executable
----------------------------
+Example 1: Stand-alone Executable
+---------------------------------
 
 This example is as basic as it gets. After setting up a BLT CMake project, 
 like the Bare Bones project in the previous section, we can start using BLT's macros.  
 
-Creating an executable is as simple as calling the following macro:
+Creating a stand-alone executable is as simple as calling the following macro:
 
 .. literalinclude:: calc_pi/CMakeLists.txt
    :start-after: _blt_tutorial_example_executable_start
@@ -61,8 +61,8 @@ by running the following commands:
    will be more on that in the following section.
 
 
-Example 2: One library, one executable
---------------------------------------
+Example 2: Executable with a Library
+------------------------------------
 
 This example is a bit more exciting.  This time we are creating a library
 that calculates the value of pi and then linking that library into an executable.
