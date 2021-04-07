@@ -52,8 +52,9 @@ LLNL HPC platforms and ORNL's Summit platform.
     getting_started
     creating_execs_and_libs
     host_configs
-    using_flags
     unit_testing
+    using_flags
+    advanced_topics
     external_dependencies
     exporting_blt_targets
     creating_documentation
