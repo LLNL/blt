@@ -31,15 +31,6 @@ the linker removing unused symbols in the larger library.
   as possible, you need to define object libraries before you use them
   if you need their inheritable information to be correct.
 
-..
-.. ------------------------------------
-.. CYRUS NOTE: 
-.. Object Libraries CUDA Considerations
-.. this seems like a detour given we haven't talked about CUDA yet
-.. ------------------------------------
-..
-
-
 If you are using separable CUDA compilation (relocatable device code) in your
 object library, users of that library will be required to use NVCC to link their
 executables - in general, only NVCC can perform the "device link" step.  To remove
