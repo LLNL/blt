@@ -43,7 +43,7 @@ by running the following commands:
 
 .. code-block:: bash
 
-    cd <BLT repository/docs/tutorial/calc_pi
+    cd <BLT repository>/docs/tutorial/calc_pi
     mkdir build
     cd build
     cmake -DBLT_SOURCE_DIR=../../.. ..
