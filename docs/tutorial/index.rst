@@ -50,7 +50,7 @@ LLNL HPC platforms and ORNL's Summit platform.
     :caption: Tutorial Contents
 
     getting_started
-    creating_execs_and_libs
+    creating_targets
     adding_tests
     host_configs
     advanced_topics
