@@ -3,10 +3,10 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _ExternalDependencies:
+.. _ImportingTargets:
 
-External Dependencies
-=====================
+Importing Targets
+=================
 
 One key goal for BLT is to simplify the use of external dependencies when building your libraries and executables. 
 
@@ -72,7 +72,7 @@ would like BLT's provided third-party targets to also be exported (for example, 
 your project does not use BLT), you can set the ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other
 EXPORTABLE targets created by ``blt_import_library()``, these targets should be prefixed with the name of
 the project.  Either the ``EXPORT_NAME`` target property or the ``NAMESPACE`` option to CMake's ``install``
-command can be used to modify the name of an installed target.  See  :ref:`ExportingBLTCreatedTargets:`
+command can be used to modify the name of an installed target.  See  :ref:`ExportingTargets:`
 for more info.
 
 You have already seen one use of ``DEPENDS_ON`` for a BLT
