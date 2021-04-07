@@ -3,17 +3,17 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _CreatingLibrariesAndExecutables:
+.. _CreatingTargets:
 
-Creating Libraries and Executables
-==================================
+Creating Targets
+================
 
 In the previous section, we learned the basics about how to create a CMake
 project with BLT, how to configure the project and how to build, and test
 BLT's built-in third party libraries.  
 
-We now move on to creating libraries and executables
-using two of BLT's core macros: ``blt_add_library()`` and ``blt_add_executable()``.
+We now move on to creating CMake targets using two of BLT's core macros: 
+``blt_add_library()`` and ``blt_add_executable()``.
 
 We begin with a simple executable that calculates :math:`\pi` by numerical integration,
 ``example_1``. We then extract that code into a library, which we link
