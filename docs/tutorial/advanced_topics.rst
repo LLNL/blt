@@ -8,9 +8,11 @@ Advanced Topics
 
 This section includes subpages on advanced topics such as:
 
+    * :ref:`PortableCompilerFlags` : Managing compiler flags across compiler families
     * :ref:`ObjectLibraries` : A collection of object files that are not linked or archived into a library 
 
 
 .. toctree::
 
+    portable_compiler_flags
     object_libraries

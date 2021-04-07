@@ -3,7 +3,7 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _PortabltCompilerFlags:
+.. _PortableCompilerFlags:
 
 Portable Compiler Flags
 =======================
