@@ -185,39 +185,6 @@ Note that the default options for ``bare_bones`` only include a single test
 tests that are activated when BLT is configured with other options enabled,
 like Fortran, MPI, OpenMP, and CUDA. 
 
-Host-configs
-------------
-
-To capture (and revision control) build options, third party library paths, etc.,
-we recommend using CMake's initial-cache file mechanism. This feature allows you
-to pass a file to CMake that provides variables to bootstrap the configuration
-process. 
-
-You can pass initial-cache files to cmake via the ``-C`` command line option.
-
-.. code-block:: bash
-
-    cmake -C config_file.cmake
-
-
-We call these initial-cache files ``host-config`` files since we typically create
-a file for each platform or for specific hosts, if necessary. 
-
-These files use standard CMake commands. CMake ``set()`` commands need to specify
-``CACHE`` as follows:
-
-.. code-block:: cmake
-
-    set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
-
-Here is a snippet from a host-config file that specifies compiler details for
-using gcc 4.9.3 on LLNL's Pascal cluster. 
-
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
-   :start-after: _blt_tutorial_compiler_config_start
-   :end-before:  _blt_tutorial_compiler_config_end
-   :language: cmake
-
 
 Example files
 -------------
@@ -231,15 +198,5 @@ Files related to setting up the Bare Bones project:
         ``CMakeLists.txt``
 
     .. literalinclude::  ./bare_bones/CMakeLists.txt
-        :language: cmake
-        :linenos:
-
-.. container:: toggle
-
-    .. container:: label
-
-        ``gcc@4.9.3_nvcc host config``
-
-    .. literalinclude::  ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
         :language: cmake
         :linenos:
