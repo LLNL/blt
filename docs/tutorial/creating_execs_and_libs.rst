@@ -24,7 +24,7 @@ Example 1: Basic executable
 ---------------------------
 
 This example is as basic as it gets. After setting up a BLT CMake project, 
-like ``blank_project`` in the previous section, we can start using BLT's macros.  
+like the Bare Bones project in the previous section, we can start using BLT's macros.  
 
 Creating an executable is as simple as calling the following macro:
 

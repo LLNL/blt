@@ -1,9 +1,9 @@
 #------------------------------------------------------------------------------
-# BLT Tutorial Example: Blank Project.
+# BLT Tutorial Example: Bare Bones Project.
 #------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.8)
-project( blank )
+project( bare_bones )
 
 # Note: This is specific to running our tests and shouldn't be exported to documentation
 if(NOT BLT_SOURCE_DIR)

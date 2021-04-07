@@ -3,10 +3,10 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _SetupBLTInYourCMakeProject:
+.. _GettingStarted:
 
-Setup BLT in your CMake Project
-===============================
+Getting Started
+===============
 
 BLT is easy to include in your CMake project whether it is an existing project or
 you are starting from scratch.  This tutorial assumes you are using git but those
@@ -59,7 +59,7 @@ This enables all of BLT's features in your project.
 However if your project is likely to be used by other projects.  The following
 is recommended:
 
-.. literalinclude:: blank_project/CMakeLists.txt
+.. literalinclude:: bare_bones/CMakeLists.txt
    :start-after: _blt_tutorial_include_blt_start
    :end-before:  _blt_tutorial_include_blt_end
    :language: cmake
@@ -95,18 +95,18 @@ If you are using BLT outside of your project pass the location of BLT as follows
     cmake -DBLT_SOURCE_DIR="path/to/blt" ..
 
 
-Example: blank_project
-----------------------
+Example: Bare Bones
+-------------------
 
-The ``blank_project`` example shows you some of BLT's built-in
+The ``bare_bones`` example project shows you some of BLT's built-in
 features. It demonstrates the bare minimum required for testing purposes.
 
-Here is the entire CMakeLists.txt file for ``blank_project``:
+Here is the entire CMakeLists.txt file needed for a bare bones project:
 
 .. code-block:: cmake
 
     cmake_minimum_required(VERSION 3.8)
-    project( blank )
+    project( bare_bones )
 
     include(/path/to/blt/SetupBLT.cmake)
 
@@ -119,7 +119,7 @@ For example if you run the following commands:
 
 .. code-block:: bash
 
-    cd <BLT repository>/docs/tutorial/blank_project
+    cd <BLT repository>/docs/tutorial/bare_bones
     cmake .
 
 you will get the following error:
@@ -139,13 +139,13 @@ To correctly run cmake, create a build directory and run cmake from there:
 
 .. code-block:: bash
 
-    cd <BLT repository>/docs/blank_project
+    cd <BLT repository>/docs/bare_bones
     mkdir build
     cd build
     cmake ..
 
 This will generate a configured ``Makefile`` in your build directory to build
-``blank_project``.  The generated makefile includes gtest and several built-in
+Bare Bones project.  The generated makefile includes gtest and several built-in
 BLT *smoke* tests, depending on the features that you have enabled in your build.  
 
 To build the project, use the following command:
@@ -172,7 +172,7 @@ If everything went correctly, you should have the following output:
 .. code-block:: bash
 
     Running tests...
-    Test project blt/docs/tutorial/blank_project/build
+    Test project blt/docs/tutorial/bare_bones/build
         Start 1: blt_gtest_smoke
     1/1 Test #1: blt_gtest_smoke ..................   Passed    0.01 sec
 
@@ -180,7 +180,7 @@ If everything went correctly, you should have the following output:
 
     Total Test time (real) =   0.10 sec
 
-Note that the default options for ``blank_project`` only include a single test
+Note that the default options for ``bare_bones`` only include a single test
 ``blt_gtest_smoke``. As we will see later on, BLT includes additional smoke
 tests that are activated when BLT is configured with other options enabled,
 like Fortran, MPI, OpenMP, and CUDA. 
@@ -222,7 +222,7 @@ using gcc 4.9.3 on LLNL's Pascal cluster.
 Example files
 -------------
 
-Files related to setting up `blank_project`:
+Files related to setting up the Bare Bones project:
 
 .. container:: toggle
 
@@ -230,7 +230,7 @@ Files related to setting up `blank_project`:
 
         ``CMakeLists.txt``
 
-    .. literalinclude::  ./blank_project/CMakeLists.txt
+    .. literalinclude::  ./bare_bones/CMakeLists.txt
         :language: cmake
         :linenos:
 

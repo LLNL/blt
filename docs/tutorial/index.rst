@@ -17,16 +17,16 @@ This tutorial provides instructions for:
 
 The two example CMake projects used are included in BLT's source tree at:
 
-* ``<blt-dir>/cmake/docs/tutorial/blank_project``
+* ``<blt-dir>/cmake/docs/tutorial/bare_bones``
 * ``<blt-dir>/cmake/docs/tutorial/calc_pi``
 
 Here are direct links to the projects in BLT's GitHub repo:
 
-* https://github.com/LLNL/blt/tree/develop/docs/tutorial/blank_project
+* https://github.com/LLNL/blt/tree/develop/docs/tutorial/bare_bones
 * https://github.com/LLNL/blt/tree/develop/docs/tutorial/calc_pi
 
 
-``blank_project`` provides a minimum template for starting a new project and
+``bare_bones`` provides a minimum template for starting a new project and
 ``calc_pi`` provides several examples that calculate the value of :math:`\pi` 
 by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
 integration. The code is adapted from ANL's `using mpi examples <https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html>`_.
@@ -49,7 +49,7 @@ LLNL HPC platforms and ORNL's Summit platform.
     :maxdepth: 3
     :caption: Tutorial Contents
 
-    setup_blt
+    getting_started
     creating_execs_and_libs
     using_flags
     unit_testing
