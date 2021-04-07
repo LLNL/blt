@@ -3,9 +3,9 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _UnitTesting:
+.. _AddingTests:
 
-Unit Testing
+Adding Tests
 ============
 
 BLT has a built-in copy of the 
@@ -21,7 +21,7 @@ In this section, we give a brief overview of GoogleTest and discuss how to add u
 tests using the ``blt_add_test()`` macro.
 
 
-Configuring tests within BLT
+Configuring Tests within BLT
 ----------------------------
 
 Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on

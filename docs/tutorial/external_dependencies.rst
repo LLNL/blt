@@ -123,7 +123,7 @@ to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test()`` macro.
    :language: cmake
 
 
-As mentioned in :ref:`UnitTesting`, GoogleTest provides a default ``main()``
+As mentioned in :ref:`AddingTests`, GoogleTest provides a default ``main()``
 driver that will execute all unit tests defined in the source. To test MPI code,
 we need to create a main that initializes and finalizes MPI in addition to Google
 Test. ``test_2.cpp`` provides an example driver for MPI with GoogleTest.
