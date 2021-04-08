@@ -9,10 +9,11 @@ Third Party Libraries
 =====================
 
 Third party libraries come in three flavors based on the CMake support provided by 
-the project and the CMake community as a whole: None, Find, and First Class.   
+the project and the CMake community as a whole: no Cmake support, CMake's Find* modules,
+and First Class project support.   
 
-None
-~~~~
+No CMake Support
+~~~~~~~~~~~~~~~~
 
 Some libraries have no support for easily importing their CMake targets into
 external projects, either through properly exporting their targets themselves
@@ -101,8 +102,8 @@ Then ``lua`` is available to be used in the ``DEPENDS_ON`` list in the following
     option to ``blt_import_library()`` can also be used to manage visibility.
 
 
-Find Modules
-~~~~~~~~~~~~
+Cmake's Find Modules
+~~~~~~~~~~~~~~~~~~~~
 
 This time we will do exactly the same thing but using the new CMake provided ``FindLua.cmake`` module.
 Instead of calling having to ensure correctness and calling ``find_path`` and ``find_library``, we
@@ -130,8 +131,8 @@ new imported library's ``NAME`` in the rest of your project.
                        EXPORTABLE ON)
 
 
-First Class
-~~~~~~~~~~~
+First Class Project Support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some projects provide what we call First Class support.  They have gone through the effort of
 properly exporting all necessary targets to use their project and
@@ -147,3 +148,6 @@ imported into your project with a single CMake function call:
     find_package(axom REQUIRED
                       NO_DEFAULT_PATH 
                       PATHS ${AXOM_DIR}/lib/cmake)
+
+You can then add the created CMake target, ``axom``, to any ``DEPENDS_ON`` list or use any other
+regular CMake function to change it.
