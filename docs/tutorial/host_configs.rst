@@ -31,7 +31,7 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
 Here is a snippet from a host-config file that specifies compiler details for
-using gcc 4.9.3 on LLNL's Pascal cluster. 
+using specific gcc (version 4.9.3 in this case) on the LLNL Pascal cluster. 
 
 .. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
    :start-after: _blt_tutorial_compiler_config_start
@@ -42,7 +42,9 @@ using gcc 4.9.3 on LLNL's Pascal cluster.
 Building and Testing on Pascal
 ------------------------------
 
-Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA enabled on Pascal:
+Since compute nodes on the Pascal cluster have CPUs and GPUs, here is how you
+can use the host-config file to configure a build of the ``calc_pi``  project with
+MPI and CUDA enabled on Pascal:
 
 .. code-block:: bash
     

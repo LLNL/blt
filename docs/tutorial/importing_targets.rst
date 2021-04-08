@@ -14,14 +14,15 @@ and ``blt_add_executable()`` macros that supports both your own projects CMake t
 and imported targets. We have logically broken this topic into two groups: :ref:`CommonHPCDependencies`
 and :ref:`ThirdPartyLibraries`.
 
-:ref:`CommonHPCDependencies`, such as MPI, CUDA, HIP, and OpenMP, are bundled and ready to use included
-with BLT as regular named CMake targets. For example, just adding ``openmp`` to any ``DEPENDS_ON``
-will add the necessary OpenMP compiler and link flags to any target. 
+* :ref:`CommonHPCDependencies`, such as MPI, CUDA, HIP, and OpenMP, are bundled and ready to use included
+   with BLT as regular named CMake targets. For example, just adding ``openmp`` to any ``DEPENDS_ON``
+   will add the necessary OpenMP compiler and link flags to any target. 
+* :ref:`ThirdPartyLibraries` are imported into your depending on the level of CMake support provided
+   by that project.  BLT provides a macro, ``blt_import_library()``, which allows you to bundle all 
+   necessary information under a single name.  Some projects properly export their CMake targets and
+   only need to be imported via a call to ``include()``.
 
-:ref:`ThirdPartyLibraries` are imported into your depending on the level of CMake support provided
-by that project.  BLT provides a macro, ``blt_import_library()``, which allows you to bundle all 
-necessary information under a single name.  Some projects properly export their CMake targets and
-only need to be imported via a call to ``include()``.
+Their following pages describe these topics in more detail.
 
 .. toctree::
 

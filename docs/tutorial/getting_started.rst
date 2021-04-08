@@ -95,8 +95,8 @@ If you are using BLT outside of your project pass the location of BLT as follows
     cmake -DBLT_SOURCE_DIR="path/to/blt" ..
 
 
-Example: Bare Bones
--------------------
+Example: Bare Bones BLT Project
+-------------------------------
 
 The ``bare_bones`` example project shows you some of BLT's built-in
 features. It demonstrates the bare minimum required for testing purposes.
@@ -147,6 +147,12 @@ To correctly run cmake, create a build directory and run cmake from there:
 This will generate a configured ``Makefile`` in your build directory to build
 Bare Bones project.  The generated makefile includes gtest and several built-in
 BLT *smoke* tests, depending on the features that you have enabled in your build.  
+
+.. note:: A smoke tests are designed to show when basic functionality is not working.
+   For example, if you have turned on MPI in your project but the MPI compiler wrapper
+   cannot produce an executable that runs even the most basic MPI code, the
+   ``blt_mpi_smoke`` test will fail.  This helps you know that the problem doesn't
+   lie in your own code but in the building/linking of MPI.
 
 To build the project, use the following command:
 

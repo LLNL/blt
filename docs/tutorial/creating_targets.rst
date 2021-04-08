@@ -53,12 +53,11 @@ by running the following commands:
    :class: hint
    
    This is one of the core macros that enables BLT to simplify our CMake-based
-   project. It unifies many CMake calls into one easy to use macro.
-   ``blt_add_executable()`` creates a CMake executable target with the
-   given sources, sets the output directory to ``<build dir>/bin``
-   (unless overridden with the macro parameter ``OUTPUT_DIR``) and handles
-   internal and external dependencies in a greatly simplified manner. There
-   will be more on that in the following section.
+   project. It unifies many CMake calls into one easy to use macro while creating
+   a CMake executable target with the given parameters. It also greatly simplifies the usage of
+   internal and external dependencies. The full list of supported parameters
+   can be found on the :ref:`blt_add_executable` API documentation.
+
 
 
 Example 2: Executable with a Library
@@ -94,7 +93,7 @@ into this executable without any more work or extra CMake function calls.
 
    This is another core BLT macro. It creates a CMake library target and associates
    the given sources and headers along with handling dependencies the same way as
-   ``blt_add_executable()`` does. It also provides a few commonly used build options,
-   such as overriding the output name of the library and the output directory. 
-   It defaults to building a static library unless you override it with
-   ``SHARED`` or with the global CMake option ``BUILD_SHARED_LIBS``.
+   ``blt_add_executable()`` does. It defaults to building a static library unless
+   you override it with ``SHARED`` or with the global CMake option ``BUILD_SHARED_LIBS``.
+   The full list of supported parameters can be found on the :ref:`blt_add_library`
+   API documentation.

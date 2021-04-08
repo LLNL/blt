@@ -9,10 +9,11 @@ User Tutorial
 This tutorial provides instructions for:
 
     * Adding BLT to a CMake project
-    * Setting up *host-config* files to handle multiple platform configurations
     * Building, linking, and installing libraries and executables
     * Setting up unit tests with GTest
+    * Setting up *host-config* files to handle multiple platform configurations
     * Using external project dependencies
+    * Exporting your project's CMake targets for outside projects to use
     * Creating documentation with Sphinx and Doxygen
 
 The two example CMake projects used are included in BLT's source tree at:

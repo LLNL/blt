@@ -14,8 +14,8 @@ bundled versions of GoogleTest, GoogleMock, GoogleBenchmark, and FRUIT.  Not onl
 for these included, we provide named CMake targets for them as well.
 
 BLT's ``mpi``, ``cuda``, ``cuda_runtime``, ``hip``, ``hip_runtime``,and ``openmp`` targets are
-all defined via ``blt_import_library()``. This creates a true CMake imported target that is inherited
-properly through the CMake dependency DAG.
+all defined via the ``blt_import_library()`` macro. This creates a true CMake imported target that is inherited
+properly through the CMake's dependency graph.
 
 .. note::
     If your project exports targets and you would like BLT's provided third-party targets to also be
