@@ -9,8 +9,8 @@ Getting Started
 ===============
 
 BLT is easy to include in your CMake project whether it is an existing project or
-you are starting from scratch.  This tutorial assumes you are using git but those
-commands can easily be changed or ignored.
+you are starting from scratch.  This tutorial assumes you are using git and the CMake
+Makefile generator but those commands can easily be changed or ignored.
 
 
 Include BLT in your Git Repository
