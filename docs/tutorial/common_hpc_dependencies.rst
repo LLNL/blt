@@ -9,7 +9,10 @@ Common HPC Dependencies
 =======================
 
 BLT creates named targets for the common HPC dependencies that most HPC projects need, such as
-MPI, CUDA, HIP, and OpenMP.  As previously mentioned in :ref:`AddingTests`, BLT also provides 
+MPI, CUDA, HIP, and OpenMP.  Something BLT assists it's users with is getting these dependencies
+to interoperate within the same library or executable.
+
+As previously mentioned in :ref:`AddingTests`, BLT also provides 
 bundled versions of GoogleTest, GoogleMock, GoogleBenchmark, and FRUIT.  Not only are the source
 for these included, we provide named CMake targets for them as well.
 
@@ -33,7 +36,6 @@ MPI
 
 Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
 which uses MPI to parallelize the calculation over the integration intervals.
-
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
 in our host config file. Here is a snippet with these settings for LLNL's Pascal Cluster:
