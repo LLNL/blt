@@ -101,7 +101,7 @@ to:
 5: Create Release Branch and Mergeback to develop
 -------------------------------------------------
 
-# Create a branch off main that is for the release branch.
+1. Create a branch off main that is for the release branch.
 
 .. code:: bash
 
@@ -111,7 +111,7 @@ to:
     git push --set-upstream origin release-v0.4.0
 
 
-# Create a pull request to merge ``main`` into ``develop`` through Github. When approved, merge it.
+2. Create a pull request to merge ``main`` into ``develop`` through Github. When approved, merge it.
 
 
 7: Build Release Documentation
