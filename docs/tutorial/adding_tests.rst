@@ -3,9 +3,9 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _UnitTesting:
+.. _AddingTests:
 
-Unit Testing
+Adding Tests
 ============
 
 BLT has a built-in copy of the 
@@ -21,7 +21,7 @@ In this section, we give a brief overview of GoogleTest and discuss how to add u
 tests using the ``blt_add_test()`` macro.
 
 
-Configuring tests within BLT
+Configuring Tests within BLT
 ----------------------------
 
 Unit testing in BLT is controlled by the ``ENABLE_TESTS`` cmake option and is on
@@ -176,7 +176,7 @@ by first generating an executable for the test using the
    and allows users to pass in command line arguments.
 
 
-Returning to our running example (see  :ref:`CreatingLibrariesAndExecutables:`), 
+Returning to our running example (see :ref:`CreatingTargets`), 
 let's add a simple test for the ``calc_pi`` library, 
 which has a single function with signature:
 
@@ -264,7 +264,7 @@ CTest's XML and to turn off compressed output:
   ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8 
 
 Then convert the CTest XML file to JUnit's format with the XSL file included
-in BLT.  This can be done in many ways, but most *nix machines come with
+in BLT.  This can be done in many ways, but most Linux or Unix machines come with
 a program called ``xsltproc``
 
 

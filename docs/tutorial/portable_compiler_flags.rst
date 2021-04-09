@@ -3,13 +3,13 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _PortabltCompilerFlags:
+.. _PortableCompilerFlags:
 
 Portable Compiler Flags
 =======================
 
 To simplify the development of code that is portable across different architectures
-and compilers, BLT provides the ``blt_append_custom_compiler_flag()`` macro,
+and compilers, BLT provides the :ref:`blt_append_custom_compiler_flag` macro,
 which allows users to easily place a compiler dependent flag into a CMake variable.
 
 .. admonition:: blt_append_custom_compiler_flag

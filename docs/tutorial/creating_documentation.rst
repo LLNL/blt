@@ -46,7 +46,7 @@ The Sphinx ``sphinx-quickstart`` utility helps you generate a new sphinx project
 selecting common settings for the ``config.py``.
 
 
-BLT provides a ``blt_add_sphinx_target()`` macro which, which will look for a ``conf.py`` file
+BLT provides a :ref:`blt_add_sphinx_target` macro which, which will look for a ``conf.py`` file
 in the current directory and add a command to build the Sphinx docs using this file to the ``docs``
 CMake target.
 
@@ -58,7 +58,7 @@ CMake target.
    This macro is active when BLT is configured with a valid ``SPHINX_EXECUTABLE`` path.
 
 
-Here is an example of using ``blt_add_sphinx_target()`` in a CMakeLists.txt file:
+Here is an example of using :ref:`blt_add_sphinx_target` in a CMakeLists.txt file:
 
 .. literalinclude:: calc_pi/docs/sphinx/CMakeLists.txt
    :language: rst
@@ -78,7 +78,7 @@ Doxygen is a compiled executable that can be installed via spack, built-by-hand,
 ``doxygen`` processes a ``Doxyfile`` which specifies options, including where to look for
 annotated source files.
 
-BLT provides a ``blt_add_doxygen_target()`` macro which, which will look for a ``Doxyfile.in``
+BLT provides a :ref:`blt_add_doxygen_target` macro which, which will look for a ``Doxyfile.in``
 file in the current directory, configure this file to create a ``Doxyfile`` in the build directory,
 and add a command to build the Doxygen docs using this file to the ``docs`` CMake target.
 
@@ -90,7 +90,7 @@ and add a command to build the Doxygen docs using this file to the ``docs`` CMak
    This macro is active when BLT is configured with a valid ``DOXYGEN_EXECUTABLE`` path.
 
 
-Here is an example of using ``blt_add_doxygen_target()`` in a CMakeLists.txt file:
+Here is an example of using :ref:`blt_add_doxygen_target` in a CMakeLists.txt file:
 
 .. literalinclude:: calc_pi/docs/doxygen/CMakeLists.txt
    :language: rst

@@ -3,26 +3,38 @@
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _ExportingBLTCreatedTargets:
+.. _ExportingTargets:
 
-Exporting BLT Created Targets
-=============================
+Exporting Targets
+=================
 
 BLT provides several built-in targets for commonly used libraries:
 
- * ``mpi`` (when ``ENABLE_MPI`` is on)
- * ``openmp`` (when ``ENABLE_OPENMP`` is on)
- * ``cuda`` and ``cuda_runtime`` (when ``ENABLE_CUDA`` is on)
- * ``hip`` and ``hip_runtime`` (when ``ENABLE_HIP`` is on)
+``mpi``
+    Available when ``ENABLE_MPI`` is ``ON``
+
+``openmp``
+    Available when ``ENABLE_OPENMP`` is ``ON``
+
+``cuda`` and ``cuda_runtime``
+    Available when ``ENABLE_CUDA`` is ``ON``
+
+``hip`` and ``hip_runtime``
+    Available when ``ENABLE_HIP`` is ``ON``
 
 These targets can be made exportable in order to make them available to users of
 your project via CMake's ``install()`` command.  Setting BLT's ``BLT_EXPORT_THIRDPARTY``
 option to ``ON`` will mark all active targets in the above list as ``EXPORTABLE``
-(see the ``blt_import_library()`` documentation for more info).
+(see the :ref:`blt_import_library` API documentation for more info).
+
+.. note::  As with other ``EXPORTABLE`` targets created by :ref:`blt_import_library`,
+    these targets should be prefixed with the name of the project.  Either the ``EXPORT_NAME``
+    target property or the ``NAMESPACE`` option to CMake's ``install``
+    command can be used to modify the name of an installed target.
 
 .. note:: If a target in your project is added to an export set, any of its dependencies
-  marked ``EXPORTABLE`` must be added to the same export set.  Failure to add them will
-  result in a CMake error in the exporting project.
+    marked ``EXPORTABLE`` must be added to the same export set.  Failure to add them will
+    result in a CMake error in the exporting project.
 
 Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
 

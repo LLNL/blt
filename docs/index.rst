@@ -28,6 +28,8 @@ BLT at a Glance
     * Managing compiler flags
     * Managing external dependencies
 
+  * Handles differences across CMake versions
+
   * Multi-platform support (HPC Platforms, OSX, Windows)
 
 * Batteries included
