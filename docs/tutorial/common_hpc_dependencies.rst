@@ -55,7 +55,7 @@ Here, you can see how ``calc_pi_mpi`` and ``test_2`` use ``DEPENDS_ON``:
 
 
 For MPI unit tests, you also need to specify the number of MPI Tasks
-to launch. We use the ``NUM_MPI_TASKS`` argument to ``blt_add_test()`` macro.
+to launch. We use the ``NUM_MPI_TASKS`` argument to :ref:`blt_add_test` macro.
 
 .. literalinclude:: calc_pi/CMakeLists.txt 
    :start-after: _blt_tutorial_calcpi_test2_test_start

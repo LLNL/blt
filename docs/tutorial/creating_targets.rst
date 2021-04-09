@@ -13,7 +13,7 @@ project with BLT, how to configure the project and how to build, and test
 BLT's built-in third party libraries.  
 
 We now move on to creating CMake targets using two of BLT's core macros: 
-``blt_add_library()`` and ``blt_add_executable()``.
+:ref:`blt_add_library` and :ref:`blt_add_executable`.
 
 We begin with a simple executable that calculates :math:`\pi` by numerical integration,
 ``example_1``. We then extract that code into a library, which we link
@@ -93,7 +93,7 @@ into this executable without any more work or extra CMake function calls.
 
    This is another core BLT macro. It creates a CMake library target and associates
    the given sources and headers along with handling dependencies the same way as
-   ``blt_add_executable()`` does. It defaults to building a static library unless
+   :ref:`blt_add_executable` does. It defaults to building a static library unless
    you override it with ``SHARED`` or with the global CMake option ``BUILD_SHARED_LIBS``.
    The full list of supported parameters can be found on the :ref:`blt_add_library`
    API documentation.

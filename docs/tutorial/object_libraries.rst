@@ -9,7 +9,7 @@ Object Libraries
 ================
 
 BLT has simplified the use of CMake object libraries through the 
-``blt_add_library()`` macro. Object libraries are a collection of object files
+:ref:`blt_add_library` macro. Object libraries are a collection of object files
 that are not linked or archived into a library. They are used in other libraries
 or executables through the ``DEPENDS_ON`` macro argument. This is generally
 useful for combining smaller libraries into a larger library without 

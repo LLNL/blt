@@ -19,7 +19,7 @@ Some libraries have no support for easily importing their CMake targets into
 external projects, either through properly exporting their targets themselves
 or the CMake community has not written a Find module that eases this work.
 
-BLT provides a ``blt_import_library()`` macro allows you to reuse all information needed
+BLT provides a :ref:`blt_import_library` macro allows you to reuse all information needed
 for an external dependency under a single name.  This includes any include
 directories, libraries, compile flags, link flags, defines, etc.  You can also
 hide any warnings created by their headers by setting the
@@ -31,7 +31,7 @@ of importing the same library's targets.
 
 The following example shows how to find a library, Lua this time, manually.  By first, 
 searching for the include directories and then for the library itself.  Finally it calls
-``blt_import_library()`` to bundle that information under one easy to remember name, ``lua`` :
+:ref:`blt_import_library` to bundle that information under one easy to remember name, ``lua`` :
 
 .. code-block:: cmake
 
@@ -86,10 +86,10 @@ searching for the include directories and then for the library itself.  Finally 
                        EXPORTABLE ON)
 
 Then ``lua`` is available to be used in the ``DEPENDS_ON`` list in the following
-``blt_add_executable()`` or ``blt_add_library()`` calls, or in any CMake command that accepts a target.
+:ref:`blt_add_executable` or :ref:`blt_add_library` calls, or in any CMake command that accepts a target.
 
 .. note::
-    CMake targets created by ``blt_import_library()`` are ``INTERFACE`` libraries that can be installed
+    CMake targets created by :ref:`blt_import_library` are ``INTERFACE`` libraries that can be installed
     and exported if the ``EXPORTABLE`` option is enabled.  For example, if the ``calc_pi`` project depends on
     Lua, it could export its ``lua`` target.  To avoid introducing target name conflicts for users of the
     ``calc_pi`` project who might also create a target called ``lua``, ``lua`` should be exported as
@@ -99,7 +99,7 @@ Then ``lua`` is available to be used in the ``DEPENDS_ON`` list in the following
     Because CMake targets are only accessible from within the directory they were defined (including
     subdirectories), the ``include()`` command should be preferred to the ``add_subdirectory()`` command
     for adding CMake files that create imported library targets needed in other directories. The ``GLOBAL``
-    option to ``blt_import_library()`` can also be used to manage visibility.
+    option to :ref:`blt_import_library` can also be used to manage visibility.
 
 
 Cmake's Find Modules
@@ -109,7 +109,7 @@ This time we will do exactly the same thing but using the new CMake provided ``F
 Instead of calling having to ensure correctness and calling ``find_path`` and ``find_library``, we
 only have to call ``find_package`` and it handles this for us.  Each Find module outputs differently
 named variables so it is important to read the documentation on CMake's website.  This is where
-``blt_import_library`` shines because you only have to figure those variables once then use the 
+:ref:`blt_import_library` shines because you only have to figure those variables once then use the 
 new imported library's ``NAME`` in the rest of your project.
 
 .. code-block:: cmake
