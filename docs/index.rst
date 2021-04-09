@@ -76,3 +76,4 @@ Thanks to all of BLT's `contributors <https://github.com/LLNL/blt/graphs/contrib
 
     User Tutorial <tutorial/index>
     API Documentation <api/index>
+    Developer Guide <developer/index>
