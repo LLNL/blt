@@ -14,17 +14,12 @@ bundled versions of GoogleTest, GoogleMock, GoogleBenchmark, and FRUIT.  Not onl
 for these included, we provide named CMake targets for them as well.
 
 BLT's ``mpi``, ``cuda``, ``cuda_runtime``, ``hip``, ``hip_runtime``,and ``openmp`` targets are
-all defined via the ``blt_import_library()`` macro. This creates a true CMake imported target that is inherited
+all defined via the :ref:`blt_import_library` macro. This creates a true CMake imported target that is inherited
 properly through the CMake's dependency graph.
 
 .. note::
-    If your project exports targets and you would like BLT's provided third-party targets to also be
-    exported (for example, if a project that imports your project does not use BLT), you can set the 
-    ``BLT_EXPORT_THIRDPARTY`` option to ``ON``.  As with other
-    EXPORTABLE targets created by ``blt_import_library()``, these targets should be prefixed with the name of
-    the project.  Either the ``EXPORT_NAME`` target property or the ``NAMESPACE`` option to CMake's ``install``
-    command can be used to modify the name of an installed target.  See  :ref:`ExportingTargets`
-    for more info.
+    BLT also supports exporting its third-party targets via the ``BLT_EXPORT_THIRDPARTY`` option.
+    See :ref:`ExportingTargets` for more information.
 
 You have already seen one use of ``DEPENDS_ON`` for a BLT dependency, ``gtest``, in ``test_1``:
 
@@ -32,13 +27,6 @@ You have already seen one use of ``DEPENDS_ON`` for a BLT dependency, ``gtest``,
    :start-after: _blt_tutorial_calcpi_test1_executable_start
    :end-before:  _blt_tutorial_calcpi_test1_executable_end
    :language: cmake
-
-
-``gtest`` is the name for the GoogleTest target in BLT registered via 
-``blt_register_library()``. Even though GoogleTest is built-in and uses CMake,
-``blt_register_library()`` allows us to easily set defines needed by all dependent
-targets.
-
 
 MPI
 ~~~
@@ -171,3 +159,21 @@ Here is an example of how to add an OpenMP enabled test that sets the amount of 
    :start-after: _blt_tutorial_openmp_test_start
    :end-before:  _blt_tutorial_openmp_test_end
    :language: cmake
+
+
+HIP
+~~~
+
+**HIP tutorial coming soon!**
+
+BLT also supports AMD's HIP via a mechanism very similar to our CUDA support.  
+
+**Important Setup Variables**
+
+* ``ENABLE_HIP`` : Enables HIP support in BLT
+* ``HIP_ROOT_DIR`` : Root directory for HIP installation
+
+**BLT Targets**
+
+* ``hip`` : Adds include directories, hip runtime libraries, and compiles source with hipcc
+* ``hip_runtime`` : Adds include directories and hip runtime libraries
