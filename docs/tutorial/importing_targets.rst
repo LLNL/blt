@@ -26,7 +26,7 @@ and imported targets. We have logically broken this topic into two groups:
    only need to be imported via a call to ``include()``.
 
 .. toctree::
-   :hidden:
+    :hidden:
 
     common_hpc_dependencies
     third_party_libraries
