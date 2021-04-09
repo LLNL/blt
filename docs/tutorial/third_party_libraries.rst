@@ -144,10 +144,8 @@ imported into your project with a single CMake function call:
 
 .. code-block:: cmake
 
-    // use the provided PATH directory and create a cmake target named 'axom'
-    find_package(axom REQUIRED
-                      NO_DEFAULT_PATH 
-                      PATHS ${AXOM_DIR}/lib/cmake)
+    # use the provided PATH directory and create a cmake target named 'axom'
+    find_package(axom REQUIRED)
 
 You can then add the created CMake target, ``axom``, to any ``DEPENDS_ON`` list or use any other
 regular CMake function to change it.

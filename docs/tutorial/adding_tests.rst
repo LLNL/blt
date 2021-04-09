@@ -264,7 +264,7 @@ CTest's XML and to turn off compressed output:
   ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV -j8 
 
 Then convert the CTest XML file to JUnit's format with the XSL file included
-in BLT.  This can be done in many ways, but most *nix machines come with
+in BLT.  This can be done in many ways, but most Linux or Unix machines come with
 a program called ``xsltproc``
 
 
