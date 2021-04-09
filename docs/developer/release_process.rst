@@ -98,6 +98,19 @@ to:
    source files for each release.
 
 
+5: Create Release Branch
+------------------------
+
+Create a branch off main that is for the release branch.
+
+.. code:: bash
+
+    git pull
+    git checkout main
+    git checkout -b release-v0.4.0
+    git push --set-upstream origin release-v0.4.0
+
+
 6: Merge Main to Develop
 ---------------------------
 
