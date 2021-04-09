@@ -10,5 +10,6 @@ This section is for information related to being a developer of BLT.
 
 .. toctree::
     :caption: Developer Guide
+    :titlesonly:
 
     release_process
