@@ -71,8 +71,8 @@ The first is to rename only the ``mpi`` target's exported name:
 
 With this approach the ``example_1`` target's exported name is unchanged - a 
 project that imports the ``example-targets`` export set will have ``example_1``
-and ``example\:\:mpi`` targets made available.  The imported ``example_1`` will
-depend on ``example\:\:mpi``.
+and ``example::mpi`` targets made available.  The imported ``example_1`` will
+depend on ``example::mpi``.
 
 Another approach is to install all targets in the export set behind a namespace:
 
@@ -81,5 +81,5 @@ Another approach is to install all targets in the export set behind a namespace:
     install(EXPORT example-targets NAMESPACE example::)
 
 With this approach all targets in the export set are prefixed, so an importing
-project will have ``example\:\:example_1`` and ``example\:\:mpi`` targets made available.
-The imported ``example\:\:example_1`` will depend on ``example\:\:mpi``.
+project will have ``example::example_1`` and ``example::mpi`` targets made available.
+The imported ``example::example_1`` will depend on ``example::mpi``.
