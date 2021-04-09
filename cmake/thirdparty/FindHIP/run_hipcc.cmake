@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -53,7 +53,9 @@ execute_process(COMMAND ${HIP_HIPCONFIG_EXECUTABLE} --compiler OUTPUT_VARIABLE H
 execute_process(COMMAND ${HIP_HIPCONFIG_EXECUTABLE} --runtime OUTPUT_VARIABLE HIP_RUNTIME OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(NOT host_flag)
     set(__CC ${HIP_HIPCC_EXECUTABLE})
-    if("${HIP_PLATFORM}" STREQUAL "hcc")
+    # ROCm version 4.0 and higher will use amd for the platform, but older
+    # versions use hcc. Keep both for backwards compatibility.
+    if("${HIP_PLATFORM}" STREQUAL "hcc" OR "${HIP_PLATFORM}" STREQUAL "amd")
         if("${HIP_COMPILER}" STREQUAL "hcc")
             if(NOT "x${HCC_HOME}" STREQUAL "x")
                 set(ENV{HCC_HOME} ${HCC_HOME})
@@ -64,7 +66,7 @@ if(NOT host_flag)
                 set(ENV{HIP_CLANG_PATH} ${HIP_CLANG_PATH})
             endif()
             # Temporarily include HIP_HCC_FLAGS for HIP-Clang for PyTorch builds
-            set(__CC_FLAGS ${HIP_CLANG_PARALLEL_BUILD_COMPILE_OPTIONS} ${HIP_HIPCC_FLAGS} ${HIP_HCC_FLAGS} ${HIP_CLANG_FLAGS} ${HIP_HIPCC_FLAGS_${build_configuration}} ${HIP_CLANG_FLAGS_${build_configuration}})
+            set(__CC_FLAGS ${HIP_CLANG_PARALLEL_BUILD_COMPILE_OPTIONS} ${HIP_HIPCC_FLAGS} ${HIP_HCC_FLAGS} ${HIP_CLANG_FLAGS} ${HIP_HIPCC_FLAGS_${build_configuration}} ${HIP_HCC_FLAGS_${build_configuration}} ${HIP_CLANG_FLAGS_${build_configuration}})
         endif()
     else()
         set(__CC_FLAGS ${HIP_HIPCC_FLAGS} ${HIP_NVCC_FLAGS} ${HIP_HIPCC_FLAGS_${build_configuration}} ${HIP_NVCC_FLAGS_${build_configuration}})

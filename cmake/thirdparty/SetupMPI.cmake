@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -136,6 +136,15 @@ if (BLT_MPI_LINK_FLAGS)
     set(_mpi_link_flags ${BLT_MPI_LINK_FLAGS})
 endif()
 
+#
+# We use `LINK_OPTIONS` for CMake 3.13 and beyond.
+# To make sure that de-duping doesn't undermine our MPI flags
+# use a string with SHELL: prefix
+#
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+    string(REPLACE ";" " " _mpi_link_flags "${_mpi_link_flags}")
+    set(_mpi_link_flags "SHELL:${_mpi_link_flags}")
+endif()
 
 # Output all MPI information
 message(STATUS "BLT MPI Compile Flags:  ${_mpi_compile_flags}")
@@ -168,10 +177,10 @@ if (ENABLE_FORTRAN)
     endif()
 endif()
 
-# Create the registered library
-blt_register_library(NAME          mpi
-                     INCLUDES      ${_mpi_includes}
-                     TREAT_INCLUDES_AS_SYSTEM ON
-                     LIBRARIES     ${_mpi_libraries}
-                     COMPILE_FLAGS ${_mpi_compile_flags}
-                     LINK_FLAGS    ${_mpi_link_flags} )
+blt_import_library(NAME          mpi
+                   INCLUDES      ${_mpi_includes}
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   LIBRARIES     ${_mpi_libraries}
+                   COMPILE_FLAGS ${_mpi_compile_flags}
+                   LINK_FLAGS    ${_mpi_link_flags} 
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

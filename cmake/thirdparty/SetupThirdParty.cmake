@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -95,6 +95,12 @@ blt_find_executable(NAME        ClangFormat
 blt_find_executable(NAME        Uncrustify
                     EXECUTABLES uncrustify)
 
+blt_find_executable(NAME        Yapf
+                    EXECUTABLES yapf)
+
+blt_find_executable(NAME        CMakeFormat
+                    EXECUTABLES cmake-format)
+
 
 #------------------------------------
 # Static analysis via Cppcheck
@@ -104,9 +110,31 @@ blt_find_executable(NAME        Cppcheck
 
 
 #------------------------------------
-# Static analysis via clang-query
+# Static analysis via clang-query and clang-tidy
 #------------------------------------
 if(CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "Ninja")
     blt_find_executable(NAME        ClangQuery
                         EXECUTABLES clang-query)
+
+    blt_find_executable(NAME        ClangTidy
+                        EXECUTABLES clang-tidy)
+endif()
+
+#------------------------------------
+# Code coverage
+#------------------------------------
+if (ENABLE_COVERAGE)
+    # Attempt to find the executables associated with gcov, lcov and genhtml.
+    # This requires that the associated features are enabled.
+    set(ENABLE_GCOV ON CACHE BOOL "")
+    set(ENABLE_LCOV ON CACHE BOOL "")
+    set(ENABLE_GENHTML ON CACHE BOOL "")
+    blt_find_executable(NAME        gcov
+                        EXECUTABLES gcov)
+
+    blt_find_executable(NAME        lcov
+                        EXECUTABLES lcov)
+
+    blt_find_executable(NAME        genhtml
+                        EXECUTABLES genhtml)
 endif()

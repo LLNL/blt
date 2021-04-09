@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -83,6 +83,14 @@ else()
     endif()
 endif()
 
+
+#################################################################################
+# PGI doesn't support a SYSTEM flag for include directories. Since this is CMake's
+# default for imported targets, we need to disable this feature for PGI.
+#################################################################################
+if(${C_COMPILER_FAMILY_IS_PGI})
+    set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE)
+endif()
 
 ################################################
 # Support for extra compiler flags and defines
@@ -236,8 +244,10 @@ endif()
 ################################
 # C++ Standard
 ################################
-
-SET( CMAKE_CXX_EXTENSIONS OFF )
+if (NOT DEFINED CMAKE_CXX_EXTENSIONS)
+    message(STATUS "Setting CMAKE_CXX_EXTENSIONS to Off")
+    set( CMAKE_CXX_EXTENSIONS OFF )
+endif ()
 SET( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 set(BLT_CXX_STD "" CACHE STRING "Version of C++ standard")
@@ -265,7 +275,7 @@ if (BLT_CXX_STD)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
             message(FATAL_ERROR "XL does not support C++17.")
         endif()
-        if (ENABLE_CUDA)
+        if (ENABLE_CUDA AND (NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES)))
             message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
         endif()
 
@@ -418,3 +428,22 @@ endif()
 foreach(flagVar ${langFlags}  "CMAKE_EXE_LINKER_FLAGS" )
     message(STATUS "${flagVar} flags are:  ${${flagVar}}")
 endforeach()
+
+##################################
+# Remove implicit link directories
+##################################
+if(BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE)
+    message(STATUS "Removing implicit link directories: ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE}")
+    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
+    message(STATUS "Updated CXX implicit Link Directories: ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}")
+    list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
+    message(STATUS "Updated C implicit Link Directories: ${CMAKE_C_IMPLICIT_LINK_DIRECTORIES}")
+    if (ENABLE_FORTRAN)
+        list(REMOVE_ITEM CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
+        message(STATUS "Updated Fortran implicit Link Directories: ${CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES}")
+    endif ()
+    if (ENABLE_CUDA)
+        list(REMOVE_ITEM CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
+        message(STATUS "Updated CUDA implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
+    endif ()
+endif()

@@ -1,18 +1,16 @@
-.. # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-.. # other BLT Project Developers. See the top-level COPYRIGHT file for details
+.. # Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+.. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-BLT
-===
-
-**Build, Link, and Test**
+BLT: Build, Link, and Test
+==========================
 
 BLT is a composition of CMake macros and several widely used open source tools 
 assembled to simplify HPC software development. 
 
 BLT was released by Lawrence Livermore National Laboratory (LLNL) under a BSD-style open source license. 
-It is developed on github under LLNL's github organization: https://github.com/llnl/blt
+It is developed on GitHub under `LLNL's GitHub organization <https://github.com/LLNL/blt>`_.
 
 .. note::
   BLT officially supports CMake 3.8 and above.  However we only print a warning if you
@@ -20,7 +18,7 @@ It is developed on github under LLNL's github organization: https://github.com/l
 
 
 BLT at a Glance
-~~~~~~~~~~~~~~~~~~
+---------------
 
 * Simplifies setting up a CMake-based build system
 
@@ -30,11 +28,13 @@ BLT at a Glance
     * Managing compiler flags
     * Managing external dependencies
 
+  * Handles differences across CMake versions
+
   * Multi-platform support (HPC Platforms, OSX, Windows)
 
 * Batteries included
 
-  * Built-in support for HPC Basics: MPI, OpenMP, and CUDA
+  * Built-in support for HPC Basics: MPI, OpenMP, CUDA, and HIP
   * Built-in support for unit testing in C/C++ and Fortran
   
 * Streamlines development processes
@@ -44,26 +44,36 @@ BLT at a Glance
 
     * Runtime and static analysis, benchmarking
 
-Developers
-~~~~~~~~~~
 
- * Chris White (white238@llnl.gov)
- * Cyrus Harrison (harrison37@llnl.gov)
- * George Zagaris (zagaris2@llnl.gov)
- * Kenneth Weiss (kweiss@llnl.gov)
- * Lee Taylor (taylor16@llnl.gov)
- * Aaron Black (black27@llnl.gov)
- * David A. Beckingsale (beckingsale1@llnl.gov)
- * Richard Hornung (hornung1@llnl.gov)
- * Randolph Settgast (settgast1@llnl.gov)
- * Peter Robinson (robinson96@llnl.gov)
+Questions
+---------
+
+Any questions can be sent to blt-dev@llnl.gov.  If you are an LLNL employee or collaborator, we have an
+internal Microsoft Teams group chat named "BLT" as well.
 
 
-Documentation
-~~~~~~~~~~~~~
+Contributions
+-------------
+
+We welcome all kinds of contributions: new features, bug fixes, documentation edits.
+
+To contribute, make a `pull request <https://github.com/LLNL/blt/pulls>`_, with ``develop``
+as the destination branch. We use CI testing and your branch must pass these tests before
+being merged.
+
+For more information, see the `contributing guide <https://github.com/LLNL/blt/blob/develop/CONTRIBUTING.md>`_.
+
+
+Authors
+-------
+
+Thanks to all of BLT's `contributors <https://github.com/LLNL/blt/graphs/contributors>`_.
+
 
 .. toctree::
+    :caption: Table of Contents
     :maxdepth: 2
 
     User Tutorial <tutorial/index>
     API Documentation <api/index>
+    Developer Guide <developer/index>

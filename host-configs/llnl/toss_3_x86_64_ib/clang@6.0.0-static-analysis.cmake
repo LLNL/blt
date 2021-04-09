@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -42,6 +42,9 @@ set(gtest_defines "-DGTEST_HAS_CXXABI_H_=0" CACHE STRING "")
 set(ClangQuery_DIR ${CLANG_HOME}/bin)
 set(ENABLE_CLANGQUERY ON CACHE BOOL "")
 
+set(ClangTidy_DIR ${CLANG_HOME}/bin)
+set(ENABLE_CLANGTIDY ON CACHE BOOL "")
+
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
@@ -54,4 +57,3 @@ set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpifort" CACHE PATH "")
 
 set(MPIEXEC              "/usr/bin/srun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG "-n" CACHE PATH "")
-

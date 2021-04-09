@@ -1,35 +1,37 @@
-.. # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-.. # other BLT Project Developers. See the top-level COPYRIGHT file for details
+.. # Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+.. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-.. _Recommendations:
+.. _CMakeRecommendations:
 
-CMake Recommendations 
-====================== 
+CMake Recommendations
+=====================
 
 This section includes several recommendations for how to wield CMake. 
 Some of them are embodied in BLT, others are broader suggestions for CMake bliss.
 
 
-.. rubric:: Disable in-source builds 
+Disable In-source Builds
+------------------------
 
 *BLT Enforces This*
-
 
 In-source builds clutter source code with temporary build files and prevent other out-of-source builds 
 from being created. Disabling in-source builds avoids clutter and accidental checkins of temporary build files.
 
-.. rubric:: Avoid using globs to identify source files
+
+Avoid using Globs to Identify Source Files
+------------------------------------------
 
 Globs are evaluated at CMake configure time - not build time. This means CMake will not detect new source files 
 when they are added to the file system unless there are other changes that trigger CMake to reconfigure. 
 
-The CMake documentation also warns against this:
-https://cmake.org/cmake/help/v3.10/command/file.html?highlight=glob#file
+The CMake documentation also warns against `this <https://cmake.org/cmake/help/v3.20/command/file.html?highlight=glob#filesystem>`_.
 
 
-.. rubric::  Use arguments instead of options in CMake Macros and Functions
+Use Arguments instead of Options in CMake Macros and Functions
+--------------------------------------------------------------
 
 ``CMAKE_PARSE_ARGUMENTS`` allows Macros or Functions to support options. Options are enabled by passing them 
 by name when calling a Macro or Function. Because of this, wrapping an existing Macro or Function in a way 
@@ -56,25 +58,30 @@ To simplify calling logic, we recommend using an argument instead of an option.
   my_function(arg1 arg2 arg3 ${arg4_value})
 
 
-.. rubric::  Prefer explicit paths to locate third-party dependencies
+Prefer Explicit Paths to Locate Third-party Dependencies
+--------------------------------------------------------
 
 Require passing explicit paths (ex: ``ZZZ_DIR``) for third-party dependency locations. 
 This avoids surprises with incompatible installs sprinkled in various system locations. 
 If you are using off-the-shelf *FindZZZ* logic, also consider adding CMake checks 
 to verify that *FindZZZ* logic actually found the dependencies at the location specified.
 
-.. rubric:: Emit a configure error if an explicitly identified third-party dependency is not found or an incorrect version is found.
 
-If an explicit path to a dependency is given (ex: ``ZZZ_DIR``) it should be valid or result in a CMake configure error.
+Error at Configure Time for Third-party Dependency Problems
+-----------------------------------------------------------
 
-In contrast, if you only issue a warning and automatically disable a feature when a third-party dependency is bad, 
-the warning often goes unnoticed and may not be caught until folks using your software are surprised. 
+Emit a configure error if an explicitly identified third-party dependency is not found or an incorrect
+version is found. If an explicit path to a dependency is given (ex: ``ZZZ_DIR``) it should be valid or result in a CMake configure error.
+
+In contrast, if you only issue a warning and automatically disable a feature when a third-party dependency
+is bad, the warning often goes unnoticed and may not be caught until folks using your software are surprised. 
 Emitting a configure error stops CMake and draws attention to the fact that something is wrong.  
 Optional dependencies are still supported by including them only if an explicit path 
 to the dependency is provided (ex: ``ZZZ_DIR``).
 
 
-.. rubric::  Add headers as source files to targets
+Add Headers as Source Files to Targets
+--------------------------------------
 
 *BLT Macros Support This*
 
@@ -82,7 +89,8 @@ This ensures headers are tracked as dependencies and are included in the project
 created by CMake's IDE generators, like Xcode or Eclipse. 
 
 
-.. rubric::  Always support `make install`
+Always Support `make install`
+-----------------------------
 
 This allows CMake to do the right thing based on ``CMAKE_INSTALL_PREFIX``, 
 and also helps support CPack create release packages. This is especially important for libraries. 

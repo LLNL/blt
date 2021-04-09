@@ -1,7 +1,9 @@
-.. # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-.. # other BLT Project Developers. See the top-level COPYRIGHT file for details
+.. # Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+.. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
+
+.. _CreatingDocumentation:
 
 Creating Documentation
 ======================
@@ -34,7 +36,7 @@ The ``calc_pi`` example provides examples of both Sphinx and Doxygen documentati
 
 
 Calc Pi Sphinx Example
-~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Sphinx is a python package that depends on several other packages.  
 It can be installed via `spack <https://spack.io>`_, pip, anaconda, etc... 
@@ -44,7 +46,7 @@ The Sphinx ``sphinx-quickstart`` utility helps you generate a new sphinx project
 selecting common settings for the ``config.py``.
 
 
-BLT provides a ``blt_add_sphinx_target()`` macro which, which will look for a ``conf.py`` file
+BLT provides a :ref:`blt_add_sphinx_target` macro which, which will look for a ``conf.py`` file
 in the current directory and add a command to build the Sphinx docs using this file to the ``docs``
 CMake target.
 
@@ -56,7 +58,7 @@ CMake target.
    This macro is active when BLT is configured with a valid ``SPHINX_EXECUTABLE`` path.
 
 
-Here is an example of using ``blt_add_sphinx_target()`` in a CMakeLists.txt file:
+Here is an example of using :ref:`blt_add_sphinx_target` in a CMakeLists.txt file:
 
 .. literalinclude:: calc_pi/docs/sphinx/CMakeLists.txt
    :language: rst
@@ -69,14 +71,14 @@ Here is the example reStructuredText file that contains documentation for the *c
    
 
 Calc Pi Doxygen Example
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 Doxygen is a compiled executable that can be installed via spack, built-by-hand, etc...
 
 ``doxygen`` processes a ``Doxyfile`` which specifies options, including where to look for
 annotated source files.
 
-BLT provides a ``blt_add_doxygen_target()`` macro which, which will look for a ``Doxyfile.in``
+BLT provides a :ref:`blt_add_doxygen_target` macro which, which will look for a ``Doxyfile.in``
 file in the current directory, configure this file to create a ``Doxyfile`` in the build directory,
 and add a command to build the Doxygen docs using this file to the ``docs`` CMake target.
 
@@ -88,7 +90,7 @@ and add a command to build the Doxygen docs using this file to the ``docs`` CMak
    This macro is active when BLT is configured with a valid ``DOXYGEN_EXECUTABLE`` path.
 
 
-Here is an example of using ``blt_add_doxygen_target()`` in a CMakeLists.txt file:
+Here is an example of using :ref:`blt_add_doxygen_target` in a CMakeLists.txt file:
 
 .. literalinclude:: calc_pi/docs/doxygen/CMakeLists.txt
    :language: rst
@@ -100,10 +102,8 @@ Here is the example ``Doxyfile.in`` file that is configured by CMake and passed 
    :language: rst
 
 
-
 Building the Calc Pi Example Documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+------------------------------------------
 
 Here is an example of building both the calc_pi Sphinx and Doxygen docs using the ``docs`` CMake target:
 
@@ -128,13 +128,7 @@ Here is an example of building both the calc_pi Sphinx and Doxygen docs using th
    [100%] Built target docs
 
 
+After this your local build directory will contain the following for viewing:
 
-
-After this, you can view the Sphinx docs at:
-
-* ``build-calc-pi/docs/sphinx/html/index.html``
-
-and the Doxygen docs at:
-
-* ``build-calc-pi/docs/doxygen/html/index.html``
-
+* Sphinx: ``build-calc-pi/docs/sphinx/html/index.html``
+* Doxygen: ``build-calc-pi/docs/doxygen/html/index.html``

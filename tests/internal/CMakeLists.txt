@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -67,8 +67,12 @@ if(ENABLE_GTEST)
     #  Header-only test
     #------------------------------------------------------
 
+    blt_add_target_definitions(TO                 example
+                               TARGET_DEFINITIONS BLT_EXAMPLE_LIB)
+
     blt_add_library(NAME blt_header_only
-                    HEADERS "src/HeaderOnly.hpp")
+                    HEADERS "src/HeaderOnly.hpp"
+                    DEPENDS_ON example)
 
     # This executable depends on the header-only library
 
@@ -87,10 +91,6 @@ if(ENABLE_GTEST)
     set(_try_combine_static_libs ON)
 
     if(CMAKE_HOST_WIN32)
-        set(_try_combine_static_libs OFF)
-    endif()
-
-    if ("$ENV{SYS_TYPE}" STREQUAL "bgqos_0")
         set(_try_combine_static_libs OFF)
     endif()
 
@@ -159,7 +159,7 @@ if(ENABLE_GTEST)
     #------------------------------------------------------
     # CUDA tests
     #------------------------------------------------------
-    if (ENABLE_CUDA)
+    if (ENABLE_CUDA AND CUDA_SEPARABLE_COMPILATION)
         add_subdirectory(src/test_cuda_device_call_from_kernel)
     endif()
     
@@ -255,14 +255,18 @@ endif()
 
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi)
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
 add_subdirectory(src/object_library_test)
 
-if(ENABLE_CLANGQUERY)
+if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)
   add_subdirectory(src/static_analysis)
+endif()
+
+if(ENABLE_HIP)
+  add_subdirectory(src/hip_defines_test)
 endif()
 
 #------------------------------------------------------------------------------
@@ -274,6 +278,7 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_cuda_mpi_smoke.cpp
     ../smoke/blt_cuda_openmp_smoke.cpp
     ../smoke/blt_cuda_runtime_smoke.cpp
+    ../smoke/blt_cuda_gtest_smoke.cpp
     ../smoke/blt_cuda_smoke.cpp
     ../smoke/blt_fruit_smoke.f90
     ../smoke/blt_gbenchmark_smoke.cpp
@@ -282,10 +287,12 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_hcc_runtime_smoke.cpp
     ../smoke/blt_hcc_smoke.cpp
     ../smoke/blt_hip_runtime_smoke.cpp
+    ../smoke/blt_hip_gtest_smoke.cpp
     ../smoke/blt_hip_smoke.cpp
     ../smoke/blt_mpi_smoke.cpp
     ../smoke/blt_openmp_smoke.cpp
     ../smoke/fortran_driver.cpp
+    ../smoke/fortran_mpi_driver.cpp
   )
 
   set(internal_tests_srcs
@@ -325,7 +332,13 @@ if(CLANGFORMAT_FOUND)
     src/test_cuda_device_call_from_kernel/CudaTests.cpp
     src/test_cuda_device_call_from_kernel/Parent.cpp
     src/test_cuda_device_call_from_kernel/Parent.hpp
+
+    src/hip_defines_test/foo.cpp
+    src/hip_defines_test/bar.cpp
   )
+
+  # Specify the major version for astyle
+  set(BLT_REQUIRED_ASTYLE_VERSION "3")
 
   blt_add_code_checks(
       PREFIX          smoke_tests
@@ -339,6 +352,56 @@ if(CLANGFORMAT_FOUND)
       
 endif()
 
+if(YAPF_FOUND)
+  # Test case where a style target running yapf should do nothing, and
+  # a corresponding check target should return 0
+  set(internal_conformant_python_srcs
+    src/test_yapf_conformant.py)
+
+  blt_add_code_checks(
+    PREFIX           yapf_conformant_tests
+    SOURCES          ${internal_conformant_python_srcs}
+    YAPF_CFG_FILE    ${CMAKE_CURRENT_SOURCE_DIR}/yapf.cfg )
+
+  # Test case where a style target running yapf should reformat the source file,
+  # and a corresponding check target should return a nonzero code
+  #
+  # After styling, test_yapf_conformant.py and
+  # test_yapf_nonconformant.py should have the same contents
+  set(internal_nonconformant_python_srcs
+    src/test_yapf_nonconformant.py)
+
+  blt_add_code_checks(
+    PREFIX           yapf_nonconformant_tests
+    SOURCES          ${internal_nonconformant_python_srcs}
+    YAPF_CFG_FILE    ${CMAKE_CURRENT_SOURCE_DIR}/yapf.cfg)
+endif() # end if(YAPF_FOUND)
+
+if (CMAKEFORMAT_FOUND)
+  # Test case where a style target running cmake-format should do nothing, and
+  # a corresponding check target should return 0
+  set(internal_conformant_cmake_srcs
+    src/test_cmake_format_conformant.cmake)
+
+  blt_add_code_checks(
+    PREFIX               cmake_format_conformant_tests
+    SOURCES              ${internal_conformant_cmake_srcs}
+    CMAKEFORMAT_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake-format-style.py )
+
+  # Test case where a style target running cmake-format should reformat the source file,
+  # and a corresponding check target should return a nonzero code
+  #
+  # After styling, cmake_format_conformant.cmake and
+  # cmake_format_nonconformant.cmake should have the same contents
+  set(internal_nonconformant_cmake_srcs
+    src/test_cmake_format_nonconformant.cmake)
+
+  blt_add_code_checks(
+    PREFIX               cmake_format_nonconformant_tests
+    SOURCES              ${internal_nonconformant_cmake_srcs}
+    CMAKEFORMAT_CFG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake-format-style.py )
+endif() # end if(CMAKEFORMAT_FOUND)
+  
 # Check blt_add_test with a command that is not a target
 if(WIN32)
     configure_file(return_true_win32.in tests/return_true.bat COPYONLY)

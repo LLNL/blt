@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -144,7 +144,7 @@ macro(blt_git_tag)
     endif()
 
     ## set working directory
-    if ( NOT DEFINED arg_SOURCE_DIR} )
+    if ( NOT DEFINED arg_SOURCE_DIR )
       set(git_dir ${CMAKE_CURRENT_SOURCE_DIR})
     else()
       set(git_dir ${arg_SOURCE_DIR})

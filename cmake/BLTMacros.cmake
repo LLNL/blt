@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -184,7 +184,13 @@ macro(blt_add_target_compile_flags)
     # Only add the flag if it is not empty
     string(STRIP "${arg_FLAGS}" _strippedFlags)
     if(NOT "${_strippedFlags}" STREQUAL "")
-        target_compile_options(${arg_TO} ${_scope} ${_strippedFlags})
+        get_target_property(_target_type ${arg_TO} TYPE)
+        if (("${_target_type}" STREQUAL "INTERFACE_LIBRARY") AND (${CMAKE_VERSION} VERSION_LESS "3.11.0"))
+            set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                         INTERFACE_COMPILE_OPTIONS ${_strippedFlags})
+        else()
+            target_compile_options(${arg_TO} ${_scope} ${_strippedFlags})
+        endif()
     endif()
 
     unset(_strippedFlags)
@@ -270,16 +276,30 @@ macro(blt_add_target_link_flags)
             endif()
         else()
             # In CMake <= 3.12, there is no target_link_flags or target_link_options command
-            get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
-            if(NOT _link_flags)
-                set(_link_flags "")
-            endif()
-            set(_link_flags "${_flags} ${_link_flags}")
+            get_target_property(_target_type ${arg_TO} TYPE)
+            if ("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+                # If it's an interface library, we add the flag via link_libraries
+                if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0")
+                    target_link_libraries(${arg_TO} INTERFACE ${_flags})
+                else()
+                    set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                                 INTERFACE_LINK_LIBRARIES ${_flags})
+                endif()
+            else()
+                get_target_property(_link_flags ${arg_TO} LINK_FLAGS)
+                # Append to existing flags
+                if(NOT _link_flags)
+                    set(_link_flags "")
+                endif()
+                set(_link_flags "${_flags} ${_link_flags}")
 
-            # Convert from a CMake ;-list to a string
-            string (REPLACE ";" " " _link_flags_str "${_link_flags}")
-            set_target_properties(${arg_TO}
-                                  PROPERTIES LINK_FLAGS "${_link_flags_str}")
+                # Convert from a CMake ;-list to a string
+                string (REPLACE ";" " " _link_flags_str "${_link_flags}")
+
+                set_target_properties(${arg_TO}
+                                      PROPERTIES LINK_FLAGS "${_link_flags_str}")
+            endif()
+
         endif()
     endif()
 
@@ -321,63 +341,241 @@ macro(blt_register_library)
 
     string(TOUPPER ${arg_NAME} uppercase_name)
 
-    set(BLT_${uppercase_name}_IS_REGISTERED_LIBRARY TRUE CACHE BOOL "" FORCE)
+    set(_BLT_${uppercase_name}_IS_REGISTERED_LIBRARY TRUE CACHE BOOL "" FORCE)
 
     if( arg_DEPENDS_ON )
-        set(BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_DEPENDS_ON)
+        set(_BLT_${uppercase_name}_DEPENDS_ON ${arg_DEPENDS_ON} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_DEPENDS_ON)
     endif()
 
     if( arg_INCLUDES )
-        set(BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_INCLUDES)
+        set(_BLT_${uppercase_name}_INCLUDES ${arg_INCLUDES} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_INCLUDES)
     endif()
 
     if( ${arg_OBJECT} )
-        set(BLT_${uppercase_name}_IS_OBJECT_LIBRARY TRUE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY TRUE CACHE BOOL "" FORCE)
     else()
-        set(BLT_${uppercase_name}_IS_OBJECT_LIBRARY FALSE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY FALSE CACHE BOOL "" FORCE)
     endif()
-    mark_as_advanced(BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
+    mark_as_advanced(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
 
-    if( ${arg_TREAT_INCLUDES_AS_SYSTEM} )
-        set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM TRUE CACHE BOOL "" FORCE)
+    # PGI does not support -isystem
+    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+        set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM TRUE CACHE BOOL "" FORCE)
     else()
-        set(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM FALSE CACHE BOOL "" FORCE)
+        set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM FALSE CACHE BOOL "" FORCE)
     endif()
-    mark_as_advanced(BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
+    mark_as_advanced(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM)
 
     if( ENABLE_FORTRAN AND arg_FORTRAN_MODULES )
-        set(BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_FORTRAN_MODULES)
+        set(_BLT_${uppercase_name}_FORTRAN_MODULES ${arg_INCLUDES} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_FORTRAN_MODULES)
     endif()
 
     if( arg_LIBRARIES )
-        set(BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE STRING "" FORCE)
+        set(_BLT_${uppercase_name}_LIBRARIES ${arg_LIBRARIES} CACHE STRING "" FORCE)
     else()
         # This prevents cmake from falling back on adding -l<library name>
         # to the command line for BLT registered libraries which are not
         # actual CMake targets
-        set(BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE STRING "" FORCE)
+        set(_BLT_${uppercase_name}_LIBRARIES "BLT_NO_LIBRARIES" CACHE STRING "" FORCE)
     endif()
-    mark_as_advanced(BLT_${uppercase_name}_LIBRARIES)
+    mark_as_advanced(_BLT_${uppercase_name}_LIBRARIES)
 
     if( arg_COMPILE_FLAGS )
-        set(BLT_${uppercase_name}_COMPILE_FLAGS "${arg_COMPILE_FLAGS}" CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_COMPILE_FLAGS)
+        set(_BLT_${uppercase_name}_COMPILE_FLAGS "${arg_COMPILE_FLAGS}" CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_COMPILE_FLAGS)
     endif()
 
     if( arg_LINK_FLAGS )
-        set(BLT_${uppercase_name}_LINK_FLAGS "${arg_LINK_FLAGS}" CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_LINK_FLAGS)
+        set(_BLT_${uppercase_name}_LINK_FLAGS "${arg_LINK_FLAGS}" CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_LINK_FLAGS)
     endif()
 
     if( arg_DEFINES )
-        set(BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE STRING "" FORCE)
-        mark_as_advanced(BLT_${uppercase_name}_DEFINES)
+        set(_BLT_${uppercase_name}_DEFINES ${arg_DEFINES} CACHE STRING "" FORCE)
+        mark_as_advanced(_BLT_${uppercase_name}_DEFINES)
     endif()
 
 endmacro(blt_register_library)
+
+##------------------------------------------------------------------------------
+## blt_patch_target( NAME <targetname>
+##                   DEPENDS_ON [dep1 [dep2 ...]]
+##                   INCLUDES [include1 [include2 ...]]
+##                   LIBRARIES [lib1 [lib2 ...]]
+##                   TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+##                   FORTRAN_MODULES [ path1 [ path2 ..]]
+##                   COMPILE_FLAGS [ flag1 [ flag2 ..]]
+##                   LINK_FLAGS [ flag1 [ flag2 ..]]
+##                   DEFINES [def1 [def2 ...]] )
+##
+## Modifies an existing CMake target - sets PUBLIC visibility except for INTERFACE
+## libraries, which use INTERFACE visibility
+##------------------------------------------------------------------------------
+macro(blt_patch_target)
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM)
+    set(multiValueArgs INCLUDES 
+                       DEPENDS_ON
+                       LIBRARIES
+                       FORTRAN_MODULES
+                       COMPILE_FLAGS
+                       LINK_FLAGS
+                       DEFINES )
+
+    ## parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Input checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_patch_target() must be called with argument NAME <name>")
+    endif()
+
+    if (NOT TARGET ${arg_NAME})
+        message(FATAL_ERROR "blt_patch_target() NAME argument must be a native CMake target")
+    endif()
+
+    # Default to public scope, unless it's an interface library
+    set(_scope PUBLIC)
+    get_target_property(_target_type ${arg_NAME} TYPE)
+    if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+        set(_scope INTERFACE)
+    endif()
+
+    # Interface libraries were heavily restricted pre-3.11
+    set(_standard_lib_interface FALSE)
+    if((${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0") OR (NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY"))
+        set(_standard_lib_interface TRUE)
+    endif()
+
+    # LIBRARIES and DEPENDS_ON are kept separate in case different logic is needed for
+    # the library itself versus its dependencies
+    set(_libs_to_link "")
+    if( arg_LIBRARIES )
+        list(APPEND _libs_to_link ${arg_LIBRARIES})
+    endif()
+
+    # TODO: This won't expand BLT-registered libraries
+    if( arg_DEPENDS_ON )
+        list(APPEND _libs_to_link ${arg_DEPENDS_ON})
+    endif()
+
+    if(_standard_lib_interface)
+        target_link_libraries(${arg_NAME} ${_scope} ${_libs_to_link})
+    else()
+        set_property(TARGET ${arg_NAME} APPEND PROPERTY
+                     INTERFACE_LINK_LIBRARIES ${_libs_to_link})
+    endif()
+        
+    if( arg_INCLUDES )
+        if(_standard_lib_interface)
+            target_include_directories(${arg_NAME} ${_scope} ${arg_INCLUDES})
+        else()
+            # Interface include directories need to be set manually
+            set_property(TARGET ${arg_NAME} APPEND PROPERTY 
+                         INTERFACE_INCLUDE_DIRECTORIES ${arg_INCLUDES})
+        endif()
+    endif()
+
+    # PGI does not support -isystem
+    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+        get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+        # Don't copy if the target had no include directories
+        if(_target_includes)
+            if(_standard_lib_interface)
+                target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
+            else()
+                set_property(TARGET ${arg_NAME} PROPERTY
+                            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
+            endif()
+        endif()
+    endif()
+
+    # FIXME: Is this all that's needed?
+    if( arg_FORTRAN_MODULES )
+        target_include_directories(${arg_NAME} ${_scope} ${arg_FORTRAN_MODULES})
+    endif()
+
+    if( arg_COMPILE_FLAGS )
+        blt_add_target_compile_flags(TO ${arg_NAME} 
+                                     SCOPE ${_scope}
+                                     FLAGS ${arg_COMPILE_FLAGS})
+    endif()
+    
+    if( arg_LINK_FLAGS )
+        blt_add_target_link_flags(TO ${arg_NAME} 
+                                  SCOPE ${_scope}
+                                  FLAGS ${arg_LINK_FLAGS})
+    endif()
+    
+    if( arg_DEFINES )
+        blt_add_target_definitions(TO ${arg_NAME} 
+                                   SCOPE ${_scope}
+                                   TARGET_DEFINITIONS ${arg_DEFINES})
+    endif()
+
+endmacro(blt_patch_target)
+
+##------------------------------------------------------------------------------
+## blt_import_library( NAME <libname>
+##                     LIBRARIES [lib1 [lib2 ...]]
+##                     DEPENDS_ON [dep1 [dep2 ...]]
+##                     INCLUDES [include1 [include2 ...]]
+##                     TREAT_INCLUDES_AS_SYSTEM [ON|OFF]
+##                     FORTRAN_MODULES [ path1 [ path2 ..]]
+##                     COMPILE_FLAGS [ flag1 [ flag2 ..]]
+##                     LINK_FLAGS [ flag1 [ flag2 ..]]
+##                     DEFINES [def1 [def2 ...]] 
+##                     GLOBAL [ON|OFF]
+##                     EXPORTABLE [ON|OFF])
+##
+## Imports a library as a CMake target
+##------------------------------------------------------------------------------
+macro(blt_import_library)
+    set(singleValueArgs NAME TREAT_INCLUDES_AS_SYSTEM GLOBAL EXPORTABLE)
+    set(multiValueArgs LIBRARIES
+                       INCLUDES 
+                       DEPENDS_ON
+                       FORTRAN_MODULES
+                       COMPILE_FLAGS
+                       LINK_FLAGS
+                       DEFINES )
+
+    ## parse the arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Input checks
+    if( "${arg_NAME}" STREQUAL "" )
+        message(FATAL_ERROR "blt_import_library() must be called with argument NAME <name>")
+    endif()
+
+    if(${arg_EXPORTABLE})
+        if(${arg_GLOBAL})
+            message(FATAL_ERROR "blt_import_library: EXPORTABLE targets cannot be GLOBAL")
+        endif()
+        add_library(${arg_NAME} INTERFACE)
+    elseif(${arg_GLOBAL})
+        add_library(${arg_NAME} INTERFACE IMPORTED GLOBAL)
+    else()
+        add_library(${arg_NAME} INTERFACE IMPORTED)
+    endif()
+
+    blt_patch_target(
+        NAME       ${arg_NAME}
+        LIBRARIES  ${arg_LIBRARIES}
+        DEPENDS_ON ${arg_DEPENDS_ON}
+        INCLUDES   ${arg_INCLUDES}
+        DEFINES    ${arg_DEFINES}
+        TREAT_INCLUDES_AS_SYSTEM ${arg_TREAT_INCLUDES_AS_SYSTEM}
+        FORTRAN_MODULES ${arg_FORTRAN_MODULES}
+        COMPILE_FLAGS ${arg_COMPILE_FLAGS}
+        LINK_FLAGS ${arg_LINK_FLAGS}
+        DEFINES ${arg_DEFINES}
+    )
+endmacro(blt_import_library)
 
 
 ##------------------------------------------------------------------------------
@@ -546,21 +744,23 @@ endmacro(blt_add_library)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_executable( NAME       <name>
-##                     SOURCES    [source1 [source2 ...]]
-##                     INCLUDES   [dir1 [dir2 ...]]
-##                     DEFINES    [define1 [define2 ...]]
-##                     DEPENDS_ON [dep1 [dep2 ...]]
-##                     OUTPUT_DIR [dir]
-##                     FOLDER     [name])
+## blt_add_executable( NAME        <name>
+##                     SOURCES     [source1 [source2 ...]]
+##                     HEADERS     [header1 [header2 ...]]
+##                     INCLUDES    [dir1 [dir2 ...]]
+##                     DEFINES     [define1 [define2 ...]]
+##                     DEPENDS_ON  [dep1 [dep2 ...]]
+##                     OUTPUT_DIR  [dir]
+##                     OUTPUT_NAME [name]
+##                     FOLDER      [name])
 ##
 ## Adds an executable target, called <name>, to be built from the given sources.
 ##------------------------------------------------------------------------------
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR FOLDER)
-    set(multiValueArgs SOURCES INCLUDES DEFINES DEPENDS_ON)
+    set(singleValueArgs NAME OUTPUT_DIR OUTPUT_NAME FOLDER)
+    set(multiValueArgs HEADERS SOURCES INCLUDES DEFINES DEPENDS_ON)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -578,9 +778,10 @@ macro(blt_add_executable)
     if (ENABLE_HIP)
         blt_add_hip_executable(NAME         ${arg_NAME}
                                SOURCES      ${arg_SOURCES}
+                               HEADERS      ${arg_HEADERS}
                                DEPENDS_ON   ${arg_DEPENDS_ON})
     else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} )
+        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
 
         if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
             blt_setup_cuda_target(
@@ -595,15 +796,22 @@ macro(blt_add_executable)
     list(GET arg_SOURCES 0 _first)
     get_source_file_property(_lang ${_first} LANGUAGE)
     if(_lang STREQUAL Fortran)
-        if (NOT CUDA_LINK_WITH_NVCC)
-            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
-        endif()
+        set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
        
     blt_setup_target(NAME       ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON} 
                      OBJECT     FALSE)
+
+    # Override the linker language with INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE, if applicable
+    # Will have just been populated by blt_setup_target
+    get_target_property(_blt_link_lang ${arg_NAME} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+    if(_blt_link_lang)
+        # This is the final link (b/c executable), so override the actual LINKER_LANGUAGE
+        # BLT currently uses this to override for HIP and CUDA linkers
+        set_target_properties(${arg_NAME} PROPERTIES LINKER_LANGUAGE ${_blt_link_lang})
+    endif()
 
     # fix the openmp flags for fortran if needed
     # NOTE: this needs to be called after blt_setup_target()
@@ -619,6 +827,11 @@ macro(blt_add_executable)
         target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
     endif()
 
+    if ( arg_OUTPUT_NAME )
+        set_target_properties(${arg_NAME} PROPERTIES
+            OUTPUT_NAME ${arg_OUTPUT_NAME} )
+    endif()
+
     # when using shared libs on windows, all runtime targets
     # (dlls and exes) must live in the same dir
     # so we do not set runtime_output_dir in this case
@@ -632,7 +845,7 @@ macro(blt_add_executable)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
-    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} )
+    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS} )
 
     blt_clean_target(TARGET ${arg_NAME})
 
@@ -1099,7 +1312,7 @@ macro(blt_print_target_properties)
 
     set(_is_blt_registered_target FALSE)
     string(TOUPPER ${arg_TARGET} _target_upper)
-    if(BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+    if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         set(_is_blt_registered_target TRUE)
         message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a blt_registered target")
     endif()
@@ -1121,8 +1334,8 @@ macro(blt_print_target_properties)
         blt_list_remove_duplicates(TO _property_list)   
 
         ## For interface targets, filter against whitelist of valid properties
-        get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
-        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
+        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
+        if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
             blt_filter_list(TO _property_list
                             REGEX "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$"
                             OPERATION "include")
@@ -1141,11 +1354,11 @@ macro(blt_print_target_properties)
         unset(_propval)
     endif()
 
-    ## Additionally, output variables generated via blt_register_target of the form "BLT_<target>_*"
+    ## Additionally, output variables generated via blt_register_target of the form "_BLT_<target>_*"
     if(_is_blt_registered_target)
-        set(_target_prefix "BLT_${_target_upper}_")
+        set(_target_prefix "_BLT_${_target_upper}_")
 
-        ## Filter to get variables of the form BLT_<target>_ and print
+        ## Filter to get variables of the form _BLT_<target>_ and print
         get_cmake_property(_variable_names VARIABLES)
         foreach (prop ${_variable_names})
             if(prop MATCHES "^${_target_prefix}")

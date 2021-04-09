@@ -1,10 +1,10 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.3.6" CACHE STRING "")
+    set(BLT_VERSION "0.4.0" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
@@ -176,7 +176,10 @@ if (NOT BLT_LOADED)
                CACHE STRING "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
                CACHE STRING "List of known file extensions used for Fortran sources")
-
+    set(BLT_Python_FILE_EXTS ".py"
+               CACHE STRING "List of known file extensions used for Python sources")
+    set(BLT_CMAKE_FILE_EXTS ".cmake" # NOTE: CMakeLists.txt handled elsewhere
+               CACHE STRING "List of known file extensions used for CMake sources")           
 
     ################################
     # Setup compiler options

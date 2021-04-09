@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -93,24 +93,66 @@ function(blt_fix_fortran_openmp_flags target_name)
 
     if (ENABLE_FORTRAN AND ENABLE_OPENMP AND BLT_OPENMP_FLAGS_DIFFER)
 
-        set(_property_name LINK_FLAGS)
-        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
-            # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
-            set(_property_name LINK_OPTIONS)
-        endif()
+        # The OpenMP interface library will have been added as a direct
+        # link dependency instead of via flags
+        get_target_property(target_link_libs ${target_name} LINK_LIBRARIES)
+        if ( target_link_libs )
+            # Since this is only called on executable targets we can safely convert
+            # from a "real" target back to a "fake" one as this is a sink vertex in
+            # the DAG.  Only the link flags need to be modified.
+            list(FIND target_link_libs "openmp" _omp_index)
+            if(${_omp_index} GREATER -1)
+                message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
 
-        get_target_property(target_link_flags ${target_name} ${_property_name})
-        if ( target_link_flags )
+                # Remove openmp from libraries
+                list(REMOVE_ITEM target_link_libs "openmp")
+                set_target_properties( ${target_name} PROPERTIES
+                                       LINK_LIBRARIES "${target_link_libs}" )
 
-            message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
+                # Add openmp compile flags verbatim w/ generator expression
+                get_target_property(omp_compile_flags openmp INTERFACE_COMPILE_OPTIONS)
+                target_compile_options(${target_name} PUBLIC ${omp_compile_flags})
 
-            string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
-                    correct_link_flags
-                    "${target_link_flags}"
-                    )
+                # Change CXX flags to Fortran flags
 
-            set_target_properties( ${target_name} PROPERTIES ${_property_name}
-                                   "${correct_link_flags}" )
+                # These are set through blt_add_target_link_flags which needs to use
+                # the link_libraries for interface libraries in CMake < 3.13
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                    get_target_property(omp_link_flags openmp INTERFACE_LINK_OPTIONS)
+                else()
+                    get_target_property(omp_link_flags openmp INTERFACE_LINK_LIBRARIES)
+                endif()
+
+                string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                        correct_omp_link_flags
+                        "${omp_link_flags}"
+                        )
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                    target_link_options(${target_name} PRIVATE "${correct_omp_link_flags}")
+                else()
+                    set_property(TARGET ${target_name} APPEND PROPERTY LINK_FLAGS "${correct_omp_link_flags}")
+                endif()
+            endif()
+
+            # Handle registered library general case
+
+            # OpenMP is an interface library which doesn't have a LINK_FLAGS property
+            # in versions < 3.13
+            set(_property_name LINK_FLAGS)
+            if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+                # In CMake 3.13+, LINK_FLAGS was converted to LINK_OPTIONS.
+                set(_property_name LINK_OPTIONS)
+            endif()
+            get_target_property(target_link_flags ${target_name} ${_property_name})
+            if ( target_link_flags )
+
+                string( REPLACE "${OpenMP_CXX_FLAGS}" "${OpenMP_Fortran_FLAGS}"
+                        correct_link_flags
+                        "${target_link_flags}"
+                        )
+                set_target_properties( ${target_name} PROPERTIES ${_property_name}
+                                    "${correct_link_flags}" )
+            endif()
         endif()
 
     endif()
@@ -123,7 +165,8 @@ endfunction()
 ##
 ## This macro attempts to find the given executable via either a previously defined
 ## <UPPERCASE_NAME>_EXECUTABLE or using find_program with the given EXECUTABLES.
-## if EXECUTABLES is left empty, then NAME is used.
+## if EXECUTABLES is left empty, then NAME is used.  This macro will only attempt
+## to locate the executable if <UPPERCASE_NAME>_ENABLED is TRUE.
 ##
 ## If successful the following variables will be defined:
 ## <UPPERCASE_NAME>_FOUND
@@ -210,39 +253,95 @@ macro(blt_inherit_target_info)
         message( FATAL_ERROR "Must provide a FROM argument to the 'blt_inherit_target' macro" )
     endif()
 
+    blt_determine_scope(TARGET ${arg_TO} OUT _scope)
+
     get_target_property(_interface_system_includes
                         ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
     if ( _interface_system_includes )
-        target_include_directories(${arg_TO} SYSTEM PUBLIC ${_interface_system_includes})
+        target_include_directories(${arg_TO} SYSTEM ${_scope} ${_interface_system_includes})
     endif()
 
     get_target_property(_interface_includes
                         ${arg_FROM} INTERFACE_INCLUDE_DIRECTORIES)
     if ( _interface_includes )
-        target_include_directories(${arg_TO} PUBLIC ${_interface_includes})
+        target_include_directories(${arg_TO} ${_scope} ${_interface_includes})
     endif()
 
     get_target_property(_interface_defines
                         ${arg_FROM} INTERFACE_COMPILE_DEFINITIONS)
     if ( _interface_defines )
-        target_compile_definitions( ${arg_TO} PUBLIC ${_interface_defines})
+        target_compile_definitions( ${arg_TO} ${_scope} ${_interface_defines})
+    endif()
+
+    if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+        get_target_property(_interface_link_options
+                            ${arg_FROM} INTERFACE_LINK_OPTIONS)
+        if ( _interface_link_options )
+            target_link_options( ${arg_TO} ${_scope} ${_interface_link_options})
+        endif()
+    endif()
+
+    get_target_property(_interface_compile_options
+                        ${arg_FROM} INTERFACE_COMPILE_OPTIONS)
+    if ( _interface_compile_options )
+        target_compile_options( ${arg_TO} ${_scope} ${_interface_compile_options})
     endif()
 
     if ( NOT arg_OBJECT )
         get_target_property(_interface_link_directories
                             ${arg_FROM} INTERFACE_LINK_DIRECTORIES)
         if ( _interface_link_directories )
-            target_link_directories( ${arg_TO} PUBLIC ${_interface_link_directories})
+            target_link_directories( ${arg_TO} ${_scope} ${_interface_link_directories})
         endif()
 
         get_target_property(_interface_link_libraries
                             ${arg_FROM} INTERFACE_LINK_LIBRARIES)
         if ( _interface_link_libraries )
-            target_link_libraries( ${arg_TO} PUBLIC ${_interface_link_libraries})
+            target_link_libraries( ${arg_TO} ${_scope} ${_interface_link_libraries})
         endif()
     endif()
 
 endmacro(blt_inherit_target_info)
+
+##------------------------------------------------------------------------------
+## blt_expand_depends( DEPENDS_ON [dep1 ...]
+##                     RESULT [variable] )
+##------------------------------------------------------------------------------
+macro(blt_expand_depends)
+    set(options)
+    set(singleValueArgs RESULT)
+    set(multiValueArgs DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                        "${multiValueArgs}" ${ARGN} )
+
+    # Expand dependency list
+    set(_deps_to_process ${arg_DEPENDS_ON})
+    set(_expanded_DEPENDS_ON)
+    while(_deps_to_process)
+        # Copy the current set of dependencies to process
+        set(_current_deps_to_process ${_deps_to_process})
+        # and add them to the full expanded list
+        list(APPEND _expanded_DEPENDS_ON ${_deps_to_process})
+        # Then clear it so we can check if new ones were added
+        set(_deps_to_process)
+        foreach( dependency ${_current_deps_to_process} )
+            string(TOUPPER ${dependency} uppercase_dependency )
+            if ( DEFINED _BLT_${uppercase_dependency}_DEPENDS_ON )
+                foreach(new_dependency ${_BLT_${uppercase_dependency}_DEPENDS_ON})
+                    # Don't add duplicates
+                    if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
+                        list(APPEND _deps_to_process ${new_dependency})
+                    endif()
+                endforeach()
+            endif()
+        endforeach()
+    endwhile()
+
+    # Write the output to the requested variable
+    set(${arg_RESULT} ${_expanded_DEPENDS_ON})
+endmacro()
 
 
 ##------------------------------------------------------------------------------
@@ -265,49 +364,51 @@ macro(blt_setup_target)
         message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_target' macro" )
     endif()
 
-    # Expand dependency list
-    set(_expanded_DEPENDS_ON ${arg_DEPENDS_ON})
-    foreach( i RANGE 50 )
-        foreach( dependency ${_expanded_DEPENDS_ON} )
-            string(TOUPPER ${dependency} uppercase_dependency )
+    # Default to "real" scope, unless it's an interface library
+    set(_private_scope PRIVATE)
+    set(_public_scope  PUBLIC)
+    get_target_property(_target_type ${arg_NAME} TYPE)
+    if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+        set(_private_scope INTERFACE)
+        set(_public_scope  INTERFACE)
+    endif()
 
-            if ( DEFINED BLT_${uppercase_dependency}_DEPENDS_ON )
-                foreach(new_dependency ${BLT_${uppercase_dependency}_DEPENDS_ON})
-                    if (NOT ${new_dependency} IN_LIST _expanded_DEPENDS_ON)
-                        list(APPEND _expanded_DEPENDS_ON ${new_dependency})
-                    endif()
-                endforeach()
-            endif()
-        endforeach()
-    endforeach()
+    # Expand dependency list - avoid "recalculating" if the information already exists
+    set(_expanded_DEPENDS_ON)
+    if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+        get_target_property(_expanded_DEPENDS_ON ${arg_NAME} BLT_EXPANDED_DEPENDENCIES)
+    endif()
+    if(NOT _expanded_DEPENDS_ON)
+        blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
+    endif()
 
     # Add dependency's information
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
 
-        if ( NOT arg_OBJECT AND BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
-            target_sources(${arg_NAME} PRIVATE $<TARGET_OBJECTS:${dependency}>)
+        if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+            target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_INCLUDES )
-            if ( BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
-                target_include_directories( ${arg_NAME} SYSTEM PUBLIC
-                    ${BLT_${uppercase_dependency}_INCLUDES} )
+        if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
+            if ( _BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
+                target_include_directories( ${arg_NAME} SYSTEM ${_public_scope}
+                    ${_BLT_${uppercase_dependency}_INCLUDES} )
             else()
-                target_include_directories( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_INCLUDES} )
+                target_include_directories( ${arg_NAME} ${_public_scope}
+                    ${_BLT_${uppercase_dependency}_INCLUDES} )
             endif()
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_FORTRAN_MODULES )
-            target_include_directories( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_FORTRAN_MODULES} )
+        if ( DEFINED _BLT_${uppercase_dependency}_FORTRAN_MODULES )
+            target_include_directories( ${arg_NAME} ${_public_scope}
+                ${_BLT_${uppercase_dependency}_FORTRAN_MODULES} )
         endif()
 
         if ( arg_OBJECT )
             # Object libraries need to inherit info from their CMake targets listed
             # in their LIBRARIES
-            foreach( _library ${BLT_${uppercase_dependency}_LIBRARIES} )
+            foreach( _library ${_BLT_${uppercase_dependency}_LIBRARIES} )
                 if(TARGET ${_library})
                     blt_inherit_target_info(TO     ${arg_NAME}
                                             FROM   ${_library}
@@ -316,7 +417,7 @@ macro(blt_setup_target)
             endforeach()
         endif()
 
-        if ( arg_OBJECT OR BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
+        if ( arg_OBJECT OR _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             # We want object libraries to inherit the vital info but not call
             # target_link_libraries() otherwise you have to install the object
             # files associated with the object library which noone wants.
@@ -325,34 +426,67 @@ macro(blt_setup_target)
                                         FROM   ${dependency}
                                         OBJECT ${arg_OBJECT})
             endif()
-        elseif (DEFINED BLT_${uppercase_dependency}_LIBRARIES)
+        elseif (DEFINED _BLT_${uppercase_dependency}_LIBRARIES)
             # This prevents cmake from adding -l<library name> to the
             # command line for BLT registered libraries which are not
             # actual CMake targets
-            if(NOT "${BLT_${uppercase_dependency}_LIBRARIES}"
+            if(NOT "${_BLT_${uppercase_dependency}_LIBRARIES}"
                     STREQUAL "BLT_NO_LIBRARIES" )
-                target_link_libraries( ${arg_NAME} PUBLIC
-                    ${BLT_${uppercase_dependency}_LIBRARIES} )
+                target_link_libraries( ${arg_NAME} ${_public_scope}
+                    ${_BLT_${uppercase_dependency}_LIBRARIES} )
             endif()
         else()
-            target_link_libraries( ${arg_NAME} PUBLIC ${dependency} )
+            target_link_libraries( ${arg_NAME} ${_public_scope} ${dependency} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_DEFINES )
-            target_compile_definitions( ${arg_NAME} PUBLIC
-                ${BLT_${uppercase_dependency}_DEFINES} )
+        if ( DEFINED _BLT_${uppercase_dependency}_DEFINES )
+            target_compile_definitions( ${arg_NAME} ${_public_scope}
+                ${_BLT_${uppercase_dependency}_DEFINES} )
         endif()
 
-        if ( DEFINED BLT_${uppercase_dependency}_COMPILE_FLAGS )
+        if ( DEFINED _BLT_${uppercase_dependency}_COMPILE_FLAGS )
             blt_add_target_compile_flags(TO ${arg_NAME}
-                                         FLAGS ${BLT_${uppercase_dependency}_COMPILE_FLAGS} )
+                                         FLAGS ${_BLT_${uppercase_dependency}_COMPILE_FLAGS} )
         endif()
 
-        if ( NOT arg_OBJECT AND DEFINED BLT_${uppercase_dependency}_LINK_FLAGS )
+        if ( NOT arg_OBJECT AND DEFINED _BLT_${uppercase_dependency}_LINK_FLAGS )
             blt_add_target_link_flags(TO ${arg_NAME}
-                                      FLAGS ${BLT_${uppercase_dependency}_LINK_FLAGS} )
+                                      FLAGS ${_BLT_${uppercase_dependency}_LINK_FLAGS} )
         endif()
 
+        if(TARGET ${dependency})
+            # If it's an interface library CMake doesn't even allow us to query the property
+            get_target_property(_dep_type ${dependency} TYPE)
+            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                # Propagate the overridden linker language, if applicable
+                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+                # TODO: Do we need to worry about overwriting?  Should only ever be HIP or CUDA
+                if(_blt_link_lang)
+                    set_target_properties(${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE ${_blt_link_lang})
+                endif()
+            endif()
+
+            # Check if a separate device link is needed
+            if(ENABLE_CUDA AND "${_dep_type}" STREQUAL "OBJECT_LIBRARY")
+                get_target_property(_device_link ${dependency} CUDA_RESOLVE_DEVICE_SYMBOLS)
+                if(_device_link AND CUDA_LINK_WITH_NVCC)
+                    set(_dlink_obj "${dependency}_device_link${CMAKE_CUDA_OUTPUT_EXTENSION}")
+                    # Make sure a target wasn't already added
+                    get_source_file_property(_generated ${_dlink_obj} GENERATED)
+                    if(NOT _generated)
+                        # Convert string to list as it will be expanded
+                        string(REPLACE " " ";" _cuda_flags ${CMAKE_CUDA_FLAGS})
+                        add_custom_command(
+                            OUTPUT ${_dlink_obj}
+                            COMMAND ${CMAKE_CUDA_COMPILER} --device-link ${_cuda_flags} $<TARGET_OBJECTS:${dependency}> -o ${_dlink_obj}
+                            DEPENDS $<TARGET_OBJECTS:${dependency}>
+                            COMMAND_EXPAND_LISTS
+                        )
+                    endif()
+                    target_sources(${arg_NAME} PRIVATE ${_dlink_obj})
+                endif()
+            endif()
+        endif()
     endforeach()
 
 endmacro(blt_setup_target)
@@ -398,6 +532,9 @@ macro(blt_setup_cuda_target)
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
         if (CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
+            # This will be propagated up to executable targets that depend on this
+            # library, which will need the HIP linker
+            set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE CUDA)
         endif()
     endif()
 
@@ -430,8 +567,46 @@ macro(blt_setup_cuda_target)
                                        CMAKE_CUDA_CREATE_STATIC_LIBRARY OFF)
             endif()
         endif()
+
+        # Replicate the behavior of CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS
+        if(${CMAKE_VERSION} VERSION_LESS "3.16.0" AND CMAKE_CUDA_RESOLVE_DEVICE_SYMBOLS)
+            set_target_properties( ${arg_NAME} PROPERTIES
+                                   CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+        endif()
     endif()
 endmacro(blt_setup_cuda_target)
+
+##------------------------------------------------------------------------------
+## blt_cleanup_hip_globals(FROM_TARGET <target>)
+##
+## Needed as the SetupHIP macros (specifically, HIP_PREPARE_TARGET_COMMANDS)
+## "pollutes" the global HIP_HIPCC_FLAGS with target-specific options.  This
+## macro removes the target-specific generator expressions from the global flags
+## which have already been copied to source-file-specific instances of the
+## run_hipcc script.  Other global flags in HIP_HIPCC_FLAGS, e.g., those set by
+## the user, are left untouched.
+##------------------------------------------------------------------------------
+macro(blt_cleanup_hip_globals)
+    set(options)
+    set(singleValueArgs FROM_TARGET)
+    set(multiValueArgs)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_FROM_TARGET )
+        message( FATAL_ERROR "Must provide a FROM_TARGET argument to the 'blt_cleanup_hip_globals' macro")
+    endif()
+
+    # Remove the compile definitions generator expression
+    # This must be copied verbatim from HIP_PREPARE_TARGET_COMMANDS,
+    # which would have just added it to HIP_HIPCC_FLAGS
+    set(_defines_genexpr "$<TARGET_PROPERTY:${arg_FROM_TARGET},COMPILE_DEFINITIONS>")
+    set(_defines_flags_genexpr "$<$<BOOL:${_defines_genexpr}>:-D$<JOIN:${_defines_genexpr}, -D>>")
+    list(REMOVE_ITEM HIP_HIPCC_FLAGS ${_defines_flags_genexpr})
+endmacro(blt_cleanup_hip_globals)
 
 ##------------------------------------------------------------------------------
 ## blt_add_hip_library(NAME         <libname>
@@ -486,8 +661,18 @@ macro(blt_add_hip_library)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
+        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
+        # Link to the hip_runtime target so it gets pulled in by targets
+        # depending on this target
+        target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
     else()
         add_library( ${arg_NAME} ${arg_LIBRARY_TYPE} ${arg_SOURCES} ${arg_HEADERS} )
+    endif()
+
+    if (${_depends_on_hip_runtime} OR ${_depends_on_hip})
+        # This will be propagated up to executable targets that depend on this
+        # library, which will need the HIP linker
+        set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE HIP)
     endif()
 
 endmacro(blt_add_hip_library)
@@ -495,13 +680,14 @@ endmacro(blt_add_hip_library)
 ##------------------------------------------------------------------------------
 ## blt_add_hip_executable(NAME         <libname>
 ##                        SOURCES      [source1 [source2 ...]]
+##                        HEADERS      [header1 [header2 ...]]
 ##                        DEPENDS_ON   [dep1 ...]
 ##------------------------------------------------------------------------------
 macro(blt_add_hip_executable)
 
     set(options)
     set(singleValueArgs NAME)
-    set(multiValueArgs SOURCES DEPENDS_ON)
+    set(multiValueArgs HEADERS SOURCES DEPENDS_ON)
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
@@ -528,6 +714,20 @@ macro(blt_add_hip_executable)
         set(_depends_on_hip_runtime TRUE)
     endif()
 
+    blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
+    foreach( dependency ${_expanded_DEPENDS_ON} )
+        if(TARGET ${dependency})
+            get_target_property(_dep_type ${dependency} TYPE)
+            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
+                # Propagate the overridden linker language, if applicable
+                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
+                if(_blt_link_lang STREQUAL "HIP")
+                    set(_depends_on_hip_runtime TRUE)
+                endif()
+            endif()
+        endif()
+    endforeach()
+
     if (${_depends_on_hip} OR ${_depends_on_hip_runtime})
         # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
@@ -543,26 +743,35 @@ macro(blt_add_hip_executable)
                                      HIP_SOURCE_PROPERTY_FORMAT TRUE)
 
         hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
+        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
     else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} )
+        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
     endif()
+
+    # Save the expanded dependencies to avoid recalculating later
+    set_target_properties(${arg_NAME} PROPERTIES
+                          BLT_EXPANDED_DEPENDENCIES "${_expanded_DEPENDS_ON}")
 
 endmacro(blt_add_hip_executable)
 
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
-##                                    Fortran_LIST <list name>)
+##                                    Fortran_LIST <list name>
+##                                    Python_LIST <list name>)
+##                                    CMAKE_LIST <list name>)
 ##
-## Filters source list by file extension into C/C++ and Fortran source lists
-## based on BLT_C_FILE_EXTS and BLT_Fortran_FILE_EXTS (global BLT variables).
-## Files with no extension or generator expressions that are not object libraries
-## (of the form "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
-##------------------------------------------------------------------------------
+## Filters source list by file extension into C/C++, Fortran, Python, and
+## CMake source lists based on BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS,
+## and BLT_CMAKE_FILE_EXTS (global BLT variables). Files named
+## "CMakeLists.txt" are also filtered here. Files with no extension
+## or generator expressions that are not object libraries (of the form
+## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
+## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST)
+    set(singleValueArgs C_LIST Fortran_LIST Python_LIST CMAKE_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -584,23 +793,33 @@ macro(blt_split_source_list_by_language)
             message(FATAL_ERROR "blt_split_source_list_by_language macro does not support generator expressions because CMake does not provide a way to evaluate them. Given generator expression: ${_file}")
         endif()
 
-        get_filename_component(_ext ${_file} EXT)
+        get_filename_component(_ext "${_file}" EXT)
         if("${_ext}" STREQUAL "")
             message(FATAL_ERROR "blt_split_source_list_by_language given source file with no extension: ${_file}")
         endif()
 
-        string(TOLOWER ${_ext} _ext_lower)
+        get_filename_component(_name "${_file}" NAME)  
 
-        if(${_ext_lower} IN_LIST BLT_C_FILE_EXTS)
+        string(TOLOWER "${_ext}" _ext_lower)
+
+        if("${_ext_lower}" IN_LIST BLT_C_FILE_EXTS)
             if (DEFINED arg_C_LIST)
-                list(APPEND ${arg_C_LIST} ${_file})
+                list(APPEND ${arg_C_LIST} "${_file}")
             endif()
-        elseif(${_ext_lower} IN_LIST BLT_Fortran_FILE_EXTS)
+        elseif("${_ext_lower}" IN_LIST BLT_Fortran_FILE_EXTS)
             if (DEFINED arg_Fortran_LIST)
-                list(APPEND ${arg_Fortran_LIST} ${_file})
+                list(APPEND ${arg_Fortran_LIST} "${_file}")
+            endif()
+        elseif("${_ext_lower}" IN_LIST BLT_Python_FILE_EXTS)
+            if (DEFINED arg_Python_LIST)
+                list(APPEND ${arg_Python_LIST} "${_file}")
+            endif()
+        elseif("${_ext_lower}" IN_LIST BLT_CMAKE_FILE_EXTS OR "${_name}" STREQUAL "CMakeLists.txt")
+            if (DEFINED arg_CMAKE_LIST)
+                list(APPEND ${arg_CMAKE_LIST} "${_file}")
             endif()
         else()
-            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS or BLT_Fortran_FILE_EXTS).\n Unknown file: ${_file}")
+            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, BLT_Python_FILE_EXTS, or BLT_CMAKE_FILE_EXTS).\n Unknown file: ${_file}")
         endif()
     endforeach()
 

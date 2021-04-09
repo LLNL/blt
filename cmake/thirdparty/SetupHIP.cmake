@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -14,33 +14,32 @@ find_package(HIP REQUIRED)
 
 message(STATUS "HIP version:      ${HIP_VERSION_STRING}")
 message(STATUS "HIP platform:     ${HIP_PLATFORM}")
-#message(STATUS "HIP Include Path: ${HIP_INCLUDE_DIRS}")
-#message(STATUS "HIP Libraries:    ${HIP_LIBRARIES}")
 
-if(${HIP_PLATFORM} STREQUAL "hcc")
+if("${HIP_PLATFORM}" STREQUAL "hcc" OR "${HIP_PLATFORM}" STREQUAL "amd")
 	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_HCC__")
-elseif(${HIP_PLATFORM} STREQUAL "nvcc")
+elseif("${HIP_PLATFORM}" STREQUAL "nvcc")
 	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_NVCC__")
 endif()
-set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/hcc/include")
+if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
+        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/hcc/include" CACHE STRING "")
+else()
+        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" CACHE STRING "")
+endif()
 set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-D${HIP_RUNTIME_DEFINE};-Wno-unused-parameter")
-# set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
-# set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/hcc/lib")
 
 # depend on 'hip', if you need to use hip
 # headers, link to hip libs, and need to run your source
 # through a hip compiler (hipcc)
-blt_register_library(NAME      hip
-                     INCLUDES  ${HIP_INCLUDE_DIRS}
-                     LIBRARIES ${HIP_LIBRARIES}
-                     TREAT_INCLUDES_AS_SYSTEM ON)
+# This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
+# of all required HIP-related includes/libraries/flags.
+blt_import_library(NAME      hip)
 
 # depend on 'hip_runtime', if you only need to use hip
 # headers or link to hip libs, but don't need to run your source
 # through a hip compiler (hipcc)
-blt_register_library(NAME          hip_runtime
-                     INCLUDES      ${HIP_RUNTIME_INCLUDE_DIRS}
-                     DEFINES       ${HIP_RUNTIME_DEFINES}
-                     COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
-                     LIBRARIES     ${HIP_RUNTIME_LIBRARIES}
-                     TREAT_INCLUDES_AS_SYSTEM ON)
+blt_import_library(NAME          hip_runtime
+                   INCLUDES      ${HIP_RUNTIME_INCLUDE_DIRS}
+                   DEFINES       ${HIP_RUNTIME_DEFINES}
+                   COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

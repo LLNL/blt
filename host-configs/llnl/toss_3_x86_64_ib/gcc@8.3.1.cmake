@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -13,10 +13,10 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# gcc@4.9.3 compilers
+# gcc@8.3.1 compilers
 #------------------------------------------------------------------------------
 
-set(GCC_VERSION "gcc-4.9.3")
+set(GCC_VERSION "gcc-8.3.1")
 set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}")
 
 # c compiler

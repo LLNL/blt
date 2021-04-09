@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -52,6 +52,7 @@ endif()
 message(STATUS "OpenMP Compile Flags: ${_compile_flags}")
 message(STATUS "OpenMP Link Flags:    ${_link_flags}")
 
-blt_register_library(NAME openmp
-                     COMPILE_FLAGS ${_compile_flags} 
-                     LINK_FLAGS    ${_link_flags})
+blt_import_library(NAME openmp
+                   COMPILE_FLAGS ${_compile_flags}
+                   LINK_FLAGS    ${_link_flags}
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

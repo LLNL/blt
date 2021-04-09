@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -82,7 +82,7 @@ if(ENABLE_TESTS)
 
         set (INSTALL_GMOCK OFF CACHE BOOL "")
         set (INSTALL_GTEST OFF CACHE BOOL "")
-                
+
         # Enable builtin google test 
         add_subdirectory(googletest-master-2020-01-07
                          ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2020-01-07)
@@ -99,7 +99,7 @@ if(ENABLE_TESTS)
                              DEFINES  ${gtest_defines} ${gtest_export_defines}
                              TREAT_INCLUDES_AS_SYSTEM ON
                              )
-                             
+
         blt_add_target_definitions(TO gtest TARGET_DEFINITIONS ${gtest_defines})
 
         list(APPEND _blt_tpl_targets gtest gtest_main)
@@ -119,10 +119,14 @@ if(ENABLE_TESTS)
     # Enable Fruit (FortRan UnIT testing) support
     if (ENABLE_FORTRAN)
         message(STATUS "Fruit Support is ${ENABLE_FRUIT}")
+        message(STATUS "Fruit MPI Support is ${ENABLE_FRUIT_MPI}")
         if(ENABLE_FRUIT)
             add_subdirectory(fruit-3.4.1
                              ${BLT_BUILD_DIR}/thirdparty_builtin/fruit-3.4.1)
-            list(APPEND _blt_tpl_targets fruit)
+	    list(APPEND _blt_tpl_targets fruit)
+	    if(ENABLE_MPI AND ENABLE_FRUIT_MPI)
+	        list(APPEND _blt_tpl_targets fruit_mpi)
+	    endif()
         endif()
     endif()
 
@@ -168,5 +172,3 @@ if(ENABLE_FOLDERS)
         blt_set_target_folder(TARGET ${tpl} FOLDER blt/thirdparty)
     endforeach()
 endif()
-
-

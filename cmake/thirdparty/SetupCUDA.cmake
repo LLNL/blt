@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -112,6 +112,8 @@ message(STATUS "CUDA Compile Flags: ${CMAKE_CUDA_FLAGS}")
 message(STATUS "CUDA Link Flags:    ${CMAKE_CUDA_LINK_FLAGS}")
 message(STATUS "CUDA Separable Compilation:  ${CUDA_SEPARABLE_COMPILATION}")
 message(STATUS "CUDA Link with NVCC:         ${CUDA_LINK_WITH_NVCC}")
+message(STATUS "CUDA Implicit Link Libraries:   ${CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES}")
+message(STATUS "CUDA Implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
 
 # don't propagate host flags - too easy to break stuff!
 set (CUDA_PROPAGATE_HOST_FLAGS Off)
@@ -120,6 +122,14 @@ if (CMAKE_CXX_COMPILER)
 else()
     set(CUDA_HOST_COMPILER ${CMAKE_C_COMPILER})
 endif()
+
+# Set PIE options to empty for PGI since it doesn't understand -fPIE This
+# option is set in the CUDA toolchain file so must be unset after
+# enable_language(CUDA)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+  set(CMAKE_CUDA_COMPILE_OPTIONS_PIE "")
+endif()
+
 
 set(_cuda_compile_flags " ")
 if (ENABLE_CLANG_CUDA)
@@ -133,12 +143,13 @@ endif()
 # leaving it to the default source file language.
 # This logic is handled in the blt_add_library/executable
 # macros
-blt_register_library(NAME cuda
-                     COMPILE_FLAGS ${_cuda_compile_flags}
-                     INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES}
-                     LINK_FLAGS "${CMAKE_CUDA_LINK_FLAGS}"
-                     )
+blt_import_library(NAME          cuda
+                   COMPILE_FLAGS ${_cuda_compile_flags}
+                   INCLUDES      ${CUDA_INCLUDE_DIRS}
+                   LIBRARIES     ${CUDA_LIBRARIES}
+                   LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   )
 
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 
@@ -146,6 +157,7 @@ blt_register_library(NAME cuda
 # linking with nvcc.
 # This logic is handled in the blt_add_library/executable
 # macros
-blt_register_library(NAME cuda_runtime
-                     INCLUDES ${CUDA_INCLUDE_DIRS}
-                     LIBRARIES ${CUDA_LIBRARIES})
+blt_import_library(NAME       cuda_runtime
+                   INCLUDES   ${CUDA_INCLUDE_DIRS}
+                   LIBRARIES  ${CUDA_LIBRARIES}
+                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY})

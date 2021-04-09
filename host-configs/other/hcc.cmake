@@ -1,5 +1,5 @@
-# Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-# other BLT Project Developers. See the top-level COPYRIGHT file for details
+# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
@@ -32,7 +32,11 @@ set(ENABLE_OPENMP OFF CACHE BOOL "")
 
 set(ROCM_ROOT_DIR "/opt/rocm" CACHE PATH "ROCm ROOT directory path")
 
-set(ROCM_INCLUDE_PATH "${ROCM_ROOT_DIR}/hcc/include;${ROCM_ROOT_DIR}/include"  CACHE PATH "")
+if ( IS_DIRECTORY "${ROCM_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
+        set(ROCM_INCLUDE_PATH "${ROCM_ROOT_DIR}/hcc/include;${ROCM_ROOT_DIR}/include"  CACHE PATH "")
+else()
+        set(ROCM_INCLUDE_PATH "${ROCM_ROOT_DIR}/include"  CACHE PATH "")
+endif()
 set(ROCM_CXX_LIBRARIES "-L${ROCM_ROOT_DIR}/lib -lhc_am -lhip_hcc" CACHE STRING "")
 
 ###########################################################
@@ -60,6 +64,7 @@ set(ROCM_CXX_LINK_FLAGS "${ROCM_CXX_LINK_FLAGS} ${ROCM_ARCH_FLAG} ${ROCM_CXX_LIB
 ###########################################################
 # set CMake cache variables
 ###########################################################
+# if hcc does not exist, consider setting the compiler to "${ROCM_ROOT_DIR}/bin/hipcc"
 set(CMAKE_CXX_COMPILER "${ROCM_ROOT_DIR}/hcc/bin/hcc" CACHE FILEPATH "ROCm HCC compiler")
 # set(BLT_CXX_FLAGS "${ROCM_CXX_COMPILE_FLAGS}" CACHE STRING "HCC compiler flags")
 

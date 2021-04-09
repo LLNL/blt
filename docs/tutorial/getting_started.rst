@@ -1,31 +1,24 @@
-.. # Copyright (c) 2017-2019, Lawrence Livermore National Security, LLC and
-.. # other BLT Project Developers. See the top-level COPYRIGHT file for details
+.. # Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+.. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-Setup BLT in your CMake Project
-=================================
+.. _GettingStarted:
+
+Getting Started
+===============
 
 BLT is easy to include in your CMake project whether it is an existing project or
-you are starting from scratch. You simply pull it into your project using a CMake
-``include()`` command.
+you are starting from scratch.  This tutorial assumes you are using git and the CMake
+Makefile generator but those commands can easily be changed or ignored.
 
-.. code-block:: cmake
 
-    include(path/to/blt/SetupBLT.cmake)
-
-You can include the BLT source in your repository or pass the location 
-of BLT at CMake configure time through the optional ``BLT_SOURCE_DIR``
-CMake variable. 
+Include BLT in your Git Repository
+----------------------------------
 
 There are two standard choices for including the BLT source in your repository:
 
-1. Add BLT as a git submodule
-2. Copy BLT into a subdirectory in your repository
-
-
-BLT as a Git Submodule
---------------------------
+**Add BLT as a git submodule**
 
 This example adds BLT as a submodule, commits, and pushes the changes to your repository.
 
@@ -36,10 +29,9 @@ This example adds BLT as a submodule, commits, and pushes the changes to your re
     git commit -m "Adding BLT"
     git push
 
-Copy BLT into your repository
------------------------------
+**Copy BLT into a subdirectory in your repository**
 
-This example will clone BLT into your repository and remove the unneeded 
+This example will clone a copy of BLT into your repository and remove the unneeded 
 git files from the clone. It then commits and pushes the changes to your
 repository.
 
@@ -52,8 +44,8 @@ repository.
     git push
 
 
-Include BLT in your project
----------------------------
+Include BLT in your CMake Project
+---------------------------------
 
 In most projects, including BLT is as simple as including the following CMake
 line in your base ``CMakeLists.txt`` after your ``project()`` call.
@@ -62,26 +54,22 @@ line in your base ``CMakeLists.txt`` after your ``project()`` call.
 
     include(blt/SetupBLT.cmake)
 
-This enables all of BLT's features in your project. 
+This enables all of BLT's features in your project.
 
 However if your project is likely to be used by other projects.  The following
 is recommended:
 
-.. literalinclude:: blank_project/CMakeLists.txt
+.. literalinclude:: bare_bones/CMakeLists.txt
    :start-after: _blt_tutorial_include_blt_start
    :end-before:  _blt_tutorial_include_blt_end
    :language: cmake
 
 This is a robust way of setting up BLT and supports an optional external BLT source
-directory. This allows the use of a common BLT across large projects. There are some
-helpful error messages if the BLT submodule is missing as well as the commands to solve
-it. 
-
-.. note::
-  Throughout this tutorial, we pass the path to BLT using ``BLT_SOURCE_DIR`` since 
-  our tutorial is part of the blt repository and we want this project to be 
-  automatically tested using a single clone of our repository.
-
+directory via the command line option ``BLT_SOURCE_DIR``.
+Using the external BLT source directory allows you to use single BLT
+instance across multiple independent CMake projects.
+This also adds helpful error messages if the BLT submodule is missing
+as well as the commands to solve it. 
 
 
 Running CMake
@@ -106,16 +94,22 @@ If you are using BLT outside of your project pass the location of BLT as follows
     cd build
     cmake -DBLT_SOURCE_DIR="path/to/blt" ..
 
-Example: blank_project
-----------------------
 
-The ``blank_project`` example is provided to show you some of BLT's built-in
+Example: Bare Bones BLT Project
+-------------------------------
+
+The ``bare_bones`` example project shows you some of BLT's built-in
 features. It demonstrates the bare minimum required for testing purposes.
 
-Here is the entire CMakeLists.txt file for ``blank_project``:
+Here is the entire CMakeLists.txt file needed for a bare bones project:
 
-.. literalinclude:: blank_project/CMakeLists.txt
-   :language: cmake
+.. code-block:: cmake
+
+    cmake_minimum_required(VERSION 3.8)
+    project( bare_bones )
+
+    include(/path/to/blt/SetupBLT.cmake)
+
 
 BLT also enforces some best practices for building, such as not allowing
 in-source builds.  This means that BLT prevents you from generating a
@@ -125,8 +119,8 @@ For example if you run the following commands:
 
 .. code-block:: bash
 
-    cd <BLT repository>/docs/tutorial/blank_project
-    cmake -DBLT_SOURCE_DIR=../..
+    cd <BLT repository>/docs/tutorial/bare_bones
+    cmake .
 
 you will get the following error:
 
@@ -145,14 +139,20 @@ To correctly run cmake, create a build directory and run cmake from there:
 
 .. code-block:: bash
 
-    cd <BLT repository>/docs/blank_project
+    cd <BLT repository>/docs/bare_bones
     mkdir build
     cd build
-    cmake -DBLT_SOURCE_DIR=../../.. ..
+    cmake ..
 
 This will generate a configured ``Makefile`` in your build directory to build
-``blank_project``.  The generated makefile includes gtest and several built-in
+Bare Bones project.  The generated makefile includes gtest and several built-in
 BLT *smoke* tests, depending on the features that you have enabled in your build.  
+
+.. note:: Smoke tests are designed to show when basic functionality is not working.
+   For example, if you have turned on MPI in your project but the MPI compiler wrapper
+   cannot produce an executable that runs even the most basic MPI code, the
+   ``blt_mpi_smoke`` test will fail.  This helps you know that the problem doesn't
+   lie in your own code but in the building/linking of MPI.
 
 To build the project, use the following command:
 
@@ -178,7 +178,7 @@ If everything went correctly, you should have the following output:
 .. code-block:: bash
 
     Running tests...
-    Test project blt/docs/tutorial/blank_project/build
+    Test project blt/docs/tutorial/bare_bones/build
         Start 1: blt_gtest_smoke
     1/1 Test #1: blt_gtest_smoke ..................   Passed    0.01 sec
 
@@ -186,42 +186,23 @@ If everything went correctly, you should have the following output:
 
     Total Test time (real) =   0.10 sec
 
-Note that the default options for ``blank_project`` only include a single test
+Note that the default options for ``bare_bones`` only include a single test
 ``blt_gtest_smoke``. As we will see later on, BLT includes additional smoke
 tests that are activated when BLT is configured with other options enabled,
-like Fortran, MPI, OpenMP, and Cuda. 
-
-Host-configs
-------------
-
-To capture (and revision control) build options, third party library paths, etc.,
-we recommend using CMake's initial-cache file mechanism. This feature allows you
-to pass a file to CMake that provides variables to bootstrap the configuration
-process. 
-
-You can pass initial-cache files to cmake via the ``-C`` command line option.
-
-.. code-block:: bash
-
-    cmake -C config_file.cmake
+like Fortran, MPI, OpenMP, and CUDA. 
 
 
-We call these initial-cache files ``host-config`` files since we typically create
-a file for each platform or for specific hosts, if necessary. 
+Example files
+-------------
 
-These files use standard CMake commands. CMake ``set()`` commands need to specify
-``CACHE`` as follows:
+Files related to setting up the Bare Bones project:
 
-.. code-block:: cmake
+.. container:: toggle
 
-    set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
+    .. container:: label
 
-Here is a snippet from a host-config file that specifies compiler details for
-using gcc 4.9.3 on LLNL's surface cluster. 
+        ``CMakeLists.txt``
 
-.. literalinclude:: ../../host-configs/other/llnl-surface-chaos_5_x86_64_ib-gcc@4.9.3.cmake
-   :start-after: _blt_tutorial_surface_compiler_config_start
-   :end-before:  _blt_tutorial_surface_compiler_config_end
-   :language: cmake
-
-
+    .. literalinclude::  ./bare_bones/CMakeLists.txt
+        :language: cmake
+        :linenos:
