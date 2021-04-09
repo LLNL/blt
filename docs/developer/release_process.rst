@@ -114,4 +114,4 @@ Create a branch off main that is for the release branch.
 6: Merge Main to Develop
 ---------------------------
 
-Create a pull request to merge main into develop. When approved, merge it.
+Create a pull request to merge ``main`` into ``develop`` through Github. When approved, merge it.
