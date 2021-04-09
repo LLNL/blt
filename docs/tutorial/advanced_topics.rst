@@ -14,7 +14,6 @@ This section includes subpages on advanced topics such as:
 
 
 .. toctree::
-    :hidden:
 
     portable_compiler_flags
     exporting_targets
