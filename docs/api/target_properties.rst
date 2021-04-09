@@ -129,7 +129,7 @@ or with the corresponding :ref:`blt_add_executable` and :ref:`blt_add_library` m
 by any target that depends on this target. ``PUBLIC`` flags are both ``INTERFACE`` and ``PRIVATE``.
 
 If ``CUDA_LINK_WITH_NVCC`` is set to ``ON``, this macro will automatically
-convert `-Wl,-rpath,` to :literal:`-Xlinker -rpath -Xlinker\ `.
+convert ``-Wl,-rpath,`` to :literal:`-Xlinker -rpath -Xlinker\ `.
 
 .. note::
    This macro also handles the various changes that CMake made in 3.13.  For example,
