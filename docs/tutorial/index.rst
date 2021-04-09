@@ -41,10 +41,7 @@ The tutorial requires a C++ compiler and CMake, we recommend using CMake 3.8.0 o
 Parts of the tutorial also require MPI, CUDA, Sphinx, and Doxygen.
 
 We provide instructions to build and run these projects on several
-LLNL HPC platforms and ORNL's Summit platform.
-
-.. CYRUS NOTE: IF WE SEPARATE THE HOST CONFIG EXAMPLES, WE SHOULD CROSS LINK HERE.
-
+LLNL HPC platforms and ORNL's Summit platform. See :ref:`HostConfigs`.
 
 .. toctree::
     :maxdepth: 3
