@@ -64,15 +64,15 @@ to:
     [Version 0.4.0]:    https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
 
 
-3: Create and push a git `tag` for the release
-----------------------------------------------
+3: Create Pull Request and push a git `tag` for the release
+-----------------------------------------------------------
 
-* Commit the changes and push them to Github.
-* Create a pull request from release candidate branch to ``main`` branch.
-* Merge pull request after reviewed and passing tests.
-* Checkout main locally: ``git checkout main && git pull``
-* Create release tag:  ``git tag v0.4.0``
-* Push tag to Github: ``git push --tags``
+#. Commit the changes and push them to Github.
+#. Create a pull request from release candidate branch to ``main`` branch.
+#. Merge pull request after reviewed and passing tests.
+#. Checkout main locally: ``git checkout main && git pull``
+#. Create release tag:  ``git tag v0.4.0``
+#. Push tag to Github: ``git push --tags``
 
 
 4: Draft a Github Release
