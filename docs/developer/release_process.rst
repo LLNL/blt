@@ -11,7 +11,7 @@ Release Process
           only code changes that should be done are bug fixes identified
           during release preparations
 
-Here are the steps to follow for an BLT release.
+Here are the steps to follow when creating a BLT release.
 
 1: Start Release Candidate Branch
 ---------------------------------
@@ -38,13 +38,13 @@ number. Typically, we use a name like v0.4.0-rc
 #. Update ``RELEASE-NOTES.md`` by changing the 
    ``unreleased`` section from:
 
-.. code:: none
+.. code:: text
 
     ## [Unreleased] - Release date yyyy-mm-dd
 
 Also add to a versioned section with the current date while leaving the unreleased section:
 
-.. code:: none
+.. code::
 
     ## [Unreleased] - Release date yyyy-mm-dd
 
@@ -52,20 +52,20 @@ Also add to a versioned section with the current date while leaving the unreleas
 
 Finally, add a link to the bottom as well:
 
-.. code:: none
+.. code:: text
 
     [Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.6...develop
 
 to:
 
-.. code:: none
+.. code:: text
 
     [Unreleased]:    https://github.com/LLNL/blt/compare/v0.4.0...develop
     [Version 0.4.0]:    https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
 
 
-3: Create Pull Request
-----------------------
+3: Create and push a git `tag` for the release
+----------------------------------------------
 
 * Commit the changes and push them to Github.
 * Create a pull request from release candidate branch to ``main`` branch.
@@ -98,10 +98,10 @@ to:
    source files for each release.
 
 
-5: Create Release Branch
-------------------------
+5: Create Release Branch and Mergeback to develop
+-------------------------------------------------
 
-Create a branch off main that is for the release branch.
+# Create a branch off main that is for the release branch.
 
 .. code:: bash
 
@@ -111,10 +111,7 @@ Create a branch off main that is for the release branch.
     git push --set-upstream origin release-v0.4.0
 
 
-6: Merge Main to Develop
-------------------------
-
-Create a pull request to merge ``main`` into ``develop`` through Github. When approved, merge it.
+# Create a pull request to merge ``main`` into ``develop`` through Github. When approved, merge it.
 
 
 7: Build Release Documentation

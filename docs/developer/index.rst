@@ -6,7 +6,7 @@
 Developer Guide
 ===============
 
-This section is for information related to being a developer of BLT.
+This section contains information for BLT developers.
 
 .. toctree::
     :titlesonly:
