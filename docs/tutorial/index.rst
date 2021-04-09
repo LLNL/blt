@@ -30,7 +30,7 @@ Here are direct links to the projects in BLT's GitHub repo:
 ``bare_bones`` provides a minimum template for starting a new project and
 ``calc_pi`` provides several examples that calculate the value of :math:`\pi` 
 by approximating the integral :math:`f(x) = \int_0^14/(1+x^2)` using numerical
-integration. The code is adapted from ANL's `using mpi examples <https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html>`_.
+integration. The code is adapted from ANL's `using MPI examples <https://www.mcs.anl.gov/research/projects/mpi/usingmpi/examples-usingmpi/simplempi/cpi_c.html>`_.
 
 
 Most of the tutorial focuses on the BLT features used to create the complete
