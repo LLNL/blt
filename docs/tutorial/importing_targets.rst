@@ -25,9 +25,8 @@ and imported targets. We have logically broken this topic into two groups:
    necessary information under a single name.  Some projects properly export their CMake targets and
    only need to be imported via a call to ``include()``.
 
-The following pages describe these topics in more detail.
-
 .. toctree::
+   :hidden:
 
     common_hpc_dependencies
     third_party_libraries

@@ -49,6 +49,7 @@ LLNL HPC platforms and ORNL's Summit platform.
 .. toctree::
     :maxdepth: 3
     :caption: Tutorial Contents
+    :includehidden:
 
     getting_started
     creating_targets
