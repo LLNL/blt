@@ -112,6 +112,13 @@ Create a branch off main that is for the release branch.
 
 
 6: Merge Main to Develop
----------------------------
+------------------------
 
 Create a pull request to merge ``main`` into ``develop`` through Github. When approved, merge it.
+
+
+7: Build Release Documentation
+------------------------------
+
+Enable the build on `readthedocs version page <https://readthedocs.org/projects/llnl-blt/versions/>`_
+for the version branch created in step 5.
