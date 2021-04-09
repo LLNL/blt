@@ -55,7 +55,6 @@ LLNL HPC platforms and ORNL's Summit platform.
     adding_tests
     host_configs
     importing_targets
-    exporting_targets
     creating_documentation
     advanced_topics
     recommendations

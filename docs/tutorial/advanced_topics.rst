@@ -15,4 +15,5 @@ This section includes subpages on advanced topics such as:
 .. toctree::
 
     portable_compiler_flags
+    exporting_targets
     object_libraries
