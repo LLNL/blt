@@ -9,20 +9,23 @@ Importing Targets
 =================
 
 One key goal for BLT is to simplify the use of external dependencies and libraries when building
-your project. To accomplish this, BLT provides a ``DEPENDS_ON`` option for the ``blt_add_library()``
-and ``blt_add_executable()`` macros that supports both your own projects CMake targets 
-and imported targets. We have logically broken this topic into two groups: :ref:`CommonHPCDependencies`
-and :ref:`ThirdPartyLibraries`.
+your project. To accomplish this, BLT provides a ``DEPENDS_ON`` option for the :ref:`blt_add_library`
+and :ref:`blt_add_executable` macros that supports both your own projects CMake targets 
+and imported targets. We have logically broken this topic into two groups:
 
-* :ref:`CommonHPCDependencies`, such as MPI, CUDA, HIP, and OpenMP, are bundled and ready to use included
+:ref:`CommonHPCDependencies`
+   Dependencies such as MPI, CUDA, HIP, and OpenMP, are bundled and ready to use included
    with BLT as regular named CMake targets. For example, just adding ``openmp`` to any ``DEPENDS_ON``
    will add the necessary OpenMP compiler and link flags to any target. 
-* :ref:`ThirdPartyLibraries` are imported into your depending on the level of CMake support provided
-   by that project.  BLT provides a macro, ``blt_import_library()``, which allows you to bundle all 
+
+:ref:`ThirdPartyLibraries`
+   These are external libraries that your project depend on, such as Lua. They are imported into your
+   project in different ways depending on the level of CMake support provided
+   by that project.  BLT provides a macro, :ref:`blt_import_library`, which allows you to bundle all 
    necessary information under a single name.  Some projects properly export their CMake targets and
    only need to be imported via a call to ``include()``.
 
-Their following pages describe these topics in more detail.
+The following pages describe these topics in more detail.
 
 .. toctree::
 
