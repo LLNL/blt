@@ -10,17 +10,24 @@ Exporting Targets
 
 BLT provides several built-in targets for commonly used libraries:
 
- * ``mpi`` (when ``ENABLE_MPI`` is ``ON``)
- * ``openmp`` (when ``ENABLE_OPENMP`` is ``ON``)
- * ``cuda`` and ``cuda_runtime`` (when ``ENABLE_CUDA`` is ``ON``)
- * ``hip`` and ``hip_runtime`` (when ``ENABLE_HIP`` is ``ON``)
+``mpi``
+    Available when ``ENABLE_MPI`` is ``ON``
+
+``openmp``
+    Available when ``ENABLE_OPENMP`` is ``ON``
+
+``cuda`` and ``cuda_runtime``
+    Available when ``ENABLE_CUDA`` is ``ON``
+
+``hip`` and ``hip_runtime``
+    Available when ``ENABLE_HIP`` is ``ON``
 
 These targets can be made exportable in order to make them available to users of
 your project via CMake's ``install()`` command.  Setting BLT's ``BLT_EXPORT_THIRDPARTY``
 option to ``ON`` will mark all active targets in the above list as ``EXPORTABLE``
 (see the :ref:`blt_import_library` API documentation for more info).
 
-.. note::  As with other ``EXPORTABLE`` targets created by ``blt_import_library()``,
+.. note::  As with other ``EXPORTABLE`` targets created by :ref:`blt_import_library`,
     these targets should be prefixed with the name of the project.  Either the ``EXPORT_NAME``
     target property or the ``NAMESPACE`` option to CMake's ``install``
     command can be used to modify the name of an installed target.
@@ -64,8 +71,8 @@ The first is to rename only the ``mpi`` target's exported name:
 
 With this approach the ``example_1`` target's exported name is unchanged - a 
 project that imports the ``example-targets`` export set will have ``example_1``
-and ``example::mpi`` targets made available.  The imported ``example_1`` will
-depend on ``example::mpi``.
+and ``example\:\:mpi`` targets made available.  The imported ``example_1`` will
+depend on ``example\:\:mpi``.
 
 Another approach is to install all targets in the export set behind a namespace:
 
@@ -74,5 +81,5 @@ Another approach is to install all targets in the export set behind a namespace:
     install(EXPORT example-targets NAMESPACE example::)
 
 With this approach all targets in the export set are prefixed, so an importing
-project will have ``example::example_1`` and ``example::mpi`` targets made available.
-The imported ``example::example_1`` will depend on ``example::mpi``.
+project will have ``example\:\:example_1`` and ``example\:\:mpi`` targets made available.
+The imported ``example\:\:example_1`` will depend on ``example\:\:mpi``.
