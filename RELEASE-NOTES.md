@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.4.0] - Release date 2021-04-09
+
 ## Added
 - Added variable ``BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE`` for filtering
   link directories implicitly added by CMake. See the following example host-config:
@@ -200,7 +202,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.3.6...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.4.0...develop
+[Version 0.4.0]: https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
 [Version 0.3.6]: https://github.com/LLNL/blt/compare/v0.3.5...v0.3.6
 [Version 0.3.5]: https://github.com/LLNL/blt/compare/v0.3.0...v0.3.5
 [Version 0.3.0]: https://github.com/LLNL/blt/compare/v0.2.5...v0.3.0
