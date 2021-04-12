@@ -81,8 +81,8 @@ searching for the include directories and then for the library itself.  Finally 
     blt_import_library(NAME       lua
                        TREAT_INCLUDES_AS_SYSTEM ON
                        DEFINES    HAVE_LUA=1
-                       INCLUDES   ${LUA_LIBRARY}
-                       LIBRARIES  ${LUA_INCLUDE_DIR}
+                       INCLUDES   ${LUA_INCLUDE_DIR}
+                       LIBRARIES  ${LUA_LIBRARY}
                        EXPORTABLE ON)
 
 Then ``lua`` is available to be used in the ``DEPENDS_ON`` list in the following
@@ -114,10 +114,11 @@ new imported library's ``NAME`` in the rest of your project.
 
 .. code-block:: cmake
 
-    # FindLua.cmake takes in LUA_DIR, which the directory where Lua was installed to
-    # and fills variables: LUA_FOUND, LUA_LIBRARIES, and LUA_INCLUDE_DIR
-    find_package(Lua NO_DEFAULT_PATH
-                     PATHS ${LUA_DIR})
+    # FindLua.cmake takes in LUA_DIR as an environment variable, which is the directory 
+    # where Lua was installed to and fills variables: LUA_FOUND, LUA_LIBRARIES, and LUA_INCLUDE_DIR
+    set(ENV{LUA_DIR} ${LUA_DIR})
+
+    find_package(Lua)
 
     if (NOT LUA_FOUND)
         MESSAGE(FATAL_ERROR "Could not find Lua in the provided LUA_DIR: ${LUA_DIR}")
@@ -126,8 +127,8 @@ new imported library's ``NAME`` in the rest of your project.
     blt_import_library(NAME       lua
                        TREAT_INCLUDES_AS_SYSTEM ON
                        DEFINES    HAVE_LUA=1
-                       INCLUDES   ${LUA_LIBRARIES}
-                       LIBRARIES  ${LUA_INCLUDE_DIR}
+                       INCLUDES   ${LUA_INCLUDE_DIR}
+                       LIBRARIES  ${LUA_LIBRARIES}
                        EXPORTABLE ON)
 
 
