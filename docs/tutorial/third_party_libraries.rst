@@ -81,8 +81,8 @@ searching for the include directories and then for the library itself.  Finally 
     blt_import_library(NAME       lua
                        TREAT_INCLUDES_AS_SYSTEM ON
                        DEFINES    HAVE_LUA=1
-                       INCLUDES   ${LUA_LIBRARY}
-                       LIBRARIES  ${LUA_INCLUDE_DIR}
+                       INCLUDES   ${LUA_INCLUDE_DIR}
+                       LIBRARIES  ${LUA_LIBRARY}
                        EXPORTABLE ON)
 
 Then ``lua`` is available to be used in the ``DEPENDS_ON`` list in the following
@@ -126,8 +126,8 @@ new imported library's ``NAME`` in the rest of your project.
     blt_import_library(NAME       lua
                        TREAT_INCLUDES_AS_SYSTEM ON
                        DEFINES    HAVE_LUA=1
-                       INCLUDES   ${LUA_LIBRARIES}
-                       LIBRARIES  ${LUA_INCLUDE_DIR}
+                       INCLUDES   ${LUA_INCLUDE_DIR}
+                       LIBRARIES  ${LUA_LIBRARIES}
                        EXPORTABLE ON)
 
 
