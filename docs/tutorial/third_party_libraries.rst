@@ -114,10 +114,11 @@ new imported library's ``NAME`` in the rest of your project.
 
 .. code-block:: cmake
 
-    # FindLua.cmake takes in LUA_DIR, which the directory where Lua was installed to
-    # and fills variables: LUA_FOUND, LUA_LIBRARIES, and LUA_INCLUDE_DIR
-    find_package(Lua NO_DEFAULT_PATH
-                     PATHS ${LUA_DIR})
+    # FindLua.cmake takes in LUA_DIR as an environment variable, which is the directory 
+    # where Lua was installed to and fills variables: LUA_FOUND, LUA_LIBRARIES, and LUA_INCLUDE_DIR
+    set(ENV{LUA_DIR} ${LUA_DIR})
+
+    find_package(Lua)
 
     if (NOT LUA_FOUND)
         MESSAGE(FATAL_ERROR "Could not find Lua in the provided LUA_DIR: ${LUA_DIR}")
