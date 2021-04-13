@@ -13,23 +13,23 @@
 
 ####
 # In pre-build phase, allocate a node for builds
-allocate_resources_build_quartz:
+quartz_allocate:
   variables:
     GIT_STRATEGY: none
   extends: [.on_quartz]
-  stage: q_allocate_resources
+  stage: allocate
   script:
-    - salloc -p pdebug -N 1 -c 36 -t 30 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
+    - salloc -p pdebug -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
   needs: []
 
 ####
 # In post-build phase, deallocate resources
 # Note : make sure this is run even on build phase failure
-release_resources_build_quartz:
+quartz_release:
   variables:
     GIT_STRATEGY: none
   extends: [.on_quartz]
-  stage: q_release_resources
+  stage: release
   script:
     - export JOBID=$(squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A)
     - if [[ -n "${JOBID}" ]]; then scancel ${JOBID}; fi
@@ -37,27 +37,29 @@ release_resources_build_quartz:
 ####
 # Template
 .build_on_quartz:
-  stage: q_build
-  extends: [.srun_build_script, .on_quartz]
+  stage: build
+  variables:
+    ALLOC_COMMAND: "srun -p pdebug -t 30 -N 1 ${ASSIGN_ID}"
+  extends: [.build_script, .on_quartz]
 
 ####
 # Build jobs
-clang_4_0_0_libcxx (quartz):
+quartz-clang_4_0_0_libcxx:
   variables:
     HOST_CONFIG: "clang@4.0.0-libcxx.cmake"
   extends: [.build_on_quartz]
 
-clang_6_0_0_static_analysis (quartz):
+quartz-clang_6_0_0_static_analysis:
   variables:
     HOST_CONFIG: "clang@6.0.0-static-analysis.cmake"
   extends: [.build_on_quartz]
 
-gcc_8_3_1 (quartz):
+quartz-gcc_8_3_1:
   variables:
     HOST_CONFIG: "gcc@8.3.1.cmake"
   extends: [.build_on_quartz]
 
-pgi_20_1 (quartz):
+quartz-pgi_20_1:
   variables:
     HOST_CONFIG: "pgi@20.1.cmake"
   extends: [.build_on_quartz]
