@@ -20,33 +20,35 @@
 ####
 # Template
 .build_on_lassen:
-  stage: l_build
-  extends: [.build_blueos_3_ppc64le_ib_p9_script, .on_lassen]
+  stage: build
+  extends: [.build_script, .on_lassen]
+  script:
+    - lalloc 1 -W 10 -q pdebug
   needs: []
 
 ####
 # Build jobs
-clang_upstream_link_with_nvcc (lassen):
+lassen-clang_upstream_link_with_nvcc:
   variables:
     HOST_CONFIG: "clang@upstream_link_with_nvcc.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-clang_upstream_nvcc_c++17 (lassen):
+lassen-clang_upstream_nvcc_c++17:
   variables:
     HOST_CONFIG: "clang@upstream_nvcc_c++17.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-clang_upstream_nvcc_c++17_no_separable (lassen):
+lassen-clang_upstream_nvcc_c++17_no_separable:
   variables:
     HOST_CONFIG: "clang@upstream_nvcc_c++17_no_separable.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-clang_upstream_nvcc_xlf (lassen):
+lassen-clang_upstream_nvcc_xlf:
   variables:
     HOST_CONFIG: "clang@upstream_nvcc_xlf.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-pgi_20.4_nvcc (lassen):
+lassen-pgi_20.4_nvcc:
   variables:
     HOST_CONFIG: "pgi@20.4_nvcc.cmake"
   extends: [.build_on_lassen, .with_cuda]
