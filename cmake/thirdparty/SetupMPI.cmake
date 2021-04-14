@@ -177,10 +177,24 @@ if (ENABLE_FORTRAN)
     endif()
 endif()
 
-blt_import_library(NAME          mpi
-                   INCLUDES      ${_mpi_includes}
-                   TREAT_INCLUDES_AS_SYSTEM ON
-                   LIBRARIES     ${_mpi_libraries}
-                   COMPILE_FLAGS ${_mpi_compile_flags}
-                   LINK_FLAGS    ${_mpi_link_flags} 
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+
+if(BLT_USE_MPI_IMPORTED_TARGETS)
+    if(TARGET MPI::MPI_C)
+        message(STATUS "Using MPI CMake imported targets: MPI::MPI_C MPI::MPI_CXX")
+        blt_register_library(NAME mpi
+                             LIBRARIES MPI::MPI_C MPI::MPI_CXX)
+    else()
+        message(FATAL_ERROR "Cannot use CMake imported targets for MPI."
+                            "(BLT_USE_MPI_IMPORTED_TARGETS == true) "
+                            "but MPI::MPI_C CMake target is missing.")
+    endif()
+else()
+    # non imported targets case
+    blt_import_library(NAME          mpi
+                       INCLUDES      ${_mpi_includes}
+                       TREAT_INCLUDES_AS_SYSTEM ON
+                       LIBRARIES     ${_mpi_libraries}
+                       COMPILE_FLAGS ${_mpi_compile_flags}
+                       LINK_FLAGS    ${_mpi_link_flags} 
+                       EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+endif()
