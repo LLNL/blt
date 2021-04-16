@@ -90,7 +90,7 @@ Test. ``test_2.cpp`` provides an example driver for MPI with GoogleTest.
   BLT also provides ``BLT_USE_FIND_MPI_TARGETS`` that will directly use the
   ``MPI::MPI_C`` and ``MPI::MPI_CXX`` targets provided by CMake's ``FindMPI``.
   When enabled these targets are available for BLT `DEPENDS_ON` arguments
-  via unified name of `mpi`.
+  via unified name of ``mpi``.
   This option requires ``ENABLE_FIND_MPI == true`` and is not compatible with
   the ``BLT_`` override options above.
 
