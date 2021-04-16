@@ -31,11 +31,7 @@ set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
 
-message(STATUS "Enable FindMPI:  ${ENABLE_FIND_MPI}")
 
-#
-# TODO: should this be BLT_ENABLE_FIND_MPI?
-#
 if(ENABLE_FIND_MPI)
     message(STATUS "FindMPI Enabled  (ENABLE_FIND_MPI == ON)")
 else()
