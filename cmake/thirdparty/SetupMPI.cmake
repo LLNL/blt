@@ -46,7 +46,6 @@ else()
 endif()
 
 
-
 if(NOT ENABLE_FIND_MPI AND BLT_USE_FIND_MPI_TARGETS)
     message(FATAL_ERROR "ENABLE_FIND_MPI == false, but BLT_USE_FIND_MPI_TARGETS == true."
                         "BLT_USE_FIND_MPI_TARGETS == true requires ENABLE_FIND_MPI == true.")
