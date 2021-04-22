@@ -31,25 +31,7 @@ set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
 
-
-if(ENABLE_FIND_MPI)
-    message(STATUS "FindMPI Enabled  (ENABLE_FIND_MPI == ON)")
-else()
-    message(STATUS "FindMPI Disabled (ENABLE_FIND_MPI == OFF) ")
-endif()
-
-
-if(BLT_USE_FIND_MPI_TARGETS)
-    message(STATUS "Using MPI CMake imported targets (BLT_USE_FIND_MPI_TARGETS == ON)")
-else()
-    message(STATUS "Not using MPI CMake imported targets (BLT_USE_FIND_MPI_TARGETS == OFF)")
-endif()
-
-
-if(NOT ENABLE_FIND_MPI AND BLT_USE_FIND_MPI_TARGETS)
-    message(FATAL_ERROR "ENABLE_FIND_MPI == false, but BLT_USE_FIND_MPI_TARGETS == true."
-                        "BLT_USE_FIND_MPI_TARGETS == true requires ENABLE_FIND_MPI == true.")
-endif()
+message(STATUS "Enable FindMPI:  ${ENABLE_FIND_MPI}")
 
 if (ENABLE_FIND_MPI)
     find_package(MPI REQUIRED)
@@ -141,33 +123,16 @@ if (ENABLE_FIND_MPI)
 endif()
 
 # Allow users to override CMake's FindMPI
-# Assuming we are not directly using targets it provides
 if (BLT_MPI_COMPILE_FLAGS)
-    if(BLT_USE_FIND_MPI_TARGETS)
-        message(FATAL_ERROR "Cannot override MPI Compile Flags when BLT_USE_FIND_MPI_TARGETS == true. "
-                            "(BLT_MPI_COMPILE_FLAGS provided, but BLT_USE_FIND_MPI_TARGETS == true)")
-    endif()
     set(_mpi_compile_flags ${BLT_MPI_COMPILE_FLAGS})
 endif()
 if (BLT_MPI_INCLUDES)
-    if(BLT_USE_FIND_MPI_TARGETS)
-        message(FATAL_ERROR "Cannot override MPI Includes when BLT_USE_FIND_MPI_TARGETS == true. "
-                            "(BLT_MPI_INCLUDES provided, but BLT_USE_FIND_MPI_TARGETS == true)")
-    endif()
     set(_mpi_includes ${BLT_MPI_INCLUDES})
 endif()
 if (BLT_MPI_LIBRARIES)
-    if(BLT_USE_FIND_MPI_TARGETS)
-        message(FATAL_ERROR "Cannot override MPI Libraries when BLT_USE_FIND_MPI_TARGETS == true. "
-                            "(BLT_MPI_LIBRARIES provided, but BLT_USE_FIND_MPI_TARGETS == true)")
-    endif()
     set(_mpi_libraries ${BLT_MPI_LIBRARIES})
 endif()
 if (BLT_MPI_LINK_FLAGS)
-    if(BLT_USE_FIND_MPI_TARGETS)
-        message(FATAL_ERROR "Cannot override MPI Link Flags when BLT_USE_FIND_MPI_TARGETS == true. "
-                            "(BLT_MPI_LINK_FLAGS provided, but BLT_USE_FIND_MPI_TARGETS == true)")
-    endif()
     set(_mpi_link_flags ${BLT_MPI_LINK_FLAGS})
 endif()
 
@@ -212,24 +177,10 @@ if (ENABLE_FORTRAN)
     endif()
 endif()
 
-
-if(BLT_USE_FIND_MPI_TARGETS)
-    if(TARGET MPI::MPI_C)
-        message(STATUS "Using MPI CMake imported targets: MPI::MPI_C MPI::MPI_CXX")
-        blt_register_library(NAME mpi
-                             LIBRARIES MPI::MPI_C MPI::MPI_CXX)
-    else()
-        message(FATAL_ERROR "Cannot use CMake imported targets for MPI."
-                            "(BLT_USE_FIND_MPI_TARGETS == true) "
-                            "but MPI::MPI_C CMake target is missing.")
-    endif()
-else()
-    # non imported targets case
-    blt_import_library(NAME          mpi
-                       INCLUDES      ${_mpi_includes}
-                       TREAT_INCLUDES_AS_SYSTEM ON
-                       LIBRARIES     ${_mpi_libraries}
-                       COMPILE_FLAGS ${_mpi_compile_flags}
-                       LINK_FLAGS    ${_mpi_link_flags} 
-                       EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
-endif()
+blt_import_library(NAME          mpi
+                   INCLUDES      ${_mpi_includes}
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   LIBRARIES     ${_mpi_libraries}
+                   COMPILE_FLAGS ${_mpi_compile_flags}
+                   LINK_FLAGS    ${_mpi_link_flags} 
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

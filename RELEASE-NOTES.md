@@ -9,9 +9,6 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
-## Added
-- Added ``BLT_USE_FIND_MPI_TARGETS`` option that directly uses the CMake targets provided by CMake's Find MPI for BLT's MPI support.
-
 ## [Version 0.4.0] - Release date 2021-04-09
 
 ## Added
