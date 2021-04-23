@@ -33,5 +33,5 @@
 }
 
 a img.logo {
-  scale: 75%
+  transform: scale(.75)
 }
