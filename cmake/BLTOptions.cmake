@@ -117,8 +117,6 @@ option(BLT_EXPORT_THIRDPARTY "Configure the third-party targets created by BLT t
 #------------------------------------------------------------------------------
 
 option(ENABLE_FIND_MPI     "Enables CMake's Find MPI support (Turn off when compiling with the mpi wrapper directly)" ON)
-option(BLT_USE_FIND_MPI_TARGETS     "Directly use the CMake targets provided by CMake's Find MPI" OFF)
-
 
 option(
     ENABLE_GTEST_DEATH_TESTS
