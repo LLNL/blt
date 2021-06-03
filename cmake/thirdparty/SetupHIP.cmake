@@ -19,7 +19,7 @@ set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include")
 if(${HIP_PLATFORM} STREQUAL "hcc")
 	set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__")
     set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/lib/libhip_hcc.so")
-elseif(${HIP_PLATFORM} STREQUAL "clang")
+elseif(${HIP_PLATFORM} STREQUAL "clang" OR ${HIP_PLATFORM} STREQUAL "amd")
     set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__;-D__HIP_ROCclr__")
     set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/lib/libamdhip64.so")
 elseif(${HIP_PLATFORM} STREQUAL "nvcc")
@@ -77,13 +77,12 @@ if (ENABLE_CLANG_HIP)
                        DEPENDS_ON       ${HIP_RUNTIME_LIBRARIES})
 else()
 
-    # depend on 'hip', if you need to use hip
-    # headers, link to hip libs, and need to run your source
-    # through a hip compiler (hipcc)
-    blt_register_library(NAME      hip
-                        INCLUDES  ${HIP_INCLUDE_DIRS}
-                        LIBRARIES ${HIP_LIBRARIES}
-                        TREAT_INCLUDES_AS_SYSTEM ON)
+# depend on 'hip', if you need to use hip
+# headers, link to hip libs, and need to run your source
+# through a hip compiler (hipcc)
+# This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
+# of all required HIP-related includes/libraries/flags.
+    blt_import_library(NAME      hip)
 endif()
 
 
