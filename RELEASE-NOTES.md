@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added compilation of HIP with clang using ``ENABLE_CLANG_HIP`` and ``BLT_CLANG_HIP_ARCH``
+
 ## [Version 0.4.0] - Release date 2021-04-09
 
 ## Added
