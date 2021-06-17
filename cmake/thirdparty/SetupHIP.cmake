@@ -74,12 +74,12 @@ if (ENABLE_CLANG_HIP)
     endif()
     set(_hip_compile_flags -x;hip)
     # Using clang HIP, we need to construct a few CPP defines and compiler flags
-    foreach(arch ${BLT_CLANG_HIP_ARCH})
-        string(TOUPPER ${arch} UPARCH)
-        string(TOLOWER ${arch} lowarch)
-        list(APPEND _hip_compile_flags "--offload-arch=${lowarch}")
-        set(_hip_compile_defines "${HIP_RUNTIME_DEFINES};-D__HIP_ARCH_${UPARCH}__=1")
-    endforeach(arch)
+    foreach(_arch ${BLT_CLANG_HIP_ARCH})
+        string(TOUPPER ${_arch} _UPARCH)
+        string(TOLOWER ${_arch} _lowarch)
+        list(APPEND _hip_compile_flags "--offload-arch=${_lowarch}")
+        set(_hip_compile_defines "${HIP_RUNTIME_DEFINES};-D__HIP_ARCH_${_UPARCH}__=1")
+    endforeach(_arch)
     
     # We need to pass rocm path as well, for certain bitcode libraries.
     # First see if we were given it, then see if it exists in the environment.
