@@ -18,16 +18,48 @@ message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include")
 if(${HIP_PLATFORM} STREQUAL "hcc")
 	set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__")
+    find_library(HIP_RUNTIME_LIBRARIES NAMES hip_hcc libhip_hcc
+                PATHS ${HIP_ROOT_DIR}/lib
+                NO_DEFAULT_PATH
+                NO_CMAKE_ENVIRONMENT_PATH
+                NO_CMAKE_PATH
+                NO_SYSTEM_ENVIRONMENT_PATH
+                NO_CMAKE_SYSTEM_PATH)
     set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/lib/libhip_hcc.so")
 elseif(${HIP_PLATFORM} STREQUAL "clang" OR ${HIP_PLATFORM} STREQUAL "amd")
-    set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__;-D__HIP_ROCclr__")
-    set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/lib/libamdhip64.so")
-elseif(${HIP_PLATFORM} STREQUAL "nvcc")
-    set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_NVCC__")
-    find_package(cudatoolkit)
-    set(HIP_RUNTIME_LIBRARIES "${CUDAToolkit_LIBRARY_DIR}/libcudart.so")
-    set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_RUNTIME_INCLUDE_DIRS};${CUDAToolkit_INCLUDE_DIR}")
+    set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__;-D__HIP_ROCclr__;-D__HIP_PLATFORM_AMD__")
+    find_library(HIP_RUNTIME_LIBRARIES NAMES amdhip64 libamdhip64
+                PATHS ${HIP_ROOT_DIR}/lib
+                NO_DEFAULT_PATH
+                NO_CMAKE_ENVIRONMENT_PATH
+                NO_CMAKE_PATH
+                NO_SYSTEM_ENVIRONMENT_PATH
+                NO_CMAKE_SYSTEM_PATH)
+elseif(${HIP_PLATFORM} STREQUAL "nvcc" OR ${HIP_PLATFORM} STREQUAL "nvidia")
+    set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_NVCC__;-D__HIP_PLATFORM_NVIDIA__")
+    if (${CMAKE_VERSION} VERSION_LESS "3.17.0")
+        find_package(CUDA)
+        find_library(HIP_RUNTIME_LIBRARIES NAMES cudart libcudart
+            PATHS ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}
+            NO_DEFAULT_PATH
+            NO_CMAKE_ENVIRONMENT_PATH
+            NO_CMAKE_PATH
+            NO_SYSTEM_ENVIRONMENT_PATH
+            NO_CMAKE_SYSTEM_PATH)
+        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_RUNTIME_INCLUDE_DIRS};${CUDA_INCLUDE_DIRS}")
+    else()
+        find_package(CUDAToolkit)
+        find_library(HIP_RUNTIME_LIBRARIES NAMES cudart libcudart
+            PATHS ${CUDAToolkit_LIBRARY_DIR}
+            NO_DEFAULT_PATH
+            NO_CMAKE_ENVIRONMENT_PATH
+            NO_CMAKE_PATH
+            NO_SYSTEM_ENVIRONMENT_PATH
+            NO_CMAKE_SYSTEM_PATH)
+        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_RUNTIME_INCLUDE_DIRS};${CUDAToolkit_INCLUDE_DIR}")
+    endif()
 endif()
+
 if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
     set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/hcc/include" CACHE STRING "")
 else()
