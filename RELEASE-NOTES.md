@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Changed
+-  Simpified the clang-format version regex that was causing hangs on some version strings.
+
 ## [Version 0.4.0] - Release date 2021-04-09
 
 ## Added
