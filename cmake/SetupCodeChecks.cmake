@@ -684,7 +684,7 @@ macro(blt_add_clangformat_target)
                         OUTPUT_VARIABLE _version_str
                         OUTPUT_STRIP_TRAILING_WHITESPACE)
         # The version number is the last token - can contain non-numeric
-        string(REGEX MATCH "([0-9a-zA-Z\\-]+\.[0-9a-zA-Z\\-]+\.?[0-9a-zA-Z\\-]?)"
+        string(REGEX MATCH "([0-9a-zA-Z\\-]+\\.[0-9a-zA-Z\\-]+\\.?[0-9a-zA-Z\\-]?)"
                _clangformat_version ${_version_str})
         # The user may only specify a part of the version (e.g. just the maj ver)
         # so check for substring
