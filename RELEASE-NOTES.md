@@ -12,9 +12,12 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Added
 - Added compilation of HIP with clang using ``ENABLE_CLANG_HIP`` and ``BLT_CLANG_HIP_ARCH``
 
+### Changed
+-  Simpified the clang-format version regex that was causing hangs on some version strings.
+
 ## [Version 0.4.0] - Release date 2021-04-09
 
-## Added
+### Added
 - Added variable ``BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE`` for filtering
   link directories implicitly added by CMake. See the following example host-config:
   ``host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake``
