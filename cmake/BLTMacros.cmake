@@ -644,7 +644,7 @@ macro(blt_add_library)
             set(_lib_type "STATIC")
         endif()
 
-        if (ENABLE_HIP)
+        if (ENABLE_HIP AND NOT ENABLE_CLANG_HIP)
             blt_add_hip_library(NAME         ${arg_NAME}
                                 SOURCES      ${arg_SOURCES}
                                 HEADERS      ${arg_HEADERS}
@@ -775,7 +775,7 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    if (ENABLE_HIP)
+    if (ENABLE_HIP AND NOT ENABLE_CLANG_HIP)
         blt_add_hip_executable(NAME         ${arg_NAME}
                                SOURCES      ${arg_SOURCES}
                                HEADERS      ${arg_HEADERS}
