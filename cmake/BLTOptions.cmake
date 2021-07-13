@@ -53,12 +53,14 @@ option(ENABLE_FORTRAN      "Enables Fortran compiler support" ${_fortran_already
 option(ENABLE_MPI          "Enables MPI support" OFF)
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
-option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF)
+cmake_dependent_option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF
+                       "ENABLE_CUDA" OFF)
 mark_as_advanced(ENABLE_CLANG_CUDA)
 set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
 mark_as_advanced(BLT_CLANG_CUDA_ARCH)
 option(ENABLE_HIP         "Enable HIP support" OFF)
-option(ENABLE_CLANG_HIP   "Enable Clang's native HIP support" OFF)
+cmake_dependent_option(ENABLE_CLANG_HIP   "Enable Clang's native HIP support" OFF
+                      "ENABLE_HIP" OFF)
 mark_as_advanced(ENABLE_CLANG_HIP)
 set(BLT_CLANG_HIP_ARCH "gfx906" CACHE STRING "AMDGPU ISA target to use when generating HIP code with Clang" )
 mark_as_advanced(BLT_CLANG_HIP_ARCH)
