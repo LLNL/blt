@@ -15,8 +15,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added compilation of HIP with clang using ``ENABLE_CLANG_HIP`` and ``BLT_CLANG_HIP_ARCH``
 
 ### Changed
-- Simpified the clang-format version regex that was causing hangs on some version strings.
 - XL: Use compiler flag `-std=c++14` instead of `-std=c++1y` when `BLT_CXX_STD` is set to `c++14`
+
+### Fixed
+- Simpified the clang-format version regex that was causing hangs on some version strings.
 
 ## [Version 0.4.0] - Release date 2021-04-09
 
