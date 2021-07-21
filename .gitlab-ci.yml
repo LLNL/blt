@@ -8,36 +8,21 @@ variables:
   BUILD_ROOT: ${CI_PROJECT_DIR}
 
 stages:
-  - l_build
-  - q_allocate_resources
-  - q_build
-  - q_release_resources
+  - allocate
+  - build
+  - release
 
 ####
 # Template
-.srun_build_script:
+.build_script:
   script:
     #Use pre-existing allocation if any
-    - JOBID=$(squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A)
+    - JOBID=$(if [[ "$SYS_TYPE" == "toss_3_x86_64_ib" ]]; then squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A; fi)
     - ASSIGN_ID=$(if [[ -n "${JOBID}" ]]; then echo "--jobid=${JOBID}"; fi)
-    - EXEC_PREFIX="srun -p pdebug ${ASSIGN_ID} -t 10 -N 1 --mpibind=off"
    #BUILD + TEST
     - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
       Build and test ${CI_PROJECT_NAME}"
-    - ${EXEC_PREFIX} .gitlab/build_and_test.sh
-    - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
-  artifacts:
-    reports:
-      junit: build/junit.xml
-
-
-.build_blueos_3_ppc64le_ib_p9_script:
-  script:
-    - EXEC_PREFIX="lalloc 1 -W 10 -q pdebug"
-    #BUILD + TEST
-    - echo -e "section_start:$(date +%s):build_and_test\r\e[0K
-      Build and test ${CI_PROJECT_NAME}"
-    - ${EXEC_PREFIX} .gitlab/build_and_test.sh
+    - ${ALLOC_COMMAND} .gitlab/build_and_test.sh
     - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
   artifacts:
     reports:
