@@ -9,11 +9,16 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.4.1] - Release date 2021-07-20
+
 ### Added
 - Added compilation of HIP with clang using ``ENABLE_CLANG_HIP`` and ``BLT_CLANG_HIP_ARCH``
 
 ### Changed
--  Simpified the clang-format version regex that was causing hangs on some version strings.
+- XL: Use compiler flag `-std=c++14` instead of `-std=c++1y` when `BLT_CXX_STD` is set to `c++14`
+
+### Fixed
+- Simpified the clang-format version regex that was causing hangs on some version strings.
 
 ## [Version 0.4.0] - Release date 2021-04-09
 
@@ -208,7 +213,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.4.0...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.4.1...develop
+[Version 0.4.1]: https://github.com/LLNL/blt/compare/v0.4.0...v0.4.1
 [Version 0.4.0]: https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
 [Version 0.3.6]: https://github.com/LLNL/blt/compare/v0.3.5...v0.3.6
 [Version 0.3.5]: https://github.com/LLNL/blt/compare/v0.3.0...v0.3.5
