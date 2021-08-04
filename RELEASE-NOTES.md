@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Changed
+- `BLT_C_FILE_EXTS` updated to include `.cuh`
+
 ## [Version 0.4.1] - Release date 2021-07-20
 
 ### Added
