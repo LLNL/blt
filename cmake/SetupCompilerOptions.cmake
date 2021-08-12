@@ -276,7 +276,7 @@ if (BLT_CXX_STD)
         blt_append_custom_compiler_flag(
             FLAGS_VAR CMAKE_CXX_FLAGS
             DEFAULT " "
-            XL "-std=c++1y"
+            XL "-std=c++14"
             PGI "--c++14")
     elseif( BLT_CXX_STD STREQUAL c++17)
         # Error out on what does not support C++17

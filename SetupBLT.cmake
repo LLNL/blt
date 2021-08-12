@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.4.0" CACHE STRING "")
+    set(BLT_VERSION "0.4.1" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
@@ -172,7 +172,7 @@ if (NOT BLT_LOADED)
     # Global variables needed by BLT
     #
     ################################
-    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".cc" ".hh" ".inl" ".cu"
+    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".cc" ".hh" ".inl" ".cu" ".cuh"
                CACHE STRING "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".F" ".f" ".f90" ".F90"
                CACHE STRING "List of known file extensions used for Fortran sources")
