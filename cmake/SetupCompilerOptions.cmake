@@ -76,7 +76,7 @@ else()
 
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "IntelLLVM")
         set(Fortran_COMPILER_FAMILY_IS_INTELLLVM 1)
-        message(STATUS "Fortran Compiler family is Intel")
+        message(STATUS "Fortran Compiler family is IntelLLVM")
 
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
         set(Fortran_COMPILER_FAMILY_IS_PGI 1)
