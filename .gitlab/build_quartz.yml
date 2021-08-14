@@ -39,7 +39,7 @@ quartz_release:
 .build_on_quartz:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pdebug -t 30 -N 1 ${ASSIGN_ID}"
+    ALLOC_COMMAND: "srun -p pdebug -t 30 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.build_script, .on_quartz]
 
 ####
