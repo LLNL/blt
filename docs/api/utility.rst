@@ -57,6 +57,7 @@ blt_append_custom_compiler_flag
                        CLANG      clangFlag      (optional)
                        HCC        hccFlag        (optional)
                        INTEL      intelFlag      (optional)
+                       INTELLLVM  intelLLVMFlag  (optional)
                        XL         xlFlag         (optional)
                        MSVC       msvcFlag       (optional)
                        MSVC_INTEL msvcIntelFlag  (optional)
