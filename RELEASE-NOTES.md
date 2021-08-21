@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added support for IntelLLVM compiler family to blt_append_custom_compiler_flag
+
 ### Changed
 - `BLT_C_FILE_EXTS` updated to include `.cuh`
 
