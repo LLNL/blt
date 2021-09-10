@@ -66,6 +66,7 @@ set(BLT_CLANG_HIP_ARCH "gfx906" CACHE STRING "AMDGPU ISA target to use when gene
 mark_as_advanced(BLT_CLANG_HIP_ARCH)
 option(ENABLE_HCC         "Enable HCC support" OFF)
 set(BLT_ROCM_ARCH "gfx900" CACHE STRING "gfx architecture to use when generating ROCm code")
+set(CMAKE_HIP_ARCHITECTURES "${BLT_ROCM_ARCH}" CACHE STRING "")
 
 #------------------------------------------------------------------------------
 # Test Options
