@@ -72,7 +72,7 @@ if (ENABLE_CLANG_HIP)
     if (NOT (${HIP_PLATFORM} STREQUAL "clang"))
         message(FATAL_ERROR "ENABLE_CLANG_HIP requires HIP_PLATFORM=clang")
     endif()
-    set(_hip_compile_flags -x;hip)
+    set(_hip_compile_flags $(_hip_compile_flags)-x;hip)
     # Using clang HIP, we need to construct a few CPP defines and compiler flags
     foreach(_arch ${BLT_CLANG_HIP_ARCH})
         string(TOUPPER ${_arch} _UPARCH)
@@ -114,7 +114,16 @@ else()
 # through a hip compiler (hipcc)
 # This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
 # of all required HIP-related includes/libraries/flags.
-    blt_import_library(NAME      hip)
+    # Using clang HIP, we need to construct a few CPP defines and compiler flags
+    foreach(_arch ${CMAKE_HIP_ARCHITECTURES})
+        string(TOUPPER ${_arch} _UPARCH)
+        string(TOLOWER ${_arch} _lowarch)
+        list(APPEND _hip_compile_flags "--offload-arch=${_lowarch}")
+        set(_hip_compile_defines "${HIP_RUNTIME_DEFINES};-D__HIP_ARCH_${_UPARCH}__=1")
+    endforeach(_arch)
+    blt_import_library(NAME      hip
+                       DEFINES          ${_hip_compile_defines}
+                       COMPILE_FLAGS    ${_hip_compile_flags})
 endif()
 
 
