@@ -15,6 +15,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Changed
 - `BLT_C_FILE_EXTS` updated to include `.cuh`
+- Fold `BLT_CLANG_HIP_ARCH` into the `CMAKE_HIP_ARCHITECTURES` variable
 
 ## [Version 0.4.1] - Release date 2021-07-20
 
