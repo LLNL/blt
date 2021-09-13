@@ -67,26 +67,29 @@ else()
 endif()
 set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-Wno-unused-parameter")
 
-set(_hip_compile_flags " ")
-if (ENABLE_CLANG_HIP)
-    if (NOT (${HIP_PLATFORM} STREQUAL "clang"))
-        message(FATAL_ERROR "ENABLE_CLANG_HIP requires HIP_PLATFORM=clang")
-    endif()
-    set(_hip_compile_flags $(_hip_compile_flags)-x;hip)
+set(_hip_compile_flags "")
+if(CMAKE_VERSION VERSION_LESS "3.21")
     # Using clang HIP, we need to construct a few CPP defines and compiler flags
-    foreach(_arch ${BLT_CLANG_HIP_ARCH})
+    foreach(_arch ${CMAKE_HIP_ARCHITECTURES})
         string(TOUPPER ${_arch} _UPARCH)
         string(TOLOWER ${_arch} _lowarch)
         list(APPEND _hip_compile_flags "--offload-arch=${_lowarch}")
         set(_hip_compile_defines "${HIP_RUNTIME_DEFINES};-D__HIP_ARCH_${_UPARCH}__=1")
     endforeach(_arch)
+endif()
+if (ENABLE_CLANG_HIP)
+    if (NOT (${HIP_PLATFORM} STREQUAL "clang"))
+        message(FATAL_ERROR "ENABLE_CLANG_HIP requires HIP_PLATFORM=clang")
+    endif()
+    list(APPEND _hip_compile_flags -x)
+    list(APPEND _hip_compile_flags hip)
     
     # We need to pass rocm path as well, for certain bitcode libraries.
     # First see if we were given it, then see if it exists in the environment.
     # If not, don't try to guess but print a warning and hope the compiler knows where it is.
     if (NOT ROCM_PATH)
         find_path(ROCM_PATH
-            bin/rocminfo
+            hip
             ENV ROCM_DIR
             ENV ROCM_PATH
             ${HIP_ROOT_DIR}/../
@@ -109,18 +112,11 @@ if (ENABLE_CLANG_HIP)
                        DEPENDS_ON       ${HIP_RUNTIME_LIBRARIES})
 else()
 
-# depend on 'hip', if you need to use hip
-# headers, link to hip libs, and need to run your source
-# through a hip compiler (hipcc)
-# This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
-# of all required HIP-related includes/libraries/flags.
-    # Using clang HIP, we need to construct a few CPP defines and compiler flags
-    foreach(_arch ${CMAKE_HIP_ARCHITECTURES})
-        string(TOUPPER ${_arch} _UPARCH)
-        string(TOLOWER ${_arch} _lowarch)
-        list(APPEND _hip_compile_flags "--offload-arch=${_lowarch}")
-        set(_hip_compile_defines "${HIP_RUNTIME_DEFINES};-D__HIP_ARCH_${_UPARCH}__=1")
-    endforeach(_arch)
+    # depend on 'hip', if you need to use hip
+    # headers, link to hip libs, and need to run your source
+    # through a hip compiler (hipcc)
+    # This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
+    # of all required HIP-related includes/libraries/flags.
     blt_import_library(NAME      hip
                        DEFINES          ${_hip_compile_defines}
                        COMPILE_FLAGS    ${_hip_compile_flags})
