@@ -111,7 +111,8 @@ if (ENABLE_CLANG_HIP)
                        COMPILE_FLAGS    ${_hip_compile_flags}
                        DEPENDS_ON       ${HIP_RUNTIME_LIBRARIES})
 else()
-
+    # hipcc does not receive a standard flag from cmake or from BLT otherwise
+    set(HIP_HIPCC_FLAGS ${HIP_HIPCC_FLAGS} -std=${BLT_CXX_STD})
     # depend on 'hip', if you need to use hip
     # headers, link to hip libs, and need to run your source
     # through a hip compiler (hipcc)
