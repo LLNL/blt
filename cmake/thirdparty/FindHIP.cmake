@@ -83,6 +83,23 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
     endif()
     mark_as_advanced(HIP_HIPCC_EXECUTABLE)
 
+    # Find hip clang executable
+    if(NOT DEFINED HIP_CLANG_PATH)
+        find_path(
+            HIP_CLANG_PATH
+            NAMES clang++
+            PATHS
+            "$ENV{HIP_CLANG_PATH}"
+            "$ENV{ROCM_PATH}/llvm/bin"
+            "$ENV{HIP_PATH}/../llvm/bin"
+            "${HIP_ROOT_DIR}/../llvm/bin"
+            "/opt/rocm/llvm/bin"
+            PATH_SUFFIXES bin
+            NO_DEFAULT_PATH
+            )
+    endif()
+    set(HIP_CLANG_EXECUTABLE "${HIP_CLANG_PATH}/clang++")
+
     # Find HIPCONFIG executable
     find_program(
         HIP_HIPCONFIG_EXECUTABLE
@@ -210,6 +227,8 @@ set(CMAKE_SHARED_LIBRARY_LINK_DYNAMIC_HIP_FLAGS ${CMAKE_SHARED_LIBRARY_LINK_DYNA
 
 set(HIP_CLANG_PARALLEL_BUILD_COMPILE_OPTIONS "")
 set(HIP_CLANG_PARALLEL_BUILD_LINK_OPTIONS "")
+
+
 
 if("${HIP_COMPILER}" STREQUAL "nvcc")
     # Set the CMake Flags to use the nvcc Compiler.
@@ -643,17 +662,6 @@ macro(HIP_ADD_EXECUTABLE hip_target)
         endif()
         set(CMAKE_HIP_LINK_EXECUTABLE "${HIP_HIPCC_CMAKE_LINKER_HELPER} ${HCC_HOME} <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
     elseif("${HIP_COMPILER}" STREQUAL "clang")
-        if("x${HIP_CLANG_PATH}" STREQUAL "x")
-            if(DEFINED ENV{HIP_CLANG_PATH})
-                set(HIP_CLANG_PATH $ENV{HIP_CLANG_PATH})
-            elseif(DEFINED ENV{ROCM_PATH})
-                set(HIP_CLANG_PATH "$ENV{ROCM_PATH}/llvm/bin")
-            elseif(DEFINED ENV{HIP_PATH})
-                set(HIP_CLANG_PATH "$ENV{HIP_PATH}/../llvm/bin")
-            else()
-                set(HIP_CLANG_PATH "/opt/rocm/llvm/bin")
-            endif()
-        endif()
         set(CMAKE_HIP_LINK_EXECUTABLE "${HIP_HIPCC_CMAKE_LINKER_HELPER} ${HIP_CLANG_PATH} ${HIP_CLANG_PARALLEL_BUILD_LINK_OPTIONS} <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
     else()
         set(CMAKE_HIP_LINK_EXECUTABLE "${HIP_HIPCC_CMAKE_LINKER_HELPER} <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
