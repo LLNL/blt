@@ -90,7 +90,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
             NAMES clang++
             PATHS
             "$ENV{HIP_CLANG_PATH}"
-            "$ENV{ROCM_PATH}"
+            "$ENV{ROCM_PATH}/llvm/bin"
             "$ENV{HIP_PATH}/../llvm/bin"
             "${HIP_ROOT_DIR}/../llvm/bin"
             "/opt/rocm/llvm/bin"
