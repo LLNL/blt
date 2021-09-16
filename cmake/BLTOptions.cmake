@@ -62,9 +62,7 @@ option(ENABLE_HIP         "Enable HIP support" OFF)
 cmake_dependent_option(ENABLE_CLANG_HIP   "Enable Clang's native HIP support" OFF
                       "ENABLE_HIP" OFF)
 mark_as_advanced(ENABLE_CLANG_HIP)
-set(BLT_CLANG_HIP_ARCH "gfx906" CACHE STRING "AMDGPU ISA target to use when generating HIP code with Clang" )
-mark_as_advanced(BLT_CLANG_HIP_ARCH)
-option(ENABLE_HCC         "Enable HCC support" OFF)
+option(ENABLE_HCC "Enable HCC support" OFF)
 set(CMAKE_HIP_ARCHITECTURES "gfx900" CACHE STRING "gfx architecture to use when generating HIP/ROCm code")
 
 #------------------------------------------------------------------------------
