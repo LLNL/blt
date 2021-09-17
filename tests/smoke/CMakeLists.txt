@@ -211,7 +211,7 @@ if (ENABLE_HIP)
     blt_add_executable(NAME blt_hip_smoke
                        SOURCES blt_hip_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON hip
+                       DEPENDS_ON blt::hip
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_hip_smoke
@@ -220,7 +220,7 @@ if (ENABLE_HIP)
     blt_add_executable(NAME blt_hip_runtime_smoke
                        SOURCES blt_hip_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON hip_runtime
+                       DEPENDS_ON blt::hip_runtime
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_hip_runtime_smoke
@@ -230,7 +230,7 @@ if (ENABLE_HIP)
         blt_add_executable(NAME blt_hip_gtest_smoke
                            SOURCES blt_hip_gtest_smoke.cpp
                            OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                           DEPENDS_ON gtest hip
+                           DEPENDS_ON gtest blt::hip
                            FOLDER blt/tests )
 
         blt_add_test(NAME    blt_hip_gtest_smoke

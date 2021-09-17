@@ -43,13 +43,10 @@ set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 #------------------------------------------------------------------------------
 # _blt_tutorial_hip_config_start
 set(ENABLE_HIP ON CACHE BOOL "")
-set(ENABLE_CLANG_HIP ON CACHE BOOL "")
 
 set(ROCM_PATH "/opt/rocm-4.1.0/" CACHE PATH "")
-set(HIP_PLATFORM "clang" CACHE STRIING "")
 
 set(BLT_CLANG_HIP_ARCH "gfx908" CACHE STRING "")
-
 
 # _blt_tutorial_hip_config_end
 
