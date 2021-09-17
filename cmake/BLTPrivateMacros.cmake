@@ -728,7 +728,7 @@ macro(blt_add_hip_executable)
         endif()
     endforeach()
 
-    if (${_depends_on_hip} OR ${_depends_on_hip_runtime})
+    if (${_depends_on_hip})
         # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
         # Note: we don't do this when depending on just 'hip_runtime'
