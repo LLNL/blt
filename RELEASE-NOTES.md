@@ -16,7 +16,32 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Changed
 - `BLT_C_FILE_EXTS` updated to include `.cuh`
 - Fold `BLT_CLANG_HIP_ARCH` into the `CMAKE_HIP_ARCHITECTURES` variable
-- When using `ENABLE_ALL_WARNINGS`, append the flag to the beginning of `CMAKE_{C,CXX}_FLAGS` instead of the end
+- When using `ENABLE_ALL_WARNINGS`, append the flag to the beginning of `CMAKE_{C,CXX}_FLAGS` instead
+  of the end
+- Source code filename extensions are now detected using regular
+  expressions instead of checking whether the output of
+  `get_filename_component(... ... EXT)` is in a list of filename
+  extensions for each programming language (e.g.,
+  `BLT_C_FILE_EXTS`). CMake's `get_filename_component(... ... EXT)`
+  returns from its filename input a string containing the leftmost
+  period of the filename and all characters to its right (stripping
+  all directory prefixes, assuming use of a left-to-right-script-based
+  character set). This behavior causes problems in filename extension
+  detection with files that have names like `1d.cube.order2.c` because
+  the `get_filename_component` call will output `.cube.order2.c`
+  instead of `.c`.
+
+  While users could add extensions like `.cube.order2.c` to BLT
+  filename extension lists like `BLT_C_FILE_EXTS`, if many such
+  "custom" extensions exist, adding each such extension could be
+  cumbersome. Though CMake 3.14 and later support using
+  `get_filename_component(... ... LAST_EXT)`, earlier versions of
+  CMake do not, and BLT aims to support CMake 3.8+. Instead, regular
+  expressions are used to detect that the filename extension of
+  `1d.cube.order2.c` is `.c`. The regular-expression-based
+  extension-matching implementation continues to support custom
+  filename extensions, and should be backward-compatible with earlier
+  versions of BLT.
 
 ## [Version 0.4.1] - Release date 2021-07-20
 
@@ -86,7 +111,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - ``blt_patch_target`` no longer attempts to set system include directories when a target
   has no include directories
 - Header-only libraries now can have dependencies via DEPENDS_ON in ``blt_add_library``
-- Added a workaround for include directories of imported targets on PGI. CMake was 
+- Added a workaround for include directories of imported targets on PGI. CMake was
   erroneously marking them as SYSTEM but this is not supported by PGI.
 - Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
   is not changed back to Fortran.
