@@ -754,6 +754,24 @@ macro(blt_add_hip_executable)
 
 endmacro(blt_add_hip_executable)
 
+##-----------------------------------------------------------------------------
+## blt_error_if_target_exists(<extension_list> <regex_output_variable>)
+##
+## This function converts the list of extensions in <extension_list>
+## to a regular expression in <regex_output_variable> that should match
+## any file name starting with a string and ending with any one of the
+## extensions in <extension_list>.
+##
+## Note that the <extension_list> argument has to be quoted, so that the
+## argument is passed as a string to this function.
+## -----------------------------------------------------------------------------
+function(blt_make_regex_from_ext_list ext_list ext_regex)
+  message(STATUS "ext_list = ${ext_list}")
+  string(REPLACE ";" "|" joined_ext_list "${ext_list}")
+  string(REPLACE "." "\\." escaped_joined_list "${joined_ext_list}")
+  set(${ext_regex} "^.*(${escaped_joined_list})$" PARENT_SCOPE)
+endfunction()
+
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
@@ -783,6 +801,22 @@ macro(blt_split_source_list_by_language)
         message( FATAL_ERROR "Must provide a SOURCES argument to the 'blt_split_source_list_by_language' macro" )
     endif()
 
+    # Convert extensions lists to regexes
+    set(BLT_C_FILE_REGEX "")
+    blt_make_regex_from_ext_list("${BLT_C_FILE_EXTS}" BLT_C_FILE_REGEX)
+    set(BLT_Fortran_FILE_REGEX "")
+    blt_make_regex_from_ext_list("${BLT_Fortran_FILE_EXTS}" BLT_Fortran_FILE_REGEX)
+    set(BLT_Python_FILE_REGEX "")
+    blt_make_regex_from_ext_list("${BLT_Python_FILE_EXTS}" BLT_Python_FILE_REGEX)
+    set(BLT_CMAKE_FILE_REGEX "")
+    blt_make_regex_from_ext_list("${BLT_CMAKE_FILE_EXTS}" BLT_CMAKE_FILE_REGEX)
+
+    # Normalize the case of the regexes
+    string(TOLOWER "${BLT_C_FILE_REGEX}" BLT_C_FILE_REGEX)
+    string(TOLOWER "${BLT_Fortran_FILE_REGEX}" BLT_Fortran_FILE_REGEX)
+    string(TOLOWER "${BLT_Python_FILE_REGEX}" BLT_Python_FILE_REGEX)
+    string(TOLOWER "${BLT_CMAKE_FILE_REGEX}" BLT_CMAKE_FILE_REGEX)
+    
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
         # Allow CMake object libraries but disallow generator expressions
@@ -798,29 +832,30 @@ macro(blt_split_source_list_by_language)
             message(FATAL_ERROR "blt_split_source_list_by_language given source file with no extension: ${_file}")
         endif()
 
-        get_filename_component(_name "${_file}" NAME)  
+        get_filename_component(_name "${_file}" NAME)
 
-        string(TOLOWER "${_ext}" _ext_lower)
+        string(TOLOWER "${_file}" _lower_file)
 
-        if("${_ext_lower}" IN_LIST BLT_C_FILE_EXTS)
-            if (DEFINED arg_C_LIST)
-                list(APPEND ${arg_C_LIST} "${_file}")
-            endif()
-        elseif("${_ext_lower}" IN_LIST BLT_Fortran_FILE_EXTS)
-            if (DEFINED arg_Fortran_LIST)
-                list(APPEND ${arg_Fortran_LIST} "${_file}")
-            endif()
-        elseif("${_ext_lower}" IN_LIST BLT_Python_FILE_EXTS)
-            if (DEFINED arg_Python_LIST)
-                list(APPEND ${arg_Python_LIST} "${_file}")
-            endif()
-        elseif("${_ext_lower}" IN_LIST BLT_CMAKE_FILE_EXTS OR "${_name}" STREQUAL "CMakeLists.txt")
-            if (DEFINED arg_CMAKE_LIST)
-                list(APPEND ${arg_CMAKE_LIST} "${_file}")
-            endif()
+        if("${_lower_file}" MATCHES "${BLT_C_FILE_REGEX}")
+          if (DEFINED arg_C_LIST)
+            list(APPEND ${arg_C_LIST} "${_file}")
+          endif()
+        elseif("${_lower_file}" MATCHES "${BLT_Fortran_FILE_REGEX}")
+          if (DEFINED arg_Fortran_LIST)
+            list(APPEND ${arg_Fortran_LIST} "${_file}")
+          endif()
+        elseif("${_lower_file}" MATCHES "${BLT_Python_FILE_EXTS}")
+          if (DEFINED arg_Python_LIST)
+            list(APPEND ${arg_Python_LIST} "${_file}")
+          endif()
+        elseif("${_lower_file}" MATCHES "${BLT_CMAKE_EXTS}" OR "${_name}" STREQUAL "CMakeLists.txt")
+          if (DEFINED arg_CMAKE_LIST)
+            list(APPEND ${arg_CMAKE_LIST} "${_file}")
+          endif()
         else()
-            message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, BLT_Python_FILE_EXTS, or BLT_CMAKE_FILE_EXTS).\n Unknown file: ${_file}")
+          message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, BLT_Python_FILE_EXTS, or BLT_CMAKE_FILE_EXTS).\n Unknown file: ${_file}")
         endif()
+
     endforeach()
 
 endmacro(blt_split_source_list_by_language)
