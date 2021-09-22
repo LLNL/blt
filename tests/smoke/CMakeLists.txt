@@ -226,6 +226,15 @@ if (ENABLE_HIP)
     blt_add_test(NAME blt_hip_runtime_smoke
                  COMMAND blt_hip_runtime_smoke)
 
+    blt_add_executable(NAME blt_hip_runtime_c_smoke
+                       SOURCES blt_hip_runtime_c_smoke.c
+                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                       DEPENDS_ON hip_runtime
+                       FOLDER blt/tests )
+
+    blt_add_test(NAME blt_hip_runtime_c_smoke
+                 COMMAND blt_hip_runtime_c_smoke)
+
     if(ENABLE_GTEST)
         blt_add_executable(NAME blt_hip_gtest_smoke
                            SOURCES blt_hip_gtest_smoke.cpp
