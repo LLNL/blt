@@ -37,11 +37,14 @@ blt_import_library(NAME          blt::hip_runtime
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 
+# AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
+# This file is also what hardcodes the --offload-arch flags we're removing here
 if(DEFINED AMDGPU_TARGETS)
     # If we haven't selected a particular architecture via CMAKE_HIP_ARCHITECTURES,
     # we want to remove the unconditionally added compile/link flags from the hip::device target.
     # FIXME: This may cause problems for targets whose HIP_ARCHITECTURES property differs
-    # from CMAKE_HIP_ARCHITECTURES
+    # from CMAKE_HIP_ARCHITECTURES - this only happens when a user manually modifies
+    # the property after it is initialized
     get_target_property(_hip_compile_options hip::device INTERFACE_COMPILE_OPTIONS)
     get_target_property(_hip_link_libs hip::device INTERFACE_LINK_LIBRARIES)
 
