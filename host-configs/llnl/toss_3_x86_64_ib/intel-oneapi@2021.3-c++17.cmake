@@ -39,6 +39,7 @@ set(BLT_CXX_STD "c++17")
 
 # Use non-system default stdlib
 set(GCC_VERSION "gcc-9.3.1")
+# Note: gcc-8.3.1 and above need the "/rh" directory. Below that version do not.
 set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}/rh")
 
 set(BLT_C_FLAGS "--gcc-toolchain=${GCC_HOME}" CACHE STRING "")
