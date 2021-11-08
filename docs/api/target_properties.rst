@@ -62,11 +62,11 @@ TO
 SCOPE
   Defines the scope of the given definitions. Defaults to ``PUBLIC`` and is case insensitive.
 
-FLAGS
+TARGET_DEFINITIONS
   List of definitions flags
 
 This macro provides very similar functionality to CMake's native 
-``add_definitions()`` and ``target_add_defintions()`` commands, but provides
+``add_definitions()`` and ``target_add_definitions()`` commands, but provides
 more fine-grained scoping for the compile definitions on a per target basis.
 Given a list of definitions, e.g., ``FOO`` and ``BAR``, this macro adds compiler
 definitions to the compiler command for the given target, i.e., it will pass

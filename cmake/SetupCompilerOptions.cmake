@@ -66,6 +66,10 @@ else()
         set(Fortran_COMPILER_FAMILY_IS_CLANG 1)
         message(STATUS "Fortran Compiler family is Clang")
 
+    elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Flang") # For Flang compilers
+        set(Fortran_COMPILER_FAMILY_IS_CLANG 1 CACHE BOOL "")
+        message(STATUS "Fortran Compiler family is Clang")
+
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "XL")
         set(Fortran_COMPILER_FAMILY_IS_XL 1)
         message(STATUS "Fortran Compiler family is XL")
