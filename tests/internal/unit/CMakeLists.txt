@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.8)
 
-project(blt-internal-tests LANGUAGES C CXX)
+project(blt-unit-tests LANGUAGES C CXX)
 
 #------------------------------------------------------------------------------
 # Setup BLT
