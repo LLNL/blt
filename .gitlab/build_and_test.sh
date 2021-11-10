@@ -15,7 +15,6 @@ cd $BUILD_DIR
 
 cmake -C ../host-configs/llnl/$SYS_TYPE/$HOST_CONFIG ../tests/internal
 make -j8
-make style
 ctest -DCTEST_OUTPUT_ON_FAILURE=1 --no-compress-output -T Test -VV
 xsltproc -o junit.xml ../tests/ctest-to-junit.xsl Testing/*/Test.xml
 

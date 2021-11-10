@@ -54,7 +54,6 @@ steps:
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
     cmake --build build --config Release
-    cmake --build build --config Release --target style
   displayName: 'OSX/Windows Build'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
@@ -70,7 +69,6 @@ steps:
   displayName: 'Linux CMake'
 - script:  |
     docker run $(DOCKER_FLAGS) make -j2
-    docker run $(DOCKER_FLAGS) make style
   condition: eq( variables['Agent.OS'], 'Linux')
   displayName: 'Linux Build'
 - script:  |
