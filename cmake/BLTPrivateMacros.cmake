@@ -756,8 +756,8 @@ endmacro(blt_add_hip_executable)
 
 
 ##-----------------------------------------------------------------------------
-## blt_make_regex_from_ext_list( EXTENSIONS   [ext1 [ext2 ...]]
-##                               OUTPUT_REGEX <regex variable name>)
+## blt_make_file_ext_regex( EXTENSIONS   [ext1 [ext2 ...]]
+##                          OUTPUT_REGEX <regex variable name>)
 ##
 ## This function converts the list of extensions in EXTENSIONS and
 ## fills the variable, given in OUTPUT_REGEX, with a joined, with '|',
@@ -765,7 +765,7 @@ endmacro(blt_add_hip_executable)
 ## a string and ending with any one of the extensions in EXTENSIONS.
 ## This also lower cases all extensions because we do not care about file casing.
 ## -----------------------------------------------------------------------------
-macro(blt_make_regex_from_ext_list)
+macro(blt_make_file_ext_regex)
 
     set(options)
     set(singleValueArgs OUTPUT_REGEX)
@@ -777,11 +777,11 @@ macro(blt_make_regex_from_ext_list)
 
     # Check arguments
     if ( NOT DEFINED arg_EXTENSIONS )
-        message( FATAL_ERROR "Must provide a EXTENSIONS argument to the 'blt_make_regex_from_ext_list' macro" )
+        message( FATAL_ERROR "Must provide a EXTENSIONS argument to the 'blt_make_file_ext_regex' macro" )
     endif()
 
     if ( NOT DEFINED arg_OUTPUT_REGEX )
-        message( FATAL_ERROR "Must provide a OUTPUT_REGEX argument to the 'blt_make_regex_from_ext_list' macro" )
+        message( FATAL_ERROR "Must provide a OUTPUT_REGEX argument to the 'blt_make_file_ext_regex' macro" )
     endif()
 
     # Join with 'or', and escape periods
@@ -794,7 +794,7 @@ macro(blt_make_regex_from_ext_list)
     # file extensions at the end of the string
     set(${arg_OUTPUT_REGEX} "^.*(${${arg_OUTPUT_REGEX}})$")
 
-endmacro()
+endmacro(blt_make_file_ext_regex)
 
 
 ##------------------------------------------------------------------------------
@@ -829,17 +829,17 @@ macro(blt_split_source_list_by_language)
 
     # Convert extensions lists to regexes
     set(BLT_C_FILE_REGEX)
-    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_C_FILE_EXTS}
-                                 OUTPUT_REGEX BLT_C_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_C_FILE_EXTS}
+                            OUTPUT_REGEX BLT_C_FILE_REGEX)
     set(BLT_Fortran_FILE_REGEX)
-    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
-                                 OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
+                            OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
     set(BLT_Python_FILE_REGEX)
-    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_Python_FILE_EXTS}
-                                 OUTPUT_REGEX BLT_Python_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_Python_FILE_EXTS}
+                            OUTPUT_REGEX BLT_Python_FILE_REGEX)
     set(BLT_CMAKE_FILE_REGEX)
-    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_CMAKE_FILE_EXTS}
-                                 OUTPUT_REGEX BLT_CMAKE_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_CMAKE_FILE_EXTS}
+                            OUTPUT_REGEX BLT_CMAKE_FILE_REGEX)
 
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
