@@ -754,23 +754,41 @@ macro(blt_add_hip_executable)
 
 endmacro(blt_add_hip_executable)
 
+
 ##-----------------------------------------------------------------------------
-## blt_error_if_target_exists(<extension_list> <regex_output_variable>)
+## blt_make_regex_from_ext_list( EXTENSIONS   [ext1 [ext2 ...]]
+##                               OUTPUT_REGEX <regex variable name>)
 ##
-## This function converts the list of extensions in <extension_list>
-## to a regular expression in <regex_output_variable> that should match
-## any file name starting with a string and ending with any one of the
-## extensions in <extension_list>.
-##
-## Note that the <extension_list> argument has to be quoted, so that the
-## argument is passed as a string to this function.
+## This function converts the list of extensions in EXTENSIONS and
+## fills the variable, given in OUTPUT_REGEX, with a joined, with '|',
+## regular expression. This regex should match any file name starting with
+## a string and ending with any one of the extensions in EXTENSIONS.
 ## -----------------------------------------------------------------------------
-function(blt_make_regex_from_ext_list ext_list ext_regex)
-  message(STATUS "ext_list = ${ext_list}")
-  string(REPLACE ";" "|" joined_ext_list "${ext_list}")
-  string(REPLACE "." "\\." escaped_joined_list "${joined_ext_list}")
-  set(${ext_regex} "^.*(${escaped_joined_list})$" PARENT_SCOPE)
-endfunction()
+macro(blt_make_regex_from_ext_list)
+
+    set(options)
+    set(singleValueArgs OUTPUT_REGEX)
+    set(multiValueArgs EXTENSIONS)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_EXTENSIONS )
+        message( FATAL_ERROR "Must provide a EXTENSIONS argument to the 'blt_make_regex_from_ext_list' macro" )
+    endif()
+
+    if ( NOT DEFINED arg_OUTPUT_REGEX )
+        message( FATAL_ERROR "Must provide a OUTPUT_REGEX argument to the 'blt_make_regex_from_ext_list' macro" )
+    endif()
+
+    list(JOIN arg_EXTENSIONS "|" ${arg_OUTPUT_REGEX})
+    string(REPLACE "." "\\." ${arg_OUTPUT_REGEX} "${${arg_OUTPUT_REGEX}}")
+
+    set(${arg_OUTPUT_REGEX} "^.*(${${arg_OUTPUT_REGEX}})$")
+endmacro()
+
 
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
@@ -802,14 +820,18 @@ macro(blt_split_source_list_by_language)
     endif()
 
     # Convert extensions lists to regexes
-    set(BLT_C_FILE_REGEX "")
-    blt_make_regex_from_ext_list("${BLT_C_FILE_EXTS}" BLT_C_FILE_REGEX)
-    set(BLT_Fortran_FILE_REGEX "")
-    blt_make_regex_from_ext_list("${BLT_Fortran_FILE_EXTS}" BLT_Fortran_FILE_REGEX)
-    set(BLT_Python_FILE_REGEX "")
-    blt_make_regex_from_ext_list("${BLT_Python_FILE_EXTS}" BLT_Python_FILE_REGEX)
-    set(BLT_CMAKE_FILE_REGEX "")
-    blt_make_regex_from_ext_list("${BLT_CMAKE_FILE_EXTS}" BLT_CMAKE_FILE_REGEX)
+    set(BLT_C_FILE_REGEX)
+    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_C_FILE_EXTS}
+                                 OUTPUT_REGEX BLT_C_FILE_REGEX)
+    set(BLT_Fortran_FILE_REGEX)
+    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
+                                 OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
+    set(BLT_Python_FILE_REGEX)
+    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_Python_FILE_EXTS}
+                                 OUTPUT_REGEX BLT_Python_FILE_REGEX)
+    set(BLT_CMAKE_FILE_REGEX)
+    blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_CMAKE_FILE_EXTS}
+                                 OUTPUT_REGEX BLT_CMAKE_FILE_REGEX)
 
     # Normalize the case of the regexes
     string(TOLOWER "${BLT_C_FILE_REGEX}" BLT_C_FILE_REGEX)
