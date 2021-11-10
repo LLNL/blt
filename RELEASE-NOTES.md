@@ -20,8 +20,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   of the end
 
 ### Fixed
-- Source code filename extension filtering now utilize regular expressions to allow
-  greater user customization and improves handling of file names with multiple
+- Source code filename extension filtering now uses regular expressions to allow
+  for more user customization and to improve handling of file names with multiple
   periods, e.g. `1d.cube.order2.c` is considered a `.c` file.
 
 ## [Version 0.4.1] - Release date 2021-07-20
