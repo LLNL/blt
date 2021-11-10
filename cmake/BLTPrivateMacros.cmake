@@ -801,7 +801,7 @@ endmacro(blt_make_file_ext_regex)
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
 ##                                    Fortran_LIST <list name>
-##                                    Python_LIST <list name>)
+##                                    Python_LIST <list name>
 ##                                    CMAKE_LIST <list name>)
 ##
 ## Filters source list by file extension into C/C++, Fortran, Python, and
