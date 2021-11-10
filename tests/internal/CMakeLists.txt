@@ -361,7 +361,7 @@ macro(compare_source_lists)
     list(SORT sorted_a_list)
     list(SORT sorted_b_list)
 
-    foreach(i RANGE a_len)
+    foreach(i RANGE ${a_len})
         set(a_item)
         set(b_item)
         list(GET sorted_a_list i a_item)
