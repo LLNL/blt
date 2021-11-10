@@ -763,6 +763,7 @@ endmacro(blt_add_hip_executable)
 ## fills the variable, given in OUTPUT_REGEX, with a joined, with '|',
 ## regular expression. This regex should match any file name starting with
 ## a string and ending with any one of the extensions in EXTENSIONS.
+## This also lower cases all extensions because we do not care about file casing.
 ## -----------------------------------------------------------------------------
 macro(blt_make_regex_from_ext_list)
 
@@ -783,10 +784,16 @@ macro(blt_make_regex_from_ext_list)
         message( FATAL_ERROR "Must provide a OUTPUT_REGEX argument to the 'blt_make_regex_from_ext_list' macro" )
     endif()
 
+    # Join with 'or', and escape periods
     list(JOIN arg_EXTENSIONS "|" ${arg_OUTPUT_REGEX})
+    # Lower-case because we do case-insensitive checks
+    string(TOLOWER "${BLT_C_FILE_REGEX}" BLT_C_FILE_REGEX)
+    # Escape periods before adding 
     string(REPLACE "." "\\." ${arg_OUTPUT_REGEX} "${${arg_OUTPUT_REGEX}}")
-
+    # Regex for by any set of characters followed by any of the given
+    # file extensions at the end of the string
     set(${arg_OUTPUT_REGEX} "^.*(${${arg_OUTPUT_REGEX}})$")
+
 endmacro()
 
 
@@ -799,10 +806,11 @@ endmacro()
 ##
 ## Filters source list by file extension into C/C++, Fortran, Python, and
 ## CMake source lists based on BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS,
-## and BLT_CMAKE_FILE_EXTS (global BLT variables). Files named
-## "CMakeLists.txt" are also filtered here. Files with no extension
-## or generator expressions that are not object libraries (of the form
-## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
+## and BLT_CMAKE_FILE_EXTS (global BLT variables). This filtering is
+## case-insensitive. Files named "CMakeLists.txt" are also filtered here.
+## Files with no extension or generator expressions that are not object
+## libraries (of the form "$<TARGET_OBJECTS:nameofobjectlibrary>") will
+## throw fatal errors.
 ## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
@@ -833,12 +841,6 @@ macro(blt_split_source_list_by_language)
     blt_make_regex_from_ext_list(EXTENSIONS   ${BLT_CMAKE_FILE_EXTS}
                                  OUTPUT_REGEX BLT_CMAKE_FILE_REGEX)
 
-    # Normalize the case of the regexes
-    string(TOLOWER "${BLT_C_FILE_REGEX}" BLT_C_FILE_REGEX)
-    string(TOLOWER "${BLT_Fortran_FILE_REGEX}" BLT_Fortran_FILE_REGEX)
-    string(TOLOWER "${BLT_Python_FILE_REGEX}" BLT_Python_FILE_REGEX)
-    string(TOLOWER "${BLT_CMAKE_FILE_REGEX}" BLT_CMAKE_FILE_REGEX)
-    
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
         # Allow CMake object libraries but disallow generator expressions
