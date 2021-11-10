@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.8)
 
-project(blt-example LANGUAGES C CXX)
+project(blt-internal-tests LANGUAGES C CXX)
 
 #------------------------------------------------------------------------------
 # Setup BLT
@@ -269,6 +269,7 @@ if(ENABLE_HIP)
   add_subdirectory(src/hip_defines_test)
 endif()
 
+add_subdirectory(unit)
 #------------------------------------------------------------------------------
 # Format the testing code using ClangFormat
 #------------------------------------------------------------------------------
