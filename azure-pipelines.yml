@@ -1,6 +1,6 @@
 # Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
-# 
+#
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 variables:
@@ -29,7 +29,7 @@ strategy:
       CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS) -DENABLE_OPENMP=ON'
       TEST_TARGET: 'linux_clang10'
     osx_gcc:
-      VM_ImageName: 'macos-10.14'
+      VM_ImageName: 'macos-1015'
       CMAKE_FLAGS: ''
       TEST_TARGET: 'osx_gcc'
     windows:
@@ -53,7 +53,7 @@ steps:
   displayName: 'OSX/Windows CMake'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
-    cmake --build build --config Release 
+    cmake --build build --config Release
   displayName: 'OSX/Windows Build'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |

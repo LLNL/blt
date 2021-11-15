@@ -16,7 +16,13 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Changed
 - `BLT_C_FILE_EXTS` updated to include `.cuh`
 - Fold `BLT_CLANG_HIP_ARCH` into the `CMAKE_HIP_ARCHITECTURES` variable
-- When using `ENABLE_ALL_WARNINGS`, append the flag to the beginning of `CMAKE_{C,CXX}_FLAGS` instead of the end
+- When using `ENABLE_ALL_WARNINGS`, append the flag to the beginning of `CMAKE_{C,CXX}_FLAGS` instead
+  of the end
+
+### Fixed
+- Source code filename extension filtering now uses regular expressions to allow
+  for more user customization and to improve handling of file names with multiple
+  periods, e.g. `1d.cube.order2.c` is considered a `.c` file.
 
 ## [Version 0.4.1] - Release date 2021-07-20
 
@@ -86,7 +92,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - ``blt_patch_target`` no longer attempts to set system include directories when a target
   has no include directories
 - Header-only libraries now can have dependencies via DEPENDS_ON in ``blt_add_library``
-- Added a workaround for include directories of imported targets on PGI. CMake was 
+- Added a workaround for include directories of imported targets on PGI. CMake was
   erroneously marking them as SYSTEM but this is not supported by PGI.
 - Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
   is not changed back to Fortran.
