@@ -229,7 +229,7 @@ if (ENABLE_HIP)
     blt_add_executable(NAME blt_hip_runtime_c_smoke
                        SOURCES blt_hip_runtime_c_smoke.c
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                       DEPENDS_ON hip_runtime
+                       DEPENDS_ON blt::hip_runtime
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_hip_runtime_c_smoke
