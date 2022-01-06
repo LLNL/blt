@@ -15,27 +15,14 @@ message(STATUS "HIP version:      ${HIP_VERSION_STRING}")
 message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
 if (NOT ROCM_PATH)
-find_path(ROCM_PATH
-    hip
-    ENV ROCM_DIR
-    ENV ROCM_PATH
-    ${HIP_ROOT_DIR}/../
-    ${ROCM_ROOT_DIR}
-    /opt/rocm)
+    find_path(ROCM_PATH
+        hip
+        ENV ROCM_DIR
+        ENV ROCM_PATH
+        ${HIP_ROOT_DIR}/../
+        ${ROCM_ROOT_DIR}
+        /opt/rocm)
 endif()
-
-blt_import_library(NAME       blt::hip
-                   DEPENDS_ON hip::device
-                   COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
-                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
-
-# depend on 'hip_runtime', if you only need to use hip
-# headers or link to hip libs, but don't need to run your source
-# through a hip compiler (hipcc)
-blt_import_library(NAME          blt::hip_runtime
-                   DEPENDS_ON    hip::host
-                   TREAT_INCLUDES_AS_SYSTEM ON
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
@@ -62,3 +49,22 @@ if(DEFINED AMDGPU_TARGETS)
         set(AMDGPU_TARGETS "${CMAKE_HIP_ARCHITECTURES}" CACHE STRING "" FORCE)
     endif()
 endif()
+
+blt_import_library(NAME       __blt_hip_internal
+                   COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
+                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+
+blt_inherit_target_info(TO __blt_hip_internal FROM hip::device OBJECT FALSE)
+
+add_library(blt::hip ALIAS __blt_hip_internal)
+
+# depend on 'hip_runtime', if you only need to use hip
+# headers or link to hip libs, but don't need to run your source
+# through a hip compiler (hipcc)
+blt_import_library(NAME          __blt_hip_runtime_internal
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+
+blt_inherit_target_info(TO __blt_hip_runtime_internal FROM hip::host OBJECT FALSE)
+
+add_library(blt::hip_runtime ALIAS __blt_hip_runtime_internal)
