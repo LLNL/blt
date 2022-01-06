@@ -50,21 +50,21 @@ if(DEFINED AMDGPU_TARGETS)
     endif()
 endif()
 
-blt_import_library(NAME       __blt_hip_internal
+blt_import_library(NAME       blt_hip
                    COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
 
-blt_inherit_target_info(TO __blt_hip_internal FROM hip::device OBJECT FALSE)
+blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 
-add_library(blt::hip ALIAS __blt_hip_internal)
+add_library(blt::hip ALIAS blt_hip)
 
 # depend on 'hip_runtime', if you only need to use hip
 # headers or link to hip libs, but don't need to run your source
 # through a hip compiler (hipcc)
-blt_import_library(NAME          __blt_hip_runtime_internal
+blt_import_library(NAME          blt_hip_runtime
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 
-blt_inherit_target_info(TO __blt_hip_runtime_internal FROM hip::host OBJECT FALSE)
+blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
 
-add_library(blt::hip_runtime ALIAS __blt_hip_runtime_internal)
+add_library(blt::hip_runtime ALIAS blt_hip_runtime)
