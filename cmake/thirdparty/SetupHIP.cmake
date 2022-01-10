@@ -11,7 +11,7 @@
 ################################
 find_package(hip REQUIRED)
 
-message(STATUS "HIP version:      ${HIP_VERSION_STRING}")
+message(STATUS "HIP version:      ${hip_VERSION")
 message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
 if (NOT ROCM_PATH)
@@ -58,10 +58,8 @@ blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 
 add_library(blt::hip ALIAS blt_hip)
 
-# depend on 'hip_runtime', if you only need to use hip
-# headers or link to hip libs, but don't need to run your source
-# through a hip compiler (hipcc)
 blt_import_library(NAME          blt_hip_runtime
+                   INCLUDES ${HIP_INCLUDE_DIRS}
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 
