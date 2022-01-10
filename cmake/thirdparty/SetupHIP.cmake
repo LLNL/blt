@@ -54,6 +54,8 @@ blt_import_library(NAME       blt_hip
                    COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
 
+# Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
+# information in our target blt_hip
 blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 
 add_library(blt::hip ALIAS blt_hip)
