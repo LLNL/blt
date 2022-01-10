@@ -17,8 +17,8 @@ message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 if (NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip
-        ENV ROCM_DIR
-        ENV ROCM_PATH
+        ENV{ROCM_DIR}
+        ENV{ROCM_PATH}
         ${HIP_ROOT_DIR}/../
         ${ROCM_ROOT_DIR}
         /opt/rocm)
