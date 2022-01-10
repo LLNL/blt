@@ -19,7 +19,7 @@ BLT provides several built-in targets for commonly used libraries:
 ``cuda`` and ``cuda_runtime``
     Available when ``ENABLE_CUDA`` is ``ON``
 
-``hip`` and ``hip_runtime``
+``blt_hip`` and ``blt_hip_runtime``
     Available when ``ENABLE_HIP`` is ``ON``
 
 These targets can be made exportable in order to make them available to users of
@@ -35,6 +35,10 @@ option to ``ON`` will mark all active targets in the above list as ``EXPORTABLE`
 .. note:: If a target in your project is added to an export set, any of its dependencies
     marked ``EXPORTABLE`` must be added to the same export set.  Failure to add them will
     result in a CMake error in the exporting project.
+
+.. note:: The recommended usage of the HIP targets is via the ``blt::hip`` and
+    ``blt::hip_runtime`` aliases. Alias targets cannot be exported, so the
+    ``blt_hip``/``blt_hip_runtime`` names can be used for this purpose.
 
 Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
 

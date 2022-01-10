@@ -18,6 +18,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Fold `BLT_CLANG_HIP_ARCH` into the `CMAKE_HIP_ARCHITECTURES` variable
 - When using `ENABLE_ALL_WARNINGS`, append the flag to the beginning of `CMAKE_{C,CXX}_FLAGS` instead
   of the end
+- HIP support now uses the `hip-config.cmake` file provided by ROCM. This
+  modification requires a change to the BLT-provided HIP target names, and they
+  are now available under the `blt` prefix: `blt::hip` and `blt::hip_runtime`.
 
 ### Fixed
 - Source code filename extension filtering now uses regular expressions to allow
