@@ -16,7 +16,7 @@ As previously mentioned in :ref:`AddingTests`, BLT also provides
 bundled versions of GoogleTest, GoogleMock, GoogleBenchmark, and FRUIT.  Not only are the source
 for these included, we provide named CMake targets for them as well.
 
-BLT's ``mpi``, ``cuda``, ``cuda_runtime``, ``hip``, ``hip_runtime``,and ``openmp`` targets are
+BLT's ``mpi``, ``cuda``, ``cuda_runtime``, ``blt::hip``, ``blt::hip_runtime``,and ``openmp`` targets are
 all defined via the :ref:`blt_import_library` macro. This creates a true CMake imported target that is inherited
 properly through the CMake's dependency graph.
 
@@ -177,5 +177,5 @@ BLT also supports AMD's HIP via a mechanism very similar to our CUDA support.
 
 **BLT Targets**
 
-* ``hip`` : Adds include directories, hip runtime libraries, and compiles source with hipcc
-* ``hip_runtime`` : Adds include directories and hip runtime libraries
+* ``blt::hip`` : Adds include directories, hip runtime libraries, and compiles source with hipcc
+* ``blt::hip_runtime`` : Adds include directories and hip runtime libraries
