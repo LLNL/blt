@@ -11,7 +11,7 @@
 ################################
 find_package(hip REQUIRED)
 
-message(STATUS "HIP version:      ${hip_VERSION")
+message(STATUS "HIP version:      ${hip_VERSION}")
 message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
 if (NOT ROCM_PATH)
