@@ -6,6 +6,8 @@
 variables:
   PROJECT_ALLOC_NAME: ${CI_PROJECT_NAME}_ci_${CI_PIPELINE_ID}
   BUILD_ROOT: ${CI_PROJECT_DIR}
+  LLNL_SERVICE_USER: atk
+  CUSTOM_CI_BUILDS_DIR: /usr/workspace/atk/gitlab-runner
 
 stages:
   - allocate
