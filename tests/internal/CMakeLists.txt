@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -255,7 +255,7 @@ endif()
 
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime hip hip_runtime)
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 

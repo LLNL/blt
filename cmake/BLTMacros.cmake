@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -644,22 +644,14 @@ macro(blt_add_library)
             set(_lib_type "STATIC")
         endif()
 
-        if (ENABLE_HIP AND NOT ENABLE_CLANG_HIP)
-            blt_add_hip_library(NAME         ${arg_NAME}
-                                SOURCES      ${arg_SOURCES}
-                                HEADERS      ${arg_HEADERS}
-                                DEPENDS_ON   ${arg_DEPENDS_ON}
-                                LIBRARY_TYPE ${_lib_type} )
-        else()
-            add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
+        add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
 
-            if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-                blt_setup_cuda_target(
-                    NAME         ${arg_NAME}
-                    SOURCES      ${arg_SOURCES}
-                    DEPENDS_ON   ${arg_DEPENDS_ON}
-                    LIBRARY_TYPE ${_lib_type})
-            endif()
+        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+            blt_setup_cuda_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON}
+                LIBRARY_TYPE ${_lib_type})
         endif()
     else()
         #
@@ -775,20 +767,13 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    if (ENABLE_HIP AND NOT ENABLE_CLANG_HIP)
-        blt_add_hip_executable(NAME         ${arg_NAME}
-                               SOURCES      ${arg_SOURCES}
-                               HEADERS      ${arg_HEADERS}
-                               DEPENDS_ON   ${arg_DEPENDS_ON})
-    else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
+    add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
 
-        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-            blt_setup_cuda_target(
-                NAME         ${arg_NAME}
-                SOURCES      ${arg_SOURCES}
-                DEPENDS_ON   ${arg_DEPENDS_ON})
-        endif()
+    if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+        blt_setup_cuda_target(
+            NAME         ${arg_NAME}
+            SOURCES      ${arg_SOURCES}
+            DEPENDS_ON   ${arg_DEPENDS_ON})
     endif()
     
     # CMake wants to load with C++ if any of the libraries are C++.
