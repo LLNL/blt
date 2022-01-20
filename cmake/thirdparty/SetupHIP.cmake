@@ -65,7 +65,7 @@ blt_import_library(NAME          blt_hip_runtime
                    INCLUDES ${HIP_INCLUDE_DIRS}
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL On)
+                   GLOBAL ON)
 
 blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
 
