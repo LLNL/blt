@@ -527,8 +527,8 @@ blt_export_tpl_targets
 
 Install BLT-provided third-party library targets to the given export set.
 
-This macro will add all the enabled third-party library targets (e.g. cuda,
-blt::hip, mpi, etc.) to the given export set, with the optional namespace. This
+This macro will add all the enabled third-party library targets (e.g. ``cuda``,
+``blt::hip``, ``mpi``, etc.) to the given export set, with the optional namespace. This
 allows downstream projects to import and use any targets that depend on BLT
 targets, without the downstream project itself requiring the use of BLT.
 
