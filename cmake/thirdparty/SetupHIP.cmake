@@ -53,7 +53,7 @@ endif()
 blt_import_library(NAME       blt_hip
                    COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL On)
+                   GLOBAL ON)
 
 # Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
 # information in our target blt_hip
