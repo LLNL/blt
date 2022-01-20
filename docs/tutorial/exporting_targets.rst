@@ -59,31 +59,20 @@ Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
     # Add the example_1 target to the example-targets export set
     install(TARGETS example_1 EXPORT example-targets)
 
-    # Add the MPI target to the same export set - this is required
+    # Add BLT's targets to the same export set - this is required
     # because the mpi target was marked exportable
-    install(TARGETS mpi EXPORT example-targets)
+    blt_export_tpl_targets(EXPORT example-targets)
 
-To avoid collisions with projects that import "example-targets", there are
-two options for adjusting the exported name of the ``mpi`` target.
+To avoid collisions with projects that import "example-targets", we can provide
+a namespace for the ``mpi`` target.
 
 The first is to rename only the ``mpi`` target's exported name:
 
 .. code-block:: cmake
 
-    set_target_properties(mpi PROPERTIES EXPORT_NAME example::mpi)
-    install(EXPORT example-targets)
+    blt_export_tpl_targets(EXPORT example-targets NAMESPACE example)
 
 With this approach the ``example_1`` target's exported name is unchanged - a 
 project that imports the ``example-targets`` export set will have ``example_1``
 and ``example::mpi`` targets made available.  The imported ``example_1`` will
 depend on ``example::mpi``.
-
-Another approach is to install all targets in the export set behind a namespace:
-
-.. code-block:: cmake
-
-    install(EXPORT example-targets NAMESPACE example::)
-
-With this approach all targets in the export set are prefixed, so an importing
-project will have ``example::example_1`` and ``example::mpi`` targets made available.
-The imported ``example::example_1`` will depend on ``example::mpi``.
