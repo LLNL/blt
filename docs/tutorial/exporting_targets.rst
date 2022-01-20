@@ -64,9 +64,7 @@ Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
     blt_export_tpl_targets(EXPORT example-targets)
 
 To avoid collisions with projects that import "example-targets", we can provide
-a namespace for the ``mpi`` target.
-
-The first is to rename only the ``mpi`` target's exported name:
+a namespace for the ``mpi`` target:
 
 .. code-block:: cmake
 
