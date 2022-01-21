@@ -28,6 +28,7 @@ set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
 
 find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
 
+message(STATUS "ROCM path:      ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
 message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
