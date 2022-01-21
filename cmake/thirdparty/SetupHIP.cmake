@@ -57,10 +57,12 @@ if(DEFINED AMDGPU_TARGETS)
     endif()
 endif()
 
+set(_blt_hip_is_global NOT ${BLT_EXPORT_THIRDPARTY})
+
 blt_import_library(NAME       blt_hip
                    COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ON)
+                   GLOBAL ${_blt_hip_is_global})
 
 # Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
 # information in our target blt_hip
@@ -72,7 +74,7 @@ blt_import_library(NAME          blt_hip_runtime
                    INCLUDES ${HIP_INCLUDE_DIRS}
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ON)
+                   GLOBAL ${_blt_hip_is_global})
 
 blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
 
