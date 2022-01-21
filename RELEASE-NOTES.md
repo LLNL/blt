@@ -12,6 +12,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Added
 - Added support for IntelLLVM compiler family to blt_append_custom_compiler_flag
 - Added support for hip targets configured with cmake 3.21 native hip support
+- Added `blt_export_tpl_targets` macro to add BLT-provided third-party library
+  targets to an export set.
 
 ### Changed
 - `BLT_C_FILE_EXTS` updated to include `.cuh`
