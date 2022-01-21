@@ -527,6 +527,12 @@ blt_export_tpl_targets
 
 Install BLT-provided third-party library targets to the given export set.
 
+EXPORT
+  CMake export set the targets are being added to
+
+NAMESPACE
+  Namespace prefix for each exported target
+
 This macro will add all the enabled third-party library targets (e.g. ``cuda``,
 ``blt::hip``, ``mpi``, etc.) to the given export set, with the optional namespace. This
 allows downstream projects to import and use any targets that depend on BLT
