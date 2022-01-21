@@ -57,7 +57,11 @@ if(DEFINED AMDGPU_TARGETS)
     endif()
 endif()
 
-set(_blt_hip_is_global NOT ${BLT_EXPORT_THIRDPARTY})
+# hip targets must be global for aliases when created as imported targets
+set(_blt_hip_is_global On)
+if (${BLT_EXPORT_THIRDPARTY})
+    set(_blt_hip_is_global Off)
+endif ()
 
 blt_import_library(NAME       blt_hip
                    COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
