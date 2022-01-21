@@ -63,7 +63,7 @@ Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
     # because the mpi target was marked exportable
     blt_export_tpl_targets(EXPORT example-targets)
 
-To avoid collisions with projects that import "example-targets", we can provide
+To avoid collisions with projects that import "example-targets", it is recommended to provide
 a namespace for the ``mpi`` target:
 
 .. code-block:: cmake
