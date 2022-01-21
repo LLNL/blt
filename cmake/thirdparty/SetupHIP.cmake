@@ -9,20 +9,27 @@
 ################################
 # HIP
 ################################
-find_package(hip REQUIRED)
-
-message(STATUS "HIP version:      ${hip_VERSION}")
-message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
 if (NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip
         ENV{ROCM_DIR}
         ENV{ROCM_PATH}
+        ENV{HIP_PATH}
+        ${HIP_PATH}/..
         ${HIP_ROOT_DIR}/../
         ${ROCM_ROOT_DIR}
         /opt/rocm)
 endif()
+
+# Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
+# found.
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
+
+find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
+
+message(STATUS "HIP version:      ${hip_VERSION}")
+message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
