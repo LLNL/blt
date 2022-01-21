@@ -43,6 +43,11 @@ lassen-clang_upstream_nvcc_c++17_no_separable:
     HOST_CONFIG: "clang@upstream_nvcc_c++17_no_separable.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
+lassen-clang_upstream_nvcc_c++14_export_tpls:
+  variables:
+    HOST_CONFIG: "clang@upstream_nvcc_c++14-export-tpls.cmake"
+  extends: [.build_on_lassen, .with_cuda]
+
 lassen-clang_upstream_nvcc_xlf:
   variables:
     HOST_CONFIG: "clang@upstream_nvcc_xlf.cmake"
