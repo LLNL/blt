@@ -9,20 +9,27 @@
 ################################
 # HIP
 ################################
-find_package(hip REQUIRED)
-
-message(STATUS "HIP version:      ${hip_VERSION}")
-message(STATUS "HIP platform:     ${HIP_PLATFORM}")
 
 if (NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip
         ENV{ROCM_DIR}
         ENV{ROCM_PATH}
+        ENV{HIP_PATH}
+        ${HIP_PATH}/..
         ${HIP_ROOT_DIR}/../
         ${ROCM_ROOT_DIR}
         /opt/rocm)
 endif()
+
+# Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
+# found.
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
+
+find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
+
+message(STATUS "ROCM path:        ${ROCM_PATH}")
+message(STATUS "HIP version:      ${hip_VERSION}")
 
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
@@ -50,10 +57,16 @@ if(DEFINED AMDGPU_TARGETS)
     endif()
 endif()
 
+# hip targets must be global for aliases when created as imported targets
+set(_blt_hip_is_global On)
+if (${BLT_EXPORT_THIRDPARTY})
+    set(_blt_hip_is_global Off)
+endif ()
+
 blt_import_library(NAME       blt_hip
                    COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ON)
+                   GLOBAL ${_blt_hip_is_global})
 
 # Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
 # information in our target blt_hip
@@ -65,7 +78,7 @@ blt_import_library(NAME          blt_hip_runtime
                    INCLUDES ${HIP_INCLUDE_DIRS}
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ON)
+                   GLOBAL ${_blt_hip_is_global})
 
 blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
 
