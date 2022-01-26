@@ -414,5 +414,26 @@ else()
                  COMMAND tests/return_true)
 endif()
 
+# create example depending on all available TPLs to test export
+set(_example_tpl_depends)
+blt_list_append(TO _example_tpl_depends ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
+blt_list_append(TO _example_tpl_depends ELEMENTS openmp IF ENABLE_OPENMP)
+blt_list_append(TO _example_tpl_depends ELEMENTS mpi IF ENABLE_MPI)
+
+blt_add_library( NAME    example-with-tpls
+                 SOURCES "src/Example.cpp"
+                 HEADERS "src/Example.hpp"
+                 DEPENDS_ON ${_example_tpl_depends}
+                 )
+
+install(TARGETS example-with-tpls EXPORT blt-exports ARCHIVE DESTINATION lib)
+
+# test blt_export_tpl_targets macro
+blt_export_tpl_targets(NAMESPACE blt
+                       EXPORT blt-exports)
+
+install(EXPORT blt-exports DESTINATION lib/cmake/blt)
+
 # Add tutorials
 add_subdirectory(../../docs/tutorial/calc_pi calc_pi)

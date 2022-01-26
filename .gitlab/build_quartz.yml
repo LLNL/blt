@@ -59,6 +59,11 @@ quartz-gcc_8_3_1:
     HOST_CONFIG: "gcc@8.3.1.cmake"
   extends: [.build_on_quartz]
 
+quartz-gcc_8_3_1_export_tpls:
+  variables:
+    HOST_CONFIG: "gcc@8.3.1-export-tpls.cmake"
+  extends: [.build_on_quartz]
+
 quartz-inteloneapi_2021_3:
   variables:
     HOST_CONFIG: "intel-oneapi@2021.3.cmake"

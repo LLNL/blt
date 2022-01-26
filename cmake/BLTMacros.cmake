@@ -1363,3 +1363,42 @@ macro(blt_print_target_properties)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties)
+
+##------------------------------------------------------------------------------
+## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)
+##
+## Add targets for BLT's third-party libraries to the given export-set, prefixed
+## with the provided namespace.
+##------------------------------------------------------------------------------
+macro(blt_export_tpl_targets)
+    set(options)
+    set(singleValuedArgs NAMESPACE EXPORT)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    if(NOT DEFINED arg_EXPORT)
+        message(FATAL_ERROR "EXPORT is a required parameter for the blt_export_tpl_targets macro.")
+    endif()
+
+    set(_blt_tpl_targets)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS openmp IF ENABLE_OPENMP)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS mpi IF ENABLE_MPI)
+    
+    foreach(dep ${_blt_tpl_targets})
+        # If the target is EXPORTABLE, add it to the export set
+        get_target_property(_is_imported ${dep} IMPORTED)
+        if(NOT ${_is_imported})
+            install(TARGETS              ${dep}
+                    EXPORT               ${arg_EXPORT})
+            # Namespace target to avoid conflicts
+            if (DEFINED arg_NAMESPACE)
+                set_target_properties(${dep} PROPERTIES EXPORT_NAME ${arg_NAMESPACE}::${dep})
+            endif ()
+        endif()
+    endforeach()
+endmacro()
