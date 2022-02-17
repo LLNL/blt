@@ -173,6 +173,10 @@ BENCHMARK(BM_test)->Unit(benchmark::kMillisecond);
 #include <cassert>
 #include <cstddef>
 #include <iosfwd>
+// BLT PATCH START
+// gcc@11 requires this for std::numeric_limits
+#include <limits>
+// BLT PATCH END
 #include <map>
 #include <set>
 #include <string>
