@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.0] - Release date 2022-03-07
+
 ### Added
 - Added support for IntelLLVM compiler family to blt_append_custom_compiler_flag
 - Added support for hip targets configured with cmake 3.21 native hip support
@@ -233,7 +235,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.4.1...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.0...develop
+[Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0
 [Version 0.4.1]: https://github.com/LLNL/blt/compare/v0.4.0...v0.4.1
 [Version 0.4.0]: https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
 [Version 0.3.6]: https://github.com/LLNL/blt/compare/v0.3.5...v0.3.6
