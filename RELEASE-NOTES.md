@@ -9,6 +9,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added support for C++20. Note: Neither XL or PGI support
+  C++20 (A BLT fatal error will occur).
+
 ## [Version 0.5.0] - Release date 2022-03-07
 
 ### Added
