@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -576,197 +576,63 @@ macro(blt_setup_cuda_target)
     endif()
 endmacro(blt_setup_cuda_target)
 
-##------------------------------------------------------------------------------
-## blt_cleanup_hip_globals(FROM_TARGET <target>)
+
+##-----------------------------------------------------------------------------
+## blt_make_file_ext_regex( EXTENSIONS   [ext1 [ext2 ...]]
+##                          OUTPUT_REGEX <regex variable name>)
 ##
-## Needed as the SetupHIP macros (specifically, HIP_PREPARE_TARGET_COMMANDS)
-## "pollutes" the global HIP_HIPCC_FLAGS with target-specific options.  This
-## macro removes the target-specific generator expressions from the global flags
-## which have already been copied to source-file-specific instances of the
-## run_hipcc script.  Other global flags in HIP_HIPCC_FLAGS, e.g., those set by
-## the user, are left untouched.
-##------------------------------------------------------------------------------
-macro(blt_cleanup_hip_globals)
+## This function converts the list of extensions in EXTENSIONS and
+## fills the variable, given in OUTPUT_REGEX, with a joined, with '|',
+## regular expression. This regex should match any file name starting with
+## a string and ending with any one of the extensions in EXTENSIONS.
+## This also lower cases all extensions because we do not care about file casing.
+## -----------------------------------------------------------------------------
+macro(blt_make_file_ext_regex)
+
     set(options)
-    set(singleValueArgs FROM_TARGET)
-    set(multiValueArgs)
+    set(singleValueArgs OUTPUT_REGEX)
+    set(multiValueArgs EXTENSIONS)
 
     # Parse the arguments
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
                             "${multiValueArgs}" ${ARGN} )
 
     # Check arguments
-    if ( NOT DEFINED arg_FROM_TARGET )
-        message( FATAL_ERROR "Must provide a FROM_TARGET argument to the 'blt_cleanup_hip_globals' macro")
+    if ( NOT DEFINED arg_EXTENSIONS )
+        message( FATAL_ERROR "Must provide a EXTENSIONS argument to the 'blt_make_file_ext_regex' macro" )
     endif()
 
-    # Remove the compile definitions generator expression
-    # This must be copied verbatim from HIP_PREPARE_TARGET_COMMANDS,
-    # which would have just added it to HIP_HIPCC_FLAGS
-    set(_defines_genexpr "$<TARGET_PROPERTY:${arg_FROM_TARGET},COMPILE_DEFINITIONS>")
-    set(_defines_flags_genexpr "$<$<BOOL:${_defines_genexpr}>:-D$<JOIN:${_defines_genexpr}, -D>>")
-    list(REMOVE_ITEM HIP_HIPCC_FLAGS ${_defines_flags_genexpr})
-endmacro(blt_cleanup_hip_globals)
-
-##------------------------------------------------------------------------------
-## blt_add_hip_library(NAME         <libname>
-##                     SOURCES      [source1 [source2 ...]]
-##                     HEADERS      [header1 [header2 ...]]
-##                     DEPENDS_ON   [dep1 ...]
-##                     LIBRARY_TYPE <STATIC, SHARED, or OBJECT>
-##------------------------------------------------------------------------------
-macro(blt_add_hip_library)
-
-    set(options)
-    set(singleValueArgs NAME LIBRARY_TYPE)
-    set(multiValueArgs SOURCES HEADERS DEPENDS_ON)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                            "${multiValueArgs}" ${ARGN} )
-
-    # Check arguments
-    if ( NOT DEFINED arg_NAME )
-        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_add_hip_library' macro")
+    if ( NOT DEFINED arg_OUTPUT_REGEX )
+        message( FATAL_ERROR "Must provide a OUTPUT_REGEX argument to the 'blt_make_file_ext_regex' macro" )
     endif()
 
-    if ( NOT DEFINED arg_SOURCES )
-        message( FATAL_ERROR "Must provide SOURCES to the 'blt_add_hip_library' macro")
-    endif()
+    # Join with 'or', and escape periods
+    list(JOIN arg_EXTENSIONS "|" ${arg_OUTPUT_REGEX})
+    # Lower-case because we do case-insensitive checks
+    string(TOLOWER "${BLT_C_FILE_REGEX}" BLT_C_FILE_REGEX)
+    # Escape periods before adding 
+    string(REPLACE "." "\\." ${arg_OUTPUT_REGEX} "${${arg_OUTPUT_REGEX}}")
+    # Regex for by any set of characters followed by any of the given
+    # file extensions at the end of the string
+    set(${arg_OUTPUT_REGEX} "^.*(${${arg_OUTPUT_REGEX}})$")
 
-    # Determine if hip or hip_runtime are in DEPENDS_ON
-    list(FIND arg_DEPENDS_ON "hip" _hip_index)
-    set(_depends_on_hip FALSE)
-    if(${_hip_index} GREATER -1)
-        set(_depends_on_hip TRUE)
-    endif()
-    list(FIND arg_DEPENDS_ON "hip_runtime" _hip_runtime_index)
-    set(_depends_on_hip_runtime FALSE)
-    if(${_hip_runtime_index} GREATER -1)
-        set(_depends_on_hip_runtime TRUE)
-    endif()
+endmacro(blt_make_file_ext_regex)
 
-    if (${_depends_on_hip})
-        # if hip is in depends_on, flag each file's language as HIP
-        # instead of leaving it up to CMake to decide
-        # Note: we don't do this when depending on just 'hip_runtime'
-        set(_hip_sources)
-        set(_non_hip_sources)
-        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
-                                          C_LIST       _hip_sources
-                                          Fortran_LIST _non_hip_sources)
-
-        set_source_files_properties( ${_hip_sources}
-                                     PROPERTIES
-                                     HIP_SOURCE_PROPERTY_FORMAT TRUE)
-
-        hip_add_library( ${arg_NAME} ${arg_SOURCES} ${arg_LIBRARY_TYPE} )
-        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
-        # Link to the hip_runtime target so it gets pulled in by targets
-        # depending on this target
-        target_link_libraries(${arg_NAME} PUBLIC hip_runtime)
-    else()
-        add_library( ${arg_NAME} ${arg_LIBRARY_TYPE} ${arg_SOURCES} ${arg_HEADERS} )
-    endif()
-
-    if (${_depends_on_hip_runtime} OR ${_depends_on_hip})
-        # This will be propagated up to executable targets that depend on this
-        # library, which will need the HIP linker
-        set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE HIP)
-    endif()
-
-endmacro(blt_add_hip_library)
-
-##------------------------------------------------------------------------------
-## blt_add_hip_executable(NAME         <libname>
-##                        SOURCES      [source1 [source2 ...]]
-##                        HEADERS      [header1 [header2 ...]]
-##                        DEPENDS_ON   [dep1 ...]
-##------------------------------------------------------------------------------
-macro(blt_add_hip_executable)
-
-    set(options)
-    set(singleValueArgs NAME)
-    set(multiValueArgs HEADERS SOURCES DEPENDS_ON)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                            "${multiValueArgs}" ${ARGN} )
-
-    # Check arguments
-    if ( NOT DEFINED arg_NAME )
-        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_add_hip_executable' macro")
-    endif()
-
-    if ( NOT DEFINED arg_SOURCES )
-        message( FATAL_ERROR "Must provide SOURCES to the 'blt_add_hip_executable' macro")
-    endif()
-
-    # Determine if hip or hip_runtime are in DEPENDS_ON
-    list(FIND arg_DEPENDS_ON "hip" _hip_index)
-    set(_depends_on_hip FALSE)
-    if(${_hip_index} GREATER -1)
-        set(_depends_on_hip TRUE)
-    endif()
-    list(FIND arg_DEPENDS_ON "hip_runtime" _hip_runtime_index)
-    set(_depends_on_hip_runtime FALSE)
-    if(${_hip_runtime_index} GREATER -1)
-        set(_depends_on_hip_runtime TRUE)
-    endif()
-
-    blt_expand_depends(DEPENDS_ON ${arg_DEPENDS_ON} RESULT _expanded_DEPENDS_ON)
-    foreach( dependency ${_expanded_DEPENDS_ON} )
-        if(TARGET ${dependency})
-            get_target_property(_dep_type ${dependency} TYPE)
-            if(NOT "${_dep_type}" STREQUAL "INTERFACE_LIBRARY")
-                # Propagate the overridden linker language, if applicable
-                get_target_property(_blt_link_lang ${dependency} INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE)
-                if(_blt_link_lang STREQUAL "HIP")
-                    set(_depends_on_hip_runtime TRUE)
-                endif()
-            endif()
-        endif()
-    endforeach()
-
-    if (${_depends_on_hip} OR ${_depends_on_hip_runtime})
-        # if hip is in depends_on, flag each file's language as HIP
-        # instead of leaving it up to CMake to decide
-        # Note: we don't do this when depending on just 'hip_runtime'
-        set(_hip_sources)
-        set(_non_hip_sources)
-        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
-                                          C_LIST       _hip_sources
-                                          Fortran_LIST _non_hip_sources)
-
-        set_source_files_properties( ${_hip_sources}
-                                     PROPERTIES
-                                     HIP_SOURCE_PROPERTY_FORMAT TRUE)
-
-        hip_add_executable( ${arg_NAME} ${arg_SOURCES} )
-        blt_cleanup_hip_globals(FROM_TARGET ${arg_NAME})
-    else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
-    endif()
-
-    # Save the expanded dependencies to avoid recalculating later
-    set_target_properties(${arg_NAME} PROPERTIES
-                          BLT_EXPANDED_DEPENDENCIES "${_expanded_DEPENDS_ON}")
-
-endmacro(blt_add_hip_executable)
 
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
 ##                                    Fortran_LIST <list name>
-##                                    Python_LIST <list name>)
+##                                    Python_LIST <list name>
 ##                                    CMAKE_LIST <list name>)
 ##
 ## Filters source list by file extension into C/C++, Fortran, Python, and
 ## CMake source lists based on BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS,
-## and BLT_CMAKE_FILE_EXTS (global BLT variables). Files named
-## "CMakeLists.txt" are also filtered here. Files with no extension
-## or generator expressions that are not object libraries (of the form
-## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
+## and BLT_CMAKE_FILE_EXTS (global BLT variables). This filtering is
+## case-insensitive. Files named "CMakeLists.txt" are also filtered here.
+## Files with no extension or generator expressions that are not object
+## libraries (of the form "$<TARGET_OBJECTS:nameofobjectlibrary>") will
+## throw fatal errors.
 ## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
@@ -783,6 +649,20 @@ macro(blt_split_source_list_by_language)
         message( FATAL_ERROR "Must provide a SOURCES argument to the 'blt_split_source_list_by_language' macro" )
     endif()
 
+    # Convert extensions lists to regexes
+    set(BLT_C_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_C_FILE_EXTS}
+                            OUTPUT_REGEX BLT_C_FILE_REGEX)
+    set(BLT_Fortran_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
+                            OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
+    set(BLT_Python_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_Python_FILE_EXTS}
+                            OUTPUT_REGEX BLT_Python_FILE_REGEX)
+    set(BLT_CMAKE_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_CMAKE_FILE_EXTS}
+                            OUTPUT_REGEX BLT_CMAKE_FILE_REGEX)
+
     # Generate source lists based on language
     foreach(_file ${arg_SOURCES})
         # Allow CMake object libraries but disallow generator expressions
@@ -798,29 +678,30 @@ macro(blt_split_source_list_by_language)
             message(FATAL_ERROR "blt_split_source_list_by_language given source file with no extension: ${_file}")
         endif()
 
-        get_filename_component(_name "${_file}" NAME)  
+        get_filename_component(_name "${_file}" NAME)
 
-        string(TOLOWER "${_ext}" _ext_lower)
+        string(TOLOWER "${_file}" _lower_file)
 
-        if("${_ext_lower}" IN_LIST BLT_C_FILE_EXTS)
+        if("${_lower_file}" MATCHES "${BLT_C_FILE_REGEX}")
             if (DEFINED arg_C_LIST)
                 list(APPEND ${arg_C_LIST} "${_file}")
             endif()
-        elseif("${_ext_lower}" IN_LIST BLT_Fortran_FILE_EXTS)
+        elseif("${_lower_file}" MATCHES "${BLT_Fortran_FILE_REGEX}")
             if (DEFINED arg_Fortran_LIST)
                 list(APPEND ${arg_Fortran_LIST} "${_file}")
             endif()
-        elseif("${_ext_lower}" IN_LIST BLT_Python_FILE_EXTS)
+        elseif("${_lower_file}" MATCHES "${BLT_Python_FILE_EXTS}")
             if (DEFINED arg_Python_LIST)
                 list(APPEND ${arg_Python_LIST} "${_file}")
             endif()
-        elseif("${_ext_lower}" IN_LIST BLT_CMAKE_FILE_EXTS OR "${_name}" STREQUAL "CMakeLists.txt")
+        elseif("${_lower_file}" MATCHES "${BLT_CMAKE_EXTS}" OR "${_name}" STREQUAL "CMakeLists.txt")
             if (DEFINED arg_CMAKE_LIST)
                 list(APPEND ${arg_CMAKE_LIST} "${_file}")
             endif()
         else()
             message(FATAL_ERROR "blt_split_source_list_by_language given source file with unknown file extension. Add the missing extension to the corresponding list (BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS, BLT_Python_FILE_EXTS, or BLT_CMAKE_FILE_EXTS).\n Unknown file: ${_file}")
         endif()
+
     endforeach()
 
 endmacro(blt_split_source_list_by_language)

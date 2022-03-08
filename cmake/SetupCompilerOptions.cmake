@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -42,6 +42,10 @@ else()
         set(C_COMPILER_FAMILY_IS_INTEL 1)
         message(STATUS "C Compiler family is Intel")
 
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
+        set(C_COMPILER_FAMILY_IS_INTELLLVM 1)
+        message(STATUS "C Compiler family is IntelLLVM")
+
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
         set(C_COMPILER_FAMILY_IS_PGI 1)
         message(STATUS "C Compiler family is PGI")
@@ -62,6 +66,10 @@ else()
         set(Fortran_COMPILER_FAMILY_IS_CLANG 1)
         message(STATUS "Fortran Compiler family is Clang")
 
+    elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Flang") # For Flang compilers
+        set(Fortran_COMPILER_FAMILY_IS_CLANG 1 CACHE BOOL "")
+        message(STATUS "Fortran Compiler family is Clang")
+
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "XL")
         set(Fortran_COMPILER_FAMILY_IS_XL 1)
         message(STATUS "Fortran Compiler family is XL")
@@ -69,6 +77,10 @@ else()
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
         set(Fortran_COMPILER_FAMILY_IS_INTEL 1)
         message(STATUS "Fortran Compiler family is Intel")
+
+    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "IntelLLVM")
+        set(Fortran_COMPILER_FAMILY_IS_INTELLLVM 1)
+        message(STATUS "Fortran Compiler family is IntelLLVM")
 
     elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
         set(Fortran_COMPILER_FAMILY_IS_PGI 1)
@@ -394,9 +406,8 @@ set(langFlags "CMAKE_C_FLAGS" "CMAKE_CXX_FLAGS")
 if (ENABLE_ALL_WARNINGS)
     message(STATUS  "Enabling all compiler warnings on all targets.")
 
-
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_ENABLE_ALL_WARNINGS_CXX_FLAG}")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_ENABLE_ALL_WARNINGS_C_FLAG}")
+    set (CMAKE_CXX_FLAGS "${BLT_ENABLE_ALL_WARNINGS_CXX_FLAG} ${CMAKE_CXX_FLAGS}")
+    set (CMAKE_C_FLAGS "${BLT_ENABLE_ALL_WARNINGS_C_FLAG} ${CMAKE_C_FLAGS}")
 endif()
 
 if (ENABLE_WARNINGS_AS_ERRORS)

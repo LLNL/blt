@@ -1,61 +1,61 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
-# 
+#
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 variables:
   DOCKER_FLAGS: "--user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName)"
+  C_COMPILERS: "-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)"
+  MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
 
 strategy:
   matrix:
-    linux_gcc7:
-      VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/tpls:gcc-7'
-      C_COMPILER: '/usr/bin/gcc'
-      CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_BIN_DIR: '/home/axom/axom_tpls/gcc-7.3.0/cmake-3.9.6/bin'
-      MPI_DIR: '/home/axom/axom_tpls/gcc-7.3.0/mpich-3.2.1'
-      MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS) -DENABLE_OPENMP=ON'
-      TEST_TARGET: 'linux_gcc7'
     linux_gcc8:
-      VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/tpls:gcc-8'
+      VM_ImageName: 'ubuntu-20.04'
+      Compiler_ImageName: 'axom/tpls:gcc-8_10-21-21_21h-28m'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_BIN_DIR: '/home/axom/axom_tpls/gcc-8.1.0/cmake-3.10.1/bin'
-      MPI_DIR: '/home/axom/axom_tpls/gcc-8.1.0/mpich-3.3.2'
-      MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS) -DENABLE_OPENMP=ON'
-      TEST_TARGET: 'linux_gcc8'
-    linux_clang4:
-      VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/tpls:clang-4'
+      CMAKE_BIN_DIR: '/usr/bin'
+      MPI_DIR: '/usr'
+      CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON'
+    linux_gcc11:
+      VM_ImageName: 'ubuntu-20.04'
+      Compiler_ImageName: 'axom/tpls:gcc-11_01-27-22_05h-56m'
+      C_COMPILER: '/usr/bin/gcc'
+      CXX_COMPILER: '/usr/bin/g++'
+      CMAKE_BIN_DIR: '/usr/bin'
+      MPI_DIR: '/usr'
+      CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON'
+    linux_gcc11_benchmarks:
+      VM_ImageName: 'ubuntu-20.04'
+      Compiler_ImageName: 'axom/tpls:gcc-11_01-27-22_05h-56m'
+      C_COMPILER: '/usr/bin/gcc'
+      CXX_COMPILER: '/usr/bin/g++'
+      CMAKE_BIN_DIR: '/usr/bin'
+      MPI_DIR: '/usr'
+      CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON -DENABLE_BENCHMARKS=ON'
+    linux_gcc11_gmock:
+      VM_ImageName: 'ubuntu-20.04'
+      Compiler_ImageName: 'axom/tpls:gcc-11_01-27-22_05h-56m'
+      C_COMPILER: '/usr/bin/gcc'
+      CXX_COMPILER: '/usr/bin/g++'
+      CMAKE_BIN_DIR: '/usr/bin'
+      MPI_DIR: '/usr'
+      CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON -DENABLE_GMOCK=ON'
+    linux_clang10:
+      VM_ImageName: 'ubuntu-18.04'
+      Compiler_ImageName: 'axom/tpls:clang-10_10-21-21_21h-28m'
       C_COMPILER: '/usr/bin/clang'
       CXX_COMPILER: '/usr/bin/clang++'
-      CMAKE_BIN_DIR: '/home/axom/axom_tpls/clang-4.0.0/cmake-3.10.1/bin'
-      MPI_DIR: '/home/axom/axom_tpls/clang-4.0.0/mpich-3.0.4'
-      MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS) -DENABLE_OPENMP=ON'
-      TEST_TARGET: 'linux_clang4'
-    linux_clang6:
-      VM_ImageName: 'ubuntu-16.04'
-      Compiler_ImageName: 'axom/tpls:clang-6'
-      C_COMPILER: '/usr/bin/clang'
-      CXX_COMPILER: '/usr/bin/clang++'
-      CMAKE_BIN_DIR: '/home/axom/axom_tpls/clang-6.0.0/cmake-3.10.1/bin'
-      MPI_DIR: '/home/axom/axom_tpls/clang-6.0.0/mpich-3.0.4'
-      MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
-      CMAKE_FLAGS: '-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER) -DENABLE_GTEST_DEATH_TESTS=OFF $(MPI_FLAGS) -DENABLE_OPENMP=ON'
-      TEST_TARGET: 'linux_clang6'
+      CMAKE_BIN_DIR: '/usr/bin'
+      MPI_DIR: '/usr'
+      CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON'
     osx_gcc:
-      VM_ImageName: 'macos-10.14'
+      VM_ImageName: 'macos-1015'
       CMAKE_FLAGS: ''
-      TEST_TARGET: 'osx_gcc'
     windows:
       VM_ImageName: 'windows-2019'
       CMAKE_FLAGS: ''
-      TEST_TARGET: 'win_vs'
 
 pool:
   vmImage: $(VM_ImageName)
@@ -73,7 +73,7 @@ steps:
   displayName: 'OSX/Windows CMake'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
-    cmake --build build --config Release 
+    cmake --build build --config Release
   displayName: 'OSX/Windows Build'
   condition: or( eq( variables['Agent.OS'], 'Windows_NT'), eq( variables['Agent.OS'], 'Darwin'))
 - script: |
@@ -101,5 +101,5 @@ steps:
   inputs:
     testResultsFormat: 'cTest'
     testResultsFiles: 'build/Testing/*/Test.xml'
-    testRunTitle: '$(TEST_TARGET) Tests'
+    testRunTitle: '$(Agent.JobName) Tests'
     failTaskOnFailedTests: true

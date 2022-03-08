@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -144,7 +144,7 @@ if(ENABLE_BENCHMARKS)
           message(FATAL_ERROR "Google Benchmark cannot be built when BUILD_SHARED_LIBS=ON or on Windows")
         endif()
 
-        set(BENCHMARK_ENABLE_TESTING OFF CACHE "" BOOL)
+        set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
         add_subdirectory(benchmark-1.5.0
                          ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.5.0)
 

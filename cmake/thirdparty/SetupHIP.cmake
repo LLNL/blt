@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -9,122 +9,77 @@
 ################################
 # HIP
 ################################
-set (CMAKE_MODULE_PATH "${BLT_ROOT_DIR}/cmake/thirdparty;${CMAKE_MODULE_PATH}")
-find_package(HIP REQUIRED)
 
-message(STATUS "HIP version:      ${HIP_VERSION_STRING}")
-message(STATUS "HIP platform:     ${HIP_PLATFORM}")
-
-set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include")
-if(${HIP_PLATFORM} STREQUAL "hcc")
-	set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__")
-    find_library(HIP_RUNTIME_LIBRARIES NAMES hip_hcc libhip_hcc
-                PATHS ${HIP_ROOT_DIR}/lib
-                NO_DEFAULT_PATH
-                NO_CMAKE_ENVIRONMENT_PATH
-                NO_CMAKE_PATH
-                NO_SYSTEM_ENVIRONMENT_PATH
-                NO_CMAKE_SYSTEM_PATH)
-    set(HIP_RUNTIME_LIBRARIES "${HIP_ROOT_DIR}/lib/libhip_hcc.so")
-elseif(${HIP_PLATFORM} STREQUAL "clang" OR ${HIP_PLATFORM} STREQUAL "amd")
-    set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_HCC__;-D__HIP_ROCclr__;-D__HIP_PLATFORM_AMD__")
-    find_library(HIP_RUNTIME_LIBRARIES NAMES amdhip64 libamdhip64
-                PATHS ${HIP_ROOT_DIR}/lib
-                NO_DEFAULT_PATH
-                NO_CMAKE_ENVIRONMENT_PATH
-                NO_CMAKE_PATH
-                NO_SYSTEM_ENVIRONMENT_PATH
-                NO_CMAKE_SYSTEM_PATH)
-elseif(${HIP_PLATFORM} STREQUAL "nvcc" OR ${HIP_PLATFORM} STREQUAL "nvidia")
-    set(HIP_RUNTIME_DEFINES "-D__HIP_PLATFORM_NVCC__;-D__HIP_PLATFORM_NVIDIA__")
-    if (${CMAKE_VERSION} VERSION_LESS "3.17.0")
-        find_package(CUDA)
-        find_library(HIP_RUNTIME_LIBRARIES NAMES cudart libcudart
-            PATHS ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}
-            NO_DEFAULT_PATH
-            NO_CMAKE_ENVIRONMENT_PATH
-            NO_CMAKE_PATH
-            NO_SYSTEM_ENVIRONMENT_PATH
-            NO_CMAKE_SYSTEM_PATH)
-        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_RUNTIME_INCLUDE_DIRS};${CUDA_INCLUDE_DIRS}")
-    else()
-        find_package(CUDAToolkit)
-        find_library(HIP_RUNTIME_LIBRARIES NAMES cudart libcudart
-            PATHS ${CUDAToolkit_LIBRARY_DIR}
-            NO_DEFAULT_PATH
-            NO_CMAKE_ENVIRONMENT_PATH
-            NO_CMAKE_PATH
-            NO_SYSTEM_ENVIRONMENT_PATH
-            NO_CMAKE_SYSTEM_PATH)
-        set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_RUNTIME_INCLUDE_DIRS};${CUDAToolkit_INCLUDE_DIR}")
-    endif()
+if (NOT ROCM_PATH)
+    find_path(ROCM_PATH
+        hip
+        ENV{ROCM_DIR}
+        ENV{ROCM_PATH}
+        ENV{HIP_PATH}
+        ${HIP_PATH}/..
+        ${HIP_ROOT_DIR}/../
+        ${ROCM_ROOT_DIR}
+        /opt/rocm)
 endif()
 
-if ( IS_DIRECTORY "${HIP_ROOT_DIR}/hcc/include" ) # this path only exists on older rocm installs
-    set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include;${HIP_ROOT_DIR}/hcc/include" CACHE STRING "")
-else()
-    set(HIP_RUNTIME_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" CACHE STRING "")
-endif()
-set(HIP_RUNTIME_COMPILE_FLAGS "${HIP_RUNTIME_COMPILE_FLAGS};-Wno-unused-parameter")
+# Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
+# found.
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
 
-set(_hip_compile_flags " ")
-if (ENABLE_CLANG_HIP)
-    if (NOT (${HIP_PLATFORM} STREQUAL "clang"))
-        message(FATAL_ERROR "ENABLE_CLANG_HIP requires HIP_PLATFORM=clang")
-    endif()
-    set(_hip_compile_flags -x;hip)
-    # Using clang HIP, we need to construct a few CPP defines and compiler flags
-    foreach(_arch ${BLT_CLANG_HIP_ARCH})
-        string(TOUPPER ${_arch} _UPARCH)
-        string(TOLOWER ${_arch} _lowarch)
-        list(APPEND _hip_compile_flags "--offload-arch=${_lowarch}")
-        set(_hip_compile_defines "${HIP_RUNTIME_DEFINES};-D__HIP_ARCH_${_UPARCH}__=1")
-    endforeach(_arch)
+find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
+
+message(STATUS "ROCM path:        ${ROCM_PATH}")
+message(STATUS "HIP version:      ${hip_VERSION}")
+
+# AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
+# This file is also what hardcodes the --offload-arch flags we're removing here
+if(DEFINED AMDGPU_TARGETS)
+    # If we haven't selected a particular architecture via CMAKE_HIP_ARCHITECTURES,
+    # we want to remove the unconditionally added compile/link flags from the hip::device target.
+    # FIXME: This may cause problems for targets whose HIP_ARCHITECTURES property differs
+    # from CMAKE_HIP_ARCHITECTURES - this only happens when a user manually modifies
+    # the property after it is initialized
+    get_target_property(_hip_compile_options hip::device INTERFACE_COMPILE_OPTIONS)
+    get_target_property(_hip_link_libs hip::device INTERFACE_LINK_LIBRARIES)
+
+    foreach(_target ${AMDGPU_TARGETS})
+        if (NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
+            list(REMOVE_ITEM _hip_compile_options "--offload-arch=${_target}")
+            list(REMOVE_ITEM _hip_link_libs "--offload-arch=${_target}")
+        endif()
+    endforeach()
     
-    # We need to pass rocm path as well, for certain bitcode libraries.
-    # First see if we were given it, then see if it exists in the environment.
-    # If not, don't try to guess but print a warning and hope the compiler knows where it is.
-    if (NOT ROCM_PATH)
-        find_path(ROCM_PATH
-            bin/rocminfo
-            ENV ROCM_DIR
-            ENV ROCM_PATH
-            ${HIP_ROOT_DIR}/../
-            ${ROCM_ROOT_DIR}
-            /opt/rocm)
+    set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_compile_options})
+    set_property(TARGET hip::device PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_link_libs})
+
+    if(DEFINED CMAKE_HIP_ARCHITECTURES)
+        set(AMDGPU_TARGETS "${CMAKE_HIP_ARCHITECTURES}" CACHE STRING "" FORCE)
     endif()
-
-    if(DEFINED ROCM_PATH)
-        list(APPEND _hip_compile_flags "--rocm-path=${ROCM_PATH}")
-    else()
-        message(WARN "ROCM_PATH not set or found! This is typically required for Clang HIP Compilation")
-    endif()
-
-    message(STATUS "Clang HIP Enabled. Clang flags for HIP compilation: ${_hip_compile_flags}")
-    message(STATUS "Defines for HIP compilation: ${_hip_compile_defines}")
-
-    blt_import_library(NAME             hip
-                       DEFINES          ${_hip_compile_defines}
-                       COMPILE_FLAGS    ${_hip_compile_flags}
-                       DEPENDS_ON       ${HIP_RUNTIME_LIBRARIES})
-else()
-
-# depend on 'hip', if you need to use hip
-# headers, link to hip libs, and need to run your source
-# through a hip compiler (hipcc)
-# This is currently used only as an indicator for blt_add_hip* -- FindHIP/hipcc will handle resolution
-# of all required HIP-related includes/libraries/flags.
-    blt_import_library(NAME      hip)
 endif()
 
+# hip targets must be global for aliases when created as imported targets
+set(_blt_hip_is_global On)
+if (${BLT_EXPORT_THIRDPARTY})
+    set(_blt_hip_is_global Off)
+endif ()
 
-# depend on 'hip_runtime', if you only need to use hip
-# headers or link to hip libs, but don't need to run your source
-# through a hip compiler (hipcc)
-blt_import_library(NAME          hip_runtime
-                   INCLUDES      ${HIP_RUNTIME_INCLUDE_DIRS}
-                   DEFINES       ${HIP_RUNTIME_DEFINES}
-                   COMPILE_FLAGS ${HIP_RUNTIME_COMPILE_FLAGS}
-                   DEPENDS_ON    ${HIP_RUNTIME_LIBRARIES}
+blt_import_library(NAME       blt_hip
+                   COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
+                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
+                   GLOBAL ${_blt_hip_is_global})
+
+# Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
+# information in our target blt_hip
+blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
+
+add_library(blt::hip ALIAS blt_hip)
+
+blt_import_library(NAME          blt_hip_runtime
+                   INCLUDES ${HIP_INCLUDE_DIRS}
                    TREAT_INCLUDES_AS_SYSTEM ON
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   GLOBAL ${_blt_hip_is_global})
+
+blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
+
+add_library(blt::hip_runtime ALIAS blt_hip_runtime)

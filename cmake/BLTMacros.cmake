@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -644,22 +644,14 @@ macro(blt_add_library)
             set(_lib_type "STATIC")
         endif()
 
-        if (ENABLE_HIP AND NOT ENABLE_CLANG_HIP)
-            blt_add_hip_library(NAME         ${arg_NAME}
-                                SOURCES      ${arg_SOURCES}
-                                HEADERS      ${arg_HEADERS}
-                                DEPENDS_ON   ${arg_DEPENDS_ON}
-                                LIBRARY_TYPE ${_lib_type} )
-        else()
-            add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
+        add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
 
-            if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-                blt_setup_cuda_target(
-                    NAME         ${arg_NAME}
-                    SOURCES      ${arg_SOURCES}
-                    DEPENDS_ON   ${arg_DEPENDS_ON}
-                    LIBRARY_TYPE ${_lib_type})
-            endif()
+        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+            blt_setup_cuda_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON}
+                LIBRARY_TYPE ${_lib_type})
         endif()
     else()
         #
@@ -775,20 +767,13 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    if (ENABLE_HIP AND NOT ENABLE_CLANG_HIP)
-        blt_add_hip_executable(NAME         ${arg_NAME}
-                               SOURCES      ${arg_SOURCES}
-                               HEADERS      ${arg_HEADERS}
-                               DEPENDS_ON   ${arg_DEPENDS_ON})
-    else()
-        add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
+    add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
 
-        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
-            blt_setup_cuda_target(
-                NAME         ${arg_NAME}
-                SOURCES      ${arg_SOURCES}
-                DEPENDS_ON   ${arg_DEPENDS_ON})
-        endif()
+    if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+        blt_setup_cuda_target(
+            NAME         ${arg_NAME}
+            SOURCES      ${arg_SOURCES}
+            DEPENDS_ON   ${arg_DEPENDS_ON})
     endif()
     
     # CMake wants to load with C++ if any of the libraries are C++.
@@ -975,6 +960,7 @@ endmacro(blt_add_benchmark)
 ##                    CLANG      clangFlag      (optional)
 ##                    HCC        hccFlag        (optional)
 ##                    INTEL      intelFlag      (optional)
+##                    INTELLLVM  intelLLVMFlag  (optional)
 ##                    XL         xlFlag         (optional)
 ##                    MSVC       msvcFlag       (optional)
 ##                    MSVC_INTEL msvcIntelFlag  (optional)
@@ -986,7 +972,7 @@ endmacro(blt_add_benchmark)
 macro(blt_append_custom_compiler_flag)
 
    set(options)
-   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG HCC PGI INTEL XL MSVC MSVC_INTEL CRAY)
+   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG HCC PGI INTEL INTELLLVM XL MSVC MSVC_INTEL CRAY)
    set(multiValueArgs)
 
    # Parse the arguments
@@ -997,7 +983,7 @@ macro(blt_append_custom_compiler_flag)
    if(NOT DEFINED arg_FLAGS_VAR)
       message( FATAL_ERROR "append_custom_compiler_flag macro requires FLAGS_VAR keyword and argument." )
    endif()
-   
+
    # Set the desired flags based on the compiler family   
    # MSVC COMPILER FAMILY applies to C/C++ and Fortran
    string( TOLOWER ${arg_FLAGS_VAR} lower_flag_var )
@@ -1020,6 +1006,8 @@ macro(blt_append_custom_compiler_flag)
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_GNU} " )
        elseif( DEFINED arg_CRAY AND Fortran_COMPILER_FAMILY_IS_CRAY )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_CRAY} " )
+       elseif( DEFINED arg_INTELLLVM AND Fortran_COMPILER_FAMILY_IS_INTELLLVM )
+          set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_INTELLLVM} " )
        elseif( DEFINED arg_DEFAULT )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_DEFAULT} ")
        endif()
@@ -1032,6 +1020,8 @@ macro(blt_append_custom_compiler_flag)
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_XL} " )
        elseif( DEFINED arg_INTEL AND C_COMPILER_FAMILY_IS_INTEL )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_INTEL} " )
+       elseif( DEFINED arg_INTELLLVM AND C_COMPILER_FAMILY_IS_INTELLLVM )
+          set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_INTELLLVM} " )
        elseif( DEFINED arg_PGI AND C_COMPILER_FAMILY_IS_PGI )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_PGI} " )
        elseif( DEFINED arg_GNU AND C_COMPILER_FAMILY_IS_GNU )
@@ -1373,3 +1363,42 @@ macro(blt_print_target_properties)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties)
+
+##------------------------------------------------------------------------------
+## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)
+##
+## Add targets for BLT's third-party libraries to the given export-set, prefixed
+## with the provided namespace.
+##------------------------------------------------------------------------------
+macro(blt_export_tpl_targets)
+    set(options)
+    set(singleValuedArgs NAMESPACE EXPORT)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    if(NOT DEFINED arg_EXPORT)
+        message(FATAL_ERROR "EXPORT is a required parameter for the blt_export_tpl_targets macro.")
+    endif()
+
+    set(_blt_tpl_targets)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS openmp IF ENABLE_OPENMP)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS mpi IF ENABLE_MPI)
+    
+    foreach(dep ${_blt_tpl_targets})
+        # If the target is EXPORTABLE, add it to the export set
+        get_target_property(_is_imported ${dep} IMPORTED)
+        if(NOT ${_is_imported})
+            install(TARGETS              ${dep}
+                    EXPORT               ${arg_EXPORT})
+            # Namespace target to avoid conflicts
+            if (DEFINED arg_NAMESPACE)
+                set_target_properties(${dep} PROPERTIES EXPORT_NAME ${arg_NAMESPACE}::${dep})
+            endif ()
+        endif()
+    endforeach()
+endmacro()

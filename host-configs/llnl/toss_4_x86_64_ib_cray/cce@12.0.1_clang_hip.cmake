@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -12,10 +12,10 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# HPE Cray cce@12.0.0 compilers
+# HPE Cray cce@12.0.1 compilers
 #------------------------------------------------------------------------------
 # _blt_tutorial_compiler_config_start
-set(CCE_HOME "/usr/tce/packages/cce-tce/cce-12.0.0")
+set(CCE_HOME "/usr/tce/packages/cce-tce/cce-12.0.1")
 set(CMAKE_C_COMPILER   "${CCE_HOME}/bin/craycc" CACHE PATH "")
 set(CMAKE_CXX_COMPILER "${CCE_HOME}/bin/crayCC" CACHE PATH "")
 
@@ -30,7 +30,7 @@ set(CMAKE_Fortran_COMPILER "${CCE_HOME}/bin/crayftn" CACHE PATH "")
 # _blt_tutorial_mpi_config_start
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME "/usr/tce/packages/cray-mpich-tce/cray-mpich-8.1.5.6-cce-12.0.0/")
+set(MPI_HOME "/usr/tce/packages/cray-mpich-tce/cray-mpich-8.1.7-cce-12.0.1/")
 set(MPI_C_COMPILER "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 
 set(MPI_CXX_COMPILER "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
@@ -43,13 +43,10 @@ set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 #------------------------------------------------------------------------------
 # _blt_tutorial_hip_config_start
 set(ENABLE_HIP ON CACHE BOOL "")
-set(ENABLE_CLANG_HIP ON CACHE BOOL "")
 
-set(ROCM_PATH "/opt/rocm-4.1.0/" CACHE PATH "")
-set(HIP_PLATFORM "clang" CACHE STRIING "")
-
-set(BLT_CLANG_HIP_ARCH "gfx908" CACHE STRING "")
-
+set(ROCM_PATH "/opt/rocm-4.2.0/" CACHE PATH "")
+set(HIP_PLATFORM "clang" CACHE STRING "")
+set(CMAKE_HIP_ARCHITECTURES "gfx908" CACHE STRING "gfx architecture to use when generating HIP/ROCm code")
 
 # _blt_tutorial_hip_config_end
 

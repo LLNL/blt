@@ -9,6 +9,28 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.0] - Release date 2022-03-07
+
+### Added
+- Added support for IntelLLVM compiler family to blt_append_custom_compiler_flag
+- Added support for hip targets configured with cmake 3.21 native hip support
+- Added `blt_export_tpl_targets` macro to add BLT-provided third-party library
+  targets to an export set.
+
+### Changed
+- `BLT_C_FILE_EXTS` updated to include `.cuh`
+- Fold `BLT_CLANG_HIP_ARCH` into the `CMAKE_HIP_ARCHITECTURES` variable
+- When using `ENABLE_ALL_WARNINGS`, append the flag to the beginning of `CMAKE_{C,CXX}_FLAGS` instead
+  of the end
+- HIP support now uses the `hip-config.cmake` file provided by ROCM. This
+  modification requires a change to the BLT-provided HIP target names, and they
+  are now available under the `blt` prefix: `blt::hip` and `blt::hip_runtime`.
+
+### Fixed
+- Source code filename extension filtering now uses regular expressions to allow
+  for more user customization and to improve handling of file names with multiple
+  periods, e.g. `1d.cube.order2.c` is considered a `.c` file.
+
 ## [Version 0.4.1] - Release date 2021-07-20
 
 ### Added
@@ -77,7 +99,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - ``blt_patch_target`` no longer attempts to set system include directories when a target
   has no include directories
 - Header-only libraries now can have dependencies via DEPENDS_ON in ``blt_add_library``
-- Added a workaround for include directories of imported targets on PGI. CMake was 
+- Added a workaround for include directories of imported targets on PGI. CMake was
   erroneously marking them as SYSTEM but this is not supported by PGI.
 - Check added to make sure that if HIP is enabled with fortran, the LINKER LANGUAGE
   is not changed back to Fortran.
@@ -213,7 +235,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.4.1...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.0...develop
+[Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0
 [Version 0.4.1]: https://github.com/LLNL/blt/compare/v0.4.0...v0.4.1
 [Version 0.4.0]: https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
 [Version 0.3.6]: https://github.com/LLNL/blt/compare/v0.3.5...v0.3.6

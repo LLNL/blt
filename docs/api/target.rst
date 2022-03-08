@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -514,3 +514,31 @@ Internally created variables (NAME = "foo"):
     | _BLT_FOO_DEFINES
 
 Internal variable names are prefixed with ``_`` to avoid collision with input parameters.
+
+.. _blt_export_tpl_targets:
+
+blt_export_tpl_targets
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_export_tpl_targets(EXPORT  <export-set-name>
+                           [NAMESPACE <namespace>])
+
+Install BLT-provided third-party library targets to the given export set.
+
+EXPORT
+  CMake export set the targets are being added to
+
+NAMESPACE
+  Namespace prefix for each exported target
+
+This macro will add all the enabled third-party library targets (e.g. ``cuda``,
+``blt::hip``, ``mpi``, etc.) to the given export set, with the optional namespace. This
+allows downstream projects to import and use any targets that depend on BLT
+targets, without the downstream project itself requiring the use of BLT.
+
+.. note::
+  It is highly recommended that the NAMESPACE argument is used to ensure that
+  the targets are given a unique prefix that will reduce the chance of
+  conflicts.

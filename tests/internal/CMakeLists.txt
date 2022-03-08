@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.8)
 
-project(blt-example LANGUAGES C CXX)
+project(blt-internal-tests LANGUAGES C CXX)
 
 #------------------------------------------------------------------------------
 # Setup BLT
@@ -255,7 +255,7 @@ endif()
 
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime)
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
@@ -269,6 +269,7 @@ if(ENABLE_HIP)
   add_subdirectory(src/hip_defines_test)
 endif()
 
+add_subdirectory(unit)
 #------------------------------------------------------------------------------
 # Format the testing code using ClangFormat
 #------------------------------------------------------------------------------
@@ -412,6 +413,27 @@ else()
     blt_add_test(NAME    test_executable_not_a_target
                  COMMAND tests/return_true)
 endif()
+
+# create example depending on all available TPLs to test export
+set(_example_tpl_depends)
+blt_list_append(TO _example_tpl_depends ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
+blt_list_append(TO _example_tpl_depends ELEMENTS openmp IF ENABLE_OPENMP)
+blt_list_append(TO _example_tpl_depends ELEMENTS mpi IF ENABLE_MPI)
+
+blt_add_library( NAME    example-with-tpls
+                 SOURCES "src/Example.cpp"
+                 HEADERS "src/Example.hpp"
+                 DEPENDS_ON ${_example_tpl_depends}
+                 )
+
+install(TARGETS example-with-tpls EXPORT blt-exports ARCHIVE DESTINATION lib)
+
+# test blt_export_tpl_targets macro
+blt_export_tpl_targets(NAMESPACE blt
+                       EXPORT blt-exports)
+
+install(EXPORT blt-exports DESTINATION lib/cmake/blt)
 
 # Add tutorials
 add_subdirectory(../../docs/tutorial/calc_pi calc_pi)
