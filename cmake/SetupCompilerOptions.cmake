@@ -309,9 +309,6 @@ if (BLT_CXX_STD)
         endif()
 
         set(CMAKE_CXX_STANDARD 20)
-        blt_append_custom_compiler_flag(
-            FLAGS_VAR CMAKE_CXX_FLAGS
-            DEFAULT " ")
     else()
         message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD. "
                             "Valid Options are ( c++98, c++11, c++14, c++17, c++20 )")
