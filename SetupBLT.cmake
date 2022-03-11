@@ -33,6 +33,8 @@ if (NOT BLT_LOADED)
     # Show CMake info right out of the gate
     ################################
     message(STATUS "CMake Version: ${CMAKE_VERSION}")
+    message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
+    message(STATUS "CMake Configuration Types: ${CMAKE_CONFIGURATION_TYPE}")
 
     if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
         message("*************************************")
@@ -212,3 +214,13 @@ if (NOT BLT_LOADED)
     endif()
 
 endif() # only load BLT once!
+
+
+
+
+
+
+
+
+
+
