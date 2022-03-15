@@ -1,0 +1,50 @@
+####
+# This is the share configuration of jobs for corona
+.on_corona:
+  tags:
+    - shell
+    - corona
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /_qnone/ || $ON_CORONA == "OFF"' #run except if ...
+      when: never
+    - if: '$CI_JOB_NAME =~ /release_resources/'
+      when: always
+    - when: on_success
+
+####
+# In pre-build phase, allocate a node for builds
+corona_allocate:
+  variables:
+    GIT_STRATEGY: none
+  extends: [.on_corona]
+  stage: allocate
+  script:
+    - salloc -p pbatch -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
+  needs: []
+
+####
+# In post-build phase, deallocate resources
+# Note : make sure this is run even on build phase failure
+corona_release:
+  variables:
+    GIT_STRATEGY: none
+  extends: [.on_corona]
+  stage: release
+  script:
+    - export JOBID=$(squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A)
+    - if [[ -n "${JOBID}" ]]; then scancel ${JOBID}; fi
+
+####
+# Template
+.build_on_corona:
+  stage: build
+  variables:
+    ALLOC_COMMAND: "srun -p pbatch -t 30 -N 1 ${ASSIGN_ID} --interactive"
+  extends: [.build_script, .on_corona]
+
+####
+# Build jobs
+corona-rocm_4_5_2_hip:
+  variables:
+    HOST_CONFIG: "rocm@4.5.2_hip.cmake"
+  extends: [.build_on_corona]

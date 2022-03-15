@@ -35,3 +35,4 @@ stages:
 include:
   - local: .gitlab/build_quartz.yml
   - local: .gitlab/build_lassen.yml
+  - local: .gitlab/build_corona.yml
