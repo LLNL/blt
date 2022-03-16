@@ -82,8 +82,8 @@ if (CUDA_LINK_WITH_NVCC)
     # executable link dependencies so the device link fails if there are any missing CUDA library dependencies. Since
     # we are doing a link with the nvcc compiler, the device link step is unnecessary .
     # Frustratingly, nvcc-link errors out if you pass it an empty file, so we have to first compile the empty file. 
-    set(CMAKE_CUDA_DEVICE_LINK_LIBRARY "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
-    set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
+    set(CMAKE_CUDA_DEVICE_LINK_LIBRARY "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++${CMAKE_CUDA_STANDARD} -dc <TARGET>.cu -o <TARGET>")
+    set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++${CMAKE_CUDA_STANDARD} -dc <TARGET>.cu -o <TARGET>")
 endif()
 
 # If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)

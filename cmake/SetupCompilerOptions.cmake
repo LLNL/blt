@@ -169,12 +169,13 @@ if (ENABLE_CUDA)
    if (BLT_CUDA_FLAGS)
       set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
    endif()
-   # quirk of ordering means that one needs to define -std=c++11 in CMAKE_CUDA_FLAGS if
-   # --expt-extended-lambda is being used so cmake can get past the compiler check, 
-   # but the CMAKE_CUDA_STANDARD stuff adds another definition in which breaks things. 
-   # So we rip it out here, but it ends up being inserted in the final build rule by cmake. 
+   # quirk of ordering means that one needs to define -std=c++<standard> in
+   # CMAKE_CUDA_FLAGS if --expt-extended-lambda is being used so cmake can get past the
+   # compiler check, but the CMAKE_CUDA_STANDARD stuff adds another definition in which
+   # breaks things. So we rip it out here, but it ends up being inserted in the final
+   # build rule by cmake.
    if (CMAKE_CUDA_FLAGS)
-      STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
+      STRING(REPLACE "-std=c++${CMAKE_CUDA_STANDARD}" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
    endif()
 endif()
 
@@ -314,11 +315,15 @@ if (BLT_CXX_STD)
                             "Valid Options are ( c++98, c++11, c++14, c++17, c++20 )")
     endif()
 
-    if (ENABLE_CUDA)
-       set(CMAKE_CUDA_STANDARD ${CMAKE_CXX_STANDARD})
-    endif()
+    message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected")
 
-    message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected") 
+    if (ENABLE_CUDA)
+       if (NOT DEFINED CMAKE_CUDA_STANDARD)
+          set(CMAKE_CUDA_STANDARD ${CMAKE_CXX_STANDARD})
+       endif()
+
+       message(STATUS "Standard C++${CMAKE_CUDA_STANDARD} selected for CUDA")
+    endif()
 endif()
 
 
