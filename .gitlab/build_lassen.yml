@@ -23,7 +23,7 @@
   stage: build
   variables:
     ALLOC_COMMAND: "lalloc 1 -W 10 -q pdebug"
-  extends: [.step_script, .on_lassen]
+  extends: [.build_script, .on_lassen]
   needs: []
 
 ####

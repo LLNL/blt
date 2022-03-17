@@ -40,7 +40,7 @@ corona_release:
   stage: build
   variables:
     ALLOC_COMMAND: "srun -p pbatch -t 10 -N 1 ${ASSIGN_ID} --interactive"
-  extends: [.step_script, .on_corona]
+  extends: [.build_script, .on_corona]
 
 ####
 # Build jobs
