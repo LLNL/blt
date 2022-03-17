@@ -33,12 +33,13 @@ if (NOT BLT_LOADED)
     # Show CMake info right out of the gate
     ################################
     message(STATUS "CMake Version: ${CMAKE_VERSION}")
-    if (DEFINED CMAKE_BUILD_TYPE)
+    get_property(_is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (_is_multi_config)
+        message(STATUS "CMake Configuration Types: ${CMAKE_CONFIGURATION_TYPES}")
+    else()
         message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
     endif()
-    if (DEFINED CMAKE_CONFIGURATION_TYPES)
-        message(STATUS "CMake Configuration Types: ${CMAKE_CONFIGURATION_TYPES}")
-    endif()
+    unset(_is_multi_config)
 
     if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
         message("*************************************")
