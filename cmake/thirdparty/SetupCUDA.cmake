@@ -67,6 +67,17 @@ if (NOT ENABLE_CLANG_CUDA)
   enable_language(CUDA)
 endif ()
 
+if(CMAKE_CUDA_STANDARD STREQUAL "17")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
+    endif()
+endif()
+
+if(CMAKE_CUDA_STANDARD STREQUAL "20")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++20.")
+    endif()
+endif()
 
 ############################################################
 # Map Legacy FindCUDA variables to native cmake variables

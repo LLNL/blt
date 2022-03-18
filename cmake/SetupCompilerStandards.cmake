@@ -34,10 +34,6 @@ if (BLT_CXX_STD)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
             message(FATAL_ERROR "XL does not support C++17.")
         endif()
-        if (ENABLE_CUDA AND (NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES)))
-            message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
-        endif()
-
         set(CMAKE_CXX_STANDARD 17)
         blt_append_custom_compiler_flag(
             FLAGS_VAR CMAKE_CXX_FLAGS
@@ -51,10 +47,6 @@ if (BLT_CXX_STD)
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
             message(FATAL_ERROR "PGI is not yet supported using C++20.")
         endif()
-        if (ENABLE_CUDA AND (NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES)))
-            message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++20.")
-        endif()
-
         set(CMAKE_CXX_STANDARD 20)
     else()
         message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD. "
