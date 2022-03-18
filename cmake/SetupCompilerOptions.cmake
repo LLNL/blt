@@ -134,55 +134,26 @@ endif()
 # all targets that use <LANG>-Compiler
 ##########################################
 
-##########################################
-# Support extra flags for the C compiler.
-##########################################
 if(BLT_C_FLAGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_C_FLAGS}")
     message(STATUS "Updated CMAKE_C_FLAGS to \"${CMAKE_C_FLAGS}\"")
 endif()
 
-#############################################
-# Support extra flags for the C++ compiler.
-#############################################
 if(BLT_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
     message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
 endif()
 
-################################################
-# Support extra flags for the Fortran compiler.
-################################################
 if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
-     message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
+    message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
 endif()
 
-
-############################################################
-# Map Legacy FindCUDA variables to native cmake variables
-# Note - we are intentionally breaking the semicolon delimited 
-# list that FindCUDA demanded of CUDA_NVCC_FLAGS so users
-# are forced to clean up their host configs.
-############################################################
-if (ENABLE_CUDA)
-   if (BLT_CUDA_FLAGS)
-      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
-   endif()
-   # quirk of ordering means that one needs to define -std=c++<standard> in
-   # CMAKE_CUDA_FLAGS if --expt-extended-lambda is being used so cmake can get past the
-   # compiler check, but the CMAKE_CUDA_STANDARD stuff adds another definition in which
-   # breaks things. So we rip it out here, but it ends up being inserted in the final
-   # build rule by cmake.
-   if (CMAKE_CUDA_FLAGS)
-      STRING(REPLACE "-std=c++${CMAKE_CUDA_STANDARD}" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
-   endif()
+if (ENABLE_CUDA AND BLT_CUDA_FLAGS)
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
+    message(STATUS "Updated CMAKE_CUDA_FLAGS to \"${CMAKE_CUDA_FLAGS}\"")
 endif()
 
-
-################################################
-# Support extra linker flags
-################################################
 if(BLT_EXE_LINKER_FLAGS)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${BLT_EXE_LINKER_FLAGS}")
     message(STATUS "Updated CMAKE_EXE_LINKER_FLAGS to \"${CMAKE_EXE_LINKER_FLAGS}\"")
