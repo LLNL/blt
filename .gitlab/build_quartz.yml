@@ -41,6 +41,7 @@ quartz_release:
   variables:
     ALLOC_COMMAND: "srun -p pdebug -t 10 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.build_script, .on_quartz]
+  needs: [quartz_allocate]
 
 ####
 # Build jobs

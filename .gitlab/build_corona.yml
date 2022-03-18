@@ -41,6 +41,7 @@ corona_release:
   variables:
     ALLOC_COMMAND: "srun -p pbatch -t 10 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.build_script, .on_corona]
+  needs: [corona_allocate]
 
 ####
 # Build jobs
