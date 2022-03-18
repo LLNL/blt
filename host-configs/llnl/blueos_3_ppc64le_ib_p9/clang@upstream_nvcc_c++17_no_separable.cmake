@@ -55,7 +55,7 @@ set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}" CACHE PATH "")
 
 set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
 set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
-set(CMAKE_CUDA_FLAGS "-Xcompiler=--gcc-toolchain=${_GCC_DIR} -restrict -arch ${_cuda_arch} -std=c++17 --expt-extended-lambda -G" CACHE STRING "")
+set(CMAKE_CUDA_FLAGS "-Xcompiler=--gcc-toolchain=${_GCC_DIR} -restrict -arch ${_cuda_arch} --expt-extended-lambda -G" CACHE STRING "")
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")

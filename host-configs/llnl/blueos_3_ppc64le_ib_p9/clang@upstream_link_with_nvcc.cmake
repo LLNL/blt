@@ -63,7 +63,7 @@ set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
 set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE PATH "")
 
 set (_cuda_arch "sm_70")
-set (CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G" CACHE STRING "" )
+set (CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} --expt-extended-lambda -G" CACHE STRING "" )
 
 set (CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 set (CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
