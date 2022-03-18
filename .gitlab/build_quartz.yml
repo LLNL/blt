@@ -7,7 +7,7 @@
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /_qnone/ || $ON_QUARTZ == "OFF"' #run except if ...
       when: never
-    - if: '$CI_JOB_NAME =~ /release_resources/'
+    - if: '$CI_JOB_NAME =~ /quartz_release/'
       when: always
     - when: on_success
 
@@ -39,8 +39,9 @@ quartz_release:
 .build_on_quartz:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pdebug -t 30 -N 1 ${ASSIGN_ID} --interactive"
+    ALLOC_COMMAND: "srun -p pdebug -t 10 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.build_script, .on_quartz]
+  needs: [quartz_allocate]
 
 ####
 # Build jobs
