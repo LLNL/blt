@@ -102,7 +102,6 @@ if (NOT BLT_LOADED)
         set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     endif()
 
-
     ################################
     # Enable cmake compilation database feature
     ################################
@@ -112,6 +111,11 @@ if (NOT BLT_LOADED)
     # Macros
     ################################
     include(${BLT_ROOT_DIR}/cmake/BLTMacros.cmake)
+
+    ################################
+    # Setup compiler standards early
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/SetupCompilerStandards.cmake)
 
     ################################
     # Standard TPL support
