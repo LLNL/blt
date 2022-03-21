@@ -13,6 +13,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added support for C++20. Note: XL does not support C++20.
   While PGI has C++20 support, it is currently disabled (A BLT fatal error will occur).
 
+### Fixed
+- Removed hard-coded -std=c++11 from various places related to CUDA flags.  This now honors
+  CMAKE_CUDA_STANDARD if set otherwise falls back on BLT_CXX_STD or CMAKE_CXX_STANDARD.
+
 ## [Version 0.5.0] - Release date 2022-03-07
 
 ### Added
