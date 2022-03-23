@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
-    message(STATUS "Setting CMAKE_CXX_EXTENSIONS to Off")
+    message(STATUS "Setting CMAKE_CXX_EXTENSIONS to OFF")
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -61,5 +61,13 @@ if (BLT_CXX_STD)
        endif()
 
        message(STATUS "Standard C++${CMAKE_CUDA_STANDARD} selected for CUDA")
+    endif()
+
+    if (ENABLE_HIP AND ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0")
+       if (NOT DEFINED CMAKE_HIP_STANDARD)
+          set(CMAKE_HIP_STANDARD ${CMAKE_CXX_STANDARD})
+       endif()
+
+       message(STATUS "Standard C++${CMAKE_HIP_STANDARD} selected for HIP")
     endif()
 endif()

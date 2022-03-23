@@ -17,11 +17,18 @@ int main()
 {
   int nDevices;
 
-  hipGetDeviceCount(&nDevices);
+  if(hipSuccess != hipGetDeviceCount(&nDevices))
+  {
+    std::cout << "ERROR: hipGetDeviceCount failed!" << std::endl;
+  }
+
   for (int i = 0; i < nDevices; i++)
   {
     hipDeviceProp_t prop;
-    hipGetDeviceProperties(&prop, i);
+    if(hipSuccess != hipGetDeviceProperties(&prop, i))
+    {
+      std::cout << "ERROR: hipGetDeviceProperties failed!" << std::endl;
+    }
     printf("Device Number: %d\n", i);
     printf("  Device name: %s\n", prop.name);
     printf("  Memory Clock Rate (KHz): %d\n",

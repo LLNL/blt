@@ -30,6 +30,9 @@ TEST(blt_hip_gtest_smoke,basic_assert_example)
   int num_threads = STR_LENGTH;
   int num_blocks = 1;
   hipLaunchKernelGGL((hello), dim3(num_blocks), dim3(num_threads),0,0);
-  hipDeviceSynchronize();
+  if(hipSuccess != hipDeviceSynchronize())
+  {
+    std::cout << "ERROR: hipDeviceSynchronize failed!" << std::endl;
+  }
   EXPECT_TRUE( true );
 }
