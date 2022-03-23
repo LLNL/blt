@@ -56,14 +56,6 @@ if (ENABLE_HIP)
   include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake)
 endif()
 
-#------------------------------------
-# HCC
-#------------------------------------
-message(STATUS "HCC Support is ${ENABLE_HCC}")
-if (ENABLE_HCC)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHCC.cmake)
-endif()
-
 
 #------------------------------------
 # Documentation Packages

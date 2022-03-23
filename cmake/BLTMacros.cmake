@@ -958,7 +958,6 @@ endmacro(blt_add_benchmark)
 ##                    DEFAULT    defaultFlag    (optional)
 ##                    GNU        gnuFlag        (optional)
 ##                    CLANG      clangFlag      (optional)
-##                    HCC        hccFlag        (optional)
 ##                    INTEL      intelFlag      (optional)
 ##                    INTELLLVM  intelLLVMFlag  (optional)
 ##                    XL         xlFlag         (optional)
@@ -972,7 +971,7 @@ endmacro(blt_add_benchmark)
 macro(blt_append_custom_compiler_flag)
 
    set(options)
-   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG HCC PGI INTEL INTELLLVM XL MSVC MSVC_INTEL CRAY)
+   set(singleValueArgs FLAGS_VAR DEFAULT GNU CLANG PGI INTEL INTELLLVM XL MSVC MSVC_INTEL CRAY)
    set(multiValueArgs)
 
    # Parse the arguments
