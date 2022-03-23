@@ -48,7 +48,6 @@ if(DEFINED AMDGPU_TARGETS)
             set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:CXX>:SHELL:${_flag}>")
             set(_generator_link_flag "$<$<LINK_LANGUAGE:CXX>:${_flag}>")
 
-            # Remove generator expressions first because they are a superset
             list(REMOVE_ITEM _hip_compile_options ${_generator_compile_flag})
             list(REMOVE_ITEM _hip_compile_options ${_flag})
             list(REMOVE_ITEM _hip_link_libs ${_generator_link_flag})
