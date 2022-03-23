@@ -27,7 +27,6 @@ which allows users to easily place a compiler dependent flag into a CMake variab
    * MSVC (Microsoft Visual Studio)
    * MSVC_INTEL (Intel toolchain in Microsoft Visual Studio)
    * PGI
-   * HCC (AMD GPU)
 
 Here is an example for setting the appropriate flag to treat warnings as errors:
 

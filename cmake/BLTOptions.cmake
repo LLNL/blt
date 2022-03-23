@@ -59,7 +59,6 @@ mark_as_advanced(ENABLE_CLANG_CUDA)
 set(BLT_CLANG_CUDA_ARCH "sm_30" CACHE STRING "Compute architecture to use when generating CUDA code with Clang")
 mark_as_advanced(BLT_CLANG_CUDA_ARCH)
 option(ENABLE_HIP         "Enable HIP support" OFF)
-option(ENABLE_HCC "Enable HCC support" OFF)
 set(CMAKE_HIP_ARCHITECTURES "gfx900" CACHE STRING "gfx architecture to use when generating HIP/ROCm code")
 
 #------------------------------------------------------------------------------

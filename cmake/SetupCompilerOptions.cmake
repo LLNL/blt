@@ -236,7 +236,6 @@ blt_append_custom_compiler_flag(
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
-     HCC        "-Wall" 
      PGI        "-Minform=warn"
      MSVC       "/W4"
                        # Additional  possibilities for visual studio include:
@@ -253,7 +252,6 @@ blt_append_custom_compiler_flag(
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
-     HCC        "-Wall" 
      PGI        "-Minform=warn"
      MSVC       "/W4"
                        # Additional  possibilities for visual studio include:
