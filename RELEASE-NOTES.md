@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.1] - Release date 2022-04-22
+
 ### Added
 - Added support for C++20. Note: XL does not support C++20.
   While PGI has C++20 support, it is currently disabled (A BLT fatal error will occur).
@@ -249,7 +251,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.0...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.1...develop
+[Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1
 [Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0
 [Version 0.4.1]: https://github.com/LLNL/blt/compare/v0.4.0...v0.4.1
 [Version 0.4.0]: https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0
