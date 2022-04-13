@@ -22,6 +22,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Removed extra HIP offload flags that were being added as generator expressions as opposed to simple
   flags.
 
+### Removed
+- Removed support for deprecated HCC.
+
 ## [Version 0.5.0] - Release date 2022-03-07
 
 ### Added
@@ -43,9 +46,6 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Source code filename extension filtering now uses regular expressions to allow
   for more user customization and to improve handling of file names with multiple
   periods, e.g. `1d.cube.order2.c` is considered a `.c` file.
-
-### Removed
-- Removed support for deprecated HCC.
 
 ## [Version 0.4.1] - Release date 2021-07-20
 
