@@ -9,6 +9,22 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.1] - Release date 2022-04-22
+
+### Added
+- Added support for C++20. Note: XL does not support C++20.
+  While PGI has C++20 support, it is currently disabled (A BLT fatal error will occur).
+- BLT_CXX_STD now sets CMAKE_HIP_STANDARD, in CMake 3.21+, similar to CMAKE_CUDA_STANDARD.
+
+### Fixed
+- Removed hard-coded -std=c++11 from various places related to CUDA flags.  This now honors
+  CMAKE_CUDA_STANDARD if set otherwise falls back on BLT_CXX_STD or CMAKE_CXX_STANDARD.
+- Removed extra HIP offload flags that were being added as generator expressions as opposed to simple
+  flags.
+
+### Removed
+- Removed support for deprecated HCC.
+
 ## [Version 0.5.0] - Release date 2022-03-07
 
 ### Added
@@ -235,7 +251,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.0...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.1...develop
+[Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1
 [Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0
 [Version 0.4.1]: https://github.com/LLNL/blt/compare/v0.4.0...v0.4.1
 [Version 0.4.0]: https://github.com/LLNL/blt/compare/v0.3.6...v0.4.0

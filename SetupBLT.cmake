@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.5.0" CACHE STRING "")
+    set(BLT_VERSION "0.5.1" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
@@ -33,6 +33,13 @@ if (NOT BLT_LOADED)
     # Show CMake info right out of the gate
     ################################
     message(STATUS "CMake Version: ${CMAKE_VERSION}")
+    get_property(_is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (_is_multi_config)
+        message(STATUS "CMake Configuration Types: ${CMAKE_CONFIGURATION_TYPES}")
+    else()
+        message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
+    endif()
+    unset(_is_multi_config)
 
     if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
         message("*************************************")
@@ -95,7 +102,6 @@ if (NOT BLT_LOADED)
         set_property(GLOBAL PROPERTY USE_FOLDERS ON)
     endif()
 
-
     ################################
     # Enable cmake compilation database feature
     ################################
@@ -105,6 +111,11 @@ if (NOT BLT_LOADED)
     # Macros
     ################################
     include(${BLT_ROOT_DIR}/cmake/BLTMacros.cmake)
+
+    ################################
+    # Setup compiler standards early
+    ################################
+    include(${BLT_ROOT_DIR}/cmake/SetupCompilerStandards.cmake)
 
     ################################
     # Standard TPL support
@@ -212,3 +223,4 @@ if (NOT BLT_LOADED)
     endif()
 
 endif() # only load BLT once!
+

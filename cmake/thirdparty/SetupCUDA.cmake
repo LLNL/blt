@@ -67,6 +67,17 @@ if (NOT ENABLE_CLANG_CUDA)
   enable_language(CUDA)
 endif ()
 
+if(CMAKE_CUDA_STANDARD STREQUAL "17")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
+    endif()
+endif()
+
+if(CMAKE_CUDA_STANDARD STREQUAL "20")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++20.")
+    endif()
+endif()
 
 ############################################################
 # Map Legacy FindCUDA variables to native cmake variables
@@ -82,8 +93,8 @@ if (CUDA_LINK_WITH_NVCC)
     # executable link dependencies so the device link fails if there are any missing CUDA library dependencies. Since
     # we are doing a link with the nvcc compiler, the device link step is unnecessary .
     # Frustratingly, nvcc-link errors out if you pass it an empty file, so we have to first compile the empty file. 
-    set(CMAKE_CUDA_DEVICE_LINK_LIBRARY "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
-    set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++11 -dc <TARGET>.cu -o <TARGET>")
+    set(CMAKE_CUDA_DEVICE_LINK_LIBRARY "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++${CMAKE_CUDA_STANDARD} -dc <TARGET>.cu -o <TARGET>")
+    set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++${CMAKE_CUDA_STANDARD} -dc <TARGET>.cu -o <TARGET>")
 endif()
 
 # If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)

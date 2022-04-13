@@ -134,54 +134,26 @@ endif()
 # all targets that use <LANG>-Compiler
 ##########################################
 
-##########################################
-# Support extra flags for the C compiler.
-##########################################
 if(BLT_C_FLAGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BLT_C_FLAGS}")
     message(STATUS "Updated CMAKE_C_FLAGS to \"${CMAKE_C_FLAGS}\"")
 endif()
 
-#############################################
-# Support extra flags for the C++ compiler.
-#############################################
 if(BLT_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BLT_CXX_FLAGS}")
     message(STATUS "Updated CMAKE_CXX_FLAGS to \"${CMAKE_CXX_FLAGS}\"")
 endif()
 
-################################################
-# Support extra flags for the Fortran compiler.
-################################################
 if(ENABLE_FORTRAN AND BLT_FORTRAN_FLAGS)
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${BLT_FORTRAN_FLAGS}")
-     message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
+    message(STATUS "Updated CMAKE_Fortran_FLAGS to \"${CMAKE_Fortran_FLAGS}\"")
 endif()
 
-
-############################################################
-# Map Legacy FindCUDA variables to native cmake variables
-# Note - we are intentionally breaking the semicolon delimited 
-# list that FindCUDA demanded of CUDA_NVCC_FLAGS so users
-# are forced to clean up their host configs.
-############################################################
-if (ENABLE_CUDA)
-   if (BLT_CUDA_FLAGS)
-      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
-   endif()
-   # quirk of ordering means that one needs to define -std=c++11 in CMAKE_CUDA_FLAGS if
-   # --expt-extended-lambda is being used so cmake can get past the compiler check, 
-   # but the CMAKE_CUDA_STANDARD stuff adds another definition in which breaks things. 
-   # So we rip it out here, but it ends up being inserted in the final build rule by cmake. 
-   if (CMAKE_CUDA_FLAGS)
-      STRING(REPLACE "-std=c++11" " " CMAKE_CUDA_FLAGS ${CMAKE_CUDA_FLAGS} )
-   endif()
+if(ENABLE_CUDA AND BLT_CUDA_FLAGS)
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${BLT_CUDA_FLAGS}")
+    message(STATUS "Updated CMAKE_CUDA_FLAGS to \"${CMAKE_CUDA_FLAGS}\"")
 endif()
 
-
-################################################
-# Support extra linker flags
-################################################
 if(BLT_EXE_LINKER_FLAGS)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${BLT_EXE_LINKER_FLAGS}")
     message(STATUS "Updated CMAKE_EXE_LINKER_FLAGS to \"${CMAKE_EXE_LINKER_FLAGS}\"")
@@ -253,61 +225,6 @@ if(BUILD_SHARED_LIBS)
     endif()
 endif()
 
-################################
-# C++ Standard
-################################
-if (NOT DEFINED CMAKE_CXX_EXTENSIONS)
-    message(STATUS "Setting CMAKE_CXX_EXTENSIONS to Off")
-    set( CMAKE_CXX_EXTENSIONS OFF )
-endif ()
-SET( CMAKE_CXX_STANDARD_REQUIRED ON )
-
-set(BLT_CXX_STD "" CACHE STRING "Version of C++ standard")
-set_property(CACHE BLT_CXX_STD PROPERTY STRINGS c++98 c++11 c++14 c++17)
-
-if (BLT_CXX_STD)
-    if( BLT_CXX_STD STREQUAL c++98 ) 
-        set(CMAKE_CXX_STANDARD 98)
-    elseif( BLT_CXX_STD STREQUAL c++11 )
-        set(CMAKE_CXX_STANDARD 11)
-        blt_append_custom_compiler_flag(
-            FLAGS_VAR CMAKE_CXX_FLAGS
-            DEFAULT " "
-            XL "-std=c++11"
-            PGI "--c++11")
-    elseif( BLT_CXX_STD STREQUAL c++14)
-        set(CMAKE_CXX_STANDARD 14)
-        blt_append_custom_compiler_flag(
-            FLAGS_VAR CMAKE_CXX_FLAGS
-            DEFAULT " "
-            XL "-std=c++14"
-            PGI "--c++14")
-    elseif( BLT_CXX_STD STREQUAL c++17)
-        # Error out on what does not support C++17
-        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
-            message(FATAL_ERROR "XL does not support C++17.")
-        endif()
-        if (ENABLE_CUDA AND (NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES)))
-            message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
-        endif()
-
-        set(CMAKE_CXX_STANDARD 17)
-        blt_append_custom_compiler_flag(
-            FLAGS_VAR CMAKE_CXX_FLAGS
-            DEFAULT " "
-            PGI "--c++17")
-    else()
-        message(FATAL_ERROR "${BLT_CXX_STD} is an invalid entry for BLT_CXX_STD. "
-                            "Valid Options are ( c++98, c++11, c++14, c++17 )")
-    endif()
-
-    if (ENABLE_CUDA)
-       set(CMAKE_CUDA_STANDARD ${CMAKE_CXX_STANDARD})
-    endif()
-
-    message(STATUS "Standard C++${CMAKE_CXX_STANDARD} selected") 
-endif()
-
 
 ##################################################################
 # Additional compiler warnings and treatment of warnings as errors
@@ -319,7 +236,6 @@ blt_append_custom_compiler_flag(
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
-     HCC        "-Wall" 
      PGI        "-Minform=warn"
      MSVC       "/W4"
                        # Additional  possibilities for visual studio include:
@@ -336,7 +252,6 @@ blt_append_custom_compiler_flag(
      CLANG      "-Wall -Wextra" 
                        # Additional  possibilities for clang include: 
                        #       "-Wdocumentation -Wdeprecated -Weverything"
-     HCC        "-Wall" 
      PGI        "-Minform=warn"
      MSVC       "/W4"
                        # Additional  possibilities for visual studio include:

@@ -285,8 +285,6 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_gbenchmark_smoke.cpp
     ../smoke/blt_gmock_smoke.cpp
     ../smoke/blt_gtest_smoke.cpp
-    ../smoke/blt_hcc_runtime_smoke.cpp
-    ../smoke/blt_hcc_smoke.cpp
     ../smoke/blt_hip_runtime_smoke.cpp
     ../smoke/blt_hip_gtest_smoke.cpp
     ../smoke/blt_hip_smoke.cpp

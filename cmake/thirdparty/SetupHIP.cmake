@@ -44,8 +44,14 @@ if(DEFINED AMDGPU_TARGETS)
 
     foreach(_target ${AMDGPU_TARGETS})
         if (NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
-            list(REMOVE_ITEM _hip_compile_options "--offload-arch=${_target}")
-            list(REMOVE_ITEM _hip_link_libs "--offload-arch=${_target}")
+            set(_flag "--offload-arch=${_target}")
+            set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:CXX>:SHELL:${_flag}>")
+            set(_generator_link_flag "$<$<LINK_LANGUAGE:CXX>:${_flag}>")
+
+            list(REMOVE_ITEM _hip_compile_options ${_generator_compile_flag})
+            list(REMOVE_ITEM _hip_compile_options ${_flag})
+            list(REMOVE_ITEM _hip_link_libs ${_generator_link_flag})
+            list(REMOVE_ITEM _hip_link_libs ${_flag})
         endif()
     endforeach()
     

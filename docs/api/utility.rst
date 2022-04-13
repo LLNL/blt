@@ -55,7 +55,6 @@ blt_append_custom_compiler_flag
                        DEFAULT    defaultFlag    (optional)
                        GNU        gnuFlag        (optional)
                        CLANG      clangFlag      (optional)
-                       HCC        hccFlag        (optional)
                        INTEL      intelFlag      (optional)
                        INTELLLVM  intelLLVMFlag  (optional)
                        XL         xlFlag         (optional)
