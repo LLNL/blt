@@ -1401,3 +1401,21 @@ macro(blt_export_tpl_targets)
         endif()
     endforeach()
 endmacro()
+
+macro(blt_convert_to_system_includes)
+    set(options)
+    set(singleValuedArgs TARGET)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    if(NOT DEFINED arg_TARGET)
+       message(FATAL_ERROR "TARGET is a required parameter for the blt_convert_to_system_includes macro.")
+    endif()
+
+    get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+    set_property(TARGET ${arg_TARGET} APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${_include_dirs}")
+endmacro()
+

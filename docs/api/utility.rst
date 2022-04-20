@@ -167,3 +167,21 @@ command but doesn't throw an error if the list is empty or not defined.
     set(mylist A B A)
     blt_list_remove_duplicates( TO mylist )
 
+.. _blt_convert_to_system_includes:
+
+blt_convert_to_system_includes
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_convert_to_system_includes(TARGET <target>)
+
+Converts the interface includes to system interface includes.
+
+.. code-block:: cmake
+   :caption: **Example**
+   :linenos:
+
+   ## convert to system includes for the foo target
+   blt_convert_to_system_includes(TARGET foo)
+
