@@ -1402,6 +1402,11 @@ macro(blt_export_tpl_targets)
     endforeach()
 endmacro()
 
+##------------------------------------------------------------------------------
+## blt_convert_to_system_includes(TARGET <target>)
+##
+## Converts existing interface includes as system interface includes.
+##------------------------------------------------------------------------------
 macro(blt_convert_to_system_includes)
     set(options)
     set(singleValuedArgs TARGET)
