@@ -1422,5 +1422,6 @@ macro(blt_convert_to_system_includes)
 
     get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
     set_property(TARGET ${arg_TARGET} APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${_include_dirs}")
+    set_property(TARGET ${arg_TARGET} PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
 endmacro()
 
