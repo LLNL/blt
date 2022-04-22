@@ -176,7 +176,7 @@ blt_convert_to_system_includes
 
     blt_convert_to_system_includes(TARGET <target>)
 
-Converts the interface includes to system interface includes.
+Converts existing interface includes to system interface includes.
 
 .. code-block:: cmake
    :caption: **Example**
