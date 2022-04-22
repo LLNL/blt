@@ -1405,7 +1405,7 @@ endmacro()
 ##------------------------------------------------------------------------------
 ## blt_convert_to_system_includes(TARGET <target>)
 ##
-## Converts existing interface includes as system interface includes.
+## Converts existing interface includes to system interface includes.
 ##------------------------------------------------------------------------------
 macro(blt_convert_to_system_includes)
     set(options)
