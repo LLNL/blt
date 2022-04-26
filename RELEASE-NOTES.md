@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added 'blt_convert_to_system_includes' macro to convert existing interface includes to system interface includes.
+
 ## [Version 0.5.1] - Release date 2022-04-22
 
 ### Added
