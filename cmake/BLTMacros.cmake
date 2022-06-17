@@ -254,7 +254,7 @@ macro(blt_add_target_link_flags)
 
     set(_flags ${arg_FLAGS})
     # Convert rpath flag if linking with CUDA
-    if (CUDA_LINK_WITH_NVCC)
+    if (BLT_CUDA_LINK_WITH_NVCC)
         string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
                        _flags "${_flags}")
     endif()
@@ -1383,7 +1383,7 @@ macro(blt_export_tpl_targets)
     endif()
 
     set(_blt_tpl_targets)
-    blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS blt_cuda blt_cuda_runtime IF ENABLE_CUDA)
     blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
     blt_list_append(TO _blt_tpl_targets ELEMENTS openmp IF ENABLE_OPENMP)
     blt_list_append(TO _blt_tpl_targets ELEMENTS mpi IF ENABLE_MPI)

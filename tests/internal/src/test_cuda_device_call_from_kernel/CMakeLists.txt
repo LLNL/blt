@@ -19,14 +19,14 @@ set(t_cuda_device_call_from_kernel_sources
 blt_add_library(NAME       t_cuda_device_call_from_kernel_lib
                 SOURCES    ${t_cuda_device_call_from_kernel_sources}
                 HEADERS    ${t_cuda_device_call_from_kernel_headers}
-                DEPENDS_ON cuda)
+                DEPENDS_ON blt::cuda)
 
 set(t_cuda_device_call_from_kernel_exec_src
     CudaTests.cpp)
 
 blt_add_executable( NAME       t_cuda_device_call_from_kernel_exec
                     SOURCES    ${t_cuda_device_call_from_kernel_exec_src}
-                    DEPENDS_ON t_cuda_device_call_from_kernel_lib gtest cuda)
+                    DEPENDS_ON t_cuda_device_call_from_kernel_lib gtest blt::cuda)
 
 blt_add_test(NAME    t_cuda_device_call_from_kernel
              COMMAND t_cuda_device_call_from_kernel_exec)

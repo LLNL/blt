@@ -67,7 +67,7 @@ set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
 set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} --expt-extended-lambda -G" CACHE STRING "" )
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
-set(CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
+set(BLT_CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")

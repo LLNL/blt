@@ -128,7 +128,7 @@ or with the corresponding :ref:`blt_add_executable` and :ref:`blt_add_library` m
 ``PRIVATE`` flags are used for the given target. ``INTERFACE`` flags are inherited
 by any target that depends on this target. ``PUBLIC`` flags are both ``INTERFACE`` and ``PRIVATE``.
 
-If ``CUDA_LINK_WITH_NVCC`` is set to ``ON``, this macro will automatically
+If ``BLT_CUDA_LINK_WITH_NVCC`` is set to ``ON``, this macro will automatically
 convert ``-Wl,-rpath,`` to :literal:`-Xlinker -rpath -Xlinker\ `.
 
 .. note::

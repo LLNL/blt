@@ -469,7 +469,7 @@ macro(blt_setup_target)
             # Check if a separate device link is needed
             if(ENABLE_CUDA AND "${_dep_type}" STREQUAL "OBJECT_LIBRARY")
                 get_target_property(_device_link ${dependency} CUDA_RESOLVE_DEVICE_SYMBOLS)
-                if(_device_link AND CUDA_LINK_WITH_NVCC)
+                if(_device_link AND BLT_CUDA_LINK_WITH_NVCC)
                     set(_dlink_obj "${dependency}_device_link${CMAKE_CUDA_OUTPUT_EXTENSION}")
                     # Make sure a target wasn't already added
                     get_source_file_property(_generated ${_dlink_obj} GENERATED)
@@ -518,19 +518,22 @@ macro(blt_setup_cuda_target)
     endif()
 
     # Determine if cuda or cuda_runtime are in DEPENDS_ON
-    list(FIND arg_DEPENDS_ON "cuda" _cuda_index)
+    list(FIND arg_DEPENDS_ON "blt_cuda" _blt_cuda_index)
+    list(FIND arg_DEPENDS_ON "blt::cuda" _blt_cuda_alias_index)
     set(_depends_on_cuda FALSE)
-    if(${_cuda_index} GREATER -1)
+    if((${_blt_cuda_index} GREATER -1) OR (${_blt_cuda_alias_index} GREATER -1))
         set(_depends_on_cuda TRUE)
     endif()
-    list(FIND arg_DEPENDS_ON "cuda_runtime" _cuda_runtime_index)
+ 
+    list(FIND arg_DEPENDS_ON "blt_cuda" _blt_cuda_runtime_index)
+    list(FIND arg_DEPENDS_ON "blt::cuda" _blt_cuda_runtime_alias_index)
     set(_depends_on_cuda_runtime FALSE)
-    if(${_cuda_runtime_index} GREATER -1)
+    if((${_blt_cuda_runtime_index} GREATER -1) OR (${_blt_cuda_runtime_alias_index} GREATER -1))
         set(_depends_on_cuda_runtime TRUE)
     endif()
 
     if (${_depends_on_cuda_runtime} OR ${_depends_on_cuda})
-        if (CUDA_LINK_WITH_NVCC)
+        if (BLT_CUDA_LINK_WITH_NVCC)
             set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE CUDA)
             # This will be propagated up to executable targets that depend on this
             # library, which will need the HIP linker

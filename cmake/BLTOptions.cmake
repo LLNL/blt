@@ -61,6 +61,12 @@ mark_as_advanced(BLT_CLANG_CUDA_ARCH)
 option(ENABLE_HIP         "Enable HIP support" OFF)
 set(CMAKE_HIP_ARCHITECTURES "gfx900" CACHE STRING "gfx architecture to use when generating HIP/ROCm code")
 
+option(BLT_CUDA_LINK_WITH_NVCC "Enable linking with NVCC" OFF)
+if (DEFINED CUDA_LINK_WITH_NVCC)
+    message(WARNING "CUDA_LINK_WITH_NVCC is deprecated and will eventually be removed.")
+    set(BLT_CUDA_LINK_WITH_NVCC ${CUDA_LINK_WITH_NVCC})
+endif()
+
 #------------------------------------------------------------------------------
 # Test Options
 #

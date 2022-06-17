@@ -243,7 +243,7 @@ if (ENABLE_CUDA AND ENABLE_MPI AND
     blt_add_executable(
       NAME       test_cuda_mpi
       SOURCES    src/test_cuda_mpi.cpp
-      DEPENDS_ON cuda mpi hwloc)
+      DEPENDS_ON blt::cuda mpi hwloc)
 
     # Tests on a 2^24 elements array.
     # It can go much bigger, but will not
@@ -255,7 +255,7 @@ endif()
 
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi blt::cuda blt::cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
@@ -414,7 +414,7 @@ endif()
 
 # create example depending on all available TPLs to test export
 set(_example_tpl_depends)
-blt_list_append(TO _example_tpl_depends ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt_cuda blt_cuda_runtime IF ENABLE_CUDA)
 blt_list_append(TO _example_tpl_depends ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
 blt_list_append(TO _example_tpl_depends ELEMENTS openmp IF ENABLE_OPENMP)
 blt_list_append(TO _example_tpl_depends ELEMENTS mpi IF ENABLE_MPI)
