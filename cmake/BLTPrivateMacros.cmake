@@ -255,10 +255,13 @@ macro(blt_inherit_target_info)
 
     blt_determine_scope(TARGET ${arg_TO} OUT _scope)
 
-    get_target_property(_interface_system_includes
-                        ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-    if ( _interface_system_includes )
-        target_include_directories(${arg_TO} SYSTEM ${_scope} ${_interface_system_includes})
+    # PGI does not support -isystem
+    if(NOT ${C_COMPILER_FAMILY_IS_PGI})
+        get_target_property(_interface_system_includes
+                            ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+        if ( _interface_system_includes )
+            target_include_directories(${arg_TO} SYSTEM ${_scope} ${_interface_system_includes})
+        endif()
     endif()
 
     get_target_property(_interface_includes

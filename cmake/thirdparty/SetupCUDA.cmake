@@ -91,6 +91,7 @@ if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
 else()
     message(STATUS "CUDA Host Compiler: ${CUDA_HOST_COMPILER}")
 endif()
+message(STATUS "CUDA Architectures: ${CMAKE_CUDA_ARCHITECTURES}")
 message(STATUS "CUDA Include Path:  ${CUDAToolkit_INCLUDE_DIRS}")
 message(STATUS "CUDA Compile Flags: ${CMAKE_CUDA_FLAGS}")
 message(STATUS "CUDA Link Flags:    ${CMAKE_CUDA_LINK_FLAGS}")
@@ -123,6 +124,7 @@ endif ()
 
 blt_import_library(NAME          blt_cuda
                    LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
+                   TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
                    GLOBAL        ${_blt_cuda_is_global})
 
