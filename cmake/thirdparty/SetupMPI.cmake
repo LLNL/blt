@@ -7,6 +7,15 @@
 # MPI
 ################################
 
+if (TARGET blt::mpi)
+    return()
+endif()
+
+if (TARGET mpi)
+    add_library(blt::mpi ALIAS mpi)
+endif()
+
+
 # CMake changed some of the output variables that we use from Find(MPI)
 # in 3.10+.  This toggles the variables based on the CMake version
 # the user is running.
@@ -190,3 +199,5 @@ blt_import_library(NAME          mpi
                    COMPILE_FLAGS ${_mpi_compile_flags}
                    LINK_FLAGS    ${_mpi_link_flags} 
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+
+add_library(blt::mpi ALIAS mpi)

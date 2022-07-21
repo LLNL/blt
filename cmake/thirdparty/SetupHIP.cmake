@@ -10,6 +10,15 @@
 # HIP
 ################################
 
+if (TARGET blt::hip)
+    return()
+endif()
+
+if (TARGET blt_hip)
+    add_library(blt::hip ALIAS blt_hip)
+    add_library(blt::hip_runtime ALIAS blt_hip_runtime)
+endif()
+
 if (NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip

@@ -8,6 +8,14 @@
 # (OpenMP support is provided by the compiler)
 #################################################
 
+if (TARGET blt::openmp)
+    return()
+endif()
+
+if (TARGET openmp)
+    add_library(blt::openmp ALIAS openmp)
+endif()
+
 find_package(OpenMP REQUIRED)
 
 # check if the openmp flags used for C/C++ are different from the openmp flags
@@ -56,3 +64,4 @@ blt_import_library(NAME openmp
                    COMPILE_FLAGS ${_compile_flags}
                    LINK_FLAGS    ${_link_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+add_library(blt::openmp ALIAS openmp)
