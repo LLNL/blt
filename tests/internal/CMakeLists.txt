@@ -227,6 +227,10 @@ if(ENABLE_GTEST)
     blt_list_append(TO _actual_list ELEMENTS "empty_escaped"        IF ${_defined_empty_var})
     blt_list_append(TO _actual_list ELEMENTS "nonempty_escaped"     IF ${_defined_nonempty_var})
 
+    # Check that ELEMENTS can be empty or missing when the IF condition is false
+    blt_list_append(TO _actual_list                                 IF FALSE)
+    blt_list_append(TO _actual_list ELEMENTS ""                     IF FALSE)
+
     # Check the results
     list(LENGTH _actual_list _actual_size)
     if(NOT "${_actual_list}" STREQUAL "${_expected_list}"
