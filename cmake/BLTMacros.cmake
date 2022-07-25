@@ -69,10 +69,6 @@ macro(blt_list_append)
         message(FATAL_ERROR "blt_list_append() requires a TO <list> argument")
     endif()
 
-    if ( NOT DEFINED arg_ELEMENTS )
-         message(FATAL_ERROR "blt_list_append() requires ELEMENTS to be specified" )
-    endif()
-
     # determine if we should add the elements to the list
     set(_shouldAdd FALSE )
     set(_listVar "${ARGN}")         # convert macro arguments to list variable
@@ -84,6 +80,11 @@ macro(blt_list_append)
 
     # append if
     if ( ${_shouldAdd} )
+        # check that ELEMENTS parameter is defined/non-empty before appending
+        if ( NOT DEFINED arg_ELEMENTS )
+            message(FATAL_ERROR "blt_list_append() requires ELEMENTS to be specified and non-empty" )
+        endif()
+
         list( APPEND ${arg_TO} ${arg_ELEMENTS} )
     endif()
 

@@ -24,6 +24,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   CMAKE_CUDA_STANDARD if set otherwise falls back on BLT_CXX_STD or CMAKE_CXX_STANDARD.
 - Removed extra HIP offload flags that were being added as generator expressions as opposed to simple
   flags.
+- Skip check for valid `ELEMENTS` parameter in `blt_list_append` macro when not appending
 
 ### Removed
 - Removed support for deprecated HCC.
