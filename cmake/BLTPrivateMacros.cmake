@@ -847,7 +847,7 @@ endmacro(blt_clean_target)
 ##------------------------------------------------------------------------------
 ## blt_print_target_properties(TARGET <target> )
 ##
-## Prints out all properties of the one given target.
+## Prints out all properties of one given target.
 ##------------------------------------------------------------------------------
 macro(blt_print_single_target_properties)
 

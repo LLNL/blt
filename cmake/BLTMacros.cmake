@@ -1278,6 +1278,10 @@ endmacro(blt_combine_static_libraries)
 ## blt_print_target_properties(TARGET <target> CHILDREN <bool> INCLUDE_REGEX <regular_expression_string>)
 ##
 ## Prints out all properties of the given target.
+##
+## Has the options to print target's link libraries and interface link libraries
+## with the CHILDREN argument, as well as only a specific child using a regular
+## expression.
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties)
 
