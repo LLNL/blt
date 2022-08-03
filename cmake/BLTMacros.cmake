@@ -49,6 +49,7 @@ macro(blt_assert_exists)
 
 endmacro(blt_assert_exists)
 
+
 ##------------------------------------------------------------------------------
 ## blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
 ##
@@ -1274,14 +1275,14 @@ endmacro(blt_combine_static_libraries)
 
 
 ##------------------------------------------------------------------------------
-## blt_print_target_properties(TARGET <target> )
+## blt_print_target_properties(TARGET <target> CHILDREN <bool> INCLUDE_REGEX <regular_expression_string>)
 ##
 ## Prints out all properties of the given target.
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties)
 
     set(options)
-    set(singleValuedArgs TARGET)
+    set(singleValuedArgs TARGET CHILDREN INCLUDE_REGEX)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
@@ -1293,7 +1294,12 @@ macro(blt_print_target_properties)
         message(FATAL_ERROR "TARGET is a required parameter for the blt_print_target_properties macro")
     endif()
 
-    ## check if this is a valid cmake target of blt_registered target
+    # set optional argument default values
+    if(NOT DEFINED arg_CHILDREN)
+        set(arg_CHILDREN, FALSE)
+    endif()
+
+    ## check if this is a valid cmake target or blt_registered target
     set(_is_cmake_target FALSE)
     if(TARGET ${arg_TARGET})
         set(_is_cmake_target TRUE)
@@ -1307,62 +1313,77 @@ macro(blt_print_target_properties)
         message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a blt_registered target")
     endif()
 
-    if(NOT _is_cmake_target AND NOT _is_blt_registered_target)
+    if(_is_cmake_target OR _is_blt_registered_target)
+        blt_print_single_target_properties(TARGET ${arg_TARGET})
+    else()
         message (STATUS "[blt_print_target_properties] Invalid argument '${arg_TARGET}'. "
                          "This macro applies only to valid cmake targets or blt_registered targets.")
     endif()
 
+    if(${arg_CHILDREN})
+        # create list of link libraries and interface link libraries from target properties
+        # TODO question: is "OR _is_blt_registered_target" required here
+        #                since it will not have these two properties?
+        set(_child_target_list "")
+        if(_is_cmake_target)
+            # get link libaries if whitelisted
+            get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
+            if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+                get_property(_propval TARGET ${arg_TARGET} PROPERTY LINK_LIBRARIES SET)
+                get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
+                if (_propval)
+                    set(_child_target_list "${_child_targets}${_propval}")
+                endif()
+            endif()
+            
+            # add semicolon to list
+            if (NOT "${_child_target_list}" STREQUAL "")
+                set(_child_target_list "${_child_targets};")
+            endif()
 
-    if(_is_cmake_target)
-        ## Solution adapted from https://stackoverflow.com/q/32183975
-        ## Create list of cmake properties
-        set(_property_list)
-        execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE _property_list)
-        string(REGEX REPLACE ";" "\\\\;" _property_list "${_property_list}")
-        string(REGEX REPLACE "\n" ";" _property_list "${_property_list}")
-        blt_filter_list(TO _property_list REGEX "^LOCATION$|^LOCATION_|_LOCATION$" OPERATION "exclude")
-        blt_list_remove_duplicates(TO _property_list)   
-
-        ## For interface targets, filter against whitelist of valid properties
-        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
-        if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
-            blt_filter_list(TO _property_list
-                            REGEX "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$"
-                            OPERATION "include")
+            # get interface link libraries
+            get_property(_propval TARGET ${arg_TARGET} PROPERTY INTERFACE_LINK_LIBRARIES SET)
+            get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
+            if (_propval)
+                set(_child_target_list "${_child_targets}${_propval}")
+            endif()
+            unset(_property_list)
+            unset(_propval)
         endif()
 
-        ## Print all such properties that have been SET
-        foreach (prop ${_property_list})
-            string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
-            get_property(_propval TARGET ${arg_TARGET} PROPERTY ${prop} SET)
-            if (_propval)
-                get_target_property(_propval ${arg_TARGET} ${prop})
-                message (STATUS "[${arg_TARGET} property] ${prop}: ${_propval}")
+
+        blt_list_remove_duplicates(TO _child_target_list)
+        if(DEFINED arg_INCLUDE_REGEX)
+            blt_filter_list(TO _child_target_list REGEX "${arg_INCLUDE_REGEX}" OPERATION "include")
+        endif()
+        foreach(_child_target ${_child_target_list})
+            ## check if _child_target is a valid cmake target or blt_registered target
+            set(_is_cmake_target FALSE)
+            if(TARGET ${_child_target})
+                set(_is_cmake_target TRUE)
+            endif()
+
+            set(_is_blt_registered_target FALSE)
+            string(TOUPPER ${_child_target} _target_upper)
+            if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+                set(_is_blt_registered_target TRUE)
+            endif()
+
+            # recursively print _child_target properties
+            if (_is_cmake_target OR _is_blt_registered_target)
+                message(STATUS "[${arg_TARGET}'s child, ${_child_target}, properties START]")
+                blt_print_target_properties(TARGET ${_child_target} CHILDREN ${arg_CHILDREN} REGEX ${arg_INCLUDE_REGEX})
+                message(STATUS "[${arg_TARGET}'s child, ${_child_target}, properties END]")
             endif()
         endforeach()
-        unset(_property_list)
-        unset(_propval)
     endif()
 
-    ## Additionally, output variables generated via blt_register_target of the form "_BLT_<target>_*"
-    if(_is_blt_registered_target)
-        set(_target_prefix "_BLT_${_target_upper}_")
-
-        ## Filter to get variables of the form _BLT_<target>_ and print
-        get_cmake_property(_variable_names VARIABLES)
-        foreach (prop ${_variable_names})
-            if(prop MATCHES "^${_target_prefix}")
-                message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
-            endif()
-        endforeach()
-        unset(_target_prefix)
-        unset(_variable_names)
-    endif()
-
+    unset(_child_target_list)
     unset(_target_upper)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties)
+
 
 ##------------------------------------------------------------------------------
 ## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)

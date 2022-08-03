@@ -842,3 +842,80 @@ macro(blt_clean_target)
     endforeach()
 
 endmacro(blt_clean_target)
+
+
+##------------------------------------------------------------------------------
+## blt_print_target_properties(TARGET <target> )
+##
+## Prints out all properties of the one given target.
+##------------------------------------------------------------------------------
+macro(blt_print_single_target_properties)
+
+    set(options)
+    set(singleValuedArgs TARGET)
+    set(multiValuedArgs)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    ## check if this is a valid cmake target or blt_registered target
+    set(_is_cmake_target FALSE)
+    if(TARGET ${arg_TARGET})
+        set(_is_cmake_target TRUE)
+    endif()
+
+    set(_is_blt_registered_target FALSE)
+    string(TOUPPER ${arg_TARGET} _target_upper)
+    if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+        set(_is_blt_registered_target TRUE)
+    endif()
+
+
+    if(_is_cmake_target)
+        ## Solution adapted from https://stackoverflow.com/q/32183975
+        ## Create list of cmake properties
+        set(_property_list)
+        execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE _property_list)
+        string(REGEX REPLACE ";" "\\\\;" _property_list "${_property_list}")
+        string(REGEX REPLACE "\n" ";" _property_list "${_property_list}")
+        blt_filter_list(TO _property_list REGEX "^LOCATION$|^LOCATION_|_LOCATION$" OPERATION "exclude")
+        blt_list_remove_duplicates(TO _property_list)   
+
+        ## For interface targets, filter against whitelist of valid properties
+        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
+        if("${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+            blt_filter_list(TO _property_list
+                            REGEX "^(INTERFACE_|IMPORTED_LIBNAME_|COMPATIBLE_INTERFACE_|MAP_IMPORTED_CONFIG_)|^(NAME|TYPE|EXPORT_NAME)$"
+                            OPERATION "include")
+        endif()
+
+        ## Print all such properties that have been SET
+        foreach (prop ${_property_list})
+            string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
+            get_property(_propval TARGET ${arg_TARGET} PROPERTY ${prop} SET)
+            if (_propval)
+                get_target_property(_propval ${arg_TARGET} ${prop})
+                message (STATUS "[${arg_TARGET} property] ${prop}: ${_propval}")
+            endif()
+        endforeach()
+        unset(_property_list)
+        unset(_propval)
+    endif()
+
+    ## Additionally, output variables generated via blt_register_target of the form "_BLT_<target>_*"
+    if(_is_blt_registered_target)
+        set(_target_prefix "_BLT_${_target_upper}_")
+
+        ## Filter to get variables of the form _BLT_<target>_ and print
+        get_cmake_property(_variable_names VARIABLES)
+        foreach (prop ${_variable_names})
+            if(prop MATCHES "^${_target_prefix}")
+                message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
+            endif()
+        endforeach()
+        unset(_target_prefix)
+        unset(_variable_names)
+    endif()
+endmacro(blt_print_single_target_properties)
+
