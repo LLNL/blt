@@ -190,7 +190,7 @@ macro(blt_find_executable)
     string(TOUPPER ${arg_NAME} _ucname)
 
     message(STATUS "${arg_NAME} support is ${ENABLE_${_ucname}}")
-    if (${ENABLE_${_ucname}})
+    if (ENABLE_${_ucname})
         set(_exes ${arg_NAME})
         if (DEFINED arg_EXECUTABLES)
             set(_exes ${arg_EXECUTABLES})
