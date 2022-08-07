@@ -35,4 +35,4 @@ set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 
 set(MPIEXEC              "${MPI_HOME}/bin/mpirun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "")
-setBLT_MPI_COMMAND_APPEND "-oversubscribe" CACHE STRING "")
+set(BLT_MPI_COMMAND_APPEND "--oversubscribe" CACHE STRING "")
