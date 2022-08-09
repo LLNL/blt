@@ -1275,18 +1275,23 @@ endmacro(blt_combine_static_libraries)
 
 
 ##------------------------------------------------------------------------------
-## blt_print_target_properties(TARGET <target> CHILDREN <bool> INCLUDE_REGEX <regular_expression_string>)
+## blt_print_target_properties(TARGET <target> CHILDREN <bool> PROP_REGEX <regular_expression_string>)
 ##
-## Prints out all properties of the given target.
+## Prints out properties of the given target.
 ##
 ## Has the options to print target's link libraries and interface link libraries
-## with the CHILDREN argument, as well as only a specific child using a regular
+## with the CHILDREN argument, as well as specific properties using a regular
 ## expression.
+## 
+## Defaults:
+## CHILDREN = false (non recursive)
+## PROP_REGEX = .* (print every property)
+## 
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties)
 
     set(options)
-    set(singleValuedArgs TARGET CHILDREN INCLUDE_REGEX)
+    set(singleValuedArgs TARGET CHILDREN PROP_REGEX)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
@@ -1298,9 +1303,14 @@ macro(blt_print_target_properties)
         message(FATAL_ERROR "TARGET is a required parameter for the blt_print_target_properties macro")
     endif()
 
-    # set optional argument default values
+    # set default value
     if(NOT DEFINED arg_CHILDREN)
-        set(arg_CHILDREN, FALSE)
+        set(arg_CHILDREN FALSE)
+    endif()
+
+    # set default value
+    if(NOT DEFINED arg_PROP_REGEX)
+        set(arg_PROP_REGEX ".*")
     endif()
 
     ## check if this is a valid cmake target or blt_registered target
@@ -1318,7 +1328,8 @@ macro(blt_print_target_properties)
     endif()
 
     if(_is_cmake_target OR _is_blt_registered_target)
-        blt_print_single_target_properties(TARGET ${arg_TARGET})
+        # non-recursive run of original target
+        blt_print_single_target_properties(TARGET ${arg_TARGET} PROP_REGEX ${arg_PROP_REGEX})
     else()
         message (STATUS "[blt_print_target_properties] Invalid argument '${arg_TARGET}'. "
                          "This macro applies only to valid cmake targets or blt_registered targets.")
@@ -1326,8 +1337,6 @@ macro(blt_print_target_properties)
 
     if(${arg_CHILDREN})
         # create list of link libraries and interface link libraries from target properties
-        # TODO question: is "OR _is_blt_registered_target" required here
-        #                since it will not have these two properties?
         set(_child_target_list "")
         if(_is_cmake_target)
             # get link libaries if whitelisted
@@ -1355,11 +1364,7 @@ macro(blt_print_target_properties)
             unset(_propval)
         endif()
 
-
         blt_list_remove_duplicates(TO _child_target_list)
-        if(DEFINED arg_INCLUDE_REGEX)
-            blt_filter_list(TO _child_target_list REGEX "${arg_INCLUDE_REGEX}" OPERATION "include")
-        endif()
         foreach(_child_target ${_child_target_list})
             ## check if _child_target is a valid cmake target or blt_registered target
             set(_is_cmake_target FALSE)
@@ -1376,7 +1381,7 @@ macro(blt_print_target_properties)
             # recursively print _child_target properties
             if (_is_cmake_target OR _is_blt_registered_target)
                 message(STATUS "[${arg_TARGET}'s child, ${_child_target}, properties START]")
-                blt_print_target_properties(TARGET ${_child_target} CHILDREN ${arg_CHILDREN} REGEX ${arg_INCLUDE_REGEX})
+                blt_print_target_properties(TARGET ${_child_target} CHILDREN ${arg_CHILDREN} PROP_REGEX ${arg_PROP_REGEX})
                 message(STATUS "[${arg_TARGET}'s child, ${_child_target}, properties END]")
             endif()
         endforeach()

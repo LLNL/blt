@@ -845,14 +845,14 @@ endmacro(blt_clean_target)
 
 
 ##------------------------------------------------------------------------------
-## blt_print_target_properties(TARGET <target> )
+## blt_print_target_properties(TARGET <target> PROP_REGEX <regular expression> TLIST <string>)
 ##
 ## Prints out all properties of one given target.
 ##------------------------------------------------------------------------------
 macro(blt_print_single_target_properties)
 
     set(options)
-    set(singleValuedArgs TARGET)
+    set(singleValuedArgs TARGET PROP_REGEX TLIST)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
@@ -894,7 +894,7 @@ macro(blt_print_single_target_properties)
         foreach (prop ${_property_list})
             string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
             get_property(_propval TARGET ${arg_TARGET} PROPERTY ${prop} SET)
-            if (_propval)
+            if ("${_propval}" AND "${prop}" MATCHES "${arg_PROP_REGEX}")
                 get_target_property(_propval ${arg_TARGET} ${prop})
                 message (STATUS "[${arg_TARGET} property] ${prop}: ${_propval}")
             endif()
@@ -910,7 +910,7 @@ macro(blt_print_single_target_properties)
         ## Filter to get variables of the form _BLT_<target>_ and print
         get_cmake_property(_variable_names VARIABLES)
         foreach (prop ${_variable_names})
-            if(prop MATCHES "^${_target_prefix}")
+            if("${prop}" MATCHES "^${_target_prefix}" AND "${prop}" MATCHES "${arg_PROP_REGEX}")
                 message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
             endif()
         endforeach()
