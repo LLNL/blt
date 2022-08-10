@@ -933,7 +933,7 @@ endmacro(blt_print_target_properties_private)
 ## recursively in TLIST.
 ##
 ## NOTE: TLIST should be an empty string at the start. TLIST must be called tlist
-##       And this function does NOT remove duplicates.
+##       and this function does NOT remove duplicates.
 ##
 ##------------------------------------------------------------------------------
 macro(blt_find_all_targets_recursive)
