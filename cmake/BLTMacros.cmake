@@ -49,7 +49,6 @@ macro(blt_assert_exists)
 
 endmacro(blt_assert_exists)
 
-
 ##------------------------------------------------------------------------------
 ## blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
 ##
