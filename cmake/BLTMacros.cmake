@@ -1294,11 +1294,11 @@ macro(blt_print_target_properties)
     set(singleValuedArgs TARGET CHILDREN PROP_REGEX)
     set(multiValuedArgs)
 
-    ## parse the arguments to the macro
+    # parse the arguments to the macro
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
 
-    ## check for required arguments
+    # check for required arguments
     if(NOT DEFINED arg_TARGET)
         message(FATAL_ERROR "TARGET is a required parameter for the blt_print_target_properties macro")
     endif()
@@ -1313,81 +1313,48 @@ macro(blt_print_target_properties)
         set(arg_PROP_REGEX ".*")
     endif()
 
-    ## check if this is a valid cmake target or blt_registered target
+    # check if this is a valid cmake target or blt_registered target
     set(_is_cmake_target FALSE)
     if(TARGET ${arg_TARGET})
         set(_is_cmake_target TRUE)
-        message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a cmake target")
     endif()
 
     set(_is_blt_registered_target FALSE)
     string(TOUPPER ${arg_TARGET} _target_upper)
     if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         set(_is_blt_registered_target TRUE)
-        message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a blt_registered target")
     endif()
 
-    if(_is_cmake_target OR _is_blt_registered_target)
-        # non-recursive run of original target
-        blt_print_single_target_properties(TARGET ${arg_TARGET} PROP_REGEX ${arg_PROP_REGEX})
-    else()
+    if(NOT _is_cmake_target AND NOT _is_blt_registered_target)
         message (STATUS "[blt_print_target_properties] Invalid argument '${arg_TARGET}'. "
                          "This macro applies only to valid cmake targets or blt_registered targets.")
-    endif()
+    else()
+        set(_temp_target "${arg_TARGET}")
+        message (STATUS "==========${_temp_target}==========")
 
-    if(${arg_CHILDREN})
-        # create list of link libraries and interface link libraries from target properties
-        set(_child_target_list "")
-        if(_is_cmake_target)
-            # get link libaries if whitelisted
-            get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
-            if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
-                get_property(_propval TARGET ${arg_TARGET} PROPERTY LINK_LIBRARIES SET)
-                get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
-                if (_propval)
-                    set(_child_target_list "${_child_targets}${_propval}")
-                endif()
-            endif()
-            
-            # add semicolon to list
-            if (NOT "${_child_target_list}" STREQUAL "")
-                set(_child_target_list "${_child_targets};")
-            endif()
+        # print properties
+        blt_print_target_properties_private(TARGET ${arg_TARGET}
+                                            PROP_REGEX ${arg_PROP_REGEX})
 
-            # get interface link libraries
-            get_property(_propval TARGET ${arg_TARGET} PROPERTY INTERFACE_LINK_LIBRARIES SET)
-            get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
-            if (_propval)
-                set(_child_target_list "${_child_targets}${_propval}")
-            endif()
-            unset(_property_list)
-            unset(_propval)
+        if(${arg_CHILDREN})
+            # find all targets from dependency tree
+            set(tlist "")
+            blt_find_all_targets_recursive(TARGET ${arg_TARGET} TLIST tlist)
+            blt_list_remove_duplicates(TO tlist)
+
+            # print all targets from dependency tree
+            foreach(t ${tlist})
+                message (STATUS "---${_temp_target}->${t}---")
+                blt_print_target_properties_private(TARGET ${t}
+                                                    PROP_REGEX ${arg_PROP_REGEX})
+                message (STATUS "---${_temp_target}->${t}---")
+            endforeach()
+            unset(tlist)
         endif()
 
-        blt_list_remove_duplicates(TO _child_target_list)
-        foreach(_child_target ${_child_target_list})
-            ## check if _child_target is a valid cmake target or blt_registered target
-            set(_is_cmake_target FALSE)
-            if(TARGET ${_child_target})
-                set(_is_cmake_target TRUE)
-            endif()
-
-            set(_is_blt_registered_target FALSE)
-            string(TOUPPER ${_child_target} _target_upper)
-            if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
-                set(_is_blt_registered_target TRUE)
-            endif()
-
-            # recursively print _child_target properties
-            if (_is_cmake_target OR _is_blt_registered_target)
-                message(STATUS "[${arg_TARGET}'s child, ${_child_target}, properties START]")
-                blt_print_target_properties(TARGET ${_child_target} CHILDREN ${arg_CHILDREN} PROP_REGEX ${arg_PROP_REGEX})
-                message(STATUS "[${arg_TARGET}'s child, ${_child_target}, properties END]")
-            endif()
-        endforeach()
+        message (STATUS "==========${_temp_target}==========\n")
     endif()
 
-    unset(_child_target_list)
     unset(_target_upper)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)

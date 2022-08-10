@@ -845,14 +845,15 @@ endmacro(blt_clean_target)
 
 
 ##------------------------------------------------------------------------------
-## blt_print_target_properties(TARGET <target> PROP_REGEX <regular expression> TLIST <string>)
+## blt_print_target_properties_private(TARGET <target>
+##                                     PROP_REGEX <regular expression>)
 ##
-## Prints out all properties of one given target.
+## Prints target properties of one target
 ##------------------------------------------------------------------------------
-macro(blt_print_single_target_properties)
+macro(blt_print_target_properties_private)
 
     set(options)
-    set(singleValuedArgs TARGET PROP_REGEX TLIST)
+    set(singleValuedArgs TARGET PROP_REGEX)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
@@ -863,12 +864,14 @@ macro(blt_print_single_target_properties)
     set(_is_cmake_target FALSE)
     if(TARGET ${arg_TARGET})
         set(_is_cmake_target TRUE)
+        message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a cmake target")
     endif()
 
     set(_is_blt_registered_target FALSE)
     string(TOUPPER ${arg_TARGET} _target_upper)
     if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         set(_is_blt_registered_target TRUE)
+        message (STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a blt_registered target")
     endif()
 
 
@@ -917,5 +920,67 @@ macro(blt_print_single_target_properties)
         unset(_target_prefix)
         unset(_variable_names)
     endif()
-endmacro(blt_print_single_target_properties)
 
+    unset(_target_upper)
+    unset(_is_blt_registered_target)
+    unset(_is_cmake_target)
+endmacro(blt_print_target_properties_private)
+
+##------------------------------------------------------------------------------
+## blt_find_all_targets_recursive(TARGET <target> TLIST tlist)
+##
+## Store all target's dependancies (link libraries and interface link libraries)
+## recursively in TLIST.
+##
+## NOTE: TLIST should be an empty string at the start. TLIST must be called tlist
+##       And this function does NOT remove duplicates.
+##
+##------------------------------------------------------------------------------
+macro(blt_find_all_targets_recursive)
+
+    set(options)
+    set(singleValuedArgs TARGET TLIST)
+    set(multiValuedArgs)
+
+    # parse the arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    # check for required arguments
+    if(NOT DEFINED arg_TARGET)
+        message(FATAL_ERROR "TARGET is a required parameter for the blt_find_all_targets_recursive macro")
+    endif()
+    if(NOT DEFINED tlist)
+        message(FATAL_ERROR "TLIST parameter must be named tlist for the blt_find_all_targets_recursive macro")
+    endif()
+
+    # check if this is a valid cmake target
+    if(TARGET ${arg_TARGET})
+        # get link libaries if whitelisted
+        set(_property_list "")
+        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
+        if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+            get_property(_propval TARGET ${arg_TARGET} PROPERTY LINK_LIBRARIES SET)
+            get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
+            if (_propval)
+                list(APPEND _property_list ${_propval})
+            endif()
+        endif()
+
+        # get interface link libraries
+        get_property(_propval TARGET ${arg_TARGET} PROPERTY INTERFACE_LINK_LIBRARIES SET)
+        get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
+        if (_propval)
+            list(APPEND _property_list ${_propval})
+        endif()
+    
+        # recursive call
+        foreach(t ${_property_list})
+            list(APPEND tlist ${t})
+            blt_find_all_targets_recursive(TARGET ${t} TLIST tlist)
+        endforeach()
+
+        unset(_property_list)
+        unset(_propval)
+    endif()
+endmacro(blt_find_all_targets_recursive)
