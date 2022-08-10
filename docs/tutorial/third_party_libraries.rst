@@ -102,7 +102,7 @@ Then ``lua`` is available to be used in the ``DEPENDS_ON`` list in the following
     option to :ref:`blt_import_library` can also be used to manage visibility.
 
 
-Cmake's Find Modules
+CMake's Find Modules
 ~~~~~~~~~~~~~~~~~~~~
 
 This time we will do exactly the same thing but using the new CMake provided ``FindLua.cmake`` module.
