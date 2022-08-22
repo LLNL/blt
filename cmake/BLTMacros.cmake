@@ -1274,7 +1274,9 @@ endmacro(blt_combine_static_libraries)
 
 
 ##------------------------------------------------------------------------------
-## blt_print_target_properties(TARGET <target> CHILDREN <bool> PROP_REGEX <regular_expression_string>)
+## blt_print_target_properties(TARGET     <target name>
+##                             CHILDREN   <TRUE|FALSE>
+##                             PROP_REGEX <regular_expression_string>)
 ##
 ## Prints out properties of the given target.
 ##
