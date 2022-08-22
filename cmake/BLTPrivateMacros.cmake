@@ -938,9 +938,6 @@ endmacro(blt_print_target_properties_private)
 ## Store all target's dependancies (link libraries and interface link libraries)
 ## recursively in TLIST.
 ##
-## NOTE: TLIST should be an empty string at the start. TLIST must be called tlist
-##       and this function does NOT remove duplicates.
-##
 ##------------------------------------------------------------------------------
 macro(blt_find_all_targets_recursive)
 
@@ -956,8 +953,9 @@ macro(blt_find_all_targets_recursive)
     if(NOT DEFINED arg_TARGET)
         message(FATAL_ERROR "TARGET is a required parameter for the blt_find_all_targets_recursive macro")
     endif()
-    if(NOT DEFINED tlist)
-        message(FATAL_ERROR "TLIST parameter must be named tlist for the blt_find_all_targets_recursive macro")
+
+    if(NOT DEFINED ${arg_TLIST})
+        message(FATAL_ERROR "TLIST is a required parameter for the blt_find_all_targets_recursive macro")
     endif()
 
     # check if this is a valid cmake target
@@ -982,8 +980,8 @@ macro(blt_find_all_targets_recursive)
     
         # recursive call
         foreach(t ${_property_list})
-            list(APPEND tlist ${t})
-            blt_find_all_targets_recursive(TARGET ${t} TLIST tlist)
+            list(APPEND ${arg_TLIST} ${t})
+            blt_find_all_targets_recursive(TARGET ${t} TLIST ${arg_TLIST})
         endforeach()
 
         unset(_property_list)
