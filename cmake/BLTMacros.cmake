@@ -1286,7 +1286,7 @@ endmacro(blt_combine_static_libraries)
 ## 
 ## Defaults:
 ## CHILDREN = false (non recursive)
-## PROP_REGEX = .* (print every property)
+## PROP_REGEX = undefined (print every property)
 ## 
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties)
@@ -1309,11 +1309,6 @@ macro(blt_print_target_properties)
         set(arg_CHILDREN FALSE)
     endif()
 
-    # set default value
-    if(NOT DEFINED arg_PROP_REGEX)
-        set(arg_PROP_REGEX ".*")
-    endif()
-
     # check if this is a valid cmake target or blt_registered target
     set(_is_cmake_target FALSE)
     if(TARGET ${arg_TARGET})
@@ -1331,7 +1326,7 @@ macro(blt_print_target_properties)
                          "This macro applies only to valid cmake targets or blt_registered targets.")
     else()
         set(_temp_target "${arg_TARGET}")
-        message (STATUS "==========${_temp_target}==========")
+        message (STATUS "==========${_temp_target} START==========")
 
         # print properties
         blt_print_target_properties_private(TARGET ${arg_TARGET}
@@ -1345,15 +1340,15 @@ macro(blt_print_target_properties)
 
             # print all targets from dependency tree
             foreach(t ${tlist})
-                message (STATUS "---${_temp_target}->${t}---")
+                message (STATUS "---${_temp_target}->${t} START---")
                 blt_print_target_properties_private(TARGET ${t}
                                                     PROP_REGEX ${arg_PROP_REGEX})
-                message (STATUS "---${_temp_target}->${t}---")
+                message (STATUS "---${_temp_target}->${t} END---")
             endforeach()
             unset(tlist)
         endif()
 
-        message (STATUS "==========${_temp_target}==========\n")
+        message (STATUS "==========${_temp_target} END==========\n")
     endif()
 
     unset(_target_upper)
