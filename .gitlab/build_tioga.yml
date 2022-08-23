@@ -15,7 +15,6 @@
   stage: build
   variables:
     ALLOC_COMMAND: "srun -p pdebug -t 25 -N 1 "
-    EXTRA_OPTIONS: "--test-serial"
   extends: [.src_build_script, .on_tioga, .src_workflow]
   needs: []
 
