@@ -155,12 +155,20 @@ blt_print_target_properties
 
 .. code-block:: cmake
 
-    blt_print_target_properties(TARGET <target>)
+    blt_print_target_properties(TARGET     <target name>
+                                CHILDREN   <TRUE|FALSE>
+                                PROP_REGEX <regular_expression_string>)
 
 Prints out all properties of the given target.
 
 TARGET
   Name of CMake target
+
+CHILDREN
+  Whether or not to print the properties of the target's children (false by default)
+
+PROP_REGEX
+  Limit the properties to print (all by default)
 
 The given target must be added via ``add_executable()`` or ``add_library()`` or
 with the corresponding :ref:`blt_add_executable`, :ref:`blt_add_library`, 

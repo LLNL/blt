@@ -12,6 +12,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Added
 - Added 'blt_convert_to_system_includes' macro to convert existing interface includes to system interface includes.
 
+### Changed
+- Added extra options to 'blt_print_target_properties' macro to print properties of
+target's children as well as limit the properties printed with a regular expression.
+
 ## [Version 0.5.1] - Release date 2022-04-22
 
 ### Added
