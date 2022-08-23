@@ -1,0 +1,46 @@
+####
+# This is the shared configuration of jobs for tioga
+.on_tioga:
+  tags:
+    - shell
+    - tioga
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /_qnone/ || $ON_TIOGA == "OFF"' #run except if ...
+      when: never
+    - when: on_success
+
+####
+# Template
+.src_build_on_tioga:
+  stage: build
+  variables:
+    ALLOC_COMMAND: "srun -p pdebug -t 25 -N 1 "
+    EXTRA_OPTIONS: "--test-serial"
+  extends: [.src_build_script, .on_tioga, .src_workflow]
+  needs: []
+
+.full_build_on_tioga:
+  stage: build
+  variables:
+    ALLOC_COMMAND: "srun -p pbatch -t 60 -N 1 "
+  extends: [.full_build_script, .on_tioga, .full_workflow]
+  needs: []
+
+####
+# PR Build jobs
+tioga-clang_14_0_0_hip-src:
+  variables:
+    COMPILER: "clang@14.0.0_hip"
+    HOST_CONFIG: "tioga-toss_4_x86_64_ib_cray-${COMPILER}.cmake"
+  extends: .src_build_on_tioga
+  allow_failure: true
+
+####
+# Full Build jobs
+tioga-clang_14_0_0_hip-full:
+  variables:
+    COMPILER: "clang@14.0.0_hip"
+    SPEC: "%${COMPILER}~openmp+rocm+mfem+c2c"
+    EXTRASPEC: "amdgpu_target=gfx90a ^raja~openmp+rocm ^umpire~openmp+rocm"
+  extends: .full_build_on_tioga
+  allow_failure: true
