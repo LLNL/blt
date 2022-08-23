@@ -10,36 +10,42 @@
     - when: on_success
 
 ####
+# In pre-build phase, allocate a node for builds
+tioga_allocate:
+  variables:
+    GIT_STRATEGY: none
+  extends: [.on_tioga]
+  stage: allocate
+  script:
+    - salloc -p pbatch -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
+  needs: []
+
+####
+# In post-build phase, deallocate resources
+# Note : make sure this is run even on build phase failure
+tioga_release:
+  variables:
+    GIT_STRATEGY: none
+  extends: [.on_tioga]
+  stage: release
+  script:
+    - export JOBID=$(squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A)
+    - if [[ -n "${JOBID}" ]]; then scancel ${JOBID}; fi
+
+####
 # Template
 .src_build_on_tioga:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pdebug -t 25 -N 1 "
-  extends: [.src_build_script, .on_tioga, .src_workflow]
-  needs: []
-
-.full_build_on_tioga:
-  stage: build
-  variables:
-    ALLOC_COMMAND: "srun -p pbatch -t 60 -N 1 "
-  extends: [.full_build_script, .on_tioga, .full_workflow]
-  needs: []
+    ALLOC_COMMAND: "srun -p pbatch -t 10 -N 1 ${ASSIGN_ID} --interactive"
+  extends: [.build_script, .on_tioga]
+  needs: [tioga_allocate]
 
 ####
-# PR Build jobs
-tioga-clang_14_0_0_hip-src:
+# Build jobs
+tioga-clang_14_0_0_hip:
   variables:
     COMPILER: "clang@14.0.0_hip"
     HOST_CONFIG: "tioga-toss_4_x86_64_ib_cray-${COMPILER}.cmake"
-  extends: .src_build_on_tioga
-  allow_failure: true
-
-####
-# Full Build jobs
-tioga-clang_14_0_0_hip-full:
-  variables:
-    COMPILER: "clang@14.0.0_hip"
-    SPEC: "%${COMPILER}~openmp+rocm+mfem+c2c"
-    EXTRASPEC: "amdgpu_target=gfx90a ^raja~openmp+rocm ^umpire~openmp+rocm"
-  extends: .full_build_on_tioga
+  extends: .build_on_tioga
   allow_failure: true
