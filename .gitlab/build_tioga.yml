@@ -47,4 +47,5 @@ tioga-clang_14_0_0_hip:
   variables:
     COMPILER: "clang@14.0.0_hip"
     HOST_CONFIG: "tioga-toss_4_x86_64_ib_cray-${COMPILER}.cmake"
+  extends: .src_build_on_tioga
   allow_failure: true
