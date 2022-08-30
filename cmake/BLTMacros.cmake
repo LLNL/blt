@@ -678,8 +678,6 @@ macro(blt_add_library)
         add_library( ${arg_NAME} INTERFACE )
         target_sources( ${arg_NAME} INTERFACE
                         $<BUILD_INTERFACE:${_build_headers}>)
-
-        blt_print_target_properties(TARGET ${arg_NAME})
     endif()
 
     # Clear value of _have_fortran from previous calls
@@ -741,9 +739,6 @@ macro(blt_add_library)
         # the white-list of properties that are allowed
         blt_clean_target(TARGET ${arg_NAME})
     endif()
-    
-    blt_print_target_properties(TARGET ${arg_NAME})
-
 endmacro(blt_add_library)
 
 

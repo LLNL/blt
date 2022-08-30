@@ -538,7 +538,7 @@ macro(blt_setup_hip_target)
     endif()
 
     if (${_depends_on_hip})
-        # if hip is in depends_on, flag each file's language as HIP 
+        # if hip is in depends_on, flag each file's language as HIP
         # instead of leaving it up to CMake to decide
         # Note: we don't do this when depending on just 'hip_runtime'
         set(_hip_sources)
