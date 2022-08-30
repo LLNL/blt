@@ -187,7 +187,9 @@ if (NOT BLT_LOADED)
     # File extension lists used to filter sources based on languages for code checks
     # and filtering Fortran sources out of cuda/hip source lists
     # Note: this filtering is case-insensitive
-    set(BLT_C_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".cc" ".hh" ".inl" ".cu" ".cuh"
+    set(BLT_C_FILE_EXTS ".c" ".h"
+               CACHE STRING "List of known file extensions used for C/CXX sources")
+    set(BLT_CXX_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx"  ".cc" ".hh" ".inl" ".cu" ".cuh"
                CACHE STRING "List of known file extensions used for C/CXX sources")
     set(BLT_Fortran_FILE_EXTS ".f" ".f90"
                CACHE STRING "List of known file extensions used for Fortran sources")

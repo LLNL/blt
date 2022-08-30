@@ -654,6 +654,13 @@ macro(blt_add_library)
                 DEPENDS_ON   ${arg_DEPENDS_ON}
                 LIBRARY_TYPE ${_lib_type})
         endif()
+        if (ENABLE_HIP)
+           blt_setup_hip_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON}
+                LIBRARY_TYPE ${_lib_type})
+        endif()
     else()
         #
         #  Header-only library support
@@ -671,6 +678,8 @@ macro(blt_add_library)
         add_library( ${arg_NAME} INTERFACE )
         target_sources( ${arg_NAME} INTERFACE
                         $<BUILD_INTERFACE:${_build_headers}>)
+
+        blt_print_target_properties(TARGET ${arg_NAME})
     endif()
 
     # Clear value of _have_fortran from previous calls
@@ -732,6 +741,8 @@ macro(blt_add_library)
         # the white-list of properties that are allowed
         blt_clean_target(TARGET ${arg_NAME})
     endif()
+    
+    blt_print_target_properties(TARGET ${arg_NAME})
 
 endmacro(blt_add_library)
 
@@ -772,6 +783,12 @@ macro(blt_add_executable)
 
     if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_target(
+            NAME         ${arg_NAME}
+            SOURCES      ${arg_SOURCES}
+            DEPENDS_ON   ${arg_DEPENDS_ON})
+    endif()
+    if (ENABLE_HIP)
+       blt_setup_hip_target(
             NAME         ${arg_NAME}
             SOURCES      ${arg_SOURCES}
             DEPENDS_ON   ${arg_DEPENDS_ON})

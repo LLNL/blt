@@ -22,6 +22,7 @@ if (NOT ROCM_PATH)
         /opt/rocm)
 endif()
 
+
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
 # found.
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
@@ -31,6 +32,9 @@ find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
 message(STATUS "ROCM path:        ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
 
+if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0" )
+   enable_language(HIP)
+endif()
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
 if(DEFINED AMDGPU_TARGETS)
@@ -54,10 +58,33 @@ if(DEFINED AMDGPU_TARGETS)
             list(REMOVE_ITEM _hip_link_libs ${_flag})
         endif()
     endforeach()
+     if (${BLT_HIP_REMOVE_HIP_COMPILE_OPTIONS})
+        message("ATTEMPTING REMOVAL ${_hip_compile_options}")
+#        set(_flag "-mllvm-amdgpu-early-inline-all=true-mllvm-amdgpu-function-calls=false")
+#        set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:CXX>:SHELL:${_flag}>")
+        list(REMOVE_ITEM _hip_compile_options "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-mllvm")
+        list(REMOVE_ITEM _hip_compile_options "-amdgpu-early-inline-all=true")
+        list(REMOVE_ITEM _hip_compile_options "-mllvm")
+        list(REMOVE_ITEM _hip_compile_options "-amdgpu-function-calls=false>")
+        message("AFTER REMOVAL ${_hip_compile_options}")
+        #blt_print_target_properties(TARGET hip-lang::device)
+        get_target_property(_hip_lang_compile_options hip-lang::device INTERFACE_COMPILE_OPTIONS)
+        message("ATTEMPTING REMOVAL ${_hip_lang_compile_options}")
+        set(_flag "-mllvm-amdgpu-early-inline-all=true-mllvm-amdgpu-function-calls=false")
+        set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:HIP>:SHELL:${_flag}>")
+        list(REMOVE_ITEM _hip_lang_compile_options "$<$<COMPILE_LANGUAGE:HIP>:SHELL:-mllvm")
+        list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-early-inline-all=true")
+        list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
+        list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-function-calls=false>")
+        message("AFTER REMOVAL ${_hip_lang_compile_options}")
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_lang_compile_options})
+     endif()
     
     set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_compile_options})
     set_property(TARGET hip::device PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_link_libs})
 
+    blt_print_target_properties(TARGET hip::device)
+#    blt_print_target_properties(TARGET hip-lang::device)
     if(DEFINED CMAKE_HIP_ARCHITECTURES)
         set(AMDGPU_TARGETS "${CMAKE_HIP_ARCHITECTURES}" CACHE STRING "" FORCE)
     endif()
@@ -86,6 +113,13 @@ blt_import_library(NAME          blt_hip_runtime
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
                    GLOBAL ${_blt_hip_is_global})
 
+blt_print_target_properties(TARGET hip::host)
 blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
 
 add_library(blt::hip_runtime ALIAS blt_hip_runtime)
+
+
+blt_print_target_properties(TARGET blt::hip_runtime)
+blt_print_target_properties(TARGET blt::hip)
+
+

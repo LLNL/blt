@@ -491,6 +491,87 @@ macro(blt_setup_target)
 
 endmacro(blt_setup_target)
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_target(NAME <name of target>
+##                       SOURCES <list of sources>
+##                       DEPENDS_ON <list of dependencies>
+##                       LIBRARY_TYPE <STATIC, SHARED, OBJECT, or blank for executables>)
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_target)
+
+    set(options)
+    set(singleValueArgs NAME LIBRARY_TYPE)
+    set(multiValueArgs SOURCES DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_hip_target' macro")
+    endif()
+
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_hip_target' macro")
+    endif()
+
+    # Determine if hip or hip_runtime are in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "blt::hip" _hip_index)
+    set(_depends_on_hip FALSE)
+    if(${_hip_index} GREATER -1)
+        set(_depends_on_hip TRUE)
+    endif()
+    list(FIND arg_DEPENDS_ON "blt::hip_runtime" _hip_runtime_index)
+    set(_depends_on_hip_runtime FALSE)
+    if(${_hip_runtime_index} GREATER -1)
+        set(_depends_on_hip_runtime TRUE)
+    endif()
+    message("DEPENDS ON HIP ${_depends_on_hip} DEPENDS_ON_HIP_RUNTIME ${_depends_on_hip_runtime}\n\t ${arg_DEPENDS_ON}")
+    if (${_depends_on_hip_runtime} OR ${_depends_on_hip})
+        if (HIP_LINK_WITH_HIPCC)
+            set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE HIP)
+            # This will be propagated up to executable targets that depend on this
+            # library, which will need the HIP linker
+            set_target_properties( ${arg_NAME} PROPERTIES INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE HIP)
+        endif()
+    endif()
+
+    if (${_depends_on_hip})
+        # if hip is in depends_on, flag each file's language as HIP 
+        # instead of leaving it up to CMake to decide
+        # Note: we don't do this when depending on just 'hip_runtime'
+        set(_hip_sources)
+        set(_non_hip_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          CXX_LIST       _hip_sources
+                                          C_LIST       _non_hip_sources
+                                          Fortran_LIST _non_hip_sources)
+        message("ALL_SOURCES: ${arg_SOURCES}\n\t HIP SOURCES ${_hip_sources}")
+        set_source_files_properties( ${_hip_sources} PROPERTIES
+                                     LANGUAGE HIP)
+
+#        if (HIP_SEPARABLE_COMPILATION)
+#            set_source_files_properties( ${_hip_sources} PROPERTIES
+#                                         HIP_SEPARABLE_COMPILATION ON)
+#            set_target_properties( ${arg_NAME} PROPERTIES
+#                                   HIP_SEPARABLE_COMPILATION ON)
+#        endif()
+
+        if (DEFINED arg_LIBRARY_TYPE)
+            if (${arg_LIBRARY_TYPE} STREQUAL "static")
+                set_target_properties( ${arg_NAME} PROPERTIES
+                                       CMAKE_HIP_CREATE_STATIC_LIBRARY ON)
+            else()
+                set_target_properties( ${arg_NAME} PROPERTIES
+                                       CMAKE_HIP_CREATE_STATIC_LIBRARY OFF)
+            endif()
+        endif()
+
+    endif()
+#    message(FATAL_ERROR "stopping")
+endmacro(blt_setup_hip_target)
+
 
 ##------------------------------------------------------------------------------
 ## blt_setup_cuda_target(NAME <name of target>
@@ -546,6 +627,7 @@ macro(blt_setup_cuda_target)
         set(_non_cuda_sources)
         blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
                                           C_LIST       _cuda_sources
+                                          CXX_LIST     _cuda_sources
                                           Fortran_LIST _non_cuda_sources)
 
         set_source_files_properties( ${_cuda_sources} PROPERTIES
@@ -622,6 +704,7 @@ endmacro(blt_make_file_ext_regex)
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
+##                                    CXX_LIST <list name>
 ##                                    Fortran_LIST <list name>
 ##                                    Python_LIST <list name>
 ##                                    CMAKE_LIST <list name>)
@@ -637,7 +720,7 @@ endmacro(blt_make_file_ext_regex)
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST Python_LIST CMAKE_LIST)
+    set(singleValueArgs C_LIST CXX_LIST Fortran_LIST Python_LIST CMAKE_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -653,6 +736,9 @@ macro(blt_split_source_list_by_language)
     set(BLT_C_FILE_REGEX)
     blt_make_file_ext_regex(EXTENSIONS   ${BLT_C_FILE_EXTS}
                             OUTPUT_REGEX BLT_C_FILE_REGEX)
+    set(BLT_CXX_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_CXX_FILE_EXTS}
+                            OUTPUT_REGEX BLT_CXX_FILE_REGEX)
     set(BLT_Fortran_FILE_REGEX)
     blt_make_file_ext_regex(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
                             OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
@@ -685,6 +771,10 @@ macro(blt_split_source_list_by_language)
         if("${_lower_file}" MATCHES "${BLT_C_FILE_REGEX}")
             if (DEFINED arg_C_LIST)
                 list(APPEND ${arg_C_LIST} "${_file}")
+            endif()
+        elseif("${_lower_file}" MATCHES "${BLT_CXX_FILE_REGEX}")
+            if (DEFINED arg_CXX_LIST)
+                list(APPEND ${arg_CXX_LIST} "${_file}")
             endif()
         elseif("${_lower_file}" MATCHES "${BLT_Fortran_FILE_REGEX}")
             if (DEFINED arg_Fortran_LIST)
