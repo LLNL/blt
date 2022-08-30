@@ -17,7 +17,7 @@ tioga_allocate:
   extends: [.on_tioga]
   stage: allocate
   script:
-    - salloc -p pbatch -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
+    - flux mini run -t10m -n1 -o mpibind=off --setattr=user.comment=${PROJECT_ALLOC_NAME}
   needs: []
 
 ####
