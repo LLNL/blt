@@ -10,36 +10,12 @@
     - when: on_success
 
 ####
-# In pre-build phase, allocate a node for builds
-tioga_allocate:
-  variables:
-    GIT_STRATEGY: none
-  extends: [.on_tioga]
-  stage: allocate
-  script:
-    - flux mini run -t10m -n1 -o mpibind=off --setattr=user.comment=${PROJECT_ALLOC_NAME}
-  needs: []
-
-####
-# In post-build phase, deallocate resources
-# Note : make sure this is run even on build phase failure
-tioga_release:
-  variables:
-    GIT_STRATEGY: none
-  extends: [.on_tioga]
-  stage: release
-  script:
-    - export JOBID=$(squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A)
-    - if [[ -n "${JOBID}" ]]; then scancel ${JOBID}; fi
-
-####
 # Template
 .src_build_on_tioga:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pbatch -t 10 -N 1 ${ASSIGN_ID} --interactive"
+    ALLOC_COMMAND: "flux mini run -t10m -n1"
   extends: [.build_script, .on_tioga]
-  needs: [tioga_allocate]
 
 ####
 # Build jobs
