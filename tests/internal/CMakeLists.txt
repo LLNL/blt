@@ -260,8 +260,13 @@ endif()
 message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
 foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
-    blt_print_target_properties(TARGET ${_target})
+    blt_print_target_properties(TARGET ${_target} CHILDREN true)
 endforeach()
+
+message(STATUS "Exercising blt_print_target_properties macro on some blt_registered target.")
+blt_register_library(NAME foo)
+blt_register_library(NAME bar DEPENDS_ON foo)
+blt_print_target_properties(TARGET bar CHILDREN true)
 
 add_subdirectory(src/object_library_test)
 

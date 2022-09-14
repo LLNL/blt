@@ -846,14 +846,15 @@ endmacro(blt_clean_target)
 
 ##------------------------------------------------------------------------------
 ## blt_print_target_properties_private(TARGET <target>
-##                                     PROP_REGEX <regular expression>)
+##                                     PROPERTY_NAME_REGEX <regular expression>
+##                                     PROPERTY_VALUE_REGEX <regular expression>)
 ##
 ## Prints target properties of one target
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties_private)
 
     set(options)
-    set(singleValuedArgs TARGET PROP_REGEX)
+    set(singleValuedArgs TARGET PROPERTY_NAME_REGEX PROPERTY_VALUE_REGEX)
     set(multiValuedArgs)
 
     ## parse the arguments to the macro
@@ -897,12 +898,9 @@ macro(blt_print_target_properties_private)
         foreach (prop ${_property_list})
             string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
             get_property(_propval TARGET ${arg_TARGET} PROPERTY ${prop} SET)
-            if ("${_propval}")
-                if ((NOT DEFINED arg_PROP_REGEX) OR
-                    (DEFINED arg_PROP_REGEX AND "${prop}" MATCHES "${arg_PROP_REGEX}"))
-                    get_target_property(_propval ${arg_TARGET} ${prop})
-                    message (STATUS "[${arg_TARGET} property] ${prop}: ${_propval}")
-                endif()
+            if ("${_propval}" AND "${prop}" MATCHES "${arg_PROPERTY_NAME_REGEX}" AND "${_propval}" MATCHES "${arg_PROPERTY_VALUE_REGEX}")
+                get_target_property(_propval ${arg_TARGET} ${prop})
+                message (STATUS "[${arg_TARGET} property] ${prop}: ${_propval}")
             endif()
         endforeach()
         unset(_property_list)
@@ -916,11 +914,8 @@ macro(blt_print_target_properties_private)
         ## Filter to get variables of the form _BLT_<target>_ and print
         get_cmake_property(_variable_names VARIABLES)
         foreach (prop ${_variable_names})
-            if("${prop}" MATCHES "^${_target_prefix}")
-                if ((NOT DEFINED arg_PROP_REGEX) OR
-                    (DEFINED arg_PROP_REGEX AND "${prop}" MATCHES "${arg_PROP_REGEX}"))
-                    message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
-                endif()
+            if("${prop}" MATCHES "^${_target_prefix}" AND "${prop}" MATCHES "${arg_PROPERTY_NAME_REGEX}" AND "${_propval}" MATCHES "${arg_PROPERTY_VALUE_REGEX}")
+                message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
             endif()
         endforeach()
         unset(_target_prefix)
@@ -956,6 +951,18 @@ macro(blt_find_all_targets_recursive)
 
     if(NOT DEFINED ${arg_TLIST})
         message(FATAL_ERROR "TLIST is a required parameter for the blt_find_all_targets_recursive macro")
+    endif()
+
+    # check if this is a blt_registered target
+    string(TOUPPER ${arg_TARGET} _target_upper)
+    if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+        # recursive call
+        set (_depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
+        foreach(t ${_depends_on})
+            list(APPEND ${arg_TLIST} ${t})
+            blt_find_all_targets_recursive(TARGET ${t} TLIST ${arg_TLIST})
+        endforeach()
+        unset(_depends_on)
     endif()
 
     # check if this is a valid cmake target

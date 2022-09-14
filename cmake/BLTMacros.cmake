@@ -1276,23 +1276,25 @@ endmacro(blt_combine_static_libraries)
 ##------------------------------------------------------------------------------
 ## blt_print_target_properties(TARGET     <target name>
 ##                             CHILDREN   <TRUE|FALSE>
-##                             PROP_REGEX <regular_expression_string>)
+##                             PROPERTY_NAME_REGEX <regular_expression_string>
+##                             PROPERTY_VALUE_REGEX <regular_expression_string>)
 ##
 ## Prints out properties of the given target.
 ##
 ## Has the options to print target's link libraries and interface link libraries
-## with the CHILDREN argument, as well as specific properties using a regular
-## expression.
+## with the CHILDREN argument, as well as specific properties using regular
+## expressions.
 ## 
 ## Defaults:
 ## CHILDREN = false (non recursive)
-## PROP_REGEX = undefined (print every property)
+## PROPERTY_NAME_REGEX = .* (print every property name)
+## PROPERTY_VALUE_REGEX = .* (print every property value)
 ## 
 ##------------------------------------------------------------------------------
 macro(blt_print_target_properties)
 
     set(options)
-    set(singleValuedArgs TARGET CHILDREN PROP_REGEX)
+    set(singleValuedArgs TARGET CHILDREN PROPERTY_NAME_REGEX PROPERTY_VALUE_REGEX)
     set(multiValuedArgs)
 
     # parse the arguments to the macro
@@ -1304,9 +1306,17 @@ macro(blt_print_target_properties)
         message(FATAL_ERROR "TARGET is a required parameter for the blt_print_target_properties macro")
     endif()
 
-    # set default value
+    # set default values
     if(NOT DEFINED arg_CHILDREN)
         set(arg_CHILDREN FALSE)
+    endif()
+
+    if(NOT DEFINED arg_PROPERTY_NAME_REGEX)
+        set(arg_PROPERTY_NAME_REGEX ".*")
+    endif()
+
+    if(NOT DEFINED arg_PROPERTY_VALUE_REGEX)
+        set(arg_PROPERTY_VALUE_REGEX ".*")
     endif()
 
     # check if this is a valid cmake target or blt_registered target
@@ -1327,7 +1337,7 @@ macro(blt_print_target_properties)
     else()
         # print properties
         blt_print_target_properties_private(TARGET ${arg_TARGET}
-                                            PROP_REGEX ${arg_PROP_REGEX})
+                                            PROPERTY_NAME_REGEX ${arg_PROPERTY_NAME_REGEX})
 
         if(${arg_CHILDREN})
             # find all targets from dependency tree
@@ -1338,7 +1348,7 @@ macro(blt_print_target_properties)
             # print all targets from dependency tree
             foreach(t ${tlist})
                 blt_print_target_properties_private(TARGET ${t}
-                                                    PROP_REGEX ${arg_PROP_REGEX})
+                                                    PROPERTY_NAME_REGEX ${arg_PROPERTY_NAME_REGEX})
             endforeach()
             unset(tlist)
         endif()
