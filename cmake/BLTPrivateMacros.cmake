@@ -938,13 +938,13 @@ macro(blt_print_target_properties_private)
 endmacro(blt_print_target_properties_private)
 
 ##------------------------------------------------------------------------------
-## blt_find_all_targets_recursive(TARGET <target> TLIST tlist)
+## blt_find_target_dependencies(TARGET <target> TLIST tlist)
 ##
 ## Store all target's dependencies (link libraries and interface link libraries)
 ## recursively in TLIST.
 ##
 ##------------------------------------------------------------------------------
-macro(blt_find_all_targets_recursive)
+macro(blt_find_target_dependencies)
 
     set(options)
     set(singleValuedArgs TARGET TLIST)
@@ -956,11 +956,11 @@ macro(blt_find_all_targets_recursive)
 
     # check for required arguments
     if(NOT DEFINED arg_TARGET)
-        message(FATAL_ERROR "TARGET is a required parameter for the blt_find_all_targets_recursive macro")
+        message(FATAL_ERROR "TARGET is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
     if(NOT DEFINED ${arg_TLIST})
-        message(FATAL_ERROR "TLIST is a required parameter for the blt_find_all_targets_recursive macro")
+        message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
     # check if this is a blt_registered target
@@ -970,7 +970,7 @@ macro(blt_find_all_targets_recursive)
         set (_depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
         foreach(t ${_depends_on})
             list(APPEND ${arg_TLIST} ${t})
-            blt_find_all_targets_recursive(TARGET ${t} TLIST ${arg_TLIST})
+            blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
         endforeach()
         unset(_depends_on)
     endif()
@@ -998,10 +998,10 @@ macro(blt_find_all_targets_recursive)
         # recursive call
         foreach(t ${_property_list})
             list(APPEND ${arg_TLIST} ${t})
-            blt_find_all_targets_recursive(TARGET ${t} TLIST ${arg_TLIST})
+            blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
         endforeach()
 
         unset(_property_list)
         unset(_propval)
     endif()
-endmacro(blt_find_all_targets_recursive)
+endmacro(blt_find_target_dependencies)

@@ -1343,7 +1343,7 @@ macro(blt_print_target_properties)
         if(${arg_CHILDREN})
             # find all targets from dependency tree
             set(tlist "")
-            blt_find_all_targets_recursive(TARGET ${arg_TARGET} TLIST tlist)
+            blt_find_target_dependencies(TARGET ${arg_TARGET} TLIST tlist)
             blt_list_remove_duplicates(TO tlist)
 
             # print all targets from dependency tree
