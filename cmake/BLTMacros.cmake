@@ -1332,12 +1332,13 @@ macro(blt_print_target_properties)
     endif()
 
     if(NOT _is_cmake_target AND NOT _is_blt_registered_target)
-        message (STATUS "[blt_print_target_properties] Invalid argument '${arg_TARGET}'. "
+        message (STATUS "[blt_print_target_properties] Invalid argument '${arg_TARGET}'."
                          "This macro applies only to valid cmake targets or blt_registered targets.")
     else()
         # print properties
         blt_print_target_properties_private(TARGET ${arg_TARGET}
-                                            PROPERTY_NAME_REGEX ${arg_PROPERTY_NAME_REGEX})
+                                            PROPERTY_NAME_REGEX ${arg_PROPERTY_NAME_REGEX}
+                                            PROPERTY_VALUE_REGEX ${arg_PROPERTY_VALUE_REGEX})
 
         if(${arg_CHILDREN})
             # find all targets from dependency tree
@@ -1348,7 +1349,8 @@ macro(blt_print_target_properties)
             # print all targets from dependency tree
             foreach(t ${tlist})
                 blt_print_target_properties_private(TARGET ${t}
-                                                    PROPERTY_NAME_REGEX ${arg_PROPERTY_NAME_REGEX})
+                                                    PROPERTY_NAME_REGEX ${arg_PROPERTY_NAME_REGEX}
+                                                    PROPERTY_VALUE_REGEX ${arg_PROPERTY_VALUE_REGEX})
             endforeach()
             unset(tlist)
         endif()

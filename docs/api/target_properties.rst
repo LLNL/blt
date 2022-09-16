@@ -155,20 +155,24 @@ blt_print_target_properties
 
 .. code-block:: cmake
 
-    blt_print_target_properties(TARGET     <target name>
-                                CHILDREN   <TRUE|FALSE>
-                                PROP_REGEX <regular_expression_string>)
+    blt_print_target_properties(TARGET               <target name>
+                                CHILDREN             <TRUE|FALSE>
+                                PROPERTY_NAME_REGEX  <regular_expression_string>
+                                PROPERTY_VALUE_REGEX <regular_expression_string>)
 
 Prints out all properties of the given target.
 
 TARGET
-  Name of CMake target
+  Name of CMake target (required)
 
 CHILDREN
   Whether or not to print the properties of the target's children (false by default)
 
-PROP_REGEX
-  Limit the properties to print (all by default)
+PROPERTY_NAME_REGEX
+  Limit the properties to print by name (all by default)
+
+PROPERTY_VALUE_REGEX
+  Limit the properties to print by value (all by default)
 
 The given target must be added via ``add_executable()`` or ``add_library()`` or
 with the corresponding :ref:`blt_add_executable`, :ref:`blt_add_library`, 
@@ -177,6 +181,14 @@ with the corresponding :ref:`blt_add_executable`, :ref:`blt_add_library`,
 Output is of the form for each property:
  | [<target> property] <property>: <value>
 
+.. code-block:: cmake
+    :caption: **Example**
+    :linenos:
+
+    blt_print_target_properties(TARGET foo)
+    blt_print_target_properties(TARGET foo CHILDREN TRUE)
+    blt_print_target_properties(TARGET foo CHILDREN TRUE PROPERTY_NAME_REGEX "CXX")
+    blt_print_target_properties(TARGET foo PROPERTY_NAME_REGEX "CXX" PROPERTY_VALUE_REGEX "ON")
 
 .. _blt_set_target_folder:
 

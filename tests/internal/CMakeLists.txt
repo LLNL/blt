@@ -257,13 +257,20 @@ if (ENABLE_CUDA AND ENABLE_MPI AND
                  NUM_MPI_TASKS 4)
 endif()
 
-message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro default options.")
 foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
-    blt_print_target_properties(TARGET ${_target} CHILDREN true)
+    blt_print_target_properties(TARGET ${_target})
 endforeach()
 
-message(STATUS "Exercising blt_print_target_properties macro on some blt_registered target.")
+message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro using regex arguments.")
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+    blt_print_target_properties(TARGET ${_target} CHILDREN true PROPERTY_NAME_REGEX "CXX_STANDARD_REQUIRED" PROPERTY_VALUE_REGEX "ON")
+endforeach()
+
+message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro on dummy blt_registered target.")
 blt_register_library(NAME foo)
 blt_register_library(NAME bar DEPENDS_ON foo)
 blt_print_target_properties(TARGET bar CHILDREN true)
@@ -271,11 +278,11 @@ blt_print_target_properties(TARGET bar CHILDREN true)
 add_subdirectory(src/object_library_test)
 
 if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)
-  add_subdirectory(src/static_analysis)
+    add_subdirectory(src/static_analysis)
 endif()
 
 if(ENABLE_HIP)
-  add_subdirectory(src/hip_defines_test)
+    add_subdirectory(src/hip_defines_test)
 endif()
 
 add_subdirectory(unit)
