@@ -940,7 +940,7 @@ endmacro(blt_print_target_properties_private)
 ##------------------------------------------------------------------------------
 ## blt_find_all_targets_recursive(TARGET <target> TLIST tlist)
 ##
-## Store all target's dependancies (link libraries and interface link libraries)
+## Store all target's dependencies (link libraries and interface link libraries)
 ## recursively in TLIST.
 ##
 ##------------------------------------------------------------------------------
