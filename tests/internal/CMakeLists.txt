@@ -275,6 +275,12 @@ blt_register_library(NAME foo)
 blt_register_library(NAME bar DEPENDS_ON foo)
 blt_print_target_properties(TARGET bar CHILDREN true)
 
+message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro. Testing infinite recursion")
+blt_register_library(NAME foo DEPENDS_ON bar)
+blt_register_library(NAME bar DEPENDS_ON foo)
+blt_print_target_properties(TARGET bar CHILDREN true)
+
 add_subdirectory(src/object_library_test)
 
 if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)

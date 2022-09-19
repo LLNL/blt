@@ -943,11 +943,12 @@ endmacro(blt_print_target_properties_private)
 ## Store all target's dependencies (link libraries and interface link libraries)
 ## recursively in TLIST.
 ##
+##
 ##------------------------------------------------------------------------------
 macro(blt_find_target_dependencies)
 
     set(options)
-    set(singleValuedArgs TARGET TLIST)
+    set(singleValuedArgs TARGET TLIST CUR_TARGET)
     set(multiValuedArgs)
 
     # parse the arguments to the macro
@@ -963,14 +964,15 @@ macro(blt_find_target_dependencies)
         message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
-    # check if this is a blt_registered target
     string(TOUPPER ${arg_TARGET} _target_upper)
     if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         # recursive call
         set (_depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
         foreach(t ${_depends_on})
-            list(APPEND ${arg_TLIST} ${t})
-            blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
+            if (NOT "${t}" IN_LIST ${arg_TLIST})
+                list(APPEND ${arg_TLIST} ${t})
+                blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
+            endif()
         endforeach()
         unset(_depends_on)
     endif()
@@ -983,7 +985,7 @@ macro(blt_find_target_dependencies)
         if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
             get_property(_propval TARGET ${arg_TARGET} PROPERTY LINK_LIBRARIES SET)
             get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
-            if (_propval)
+            if (_propval AND NOT "${_propval}" IN_LIST ${arg_TLIST})
                 list(APPEND _property_list ${_propval})
             endif()
         endif()
@@ -991,7 +993,7 @@ macro(blt_find_target_dependencies)
         # get interface link libraries
         get_property(_propval TARGET ${arg_TARGET} PROPERTY INTERFACE_LINK_LIBRARIES SET)
         get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
-        if (_propval)
+        if (_propval AND NOT "${_propval}" IN_LIST ${arg_TLIST})
             list(APPEND _property_list ${_propval})
         endif()
     
