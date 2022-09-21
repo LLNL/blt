@@ -14,7 +14,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Changed
 - Added three extra options to 'blt_print_target_properties' macro to print properties of
-targets children as well as limit the properties printed with regular expressions:
+target's children as well as limit the properties printed with regular expressions:
     - CHILDREN (true/ false) whether or not you want to print the target's children's properties as well (recursively)
     - PROPERTY_NAME_REGEX (regular expression string) reduce which properties to print by name
     - PROPERTY_VALUE_REGEX (regular expression string) reduce which properties to print by value
