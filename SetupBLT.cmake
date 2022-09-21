@@ -80,6 +80,12 @@ if (NOT BLT_LOADED)
         cmake_policy(SET CMP0076 OLD)
     endif()
 
+    # Sets CUDA_ARCHITECTURES target property based on CMAKE_CUDA_ARCHITECTURES
+    # Policy added in 3.18+
+    if(POLICY CMP0104)
+        cmake_policy(SET CMP0104 NEW)
+    endif()
+
     ################################
     # Invoke CMake Fortran setup
     # if ENABLE_FORTRAN == ON

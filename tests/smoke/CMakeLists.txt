@@ -128,7 +128,7 @@ if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_smoke
                        SOURCES blt_cuda_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                       DEPENDS_ON cuda
+                       DEPENDS_ON blt::cuda
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_cuda_smoke
@@ -137,7 +137,7 @@ if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_runtime_smoke
                        SOURCES blt_cuda_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                       DEPENDS_ON cuda_runtime
+                       DEPENDS_ON blt::cuda_runtime
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_cuda_runtime_smoke
@@ -146,7 +146,7 @@ if (ENABLE_CUDA)
     blt_add_executable(NAME blt_cuda_version_smoke
                        SOURCES blt_cuda_version_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                       DEPENDS_ON cuda_runtime
+                       DEPENDS_ON blt::cuda_runtime
                        FOLDER blt/tests )
 
     blt_add_test(NAME blt_cuda_version_smoke
@@ -155,7 +155,7 @@ if (ENABLE_CUDA)
         blt_add_executable(NAME blt_cuda_openmp_smoke
                            SOURCES blt_cuda_openmp_smoke.cpp
                            OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY} 
-                           DEPENDS_ON cuda openmp
+                           DEPENDS_ON blt::cuda openmp
                            FOLDER blt/tests )
 
         blt_add_test(NAME blt_cuda_openmp_smoke
@@ -166,7 +166,7 @@ if (ENABLE_CUDA)
         blt_add_executable(NAME       blt_cuda_mpi_smoke
                            SOURCES    blt_cuda_mpi_smoke.cpp
                            OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                           DEPENDS_ON cuda mpi
+                           DEPENDS_ON blt::cuda mpi
                            FOLDER blt/tests )
         blt_add_test(NAME    blt_cuda_mpi_smoke
                      COMMAND blt_cuda_mpi_smoke
@@ -177,7 +177,7 @@ if (ENABLE_CUDA)
         blt_add_executable(NAME blt_cuda_gtest_smoke
                            SOURCES blt_cuda_gtest_smoke.cpp
                            OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                           DEPENDS_ON cuda gtest
+                           DEPENDS_ON blt::cuda gtest
                            FOLDER blt/tests )
 
         blt_add_test(NAME    blt_cuda_gtest_smoke

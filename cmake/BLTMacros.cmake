@@ -255,7 +255,7 @@ macro(blt_add_target_link_flags)
 
     set(_flags ${arg_FLAGS})
     # Convert rpath flag if linking with CUDA
-    if (CUDA_LINK_WITH_NVCC)
+    if (BLT_CUDA_LINK_WITH_NVCC)
         string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
                        _flags "${_flags}")
     endif()
@@ -362,7 +362,7 @@ macro(blt_register_library)
     mark_as_advanced(_BLT_${uppercase_name}_IS_OBJECT_LIBRARY)
 
     # PGI does not support -isystem
-    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT ${C_COMPILER_FAMILY_IS_PGI}))
         set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM TRUE CACHE BOOL "" FORCE)
     else()
         set(_BLT_${uppercase_name}_TREAT_INCLUDES_AS_SYSTEM FALSE CACHE BOOL "" FORCE)
@@ -481,7 +481,7 @@ macro(blt_patch_target)
     endif()
 
     # PGI does not support -isystem
-    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
+    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT ${C_COMPILER_FAMILY_IS_PGI}))
         get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
         # Don't copy if the target had no include directories
         if(_target_includes)
@@ -1384,7 +1384,7 @@ macro(blt_export_tpl_targets)
     endif()
 
     set(_blt_tpl_targets)
-    blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS blt_cuda blt_cuda_runtime IF ENABLE_CUDA)
     blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
     blt_list_append(TO _blt_tpl_targets ELEMENTS openmp IF ENABLE_OPENMP)
     blt_list_append(TO _blt_tpl_targets ELEMENTS mpi IF ENABLE_MPI)

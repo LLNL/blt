@@ -109,7 +109,7 @@ if (ENABLE_FIND_MPI)
     string(REPLACE " -pthread" ";-pthread"  _mpi_link_flags "${_mpi_link_flags}")
 
     # Fixes for linking with NVCC
-    if (CUDA_LINK_WITH_NVCC)
+    if (BLT_CUDA_LINK_WITH_NVCC)
         # Convert rpath flag if linking with CUDA
         string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
                        _mpi_link_flags "${_mpi_link_flags}")
