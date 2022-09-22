@@ -938,12 +938,10 @@ macro(blt_print_target_properties_private)
 endmacro(blt_print_target_properties_private)
 
 ##------------------------------------------------------------------------------
-## blt_find_target_dependencies(TARGET <target> TLIST tlist)
+## blt_find_target_dependencies(TARGET <target> TLIST <list name>)
 ##
 ## Store all target's dependencies (link libraries and interface link libraries)
-## recursively in TLIST.
-##
-##
+## recursively in the variable name TLIST holds.
 ##------------------------------------------------------------------------------
 macro(blt_find_target_dependencies)
 

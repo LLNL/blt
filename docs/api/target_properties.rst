@@ -166,7 +166,7 @@ TARGET
   Name of CMake target (required)
 
 CHILDREN
-  Whether or not to print the properties of the target's children (false by default)
+  Whether or not to print the properties of the target's children recursively (false by default)
 
 PROPERTY_NAME_REGEX
   Limit the properties to print by name (all by default)
