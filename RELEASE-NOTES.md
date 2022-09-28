@@ -11,6 +11,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added 'blt_convert_to_system_includes' macro to convert existing interface includes to system interface includes.
+- Added variable ``BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE`` for filtering
+  link libraries implicitly added by CMake. See the following example host-config:
+  ``host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake``
 
 ## [Version 0.5.1] - Release date 2022-04-22
 
