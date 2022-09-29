@@ -1279,7 +1279,8 @@ endmacro(blt_combine_static_libraries)
 ##                             PROPERTY_NAME_REGEX <regular_expression_string>
 ##                             PROPERTY_VALUE_REGEX <regular_expression_string>)
 ##
-## Prints out properties of the given target.
+## Prints all (or filtered) properties of a given target and optionally its
+## dependencies as well.
 ##
 ## Has the options to print target's link libraries and interface link libraries
 ## with the CHILDREN argument, as well as specific properties using regular
