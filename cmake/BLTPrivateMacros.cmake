@@ -866,7 +866,7 @@ macro(blt_print_target_properties_private)
     set(_target_type_str "")
     if(TARGET ${arg_TARGET})
         set(_is_cmake_target TRUE)
-        set(_target_type_str "${_target_type_str}cmake target")
+        set(_target_type_str "CMake target")
     endif()
 
     set(_is_blt_registered_target FALSE)
@@ -876,11 +876,11 @@ macro(blt_print_target_properties_private)
         if (_is_cmake_target)
             set(_target_type_str "${_target_type_str} and a ")
         endif()
-        set(_target_type_str "${_target_type_str}blt_registered target")
+        set(_target_type_str "${_target_type_str}BLT Registered target")
     endif()
 
     if (_is_cmake_target OR _is_blt_registered_target)
-        message(STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a ${_target_type_str}")
+        message(STATUS "[${arg_TARGET}] '${arg_TARGET}' is a ${_target_type_str}")
     endif()
     unset(_target_type_str)
 
@@ -946,7 +946,7 @@ endmacro(blt_print_target_properties_private)
 macro(blt_find_target_dependencies)
 
     set(options)
-    set(singleValuedArgs TARGET TLIST CUR_TARGET)
+    set(singleValuedArgs TARGET TLIST)
     set(multiValuedArgs)
 
     # parse the arguments to the macro
@@ -958,7 +958,7 @@ macro(blt_find_target_dependencies)
         message(FATAL_ERROR "TARGET is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
-    if(NOT DEFINED ${arg_TLIST})
+    if(NOT DEFINED arg_TLIST OR NOT DEFINED ${arg_TLIST})
         message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
