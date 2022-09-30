@@ -107,6 +107,12 @@ if (NOT BLT_LOADED)
     ################################
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+    ###################################
+    # Setup compiler family flags
+    # Must be included before BLTMacros
+    ###################################
+    include(${BLT_ROOT_DIR}/cmake/SetupCompilerFamily.cmake)
+
     ################################
     # Macros
     ################################
