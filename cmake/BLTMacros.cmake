@@ -1024,7 +1024,15 @@ macro(blt_append_custom_compiler_flag)
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_INTELLLVM} " )
        elseif( DEFINED arg_PGI AND C_COMPILER_FAMILY_IS_PGI )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_PGI} " )
-       elseif( DEFINED arg_GNU AND C_COMPILER_FAMILY_IS_GNU )
+       # Hack to get this working, the COMPILER_FAMILY vars are not set yet
+       # when SetupCompilerStandards is run.  This means that none of
+       # of the CMAKE_CXX_FLAGS will set here.  I've temporarily hacked this
+       # by removing the check for GNU (obviously, this needs to be fixed
+       # differently.
+       #
+       # elseif( DEFINED arg_GNU AND C_COMPILER_FAMILY_IS_GNU )
+       #
+       elseif( DEFINED arg_GNU )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_GNU} " )
        elseif( DEFINED arg_CRAY AND C_COMPILER_FAMILY_IS_CRAY )
           set (${arg_FLAGS_VAR} "${${arg_FLAGS_VAR}} ${arg_CRAY} " )

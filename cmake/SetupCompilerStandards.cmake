@@ -20,6 +20,7 @@ if (BLT_CXX_STD)
         blt_append_custom_compiler_flag(
             FLAGS_VAR CMAKE_CXX_FLAGS
             DEFAULT " "
+            GNU "-std=c++11"
             XL "-std=c++11"
             PGI "--c++11")
     elseif( BLT_CXX_STD STREQUAL c++14)
@@ -27,6 +28,7 @@ if (BLT_CXX_STD)
         blt_append_custom_compiler_flag(
             FLAGS_VAR CMAKE_CXX_FLAGS
             DEFAULT " "
+            GNU "-std=c++14"
             XL "-std=c++14"
             PGI "--c++14")
     elseif( BLT_CXX_STD STREQUAL c++17)
@@ -38,6 +40,7 @@ if (BLT_CXX_STD)
         blt_append_custom_compiler_flag(
             FLAGS_VAR CMAKE_CXX_FLAGS
             DEFAULT " "
+            GNU "-std=c++17"
             PGI "--c++17")
     elseif( BLT_CXX_STD STREQUAL c++20)
         # Error out on what does not support C++20
