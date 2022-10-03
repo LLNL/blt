@@ -880,7 +880,7 @@ macro(blt_print_target_properties_private)
     endif()
 
     if (_is_cmake_target OR _is_blt_registered_target)
-        message(STATUS "[${arg_TARGET}] '${arg_TARGET}' is a ${_target_type_str}")
+        message(STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a ${_target_type_str}")
     endif()
     unset(_target_type_str)
 
