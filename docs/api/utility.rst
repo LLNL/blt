@@ -101,8 +101,28 @@ SOURCE_STRING
 
 ``SOURCE_STRING`` must be a valid C++ program with a main() function and
 must be passed in as a quoted string variable. Otherwise, CMake will convert
-the string into a list and lose the semicolons.
-E.g. blt_check_code_compiles(SOURCE_STRING "${str_var}" ...)
+the string into a list and lose the semicolons.  You can use any CMake method
+of sending a string, but we recommend the
+`bracket argument method <https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#bracket-argument>`_
+shown below so you do not have to escape your quotes:
+
+.. code-block:: cmake
+
+    blt_check_code_compiles(CODE_COMPILES  hello_world_compiled
+                            SOURCE_STRING
+    [=[
+    #include <iostream>
+
+    int main(int, char**)
+    {
+
+        std::cout << "Hello World!" << std::endl;
+
+        return 0;
+    }
+    ]=])
+
+
 
 
 .. _blt_find_libraries:

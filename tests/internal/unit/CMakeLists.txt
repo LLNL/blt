@@ -156,16 +156,17 @@ message(STATUS "Checking for blt_check_code_compiles")
 blt_check_code_compiles(CODE_COMPILES  _hello_world_compiled
                         VERBOSE_OUTPUT ON
                         SOURCE_STRING
-"#include <iostream>
+[=[
+#include <iostream>
 
 int main(int, char**)
 {
 
-    std::cout << \"Hello World!\" << std::endl;
+    std::cout << "Hello World!" << std::endl;
 
     return 0;
 }
-")
+]=])
 
 if(_hello_world_compiled)
   message(STATUS "... passed")
