@@ -77,6 +77,34 @@ When using the Intel toolchain within Visual Studio, we use the
 ``MSVC_INTEL`` flag, when provided, with a fallback to the ``MSVC`` flag.
 
 
+.. blt_check_code_compiles:
+
+blt_check_code_compiles
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+     blt_check_code_compiles(CODE_COMPILES  <variable>
+                             VERBOSE_OUTPUT <ON|OFF (default OFF)>
+                             SOURCE_STRING  <quoted C++ program>)
+
+This macro checks if a snippet of C++ code compiles.
+
+CODE_COMPILES
+  The boolean variable that will be filled with the compilation result.
+
+VERBOSE_OUTPUT
+  Optional parameter to output debug information (Default: OFF)
+
+SOURCE_STRING
+  The source snippet to compile.
+
+``SOURCE_STRING`` must be a valid C++ program with a main() function and
+must be passed in as a quoted string variable. Otherwise, CMake will convert
+the string into a list and lose the semicolons.
+E.g. blt_check_code_compiles(SOURCE_STRING "${str_var}" ...)
+
+
 .. _blt_find_libraries:
 
 blt_find_libraries

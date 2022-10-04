@@ -11,6 +11,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added `blt_convert_to_system_includes` macro to convert existing interface includes to system interface includes.
+- `blt_check_code_compiles` which compiles a C++ code snippet and returns the result.
 
 ### Changed
 - Added three extra options to `blt_print_target_properties` macro to print properties of
