@@ -66,6 +66,13 @@ if (NOT BLT_LOADED)
         cmake_policy(SET CMP0057 NEW)
     endif()
 
+    # Make `check_cxx_source_compiles` honor `CMAKE_CXX_STANDARD`
+    # NOTE: This only works on a few CMake versions even though it was
+    #  added in CMake 3.14. (for example, 3.20.2, 3.21.1, and 3.23.1 did not work)
+    if(POLICY CMP0067)
+      cmake_policy(SET CMP0067 NEW)
+    endif()
+
     # Policy to use <PackageName>_ROOT variable in find_<Package> commands
     # Policy added in 3.12+
     if(POLICY CMP0074)
