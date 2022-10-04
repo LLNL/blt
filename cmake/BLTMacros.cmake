@@ -1446,7 +1446,8 @@ endmacro()
 macro(blt_check_code_compiles)
 
     set(options)
-    set(singleValueArgs CODE_COMPILES VERBOSE_OUTPUT)
+    set(singleValueArgs CODE_COMPILES VERBOSE_OUTPUT )
+    # NOTE: SOURCE_STRING must be a multiValueArg otherwise CMake removes all semi-colons
     set(multiValueArgs SOURCE_STRING)
 
     # Parse the arguments to the macro
