@@ -5,6 +5,10 @@
 
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
+macro(hello_world)
+    message(STATUS "Hello World!")
+endmacro(hello_world)
+
 ##------------------------------------------------------------------------------
 ## blt_assert_exists( [DIRECTORIES [<dir1> <dir2> ...] ]
 ##                    [TARGETS [<target1> <target2> ...] ]
