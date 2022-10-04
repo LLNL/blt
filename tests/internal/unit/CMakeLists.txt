@@ -151,3 +151,25 @@ message(
 "Tests passed for `blt_split_source_list_by_language`.\n"
 "*****************************************************")
 
+message(STATUS "Checking for blt_check_code_compiles")
+
+blt_check_code_compiles(CODE_COMPILES  _hello_world_compiled
+                        VERBOSE_OUTPUT ON
+                        SOURCE_STRING
+[=[
+#include <iostream>
+
+int main(int, char**)
+{
+
+    std::cout << "Hello World!" << std::endl;
+
+    return 0;
+}
+]=])
+
+if(_hello_world_compiled)
+  message(STATUS "... passed")
+else()
+  message(FATAL_ERROR "... failed to compile.")
+endif()
