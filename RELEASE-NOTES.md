@@ -12,6 +12,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Added
 - Added `blt_convert_to_system_includes` macro to convert existing interface includes to system interface includes.
 - `blt_check_code_compiles` which compiles a C++ code snippet and returns the result.
+- Added variable ``BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE`` for filtering
+  link libraries implicitly added by CMake. See the following example host-config:
+  ``host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake``
 
 ### Changed
 - Added three extra options to `blt_print_target_properties` macro to print properties of
