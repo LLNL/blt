@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.2] - Release date 2022-10-05
+
 ### Added
 - Added `blt_convert_to_system_includes` macro to convert existing interface includes to system interface includes.
 - `blt_check_code_compiles` which compiles a C++ code snippet and returns the result.
@@ -266,7 +268,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.1...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.2...develop
+[Version 0.5.2]: https://github.com/LLNL/blt/compare/v0.5.1...v0.5.2
 [Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1
 [Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0
 [Version 0.4.1]: https://github.com/LLNL/blt/compare/v0.4.0...v0.4.1
