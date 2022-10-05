@@ -77,6 +77,54 @@ When using the Intel toolchain within Visual Studio, we use the
 ``MSVC_INTEL`` flag, when provided, with a fallback to the ``MSVC`` flag.
 
 
+.. blt_check_code_compiles:
+
+blt_check_code_compiles
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+     blt_check_code_compiles(CODE_COMPILES  <variable>
+                             VERBOSE_OUTPUT <ON|OFF (default OFF)>
+                             SOURCE_STRING  <quoted C++ program>)
+
+This macro checks if a snippet of C++ code compiles.
+
+CODE_COMPILES
+  The boolean variable that will be filled with the compilation result.
+
+VERBOSE_OUTPUT
+  Optional parameter to output debug information (Default: OFF)
+
+SOURCE_STRING
+  The source snippet to compile.
+
+``SOURCE_STRING`` must be a valid C++ program with a main() function and
+must be passed in as a quoted string variable. Otherwise, CMake will convert
+the string into a list and lose the semicolons.  You can use any CMake method
+of sending a string, but we recommend the
+`bracket argument method <https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#bracket-argument>`_
+shown below so you do not have to escape your quotes:
+
+.. code-block:: cmake
+
+    blt_check_code_compiles(CODE_COMPILES  hello_world_compiled
+                            SOURCE_STRING
+    [=[
+    #include <iostream>
+
+    int main(int, char**)
+    {
+
+        std::cout << "Hello World!" << std::endl;
+
+        return 0;
+    }
+    ]=])
+
+
+
+
 .. _blt_find_libraries:
 
 blt_find_libraries
@@ -166,4 +214,22 @@ command but doesn't throw an error if the list is empty or not defined.
 
     set(mylist A B A)
     blt_list_remove_duplicates( TO mylist )
+
+.. _blt_convert_to_system_includes:
+
+blt_convert_to_system_includes
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_convert_to_system_includes(TARGET <target>)
+
+Converts existing interface includes to system interface includes.
+
+.. code-block:: cmake
+   :caption: **Example**
+   :linenos:
+
+   ## convert to system includes for the foo target
+   blt_convert_to_system_includes(TARGET foo)
 

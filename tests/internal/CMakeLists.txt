@@ -227,6 +227,10 @@ if(ENABLE_GTEST)
     blt_list_append(TO _actual_list ELEMENTS "empty_escaped"        IF ${_defined_empty_var})
     blt_list_append(TO _actual_list ELEMENTS "nonempty_escaped"     IF ${_defined_nonempty_var})
 
+    # Check that ELEMENTS can be empty or missing when the IF condition is false
+    blt_list_append(TO _actual_list                                 IF FALSE)
+    blt_list_append(TO _actual_list ELEMENTS ""                     IF FALSE)
+
     # Check the results
     list(LENGTH _actual_list _actual_size)
     if(NOT "${_actual_list}" STREQUAL "${_expected_list}"
@@ -253,20 +257,38 @@ if (ENABLE_CUDA AND ENABLE_MPI AND
                  NUM_MPI_TASKS 4)
 endif()
 
-message(STATUS "Exercising blt_print_target_properties macro on some targets and non-targets.")
 message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro default options.")
 foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
+message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro using regex arguments.")
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+    blt_print_target_properties(TARGET ${_target} CHILDREN true PROPERTY_NAME_REGEX "CXX_STANDARD_REQUIRED" PROPERTY_VALUE_REGEX "ON")
+endforeach()
+
+message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro on dummy blt_registered target.")
+blt_register_library(NAME foo)
+blt_register_library(NAME bar DEPENDS_ON foo)
+blt_print_target_properties(TARGET bar CHILDREN true)
+
+message(STATUS "")
+message(STATUS "Exercising blt_print_target_properties macro. Testing infinite recursion")
+blt_register_library(NAME foo DEPENDS_ON bar)
+blt_register_library(NAME bar DEPENDS_ON foo)
+blt_print_target_properties(TARGET bar CHILDREN true)
+
 add_subdirectory(src/object_library_test)
 
 if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)
-  add_subdirectory(src/static_analysis)
+    add_subdirectory(src/static_analysis)
 endif()
 
 if(ENABLE_HIP)
-  add_subdirectory(src/hip_defines_test)
+    add_subdirectory(src/hip_defines_test)
 endif()
 
 add_subdirectory(unit)

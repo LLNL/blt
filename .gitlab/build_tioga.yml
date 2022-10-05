@@ -1,0 +1,26 @@
+####
+# This is the shared configuration of jobs for tioga
+.on_tioga:
+  tags:
+    - shell
+    - tioga
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /_qnone/ || $ON_TIOGA == "OFF"' #run except if ...
+      when: never
+    - when: on_success
+
+####
+# Template
+.src_build_on_tioga:
+  stage: build
+  variables:
+    ALLOC_COMMAND: "flux mini run -t10m -n1"
+  extends: [.build_script, .on_tioga]
+
+####
+# Build jobs
+tioga-clang_14_0_0_hip:
+  variables:
+    HOST_CONFIG: "clang@14.0.0_hip.cmake"
+  extends: .src_build_on_tioga
+  allow_failure: true

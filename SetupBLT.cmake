@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.5.1" CACHE STRING "")
+    set(BLT_VERSION "0.5.2" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
@@ -64,6 +64,13 @@ if (NOT BLT_LOADED)
     # Policy added in 3.3+
     if(POLICY CMP0057)
         cmake_policy(SET CMP0057 NEW)
+    endif()
+
+    # Make `check_cxx_source_compiles` honor `CMAKE_CXX_STANDARD`
+    # NOTE: This only works on a few CMake versions even though it was
+    #  added in CMake 3.14. (for example, 3.20.2, 3.21.1, and 3.23.1 did not work)
+    if(POLICY CMP0067)
+      cmake_policy(SET CMP0067 NEW)
     endif()
 
     # Policy to use <PackageName>_ROOT variable in find_<Package> commands

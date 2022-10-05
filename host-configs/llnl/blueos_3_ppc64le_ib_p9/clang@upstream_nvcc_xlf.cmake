@@ -57,6 +57,8 @@ set(BLT_MPI_COMMAND_APPEND "mpibind" CACHE PATH "")
 set(CMAKE_Fortran_COMPILER_ID "XL" CACHE PATH "All of BlueOS compilers report clang due to nvcc, override to proper compiler family")
 set(BLT_FORTRAN_FLAGS "-WF,-C!" CACHE PATH "Converts C-style comments to Fortran style in preprocessed files")
 
+set(BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE "xlomp_ser" CACHE STRING "")
+
 #------------------------------------------------------------------------------
 # CUDA support
 #------------------------------------------------------------------------------
