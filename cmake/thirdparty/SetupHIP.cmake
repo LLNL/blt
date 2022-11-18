@@ -69,10 +69,16 @@ if (${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
 endif ()
 
-blt_import_library(NAME       blt_hip
-                   COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
-                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ${_blt_hip_is_global})
+if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray")
+  set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
+else()
+  set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
+endif()
+
+blt_import_library(NAME          blt_hip
+                   COMPILE_FLAGS ${_blt_hip_compile_flags}
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   GLOBAL        ${_blt_hip_is_global})
 
 # Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
 # information in our target blt_hip
