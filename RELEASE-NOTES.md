@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Fixed
+- Guard HIP compiler flag ``--rocm-path=/path/to/rocm`` against Crayftn compiler.
+
 ## [Version 0.5.2] - Release date 2022-10-05
 
 ### Added
