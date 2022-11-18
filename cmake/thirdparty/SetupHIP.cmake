@@ -66,10 +66,12 @@ if(${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
 endif()
 
-if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray")
-  set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
+# Guard against `--rocm-path` being added to crayftn less than version 15.0.0 due to
+# invalid command line option error
+if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray" AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 15.0.0)
+    set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
 else()
-  set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
+    set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
 endif()
 
 blt_import_library(NAME          blt_hip
