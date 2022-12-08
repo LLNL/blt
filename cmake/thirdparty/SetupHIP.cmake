@@ -19,6 +19,7 @@ if(NOT ROCM_PATH)
         /opt/rocm)
 endif()
 
+
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
 # found.
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
@@ -28,6 +29,9 @@ find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
 message(STATUS "ROCM path:        ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
 
+if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0" )
+   enable_language(HIP)
+endif()
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
 if(DEFINED AMDGPU_TARGETS)
@@ -51,9 +55,47 @@ if(DEFINED AMDGPU_TARGETS)
             list(REMOVE_ITEM _hip_link_libs ${_flag})
         endif()
     endforeach()
+     if (${BLT_BUILD_HIP_WITH_HIPCC})
+        list(REMOVE_ITEM _hip_compile_options "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-mllvm")
+        list(REMOVE_ITEM _hip_compile_options "-amdgpu-early-inline-all=true")
+        list(REMOVE_ITEM _hip_compile_options "-mllvm")
+        list(REMOVE_ITEM _hip_compile_options "-amdgpu-function-calls=false>")
+        get_target_property(_hip_lang_compile_options hip-lang::device INTERFACE_COMPILE_OPTIONS)
+        set(_flag "-mllvm-amdgpu-early-inline-all=true-mllvm-amdgpu-function-calls=false")
+        set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:HIP>:SHELL:${_flag}>")
+        list(REMOVE_ITEM _hip_lang_compile_options "$<$<COMPILE_LANGUAGE:HIP>:SHELL:-mllvm")
+        list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-early-inline-all=true")
+        list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
+        list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-function-calls=false>")
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_lang_compile_options})
+     endif()
     
+#   when we are using hipcc instead of amdclang, the hip cmake stuff fails to find the clang runtime link libraries
+#   and leaves CLANGRT_BUILTINS-NOTFOUND in the interface. We remove it here.
+#   Note sometimes the entry is the last entry of a generator expression, ending in '>', so we use transform to
+#   preserve the '>'
+    if (${BLT_BUILD_HIP_WITH_HIPCC})
+       get_target_property(_hip_lang_link_libs hip-lang::device INTERFACE_LINK_LIBRARIES)
+       get_target_property(_hip_host_link_libs hip::host INTERFACE_LINK_LIBRARIES)
+       list(TRANSFORM _hip_lang_link_libs REPLACE "CLANGRT_BUILTINS-NOTFOUND" "")
+       list(TRANSFORM _hip_host_link_libs REPLACE "CLANGRT_BUILTINS-NOTFOUND" "")
+       set_property(TARGET hip::host PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_host_link_libs})
+       set_property(TARGET hip-lang::device PROPERTY  INTERFACE_LINK_LIBRARIES ${_hip_lang_link_libs})
+       # also transform preexisting _hip_link_libs before set occurs after this conditional block
+       list(TRANSFORM _hip_link_libs REPLACE "CLANGRT_BUILTINS-NOTFOUND" "")
+    endif()
+
     set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_compile_options})
     set_property(TARGET hip::device PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_link_libs})
+    if (${BLT_BUILD_HIP_WITH_HIPCC})
+#   remove interface include directories - these are bugged in ROCM 5.2.1
+       set_property(TARGET hip-lang::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+       set_property(TARGET hip::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+       set_property(TARGET hip::host PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+       set_property(TARGET hip-lang::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+       set_property(TARGET hip::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+       set_property(TARGET hip::host PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+    endif()
 
     if(DEFINED CMAKE_HIP_ARCHITECTURES)
         set(AMDGPU_TARGETS "${CMAKE_HIP_ARCHITECTURES}" CACHE STRING "" FORCE)

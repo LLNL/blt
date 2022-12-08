@@ -654,6 +654,13 @@ macro(blt_add_library)
                 DEPENDS_ON   ${arg_DEPENDS_ON}
                 LIBRARY_TYPE ${_lib_type})
         endif()
+        if (ENABLE_HIP)
+           blt_setup_hip_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON}
+                LIBRARY_TYPE ${_lib_type})
+        endif()
     else()
         #
         #  Header-only library support
@@ -732,7 +739,6 @@ macro(blt_add_library)
         # the white-list of properties that are allowed
         blt_clean_target(TARGET ${arg_NAME})
     endif()
-
 endmacro(blt_add_library)
 
 
@@ -772,6 +778,12 @@ macro(blt_add_executable)
 
     if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_target(
+            NAME         ${arg_NAME}
+            SOURCES      ${arg_SOURCES}
+            DEPENDS_ON   ${arg_DEPENDS_ON})
+    endif()
+    if (ENABLE_HIP)
+       blt_setup_hip_target(
             NAME         ${arg_NAME}
             SOURCES      ${arg_SOURCES}
             DEPENDS_ON   ${arg_DEPENDS_ON})
