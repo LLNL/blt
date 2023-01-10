@@ -485,12 +485,8 @@ macro(blt_patch_target)
         get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
         # Don't copy if the target had no include directories
         if(_target_includes)
-            if(_standard_lib_interface)
-                target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
-            else()
-                set_property(TARGET ${arg_NAME} PROPERTY
-                            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
-            endif()
+            set_property(TARGET ${arg_NAME} PROPERTY
+                         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
         endif()
     endif()
 
