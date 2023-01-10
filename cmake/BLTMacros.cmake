@@ -1541,13 +1541,13 @@ macro(blt_convert_to_system_includes)
 
     # PGI does not support -isystem
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
-        get_target_property(_include_dirs ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+        get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
         # Don't copy if the target had no include directories
         if(_include_dirs)
             # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES so it is not doubled
             # by target_include_directories
-            set_property(TARGET ${arg_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-            target_include_directories(${arg_NAME} SYSTEM INTERFACE ${_include_dirs})
+            set_property(TARGET ${arg_TARGET} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+            target_include_directories(${arg_TARGET} SYSTEM INTERFACE ${_include_dirs})
         endif()
     endif()
 
