@@ -3,11 +3,14 @@
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
 
+# Author: Noel Chalmers @ Advanced Micro Devices, Inc.
+# Date: March 11, 2019
+
 ################################
 # HIP
 ################################
 
-if(NOT ROCM_PATH)
+if (NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip
         ENV{ROCM_DIR}
@@ -18,7 +21,6 @@ if(NOT ROCM_PATH)
         ${ROCM_ROOT_DIR}
         /opt/rocm)
 endif()
-
 
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
 # found.
@@ -32,6 +34,7 @@ message(STATUS "HIP version:      ${hip_VERSION}")
 if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0" )
    enable_language(HIP)
 endif()
+
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
 if(DEFINED AMDGPU_TARGETS)
@@ -44,7 +47,7 @@ if(DEFINED AMDGPU_TARGETS)
     get_target_property(_hip_link_libs hip::device INTERFACE_LINK_LIBRARIES)
 
     foreach(_target ${AMDGPU_TARGETS})
-        if(NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
+        if (NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
             set(_flag "--offload-arch=${_target}")
             set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:CXX>:SHELL:${_flag}>")
             set(_generator_link_flag "$<$<LINK_LANGUAGE:CXX>:${_flag}>")
@@ -55,7 +58,8 @@ if(DEFINED AMDGPU_TARGETS)
             list(REMOVE_ITEM _hip_link_libs ${_flag})
         endif()
     endforeach()
-     if (${BLT_BUILD_HIP_WITH_HIPCC})
+
+    if (BLT_BUILD_HIP_WITH_HIPCC)
         list(REMOVE_ITEM _hip_compile_options "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-mllvm")
         list(REMOVE_ITEM _hip_compile_options "-amdgpu-early-inline-all=true")
         list(REMOVE_ITEM _hip_compile_options "-mllvm")
@@ -68,33 +72,19 @@ if(DEFINED AMDGPU_TARGETS)
         list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
         list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-function-calls=false>")
         set_property(TARGET hip-lang::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_lang_compile_options})
-     endif()
-    
-#   when we are using hipcc instead of amdclang, the hip cmake stuff fails to find the clang runtime link libraries
-#   and leaves CLANGRT_BUILTINS-NOTFOUND in the interface. We remove it here.
-#   Note sometimes the entry is the last entry of a generator expression, ending in '>', so we use transform to
-#   preserve the '>'
-    if (${BLT_BUILD_HIP_WITH_HIPCC})
-       get_target_property(_hip_lang_link_libs hip-lang::device INTERFACE_LINK_LIBRARIES)
-       get_target_property(_hip_host_link_libs hip::host INTERFACE_LINK_LIBRARIES)
-       list(TRANSFORM _hip_lang_link_libs REPLACE "CLANGRT_BUILTINS-NOTFOUND" "")
-       list(TRANSFORM _hip_host_link_libs REPLACE "CLANGRT_BUILTINS-NOTFOUND" "")
-       set_property(TARGET hip::host PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_host_link_libs})
-       set_property(TARGET hip-lang::device PROPERTY  INTERFACE_LINK_LIBRARIES ${_hip_lang_link_libs})
-       # also transform preexisting _hip_link_libs before set occurs after this conditional block
-       list(TRANSFORM _hip_link_libs REPLACE "CLANGRT_BUILTINS-NOTFOUND" "")
     endif()
 
     set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_compile_options})
     set_property(TARGET hip::device PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_link_libs})
-    if (${BLT_BUILD_HIP_WITH_HIPCC})
-#   remove interface include directories - these are bugged in ROCM 5.2.1
-       set_property(TARGET hip-lang::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
-       set_property(TARGET hip::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
-       set_property(TARGET hip::host PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
-       set_property(TARGET hip-lang::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
-       set_property(TARGET hip::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
-       set_property(TARGET hip::host PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+
+    if (BLT_BUILD_HIP_WITH_HIPCC)
+        #   remove interface include directories - these are bugged in ROCM 5.2.1
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::host PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::host PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
     endif()
 
     if(DEFINED CMAKE_HIP_ARCHITECTURES)
@@ -102,24 +92,28 @@ if(DEFINED AMDGPU_TARGETS)
     endif()
 endif()
 
+# adds -x hip to the CL for hip-lang::device
+if (NOT BLT_BUILD_HIP_WITH_HIPCC)
+   get_target_property(_hip_lang_compile_options hip-lang::device INTERFACE_COMPILE_OPTIONS)
+   message(${_hip_lang_compile_options})
+   list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
+   list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-function-calls=false>")
+   list(APPEND _hip_lang_compile_options "-x")
+   list(APPEND _hip_lang_compile_options "hip")
+   list(APPEND _hip_lang_compile_options "-mllvm")
+   list(APPEND _hip_lang_compile_options "-amdgpu-function-calls=false>")
+   set_property(TARGET hip-lang::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_lang_compile_options})
+endif()
+
 # hip targets must be global for aliases when created as imported targets
 set(_blt_hip_is_global On)
-if(${BLT_EXPORT_THIRDPARTY})
+if (${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
 endif()
 
-# Guard against `--rocm-path` being added to crayftn less than version 15.0.0 due to
-# invalid command line option error
-if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray" AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 15.0.0)
-    set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
-else()
-    set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
-endif()
-
-blt_import_library(NAME          blt_hip
-                   COMPILE_FLAGS ${_blt_hip_compile_flags}
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL        ${_blt_hip_is_global})
+blt_import_library(NAME       blt_hip
+                 EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
+                 GLOBAL     ${_blt_hip_is_global})
 
 # Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
 # information in our target blt_hip
