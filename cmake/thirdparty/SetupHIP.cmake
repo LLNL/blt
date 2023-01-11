@@ -10,7 +10,7 @@
 # HIP
 ################################
 
-if (NOT ROCM_PATH)
+if(NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip
         ENV{ROCM_DIR}
@@ -31,7 +31,7 @@ find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
 message(STATUS "ROCM path:        ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
 
-if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0" )
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0" )
    enable_language(HIP)
 endif()
 
@@ -47,7 +47,7 @@ if(DEFINED AMDGPU_TARGETS)
     get_target_property(_hip_link_libs hip::device INTERFACE_LINK_LIBRARIES)
 
     foreach(_target ${AMDGPU_TARGETS})
-        if (NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
+        if(NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
             set(_flag "--offload-arch=${_target}")
             set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:CXX>:SHELL:${_flag}>")
             set(_generator_link_flag "$<$<LINK_LANGUAGE:CXX>:${_flag}>")
@@ -59,7 +59,7 @@ if(DEFINED AMDGPU_TARGETS)
         endif()
     endforeach()
 
-    if (BLT_BUILD_HIP_WITH_HIPCC)
+    if(BLT_BUILD_HIP_WITH_HIPCC)
         list(REMOVE_ITEM _hip_compile_options "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-mllvm")
         list(REMOVE_ITEM _hip_compile_options "-amdgpu-early-inline-all=true")
         list(REMOVE_ITEM _hip_compile_options "-mllvm")
@@ -77,7 +77,7 @@ if(DEFINED AMDGPU_TARGETS)
     set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_compile_options})
     set_property(TARGET hip::device PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_link_libs})
 
-    if (BLT_BUILD_HIP_WITH_HIPCC)
+    if(BLT_BUILD_HIP_WITH_HIPCC)
         #   remove interface include directories - these are bugged in ROCM 5.2.1
         set_property(TARGET hip-lang::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
         set_property(TARGET hip::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
@@ -93,7 +93,7 @@ if(DEFINED AMDGPU_TARGETS)
 endif()
 
 # adds -x hip to the CL for hip-lang::device
-if (NOT BLT_BUILD_HIP_WITH_HIPCC)
+if(NOT BLT_BUILD_HIP_WITH_HIPCC)
    get_target_property(_hip_lang_compile_options hip-lang::device INTERFACE_COMPILE_OPTIONS)
    message(${_hip_lang_compile_options})
    list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
@@ -107,7 +107,7 @@ endif()
 
 # hip targets must be global for aliases when created as imported targets
 set(_blt_hip_is_global On)
-if (${BLT_EXPORT_THIRDPARTY})
+if(${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
 endif()
 
