@@ -108,7 +108,7 @@ if(${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
 endif()
 
-set(BLT_ADD_ROCM_PATH_COMPILER_FLAG CACHE BOOL ON "")
+set(BLT_ADD_ROCM_PATH_COMPILER_FLAG ON CACHE BOOL "")
 if (BLT_ADD_ROCM_PATH_COMPILER_FLAG)
 # Guard against `--rocm-path` being added to crayftn less than version 15.0.0 due to
 # invalid command line option error
