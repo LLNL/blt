@@ -190,6 +190,44 @@ Output is of the form for each property:
     blt_print_target_properties(TARGET foo CHILDREN TRUE PROPERTY_NAME_REGEX "CXX")
     blt_print_target_properties(TARGET foo PROPERTY_NAME_REGEX "CXX" PROPERTY_VALUE_REGEX "ON")
 
+.. _blt_print_variables:
+
+blt_print_variables
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_print_variables(NAME_REGEX  <regular_expression_string>
+                        VALUE_REGEX <regular_expression_string>
+                        [IGNORE_CASE])
+
+Prints variables and their values in the current scope, with optional 
+regex filtering on the variable names and values.
+
+NAME_REGEX
+  Regular expression to apply to variable names (all by default)
+
+VALUE_REGEX
+  Regular expression to apply to variable values (all by default)
+
+IGNORE_CASE
+  Optionally ignore case of variable names and values when filtering
+
+
+Output is of the following form for each variable:
+ | [blt_print_variables] <decorated_name>: <value>
+
+Cache variables are marked as CACHE and will list their type, e.g. `CACHE{<name>}:TYPE`
+
+.. code-block:: cmake
+    :caption: **Example**
+    :linenos:
+
+    blt_print_variables()
+    blt_print_variables( NAME_REGEX "blt" IGNORE_CASE)
+    blt_print_variables( NAME_REGEX "_FOUND" VALUE_REGEX "^on$|^true$|^1$" IGNORE_CASE)
+    blt_print_variables( NAME_REGEX "LIB|LIBS|LIBRARY|LIBRARIES")
+
 .. _blt_set_target_folder:
 
 blt_set_target_folder

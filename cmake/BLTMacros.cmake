@@ -1364,6 +1364,134 @@ endmacro(blt_print_target_properties)
 
 
 ##------------------------------------------------------------------------------
+## blt_print_variables([NAME_REGEX  <regular_expression_string>]
+##                     [VALUE_REGEX <regular_expression_string>]
+##                     [IGNORE_CASE])
+##
+## Prints all (or filtered) variables and their values in the current scope.
+## 
+## Defaults:
+## The regexes are case-sensitive unless the IGNORE_CASE option is supplied
+## NAME_REGEX = .* (print every property name)
+## VALUE_REGEX = .* (print every property value)
+## 
+##------------------------------------------------------------------------------
+macro(blt_print_variables)
+
+    set(options            IGNORE_CASE)
+    set(singleValuedArgs   NAME_REGEX VALUE_REGEX)
+    set(multiValuedArgs)
+
+    # parse and initialize arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+
+    message(STATUS "[blt_print_variables] The following variables are defined at the calling site in '${CMAKE_CURRENT_LIST_FILE}' -- ")
+
+    if(NOT DEFINED arg_IGNORE_CASE)
+        set(arg_IGNORE_CASE FALSE)
+    endif()
+
+    if(arg_IGNORE_CASE)
+        set(_case_sensitivity "case insensitive")
+    else()
+        set(_case_sensitivity "case sensitive")
+    endif()
+
+    if(DEFINED arg_NAME_REGEX)
+        message(STATUS "[blt_print_variables] matching NAME_REGEX '${arg_NAME_REGEX}' (${_case_sensitivity})")
+    else()
+        set(arg_NAME_REGEX ".*")
+    endif()
+
+    if(DEFINED arg_VALUE_REGEX)
+        message(STATUS "[blt_print_variables] matching VALUE_REGEX '${arg_VALUE_REGEX}' (${_case_sensitivity})")
+    else()
+        set(arg_VALUE_REGEX ".*")
+    endif()
+
+
+    # Note: 'if(DEFINED CACHE{var})' is only avaliable in CMake@3.14+
+    set(_has_defined_cache FALSE)
+    if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14.0")
+        set(_has_defined_cache TRUE)
+    endif()
+
+    # Start with a sorted, unique list of all variables
+    get_cmake_property(_vars VARIABLES)
+    list (SORT _vars)
+    list (REMOVE_DUPLICATES _vars)
+
+    # Filter and print each variable
+    foreach (_v ${_vars})
+        # Apply regex to variable name, accounting for case sensitivity
+        set(_match_name FALSE)
+        if(arg_IGNORE_CASE)
+            string(TOUPPER ${_v} _v_upper)
+            string(REGEX MATCH ${arg_NAME_REGEX} _match_upper ${_v_upper})
+
+            string(TOLOWER ${_v} _v_lower)
+            string(REGEX MATCH ${arg_NAME_REGEX} _match_lower ${_v_lower})
+
+            if(_match_upper OR _match_lower)
+                set(_match_name TRUE)
+            endif()
+        else()
+            string(REGEX MATCH ${arg_NAME_REGEX} _match_name ${_v})
+        endif()
+
+        # Apply regex to variable value, accounting for case sensitivity
+        # Optimization: Only apply VALUE_REGEX to matched names
+        # Practicality: Only apply VALUE_REGEX to non-empty variables. 
+        # This avoids the following CMake error:
+        #     "string sub-command REGEX, mode MATCH regex ".*" matched an empty string"
+        set(_match_value FALSE)
+        if(_match_name AND ${_v})
+            set(_val "${${_v}}")
+            if(arg_IGNORE_CASE)
+                string(TOUPPER "${_val}" _val_upper)
+                string(REGEX MATCH ${arg_VALUE_REGEX} _match_upper "${_val_upper}")
+
+                string(TOLOWER "${_val}" _val_lower)
+                string(REGEX MATCH ${arg_VALUE_REGEX} _match_lower "${_val_lower}")
+
+                if(_match_upper OR _match_lower)
+                    set(_match_value TRUE)
+                endif()
+            else()
+                string(REGEX MATCH ${arg_VALUE_REGEX} _match_value "${_val}")
+            endif()
+        endif()
+
+        # Format variable name and value and print
+        if (_match_name AND _match_value)
+            set(_v_print_name ${_v})
+            # If it's a cache variable, wrap in "CACHE{}"
+            if(_has_defined_cache AND DEFINED CACHE{${_v}})
+                # Append TYPE to cache variable name, if non-empty
+                get_property(_type CACHE ${_v} PROPERTY TYPE)
+                if(NOT "" STREQUAL "${_type}")
+                    set(_v_print_name "CACHE{${_v}}:${_type}")
+                else()
+                    set(_v_print_name "CACHE{${_v}}")
+                endif()
+            endif()
+            
+            message(STATUS "[blt_print_variables]   ${_v_print_name} := ${${_v}}")
+        endif()
+    endforeach()
+
+    message(STATUS "[blt_print_variables] ----------------------------------------------------------")
+
+    unset(_case_sensitive)
+    unset(_vars)
+    unset(_has_defined_cache)
+    unset(_match_name)
+    unset(_match_value)
+endmacro(blt_print_variables)
+
+##------------------------------------------------------------------------------
 ## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)
 ##
 ## Add targets for BLT's third-party libraries to the given export-set, prefixed
