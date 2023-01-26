@@ -910,6 +910,10 @@ macro(blt_add_test)
             set(_mpiexec ${MPIEXEC})
         endif()
 
+        # Allows whitespaces in MPI executable or flags (main use for "flux mini run")
+        string(REPLACE " " ";" MPIEXEC_NUMPROC_FLAG "${MPIEXEC_NUMPROC_FLAG}")
+        string(REPLACE " " ";" _mpiexec "${_mpiexec}")
+
         set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
     endif()
 

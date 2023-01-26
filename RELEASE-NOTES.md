@@ -30,6 +30,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
     - CHILDREN (true/ false) whether or not you want to print the target's children's properties as well (recursively)
     - PROPERTY_NAME_REGEX (regular expression string) reduce which properties to print by name
     - PROPERTY_VALUE_REGEX (regular expression string) reduce which properties to print by value
+- Allow for whitespace-separated arguments to MPIEXEC{_EXECUTABLE} and MPIEXEC_NUMPROC_FLAG to support `flux mini run`
 
 ## [Version 0.5.1] - Release date 2022-04-22
 
