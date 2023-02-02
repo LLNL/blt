@@ -40,6 +40,7 @@ repository.
     cd <your repository>
     git clone https://github.com/LLNL/blt.git
     rm -rf blt/.git
+    git add blt
     git commit -m "Adding BLT"
     git push
 
