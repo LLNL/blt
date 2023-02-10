@@ -1,7 +1,7 @@
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/googletest/cmake/internal_utils.cmake b/thirdparty_builtin/googletest-master-2020-01-07/googletest/cmake/internal_utils.cmake
+diff --git a/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake b/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake
 index 2f70f0b..36cbecb 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/googletest/cmake/internal_utils.cmake
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/googletest/cmake/internal_utils.cmake
+--- a/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake
++++ b/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake
 @@ -82,13 +82,13 @@ macro(config_compiler_and_linker)
      # http://stackoverflow.com/questions/3232669 explains the issue.
      set(cxx_base_flags "${cxx_base_flags} -wd4702")

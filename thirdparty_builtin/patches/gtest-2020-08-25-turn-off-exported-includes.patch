@@ -1,7 +1,7 @@
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt b/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest/googlemock/CMakeLists.txt b/thirdparty_builtin/googletest/googlemock/CMakeLists.txt
 index d32b70b..3409d30 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt
+--- a/thirdparty_builtin/googletest/googlemock/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/googlemock/CMakeLists.txt
 @@ -106,14 +106,14 @@ endif()
  # If the CMake version supports it, attach header directory information
  # to the targets for when we are part of a parent build (ie being pulled
@@ -25,10 +25,10 @@ index d32b70b..3409d30 100644
  
  ########################################################################
  #
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt b/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest/googletest/CMakeLists.txt b/thirdparty_builtin/googletest/googletest/CMakeLists.txt
 index 4fd7b52..b67c13a 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt
+--- a/thirdparty_builtin/googletest/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/googletest/CMakeLists.txt
 @@ -130,14 +130,14 @@ cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
  # If the CMake version supports it, attach header directory information
  # to the targets for when we are part of a parent build (ie being pulled

@@ -1,7 +1,7 @@
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt b/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest/CMakeLists.txt b/thirdparty_builtin/googletest/CMakeLists.txt
 index a30d2da..30b8f9e 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt
+--- a/thirdparty_builtin/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/CMakeLists.txt
 @@ -1,8 +1,6 @@
  # Note: CMake support is community-based. The maintainers do not use CMake
  # internally.

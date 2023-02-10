@@ -1,7 +1,7 @@
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt b/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest/CMakeLists.txt b/thirdparty_builtin/googletest/CMakeLists.txt
 index 755b8b7..a30d2da 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/CMakeLists.txt
+--- a/thirdparty_builtin/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/CMakeLists.txt
 @@ -10,16 +10,6 @@ endif (POLICY CMP0048)
  project(googletest-distribution)
  set(GOOGLETEST_VERSION 1.10.0)

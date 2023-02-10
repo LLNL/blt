@@ -84,8 +84,8 @@ if(ENABLE_TESTS)
         set (INSTALL_GTEST OFF CACHE BOOL "")
 
         # Enable builtin google test 
-        add_subdirectory(googletest-master-2020-01-07
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2020-01-07)
+        add_subdirectory(googletest
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest)
 
         if(UNIX AND NOT APPLE)
             find_package( Threads )

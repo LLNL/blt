@@ -1,7 +1,7 @@
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt b/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest/googlemock/CMakeLists.txt b/thirdparty_builtin/googletest/googlemock/CMakeLists.txt
 index 17ca62f..d32b70b 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/googlemock/CMakeLists.txt
+--- a/thirdparty_builtin/googletest/googlemock/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/googlemock/CMakeLists.txt
 @@ -107,10 +107,10 @@ endif()
  # to the targets for when we are part of a parent build (ie being pulled
  # in via add_subdirectory() rather than being a standalone build).
@@ -15,10 +15,10 @@ index 17ca62f..d32b70b 100644
      "$<BUILD_INTERFACE:${gmock_build_include_dirs}>"
      "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
  endif()
-diff --git a/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt b/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest/googletest/CMakeLists.txt b/thirdparty_builtin/googletest/googletest/CMakeLists.txt
 index ae08085..4fd7b52 100644
---- a/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt
-+++ b/thirdparty_builtin/googletest-master-2020-01-07/googletest/CMakeLists.txt
+--- a/thirdparty_builtin/googletest/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/googletest/CMakeLists.txt
 @@ -131,10 +131,10 @@ cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
  # to the targets for when we are part of a parent build (ie being pulled
  # in via add_subdirectory() rather than being a standalone build).
