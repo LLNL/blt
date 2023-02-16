@@ -708,41 +708,6 @@ endmacro(blt_split_source_list_by_language)
 
 
 ##------------------------------------------------------------------------------
-## blt_update_project_sources( TARGET_SOURCES <sources> )
-##------------------------------------------------------------------------------
-macro(blt_update_project_sources)
-
-    set(options)
-    set(singleValueArgs)
-    set(multiValueArgs TARGET_SOURCES)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                            "${multiValueArgs}" ${ARGN} )
-
-    # Check arguments
-    if ( NOT DEFINED arg_TARGET_SOURCES )
-        message( FATAL_ERROR "Must provide target sources" )
-    endif()
-
-    ## append the target source to the all project sources
-    foreach( src ${arg_TARGET_SOURCES} )
-        if(IS_ABSOLUTE ${src})
-            list(APPEND "${PROJECT_NAME}_ALL_SOURCES" "${src}")
-        else()
-            list(APPEND "${PROJECT_NAME}_ALL_SOURCES"
-                "${CMAKE_CURRENT_SOURCE_DIR}/${src}")
-        endif()
-    endforeach()
-
-    set( "${PROJECT_NAME}_ALL_SOURCES" "${${PROJECT_NAME}_ALL_SOURCES}"
-        CACHE STRING "" FORCE )
-    mark_as_advanced("${PROJECT_NAME}_ALL_SOURCES")
-
-endmacro(blt_update_project_sources)
-
-
-##------------------------------------------------------------------------------
 ## blt_filter_list( TO <list_var> REGEX <string> OPERATION <string> )
 ##
 ## This macro provides the same functionality as cmake's list(FILTER )

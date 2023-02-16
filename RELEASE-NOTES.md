@@ -16,6 +16,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Guard HIP compiler flag ``--rocm-path=/path/to/rocm`` against Crayftn compiler earlier than 15.0.0.
 - Fix doubling of `INTERFACE_INCLUDE_DIRECTORIES` in `blt_patch_target(... TREAT_INCLUDES_AS_SYSTEM true)`.
 
+### Removed
+- Removed tracking all sources in a project via ``${PROJECT_NAME}_ALL_SOURCES``.
+
 ## [Version 0.5.2] - Release date 2022-10-05
 
 ### Added
