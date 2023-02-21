@@ -715,8 +715,6 @@ macro(blt_add_library)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
-    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
-
     if ( arg_SOURCES )
         # Don't clean header-only libraries because you would have to handle
         # the white-list of properties that are allowed
@@ -820,8 +818,6 @@ macro(blt_add_executable)
     if(ENABLE_FOLDERS AND DEFINED arg_FOLDER)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
-
-    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS} )
 
     blt_clean_target(TARGET ${arg_NAME})
 
