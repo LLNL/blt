@@ -236,8 +236,8 @@ you are modifying or adding code and need to understand how unit test details
 are working, for example.
 
 .. note:: 
-   You can pass arguments to ctest via the ``TEST_ARGS`` parameter, e.g.
-   ``make test TEST_ARGS="..."``
+   You can pass arguments to ctest via the ``ARGS`` parameter, e.g.
+   ``make test ARGS="..."``
    Useful arguments include:
 
    -R
