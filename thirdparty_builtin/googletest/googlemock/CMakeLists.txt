@@ -104,15 +104,17 @@ endif()
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
 # in via add_subdirectory() rather than being a standalone build).
-if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
-  string(REPLACE ";" "$<SEMICOLON>" dirs "${gmock_build_include_dirs}")
-  target_include_directories(gmock SYSTEM INTERFACE
-    "$<BUILD_INTERFACE:${dirs}>"
-    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-  target_include_directories(gmock_main SYSTEM INTERFACE
-    "$<BUILD_INTERFACE:${dirs}>"
-    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-endif()
+# TODO: Per patches/gtest-2020-10-07-interface-includes.patch
+# It looks like the patch was already applied, patch is outdated
+#if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
+#  string(REPLACE ";" "$<SEMICOLON>" dirs "${gmock_build_include_dirs}")
+#  target_include_directories(gmock SYSTEM INTERFACE
+#    "$<BUILD_INTERFACE:${dirs}>"
+#    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+#  target_include_directories(gmock_main SYSTEM INTERFACE
+#    "$<BUILD_INTERFACE:${dirs}>"
+#    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+#endif()
 
 ########################################################################
 #

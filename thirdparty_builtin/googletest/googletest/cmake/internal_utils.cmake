@@ -91,6 +91,8 @@ macro(config_compiler_and_linker)
       set(cxx_base_flags "${cxx_base_flags} -utf-8")
     endif()
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+# TODO: Per patches/gtest-2020-03-11-remove-werror.patch
+# -Werror was already removed from the below code, the patch is outdated.
     set(cxx_base_flags "-Wall -Wshadow -Wconversion")
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
