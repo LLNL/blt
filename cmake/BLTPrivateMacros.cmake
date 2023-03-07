@@ -628,11 +628,11 @@ endmacro(blt_make_file_ext_regex)
 ##
 ## Filters source list by file extension into C/C++, Fortran, Python, and
 ## CMake source lists based on BLT_C_FILE_EXTS, BLT_Fortran_FILE_EXTS,
-## and BLT_CMAKE_FILE_EXTS (global BLT variables). This filtering is
-## case-insensitive. Files named "CMakeLists.txt" are also filtered here.
-## Files with no extension or generator expressions that are not object
-## libraries (of the form "$<TARGET_OBJECTS:nameofobjectlibrary>") will
-## throw fatal errors.
+## BLT_Python_FILE_EXTS and BLT_CMAKE_FILE_EXTS (global BLT variables).
+## This filtering is case-insensitive. Files named "CMakeLists.txt" are
+## also filtered here. Files with no extension or generator expressions
+## that are not object libraries (of the form
+## "$<TARGET_OBJECTS:nameofobjectlibrary>") will throw fatal errors.
 ## ------------------------------------------------------------------------------
 macro(blt_split_source_list_by_language)
 
