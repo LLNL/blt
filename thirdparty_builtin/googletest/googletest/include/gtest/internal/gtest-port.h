@@ -859,7 +859,7 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #define GTEST_NO_INLINE_
 #endif
 
-#if GTEST_HAVE_ATTRIBUTE_(disable_tail_calls)
+#if GTEST_HAVE_ATTRIBUTE_(disable_tail_calls) && defined(__clang__)
 // Ask the compiler not to perform tail call optimization inside
 // the marked function.
 #define GTEST_NO_TAIL_CALL_ __attribute__((disable_tail_calls))
