@@ -1,9 +1,6 @@
 # Note: CMake support is community-based. The maintainers do not use CMake
 # internally.
 
-# TODO: Per patches/gtest-2020-01-07-remove-minimum-cmake.patch
-# The below rule may in fact stay here, it looks unlikely that we build with
-# an older version of CMake.
 cmake_minimum_required(VERSION 3.5)
 
 if (POLICY CMP0048)
@@ -21,11 +18,9 @@ endif (POLICY CMP0077)
 project(googletest-distribution)
 set(GOOGLETEST_VERSION 1.13.0)
 
-# TODO: Per patches/gtest-2020-01-07-remove-cxx-std-logic.patch
-# it looks like the below section should be removed.
-#if(NOT CYGWIN AND NOT MSYS AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL QNX)
-#  set(CMAKE_CXX_EXTENSIONS OFF)
-#endif()
+if(NOT CYGWIN AND NOT MSYS AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL QNX)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
 
 enable_testing()
 
@@ -39,6 +34,6 @@ option(GTEST_HAS_ABSL "Use Abseil and RE2. Requires Abseil and RE2 to be separat
 
 if(BUILD_GMOCK)
   add_subdirectory( googlemock )
-elseif(BUILD_GTEST)
+else()
   add_subdirectory( googletest )
 endif()

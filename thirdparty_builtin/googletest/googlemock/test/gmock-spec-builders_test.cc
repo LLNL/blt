@@ -1088,7 +1088,7 @@ TEST(UnexpectedCallTest, UnsatisfiedPrerequisites) {
 
   // Verifies that the failure message contains the two unsatisfied
   // pre-requisites but not the satisfied one.
-#if GTEST_USES_POSIX_RE
+#ifdef GTEST_USES_POSIX_RE
   EXPECT_THAT(r.message(),
               ContainsRegex(
                   // POSIX RE doesn't understand the (?s) prefix, but has no
@@ -2050,7 +2050,7 @@ class GMockVerboseFlagTest : public VerboseFlagPreservingFixture {
         "See "
         "https://github.com/google/googletest/blob/main/docs/"
         "gmock_cook_book.md#"
-        "knowing-when-to-expect for details.";
+        "knowing-when-to-expect-useoncall for details.";
 
     // A void-returning function.
     CaptureStdout();
