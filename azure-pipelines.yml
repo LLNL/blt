@@ -13,6 +13,7 @@ variables:
   VM_ImageName: 'ubuntu-20.04'
 
 strategy:
+  matrix:
     linux_gcc11:
       Compiler_ImageName: '$(GCC11_IMAGE)'
       C_COMPILER: '/usr/bin/gcc'
