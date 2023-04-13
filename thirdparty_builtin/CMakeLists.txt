@@ -7,9 +7,9 @@ set(_blt_tpl_targets) # tracks names of enabled tpl targets
 
 if(ENABLE_GBENCHMARK OR ENABLE_GTEST OR ENABLE_GMOCK)
   if("${CMAKE_CXX_STANDARD}" STREQUAL "" OR
-     "${CMAKE_CXX_STANDARD}" LESS 11)
+     "${CMAKE_CXX_STANDARD}" LESS 14)
       message(WARNING "GoogleTest, GoogleMock, and GoogleBenchmark require C++11 or later. "
-                      "Set BLT_CXX_STD to 'c++11' or higher before loading BLT.")
+                      "Set BLT_CXX_STD to 'c++14' or higher before loading BLT.")
   endif()
 endif()
 
