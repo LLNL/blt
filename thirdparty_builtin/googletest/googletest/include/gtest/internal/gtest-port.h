@@ -653,7 +653,6 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #endif  // !GTEST_OS_WINDOWS_MOBILE
 #endif  // GTEST_HAS_STREAM_REDIRECTION
 
-#ifndef GTEST_HAS_DEATH_TEST
 // Determines whether to support death tests.
 // pops up a dialog window that cannot be suppressed programmatically.
 #if (defined(GTEST_OS_LINUX) || defined(GTEST_OS_CYGWIN) ||           \
@@ -670,7 +669,6 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #if GTEST_HAS_FILE_SYSTEM
 #define GTEST_HAS_DEATH_TEST 1
 #endif  // GTEST_HAS_FILE_SYSTEM
-#endif
 #endif
 
 // Determines whether to support type-driven tests.
@@ -695,7 +693,7 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #if defined(GTEST_OS_LINUX) || defined(GTEST_OS_GNU_KFREEBSD) || \
     defined(GTEST_OS_DRAGONFLY) || defined(GTEST_OS_FREEBSD) ||  \
     defined(GTEST_OS_NETBSD) || defined(GTEST_OS_OPENBSD) ||     \
-    defined(GTEST_OS_GNU_HURD)
+    defined(GTEST_OS_GNU_HURD) || defined(GTEST_OS_MAC)
 #define GTEST_CAN_STREAM_RESULTS_ 1
 #else
 #define GTEST_CAN_STREAM_RESULTS_ 0
@@ -859,11 +857,11 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #define GTEST_NO_INLINE_
 #endif
 
-#if GTEST_HAVE_ATTRIBUTE_(disable_tail_calls) && defined(__clang__)
+#if GTEST_HAVE_ATTRIBUTE_(disable_tail_calls)
 // Ask the compiler not to perform tail call optimization inside
 // the marked function.
 #define GTEST_NO_TAIL_CALL_ __attribute__((disable_tail_calls))
-#elif __GNUC__
+#elif defined(__GNUC__) && !defined(__NVCOMPILER)
 #define GTEST_NO_TAIL_CALL_ \
   __attribute__((optimize("no-optimize-sibling-calls")))
 #else
@@ -2171,8 +2169,8 @@ inline const char* StrError(int errnum) { return strerror(errnum); }
 
 inline const char* GetEnv(const char* name) {
 #if defined(GTEST_OS_WINDOWS_MOBILE) || defined(GTEST_OS_WINDOWS_PHONE) || \
-    defined(GTEST_OS_WINDOWS_RT) || defined(GTEST_OS_ESP8266) ||           \
-    defined(GTEST_OS_XTENSA) || defined(GTEST_OS_QURT)
+    defined(GTEST_OS_ESP8266) || defined(GTEST_OS_XTENSA) ||               \
+    defined(GTEST_OS_QURT)
   // We are on an embedded platform, which has no environment variables.
   static_cast<void>(name);  // To prevent 'unused argument' warning.
   return nullptr;
