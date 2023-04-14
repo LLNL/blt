@@ -62,7 +62,7 @@ set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
 set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-lambda -G"
     CACHE STRING "")
 
-set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "")
+set(CMAKE_CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "")
 
 # _blt_tutorial_cuda_config_end
 
