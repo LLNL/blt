@@ -10,11 +10,11 @@
 # This file provides CMake with paths / details for:
 #  C,C++, & Fortran compilers + MPI
 #------------------------------------------------------------------------------
-# clang-4.0.0 / gfortran@4.9.3 compilers
+# clang-10.0.1 / gfortran@8.3.1 compilers
 # Uses clang's 'libc++' instead of 'libstdc++'
 
-set(CLANG_HOME "/usr/tce/packages/clang/clang-4.0.0")
-set(GNU_HOME "/usr/tce/packages/gcc/gcc-4.9.3")
+set(CLANG_HOME "/usr/tce/packages/clang/clang-10.0.1")
+set(GNU_HOME "/usr/tce/packages/gcc/gcc-8.3.1")
 
 # c compiler
 set(CMAKE_C_COMPILER "${CLANG_HOME}/bin/clang" CACHE PATH "")
@@ -37,15 +37,23 @@ set(BLT_CXX_FLAGS "-stdlib=libc++" CACHE STRING "")
 set(gtest_defines "-DGTEST_HAS_CXXABI_H_=0" CACHE STRING "")
 
 #------------------------------------------------------------------------------
+# Static Analysis Support
+#------------------------------------------------------------------------------
+set(ClangQuery_DIR ${CLANG_HOME}/bin)
+set(ENABLE_CLANGQUERY ON CACHE BOOL "")
+
+set(ClangTidy_DIR ${CLANG_HOME}/bin)
+set(ENABLE_CLANGTIDY ON CACHE BOOL "")
+
+#------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3-clang-4.0.0" CACHE PATH "")
+set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.2-clang-10.0.1" CACHE PATH "")
 set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc"   CACHE PATH "")
 set(MPI_CXX_COMPILER     "${MPI_HOME}/bin/mpicxx"  CACHE PATH "")
 set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpifort" CACHE PATH "")
 
 set(MPIEXEC              "/usr/bin/srun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG "-n" CACHE PATH "")
-
