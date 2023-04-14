@@ -7,44 +7,36 @@ variables:
   DOCKER_FLAGS: "--user='root' -v `pwd`:/blt -w /blt/build $(Compiler_ImageName)"
   C_COMPILERS: "-DCMAKE_C_COMPILER=$(C_COMPILER) -DCMAKE_CXX_COMPILER=$(CXX_COMPILER)"
   MPI_FLAGS: '-DENABLE_MPI=ON -DMPI_C_COMPILER=$(MPI_DIR)/bin/mpicc -DMPI_CXX_COMPILER=$(MPI_DIR)/bin/mpicxx -DMPIEXEC=$(MPI_DIR)/bin/mpiexec -DMPIEXEC_NUMPROC_FLAG=-n'
+  # Use the 'axom/tpls' images because they contain mpi and fortran
+  GCC11_IMAGENAME: 'axom/tpls:gcc-11_02-02-23_01h-47m'
+  CLANG10_IMAGENAME: 'axom/tpls:clang-10_02-02-23_01h-47m'
+  VM_ImageName: 'ubuntu-20.04'
 
 strategy:
   matrix:
-    linux_gcc8:
-      VM_ImageName: 'ubuntu-20.04'
-      Compiler_ImageName: 'axom/tpls:gcc-8_10-21-21_21h-28m'
-      C_COMPILER: '/usr/bin/gcc'
-      CXX_COMPILER: '/usr/bin/g++'
-      CMAKE_BIN_DIR: '/usr/bin'
-      MPI_DIR: '/usr'
-      CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON'
     linux_gcc11:
-      VM_ImageName: 'ubuntu-20.04'
-      Compiler_ImageName: 'axom/tpls:gcc-11_01-27-22_05h-56m'
+      Compiler_ImageName: '$(GCC11_IMAGENAME)'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
       CMAKE_BIN_DIR: '/usr/bin'
       MPI_DIR: '/usr'
       CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON'
     linux_gcc11_benchmarks:
-      VM_ImageName: 'ubuntu-20.04'
-      Compiler_ImageName: 'axom/tpls:gcc-11_01-27-22_05h-56m'
+      Compiler_ImageName: '$(GCC11_IMAGENAME)'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
       CMAKE_BIN_DIR: '/usr/bin'
       MPI_DIR: '/usr'
       CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON -DENABLE_BENCHMARKS=ON'
     linux_gcc11_gmock:
-      VM_ImageName: 'ubuntu-20.04'
-      Compiler_ImageName: 'axom/tpls:gcc-11_01-27-22_05h-56m'
+      Compiler_ImageName: '$(GCC11_IMAGENAME)'
       C_COMPILER: '/usr/bin/gcc'
       CXX_COMPILER: '/usr/bin/g++'
       CMAKE_BIN_DIR: '/usr/bin'
       MPI_DIR: '/usr'
       CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON -DENABLE_GMOCK=ON'
     linux_clang10:
-      VM_ImageName: 'ubuntu-18.04'
-      Compiler_ImageName: 'axom/tpls:clang-10_10-21-21_21h-28m'
+      Compiler_ImageName: '$(CLANG10_IMAGENAME)'
       C_COMPILER: '/usr/bin/clang'
       CXX_COMPILER: '/usr/bin/clang++'
       CMAKE_BIN_DIR: '/usr/bin'
@@ -54,7 +46,7 @@ strategy:
       VM_ImageName: 'macos-12'
       CMAKE_FLAGS: ''
     windows:
-      VM_ImageName: 'windows-2019'
+      VM_ImageName: 'windows-2022'
       CMAKE_FLAGS: ''
 
 pool:
