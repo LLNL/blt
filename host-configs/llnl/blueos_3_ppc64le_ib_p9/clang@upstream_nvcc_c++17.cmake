@@ -45,7 +45,7 @@ set(MPI_CXX_COMPILER "${_MPI_BASE_DIR}/bin/mpicxx" CACHE PATH "")
 #------------------------------------------------------------------------------
 # Cuda
 #------------------------------------------------------------------------------
-
+# _blt_tutorial_cuda_config_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
 set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-11.1.1" CACHE PATH "")
@@ -58,6 +58,8 @@ set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
 set(CMAKE_CUDA_FLAGS "-Xcompiler=--gcc-toolchain=${_GCC_DIR} -restrict -arch ${_cuda_arch} --expt-extended-lambda -G" CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
+
+# _blt_tutorial_cuda_config_end
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
