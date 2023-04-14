@@ -1,0 +1,2 @@
+Googletest version is from 04/13/2023
+https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc
