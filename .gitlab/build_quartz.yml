@@ -45,14 +45,9 @@ quartz_release:
 
 ####
 # Build jobs
-quartz-clang_4_0_0_libcxx:
+quartz-clang_10_0_1:
   variables:
-    HOST_CONFIG: "clang@4.0.0-libcxx.cmake"
-  extends: [.build_on_quartz]
-
-quartz-clang_6_0_0_static_analysis:
-  variables:
-    HOST_CONFIG: "clang@6.0.0-static-analysis.cmake"
+    HOST_CONFIG: "clang@10.0.1.cmake"
   extends: [.build_on_quartz]
 
 quartz-gcc_8_3_1:
