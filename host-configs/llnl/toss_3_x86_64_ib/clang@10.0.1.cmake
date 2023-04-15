@@ -10,11 +10,15 @@
 # This file provides CMake with paths / details for:
 #  C,C++, & Fortran compilers + MPI
 #------------------------------------------------------------------------------
-# clang-10.0.1 / gfortran@8.3.1 compilers
-# Uses clang's 'libc++' instead of 'libstdc++'
+# clang-10.0.1 compilers
+# Uses gcc@8.3.1 standard library
 
 set(CLANG_HOME "/usr/tce/packages/clang/clang-10.0.1")
 set(GNU_HOME "/usr/tce/packages/gcc/gcc-8.3.1")
+
+set(CMAKE_C_FLAGS "--gcc-toolchain=${GNU_HOME}" CACHE STRING "")
+
+set(CMAKE_CXX_FLAGS "--gcc-toolchain=${GNU_HOME}" CACHE STRING "")
 
 # c compiler
 set(CMAKE_C_COMPILER "${CLANG_HOME}/bin/clang" CACHE PATH "")
