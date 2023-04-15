@@ -101,7 +101,7 @@ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call
 ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable
 for you and enable the CUDA language.
 
-Here is a snippet with these settings for LLNL's Pascal Cluster:
+Here is a snippet with these settings for LLNL's Lassen Cluster:
 
 .. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
    :start-after: _blt_tutorial_cuda_config_start
