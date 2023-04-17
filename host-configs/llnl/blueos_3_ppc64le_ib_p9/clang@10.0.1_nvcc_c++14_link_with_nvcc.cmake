@@ -4,11 +4,14 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 #------------------------------------------------------------------------------
-# Example host-config file for the blue_os cluster at LLNL
+# Example host-config file for the blue_os cluster at LLNL, specifically Lassen
 #------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
-#  C/C++, OpenMP, MPI, and Cuda
+#  C/C++:   Clang with GCC 8.3.1 toolchain
+#  Cuda
+#  MPI
+#  OpenMP
 # 
 # It demonstrates a more complex build, where the code is linked with nvcc.
 #------------------------------------------------------------------------------
@@ -21,12 +24,10 @@
 #------------------------------------------------------------------------------
 
 # Use Clang compilers for C/C++
-set(CLANG_VERSION "clang-upstream-2019.08.15" CACHE STRING "")
-set(CLANG_HOME "/usr/tce/packages/clang/${CLANG_VERSION}")
-
+set(CLANG_HOME "/usr/tce/packages/clang/clang-ibm-10.0.1-gcc-8.3.1")
 set(CMAKE_C_COMPILER   "${CLANG_HOME}/bin/clang" CACHE PATH "")
 set(CMAKE_CXX_COMPILER "${CLANG_HOME}/bin/clang++" CACHE PATH "")
-set(BLT_CXX_STD "c++11" CACHE STRING "")
+set(BLT_CXX_STD "c++14" CACHE STRING "")
 
 # Disable Fortran
 set(ENABLE_FORTRAN OFF CACHE BOOL "")
@@ -36,7 +37,7 @@ set(ENABLE_FORTRAN OFF CACHE BOOL "")
 #------------------------------------------------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME               "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${CLANG_VERSION}")
+set(MPI_HOME               "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-10.0.1-gcc-8.3.1")
 set(MPI_C_COMPILER         "${MPI_HOME}/bin/mpicc"   CACHE PATH "")
 set(MPI_CXX_COMPILER       "${MPI_HOME}/bin/mpicxx"  CACHE PATH "")
 
@@ -58,13 +59,12 @@ set(BLT_OPENMP_LINK_FLAGS "-Xlinker -rpath -Xlinker ${OMP_HOME}/lib -L${OMP_HOME
 #------------------------------------------------------------------------------
 set(ENABLE_CUDA ON CACHE BOOL "")
 
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-11.1.1" CACHE PATH "")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-11.2.0" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
 set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}" CACHE PATH "")
 
 set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
-set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
-set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} --expt-extended-lambda -G" CACHE STRING "" )
+set(CMAKE_CUDA_FLAGS "-restrict --expt-extended-lambda -G" CACHE STRING "")
 
 set(CMAKE_CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 set(CUDA_LINK_WITH_NVCC ON CACHE BOOL "")
