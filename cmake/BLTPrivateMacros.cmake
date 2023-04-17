@@ -551,13 +551,6 @@ macro(blt_setup_cuda_target)
         set_source_files_properties( ${_cuda_sources} PROPERTIES
                                      LANGUAGE CUDA)
 
-        if (CMAKE_CUDA_SEPARABLE_COMPILATION)
-            set_source_files_properties( ${_cuda_sources} PROPERTIES
-                                         CMAKE_CUDA_SEPARABLE_COMPILATION ON)
-            set_target_properties( ${arg_NAME} PROPERTIES
-                                    CMAKE_CUDA_SEPARABLE_COMPILATION ON)
-        endif()
-
         if (DEFINED arg_LIBRARY_TYPE)
             if (${arg_LIBRARY_TYPE} STREQUAL "static")
                 set_target_properties( ${arg_NAME} PROPERTIES

@@ -52,6 +52,13 @@ else()
     endif()
 endif()
 
+# CMake now has its own variable for CUDA separable compilation 
+if(CUDA_SEPARABLE_COMPILATION)
+    message(WARNING "BLT has deprecated 'CUDA_SEPARABLE_COMPILATION' in favor of "
+        "'CMAKE_CUDA_SEPARABLE_COMPILATION'. It will be removed in future BLT releases")
+    set(CMAKE_CUDA_SEPARABLE_COMPILATION ${CUDA_SEPARABLE_COMPILATION} CACHE BOOL "")
+endif()
+
 # Override rpath link flags for nvcc
 if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_SHARED_LIBRARY_RUNTIME_CUDA_FLAG "-Xlinker -rpath -Xlinker " CACHE STRING "")
