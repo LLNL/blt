@@ -58,7 +58,6 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
-set(ENABLE_GTEST_DEATH_TESTS OFF CACHE BOOL "")
 
 # Very specific fix for working around CMake adding implicit link directories returned by the BlueOS
 # compilers to link CUDA executables 
