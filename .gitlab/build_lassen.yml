@@ -28,11 +28,6 @@
 
 ####
 # Build jobs
-lassen-clang_10.0.1_nvcc_c++14_link_with_nvcc:
-  variables:
-    HOST_CONFIG: "clang@10.0.1_nvcc_c++14_link_with_nvcc.cmake"
-  extends: [.build_on_lassen, .with_cuda]
-
 lassen-clang_10.0.1_nvcc_c++14_export_tpls:
   variables:
     HOST_CONFIG: "clang@10.0.1_nvcc_c++14_export_tpls.cmake"
