@@ -6300,7 +6300,8 @@ void UnitTestImpl::UnshuffleTests() {
 // For example, if Foo() calls Bar(), which in turn calls
 // GetCurrentOsStackTraceExceptTop(..., 1), Foo() will be included in
 // the trace but Bar() and GetCurrentOsStackTraceExceptTop() won't.
-GTEST_NO_INLINE_ GTEST_NO_TAIL_CALL_ std::string
+// BLT UPDATE: remove GTEST_NO_TAIL_CALL_
+GTEST_NO_INLINE_ std::string
 GetCurrentOsStackTraceExceptTop(int skip_count) {
   // We pass skip_count + 1 to skip this wrapper function in addition
   // to what the user really wants to skip.
