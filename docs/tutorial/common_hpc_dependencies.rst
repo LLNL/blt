@@ -40,7 +40,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
 in our host config file. Here is a snippet with these settings for LLNL's Pascal Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake
    :start-after: _blt_tutorial_mpi_config_start
    :end-before:  _blt_tutorial_mpi_config_end
    :language: cmake
