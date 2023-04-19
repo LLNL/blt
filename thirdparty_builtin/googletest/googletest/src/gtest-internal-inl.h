@@ -636,9 +636,8 @@ class GTEST_API_ UnitTestImpl {
   // For example, if Foo() calls Bar(), which in turn calls
   // CurrentOsStackTraceExceptTop(1), Foo() will be included in the
   // trace but Bar() and CurrentOsStackTraceExceptTop() won't.
-  // BLT UPDATE: remove GTEST_NO_TAIL_CALL_
   std::string CurrentOsStackTraceExceptTop(int skip_count)
-      GTEST_NO_INLINE_;
+      GTEST_NO_INLINE_ GTEST_NO_TAIL_CALL_;
 
   // Finds and returns a TestSuite with the given name.  If one doesn't
   // exist, creates one and returns it.
