@@ -20,12 +20,10 @@
 #------------------------------------------------------------------------------
 
 # Use Clang compilers for C/C++
-set(CLANG_VERSION "clang-upstream-2019.08.15" CACHE STRING "")
-set(CLANG_HOME "/usr/tce/packages/clang/${CLANG_VERSION}")
-
+set(CLANG_HOME "/usr/tce/packages/clang/clang-ibm-10.0.1-gcc-8.3.1")
 set(CMAKE_C_COMPILER   "${CLANG_HOME}/bin/clang" CACHE PATH "")
 set(CMAKE_CXX_COMPILER "${CLANG_HOME}/bin/clang++" CACHE PATH "")
-set(BLT_CXX_STD "c++11" CACHE STRING "")
+set(BLT_CXX_STD "c++14" CACHE STRING "")
 
 # Use XL compiler for Fortran
 set(ENABLE_FORTRAN ON CACHE BOOL "")
@@ -36,18 +34,17 @@ set(CMAKE_Fortran_COMPILER "${XL_HOME}/bin/xlf2003" CACHE PATH "")
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
-
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME               "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${CLANG_VERSION}")
-set(MPI_Fortran_HOME       "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-${XL_VERSION}")
+set(MPI_HOME               "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-10.0.1-gcc-8.3.1")
+set(MPI_C_COMPILER         "${MPI_HOME}/bin/mpicc"   CACHE PATH "")
+set(MPI_CXX_COMPILER       "${MPI_HOME}/bin/mpicxx"  CACHE PATH "")
 
-set(MPI_C_COMPILER         "${MPI_HOME}/bin/mpicc" CACHE PATH "")
-set(MPI_CXX_COMPILER       "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
+set(MPI_Fortran_HOME       "/usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-10.0.1-gcc-8.3.1")
 set(MPI_Fortran_COMPILER   "${MPI_Fortran_HOME}/bin/mpif90" CACHE PATH "")
 
-set(MPIEXEC                "${MPI_HOME}/bin/mpirun" CACHE PATH "")
-set(MPIEXEC_NUMPROC_FLAG   "-np" CACHE PATH "")
+set(MPIEXEC                "${MPI_HOME}/bin/mpirun"  CACHE PATH "")
+set(MPIEXEC_NUMPROC_FLAG   "-np"     CACHE PATH "")
 set(BLT_MPI_COMMAND_APPEND "mpibind" CACHE PATH "")
 
 #------------------------------------------------------------------------------
@@ -65,16 +62,19 @@ set(BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE "xlomp_ser" CACHE STRING "")
 #_blt_tutorial_useful_cuda_flags_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-11.1.1" CACHE PATH "")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-11.2.0" CACHE PATH "")
 set(CMAKE_CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc" CACHE PATH "")
-set(CMAKE_CUDA_HOST_COMPILER "${MPI_CXX_COMPILER}" CACHE PATH "")
+set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}" CACHE PATH "")
 
 set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
-set(_cuda_arch "sm_${CMAKE_CUDA_ARCHITECTURES}")
-set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} --expt-extended-lambda -G" CACHE STRING "")
+set(CMAKE_CUDA_FLAGS "-restrict --expt-extended-lambda -G" CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
 #_blt_tutorial_useful_cuda_flags_end
+
+# Very specific fix for working around CMake adding implicit link directories returned by the BlueOS
+# compilers to link CUDA executables 
+set(BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE "/usr/tce/packages/gcc/gcc-4.9.3/lib64/gcc/powerpc64le-unknown-linux-gnu/4.9.3;/usr/tce/packages/gcc/gcc-4.9.3/lib64" CACHE STRING "")
