@@ -31,6 +31,8 @@ set(ENABLE_FORTRAN ON CACHE BOOL "")
 # fortran compiler
 set(CMAKE_Fortran_COMPILER "${INTELLLVM_HOME}/bin/ifx" CACHE PATH "")
 
+set(BLT_CXX_STD "c++14")
+
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
