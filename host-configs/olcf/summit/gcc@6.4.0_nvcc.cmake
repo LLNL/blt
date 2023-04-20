@@ -50,7 +50,6 @@ set(MPIEXEC_EXECUTABLE "/sw/summit/xalt/1.2.1/bin/jsrun" CACHE PATH "")
 #------------------------------------------------------------------------------
 # CUDA support
 #------------------------------------------------------------------------------
-# _blt_tutorial_cuda_config_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
 set(CUDA_TOOLKIT_ROOT_DIR "/sw/summit/cuda/10.1.243/" CACHE PATH "")
@@ -63,6 +62,3 @@ set(CMAKE_CUDA_FLAGS "-restrict -arch ${_cuda_arch} -std=c++11 --expt-extended-l
     CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "")
-
-# _blt_tutorial_cuda_config_end
-
