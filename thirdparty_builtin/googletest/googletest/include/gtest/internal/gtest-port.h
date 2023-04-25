@@ -859,8 +859,8 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #define GTEST_NO_INLINE_
 #endif
 
-// BLT EDIT: xlc compilers fail trying to set the flag
-#if defined(__ibmxl__)
+// BLT EDIT: xlc and intel compilers fail trying to set the flag
+#if defined(__ibmxl__) || defined(__INTEL_COMPILER)
 #define GTEST_NO_TAIL_CALL_
 #elif GTEST_HAVE_ATTRIBUTE_(disable_tail_calls)
 // Ask the compiler not to perform tail call optimization inside
