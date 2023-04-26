@@ -7,7 +7,7 @@
 # Example pgi@20.1 host-config for LLNL toss3 machines
 #------------------------------------------------------------------------------
 
-set(COMPILER_HOME "/usr/tce/packages/pgi/pgi-20.1")
+set(COMPILER_HOME "/usr/tce/packages/pgi/pgi-22.1")
 
 # c compiler
 set(CMAKE_C_COMPILER "${COMPILER_HOME}/bin/pgcc" CACHE PATH "")
@@ -34,7 +34,7 @@ set(ENABLE_OPENMP ON CACHE BOOL "")
 
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3-pgi-20.1")
+set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3-pgi-22.1")
 
 set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 set(MPI_CXX_COMPILER     "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
