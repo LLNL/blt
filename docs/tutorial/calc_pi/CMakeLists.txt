@@ -34,8 +34,8 @@ blt_add_executable( NAME    example_1
 #------------------------------------------------------------------------------
 # _blt_tutorial_calcpi_library_start
 blt_add_library( NAME    calc_pi
-                HEADERS calc_pi.hpp calc_pi_exports.h
-                SOURCES calc_pi.cpp )
+                 HEADERS calc_pi.hpp calc_pi_exports.h
+                 SOURCES calc_pi.cpp )
 # _blt_tutorial_calcpi_library_end
 
 if(WIN32 AND BUILD_SHARED_LIBS)
