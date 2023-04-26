@@ -26,6 +26,7 @@ set(CMAKE_Fortran_COMPILER "${COMPILER_HOME}/bin/pgfortran" CACHE PATH "")
 #------------------------------------------------------------------------------
 
 set(ENABLE_OPENMP ON CACHE BOOL "")
+set(ENABLE_GTEST OFF CACHE BOOL "")
 
 
 #------------------------------------------------------------------------------
