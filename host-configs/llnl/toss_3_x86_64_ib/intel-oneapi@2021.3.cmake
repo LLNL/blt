@@ -32,6 +32,21 @@ set(ENABLE_FORTRAN ON CACHE BOOL "")
 set(CMAKE_Fortran_COMPILER "${INTELLLVM_HOME}/bin/ifx" CACHE PATH "")
 
 #------------------------------------------------------------------------------
+# Extra flags
+#------------------------------------------------------------------------------
+
+set(BLT_CXX_STD "c++14")
+
+# Use non-system default stdlib
+set(GCC_VERSION "gcc-9.3.1")
+# Note: gcc-8.3.1 and above need the "/rh" directory. Below that version do not.
+set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}/rh")
+
+set(BLT_C_FLAGS "--gcc-toolchain=${GCC_HOME}" CACHE STRING "")
+set(BLT_CXX_FLAGS "--gcc-toolchain=${GCC_HOME}" CACHE STRING "")
+set(BLT_FORTRAN_FLAGS "-gcc-name=${GCC_HOME}/bin/gcc" CACHE STRING "")
+
+#------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")

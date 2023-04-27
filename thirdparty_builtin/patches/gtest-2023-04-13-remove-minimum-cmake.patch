@@ -1,0 +1,45 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6af41437..b5ae2b0d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,8 +1,6 @@
+ # Note: CMake support is community-based. The maintainers do not use CMake
+ # internally.
+ 
+-cmake_minimum_required(VERSION 3.5)
+-
+ if (POLICY CMP0048)
+   cmake_policy(SET CMP0048 NEW)
+ endif (POLICY CMP0048)
+@@ -34,6 +32,6 @@ option(GTEST_HAS_ABSL "Use Abseil and RE2. Requires Abseil and RE2 to be separat
+ 
+ if(BUILD_GMOCK)
+   add_subdirectory( googlemock )
+-else()
++elseif(BUILD_GTEST)
+   add_subdirectory( googletest )
+ endif()
+diff --git a/googlemock/CMakeLists.txt b/googlemock/CMakeLists.txt
+index 5c1f0daf..2e6d093c 100644
+--- a/googlemock/CMakeLists.txt
++++ b/googlemock/CMakeLists.txt
+@@ -36,7 +36,6 @@ endif()
+ # as ${gmock_SOURCE_DIR} and to the root binary directory as
+ # ${gmock_BINARY_DIR}.
+ # Language "C" is required for find_package(Threads).
+-cmake_minimum_required(VERSION 3.5)
+ cmake_policy(SET CMP0048 NEW)
+ project(gmock VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
+ 
+diff --git a/googletest/CMakeLists.txt b/googletest/CMakeLists.txt
+index 95bfa442..0646652d 100644
+--- a/googletest/CMakeLists.txt
++++ b/googletest/CMakeLists.txt
+@@ -46,7 +46,6 @@ endif()
+ 
+ # Project version:
+ 
+-cmake_minimum_required(VERSION 3.5)
+ cmake_policy(SET CMP0048 NEW)
+ project(gtest VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
+ 

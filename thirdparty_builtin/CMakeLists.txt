@@ -7,9 +7,9 @@ set(_blt_tpl_targets) # tracks names of enabled tpl targets
 
 if(ENABLE_GBENCHMARK OR ENABLE_GTEST OR ENABLE_GMOCK)
   if("${CMAKE_CXX_STANDARD}" STREQUAL "" OR
-     "${CMAKE_CXX_STANDARD}" LESS 11)
-      message(WARNING "GoogleTest, GoogleMock, and GoogleBenchmark require C++11 or later. "
-                      "Set BLT_CXX_STD to 'c++11' or higher before loading BLT.")
+     "${CMAKE_CXX_STANDARD}" LESS 14)
+      message(WARNING "GoogleTest, GoogleMock, and GoogleBenchmark require C++14 or later. "
+                      "Set BLT_CXX_STD to 'c++14' or higher before loading BLT.")
   endif()
 endif()
 
@@ -84,8 +84,8 @@ if(ENABLE_TESTS)
         set (INSTALL_GTEST OFF CACHE BOOL "")
 
         # Enable builtin google test 
-        add_subdirectory(googletest-master-2020-01-07
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest-master-2020-01-07)
+        add_subdirectory(googletest
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/googletest)
 
         if(UNIX AND NOT APPLE)
             find_package( Threads )

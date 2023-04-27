@@ -69,8 +69,3 @@ ruby-inteloneapi_2021_3_cxx17:
   variables:
     HOST_CONFIG: "intel-oneapi@2021.3-c++17.cmake"
   extends: [.build_on_ruby]
-
-ruby-pgi_20_1:
-  variables:
-    HOST_CONFIG: "pgi@20.1.cmake"
-  extends: [.build_on_ruby]
