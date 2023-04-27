@@ -10,7 +10,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ## [Unreleased] - Release date yyyy-mm-dd
 
 ### Changed
-- Updated Googletest to main from 04/13/2023. Commit: [12a5852e451baabc79c63a86c634912c563d57bc](https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc)
+- Updated Googletest to main from 04/13/2023.
+  Commit: [12a5852e451baabc79c63a86c634912c563d57bc](https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc).
+  Note: this version of Googletest requires C++14, and PGI is not supported. If you are using PGI, set ENABLE_GTEST OFF.
 
 ### Added
 - Added `blt_print_variables` macro to print variables in current scope, with regex filtering on variable names and values
