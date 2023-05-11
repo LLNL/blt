@@ -40,7 +40,7 @@ endif()
 ################
 # gbenchmark test
 ################
-if(ENABLE_GBENCHMARKS)
+if(ENABLE_GBENCHMARK)
     blt_add_executable(NAME blt_gbenchmark_smoke
                        SOURCES blt_gbenchmark_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}

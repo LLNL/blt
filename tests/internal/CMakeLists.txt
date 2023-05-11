@@ -260,7 +260,7 @@ endif()
 # Exercise blt_print_target_properties macro
 message(STATUS "")
 message(STATUS "Exercising blt_print_target_properties macro default options.")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+foreach(_target gtest gbenchmark example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
