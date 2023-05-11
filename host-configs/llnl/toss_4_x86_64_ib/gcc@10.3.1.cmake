@@ -34,7 +34,6 @@ set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
-#_blt_tutorial_mpi_config_start
 set(ENABLE_MPI ON CACHE BOOL "")
 
 set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3.6-${GCC_VERSION}" CACHE PATH "")
@@ -45,4 +44,3 @@ set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 
 set(MPIEXEC              "/usr/bin/srun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG "-n" CACHE PATH "")
-#_blt_tutorial_mpi_config_end
