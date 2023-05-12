@@ -53,10 +53,6 @@ if(MSVC)
     endif()
 endif()
 
-# BLT EDIT START
-set(CMAKE_BUILD_TYPE ${_BLT_GBENCHMARK_COMPILE_FLAGS})
-# BLT EDIT END
-
 set(ENABLE_ASSEMBLY_TESTS_DEFAULT OFF)
 function(should_enable_assembly_tests)
   if(CMAKE_BUILD_TYPE)

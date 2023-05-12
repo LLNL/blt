@@ -155,7 +155,6 @@ if(ENABLE_BENCHMARKS)
         blt_register_library(NAME      gbenchmark
                              INCLUDES  ${benchmark_SOURCE_DIR}/include ${benchmark_SOURCE_DIR}
                              LIBRARIES benchmark ${RT_LIBRARIES}
-                             COMPILE_FLAGS "-DCMAKE_BUILD_TYPE=Release"
                              TREAT_INCLUDES_AS_SYSTEM ON)
 
         list(APPEND _blt_tpl_targets gbenchmark)
