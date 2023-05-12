@@ -57,7 +57,7 @@ is always on in your build project.
                            DEPENDS gbenchmark)
         blt_add_benchmark(
              NAME    component_benchmark
-             COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
+             COMMAND component_benchmark "--benchmark_min_time=0.0001s --v=3 --benchmark_format=json")
     endif()
 
 
