@@ -10,14 +10,14 @@
 #define BASIC_BENCHMARK_TEST(x) \
   BENCHMARK(x)->Arg( 1<<3 )->Arg( 1<<9 )->Arg( 1 << 13 )
 
-void benchmark_smoke_empty(benchmark::State& state)
+void benchmark_smoke_string_create(benchmark::State& state)
 {
   for (auto _ : state)
   {
-    benchmark::DoNotOptimize(state.iterations());
+    std::string empty_string;
   }
 }
-BENCHMARK(benchmark_smoke_empty);
+BENCHMARK(benchmark_smoke_string_create);
 
 
 void benchmark_smoke_spin_loop(benchmark::State& state)
