@@ -40,7 +40,7 @@ endif()
 ################
 # gbenchmark test
 ################
-if(ENABLE_GBENCHMARKS)
+if(ENABLE_GBENCHMARK)
     blt_add_executable(NAME blt_gbenchmark_smoke
                        SOURCES blt_gbenchmark_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
@@ -49,11 +49,11 @@ if(ENABLE_GBENCHMARKS)
 
     if(ENABLE_BENCHMARKS)
         blt_add_benchmark(NAME     blt_gbenchmark_smoke 
-                          COMMAND  blt_gbenchmark_smoke "--benchmark_min_time=0.0001")
+                          COMMAND  blt_gbenchmark_smoke "--benchmark_min_time=0.0001s")
     else()
         # A user could turn on gbenchmarks but turn off benchmarks
         blt_add_test(NAME     blt_gbenchmark_smoke 
-                     COMMAND  blt_gbenchmark_smoke "--benchmark_min_time=0.0001")
+                     COMMAND  blt_gbenchmark_smoke "--benchmark_min_time=0.0001s")
     endif()
 endif()
 
