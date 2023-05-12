@@ -35,5 +35,6 @@ stages:
 include:
   - local: .gitlab/build_ruby.yml
   - local: .gitlab/build_lassen.yml
+  - local: .gitlab/build_quartz.yml
 # white238: Turned off while tioga is down for maintenance and is fickle
 #  - local: .gitlab/build_tioga.yml
