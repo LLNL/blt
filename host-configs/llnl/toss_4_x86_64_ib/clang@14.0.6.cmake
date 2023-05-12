@@ -11,15 +11,9 @@
 #  C,C++, & Fortran compilers + MPI
 #------------------------------------------------------------------------------
 # clang-14.0.6 compilers
-# Uses gcc@10.3.1 standard library
 
 set(CLANG_VERSION "clang-14.0.6")
 set(CLANG_HOME "/usr/tce/packages/clang/${CLANG_VERSION}")
-set(GNU_HOME "/usr/tce/packages/gcc/gcc-10.3.1")
-
-set(CMAKE_C_FLAGS "--gcc-toolchain=${GNU_HOME}" CACHE STRING "")
-
-set(CMAKE_CXX_FLAGS "--gcc-toolchain=${GNU_HOME}" CACHE STRING "")
 
 # c compiler
 set(CMAKE_C_COMPILER "${CLANG_HOME}/bin/clang" CACHE PATH "")
