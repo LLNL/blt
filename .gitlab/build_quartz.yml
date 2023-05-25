@@ -54,3 +54,13 @@ quartz-gcc_10_3_1:
   variables:
     HOST_CONFIG: "gcc@10.3.1.cmake"
   extends: [.build_on_quartz]
+
+quartz-gcc_10_3_1-export-tpls:
+  variables:
+    HOST_CONFIG: "gcc@10.3.1-export-tpls.cmake"
+  extends: [.build_on_quartz]
+
+quartz-intel_2022_1_0_cxx17:
+  variables:
+    HOST_CONFIG: "intel@2022.1.0-c++17.cmake"
+  extends: [.build_on_quartz]
