@@ -1,10 +1,10 @@
-# Copyright (c) 2017-2021, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 #------------------------------------------------------------------------------
-# Example host-config file for the ruby cluster at LLNL
+# Example host-config file for a cluster on a toss4 platform (e.g. quartz) at LLNL
 #------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
