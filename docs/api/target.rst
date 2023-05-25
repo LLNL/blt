@@ -35,8 +35,8 @@ NUM_OMP_THREADS
   set to the given variable.
 
 CONFIGURATIONS
-  Set the CTest configuration for this test.  When not specified, the test
-  will be added to BLT's default ``Benchmark`` CTest configuration.
+  Optionally set additional CTest configuration(s) for this test. Benchmark tests
+  will always be added to the ``Benchmark`` CTest configuration.
 
 This macro adds a benchmark test to the ``Benchmark`` CTest configuration
 which can be run by the ``run_benchmarks`` build target.  These tests are
