@@ -1568,6 +1568,8 @@ endmacro()
 ## CODE_COMPILES A boolean variable the contains the compilation result.
 ##
 ## VERBOSE_OUTPUT Optional parameter to output debug information (Default: off)
+##
+## LINK_LIBRARIES Optional parameter for a list of additional dependencies
 ##------------------------------------------------------------------------------
 macro(blt_check_code_compiles)
 
