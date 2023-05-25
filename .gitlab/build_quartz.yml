@@ -63,4 +63,4 @@ quartz-gcc_10_3_1-export-tpls:
 quartz-intel_2022_1_0_cxx17:
   variables:
     HOST_CONFIG: "intel@2022.1.0-c++17.cmake"
-  extends: [.build_on_ruby]
+  extends: [.build_on_quartz]
