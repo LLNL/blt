@@ -17,6 +17,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added `blt_print_variables` macro to print variables in current scope, with regex filtering on variable names and values
+- Added `LINK_LIBRARIES` optional parameter to `check_code_compiles` macro to allow for checking if a feature is available in a third-party library.
 
 ### Fixed
 - Guard HIP compiler flag ``--rocm-path=/path/to/rocm`` against Crayftn compiler earlier than 15.0.0.
