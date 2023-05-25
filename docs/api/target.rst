@@ -13,9 +13,11 @@ blt_add_benchmark
 
 .. code-block:: cmake
 
-    blt_add_benchmark( NAME          [name]
-                       COMMAND       [command]
-                       NUM_MPI_TASKS [n])
+    blt_add_benchmark( NAME            [name]
+                       COMMAND         [command]
+                       NUM_MPI_TASKS   [n]
+                       NUM_OMP_THREADS [n]
+                       CONFIGURATIONS  [config1 [config2...]])
 
 Adds a benchmark to the project.
 
@@ -27,6 +29,14 @@ COMMAND
 
 NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
+
+NUM_OMP_THREADS
+  Indicates this test requires the defined environment variable ``OMP_NUM_THREADS``
+  set to the given variable.
+
+CONFIGURATIONS
+  Optionally set additional CTest configuration(s) for this test. Benchmark tests
+  will always be added to the ``Benchmark`` CTest configuration.
 
 This macro adds a benchmark test to the ``Benchmark`` CTest configuration
 which can be run by the ``run_benchmarks`` build target.  These tests are
@@ -42,6 +52,9 @@ library in its ``DEPENDS_ON`` list.
 
 Any calls to this macro should be guarded with ``ENABLE_BENCHMARKS`` unless this option
 is always on in your build project.
+
+If ``NUM_OMP_THREADS`` is given, this macro will set the environment variable ``OMP_NUM_THREADS``
+before running this test.  This is done by appending to the CMake tests property.
 
 .. note::
   BLT provides a built-in Google Benchmark that is enabled by default if you set
