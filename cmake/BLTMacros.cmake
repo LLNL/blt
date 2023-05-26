@@ -915,15 +915,17 @@ endmacro(blt_add_test)
 ##------------------------------------------------------------------------------
 ## blt_add_benchmark( NAME          [name] 
 ##                    COMMAND       [command]
-##                    NUM_MPI_TASKS [n])
+##                    NUM_MPI_TASKS [n]
+##                    NUM_OMP_THREADS [n]
+##                    CONFIGURATIONS  [config1 [config2...]])
 ##
 ## Adds a benchmark to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_benchmark)
 
     set(options)
-    set(singleValueArgs NAME NUM_MPI_TASKS)      
-    set(multiValueArgs COMMAND)
+    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS)
+    set(multiValueArgs COMMAND CONFIGURATIONS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -931,10 +933,11 @@ macro(blt_add_benchmark)
 
     # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
     # from the general list of tests
-    blt_add_test( NAME           ${arg_NAME}
-                  COMMAND        ${arg_COMMAND}
-                  NUM_MPI_TASKS  ${arg_NUM_MPI_TASKS}
-                  CONFIGURATIONS Benchmark)
+    blt_add_test( NAME            ${arg_NAME}
+                  COMMAND         ${arg_COMMAND}
+                  NUM_MPI_TASKS   ${arg_NUM_MPI_TASKS}
+                  NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
+                  CONFIGURATIONS  Benchmark ${arg_CONFIGURATIONS})
 
 endmacro(blt_add_benchmark)
 
