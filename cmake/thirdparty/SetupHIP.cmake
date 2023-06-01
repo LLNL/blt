@@ -28,6 +28,10 @@ find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
 message(STATUS "ROCM path:        ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
 
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.21.0" )
+   enable_language(HIP)
+endif()
+
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
 # This file is also what hardcodes the --offload-arch flags we're removing here
 if(DEFINED AMDGPU_TARGETS)
@@ -51,13 +55,51 @@ if(DEFINED AMDGPU_TARGETS)
             list(REMOVE_ITEM _hip_link_libs ${_flag})
         endif()
     endforeach()
-    
+
+    if(BLT_BUILD_HIP_WITH_HIPCC)
+        list(REMOVE_ITEM _hip_compile_options "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-mllvm")
+        list(REMOVE_ITEM _hip_compile_options "-amdgpu-early-inline-all=true")
+        list(REMOVE_ITEM _hip_compile_options "-mllvm")
+        list(REMOVE_ITEM _hip_compile_options "-amdgpu-function-calls=false>")
+        get_target_property(_hip_lang_compile_options hip-lang::device INTERFACE_COMPILE_OPTIONS)
+        set(_flag "-mllvm-amdgpu-early-inline-all=true-mllvm-amdgpu-function-calls=false")
+        set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:HIP>:SHELL:${_flag}>")
+        list(REMOVE_ITEM _hip_lang_compile_options "$<$<COMPILE_LANGUAGE:HIP>:SHELL:-mllvm")
+        list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-early-inline-all=true")
+        list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
+        list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-function-calls=false>")
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_lang_compile_options})
+    endif()
+
     set_property(TARGET hip::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_compile_options})
     set_property(TARGET hip::device PROPERTY INTERFACE_LINK_LIBRARIES ${_hip_link_libs})
+
+    if(BLT_BUILD_HIP_WITH_HIPCC)
+        #   remove interface include directories - these are bugged in ROCM 5.2.1
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::device PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::host PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip-lang::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::device PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+        set_property(TARGET hip::host PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+    endif()
 
     if(DEFINED CMAKE_HIP_ARCHITECTURES)
         set(AMDGPU_TARGETS "${CMAKE_HIP_ARCHITECTURES}" CACHE STRING "" FORCE)
     endif()
+endif()
+
+# adds -x hip to the CL for hip-lang::device
+if(NOT BLT_BUILD_HIP_WITH_HIPCC)
+   get_target_property(_hip_lang_compile_options hip-lang::device INTERFACE_COMPILE_OPTIONS)
+   message(${_hip_lang_compile_options})
+   list(REMOVE_ITEM _hip_lang_compile_options "-mllvm")
+   list(REMOVE_ITEM _hip_lang_compile_options "-amdgpu-function-calls=false>")
+   list(APPEND _hip_lang_compile_options "-x")
+   list(APPEND _hip_lang_compile_options "hip")
+   list(APPEND _hip_lang_compile_options "-mllvm")
+   list(APPEND _hip_lang_compile_options "-amdgpu-function-calls=false>")
+   set_property(TARGET hip-lang::device PROPERTY INTERFACE_COMPILE_OPTIONS ${_hip_lang_compile_options})
 endif()
 
 # hip targets must be global for aliases when created as imported targets
@@ -66,12 +108,17 @@ if(${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
 endif()
 
+set(BLT_ADD_ROCM_PATH_COMPILER_FLAG ON CACHE BOOL "")
+if (BLT_ADD_ROCM_PATH_COMPILER_FLAG)
 # Guard against `--rocm-path` being added to crayftn less than version 15.0.0 due to
 # invalid command line option error
 if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray" AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 15.0.0)
     set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
 else()
     set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
+endif()
+else()
+   set(_blt_hip_compile_flags "")
 endif()
 
 blt_import_library(NAME          blt_hip
