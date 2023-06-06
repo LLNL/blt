@@ -1557,6 +1557,7 @@ endmacro()
 ##------------------------------------------------------------------------------
 ## blt_check_code_compiles(CODE_COMPILES <variable>
 ##                         VERBOSE_OUTPUT <ON|OFF (default OFF)>
+##                         DEPENDS_ON <libs>
 ##                         SOURCE_STRING <quoted C++ program>)
 ##
 ## This macro checks if a snippet of C++ code compiles.
@@ -1570,13 +1571,15 @@ endmacro()
 ## CODE_COMPILES A boolean variable the contains the compilation result.
 ##
 ## VERBOSE_OUTPUT Optional parameter to output debug information (Default: off)
+##
+## DEPENDS_ON Optional parameter for a list of additional dependencies
 ##------------------------------------------------------------------------------
 macro(blt_check_code_compiles)
 
     set(options)
     set(singleValueArgs CODE_COMPILES VERBOSE_OUTPUT )
     # NOTE: SOURCE_STRING must be a multiValueArg otherwise CMake removes all semi-colons
-    set(multiValueArgs SOURCE_STRING)
+    set(multiValueArgs DEPENDS_ON SOURCE_STRING)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -1603,11 +1606,20 @@ macro(blt_check_code_compiles)
     string(RANDOM LENGTH 5 _rand)
     set(_fname ${CMAKE_CURRENT_BINARY_DIR}/_bltCheckCompiles${_rand}.cpp)
     file(WRITE ${_fname} "${arg_SOURCE_STRING}")
-    try_compile(${arg_CODE_COMPILES}
+    if(NOT DEFINED arg_DEPENDS_ON)
+        try_compile(${arg_CODE_COMPILES}
                 ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
                 SOURCES ${_fname}
                 CXX_STANDARD ${CMAKE_CXX_STANDARD}
                 OUTPUT_VARIABLE _res)
+    else()
+        try_compile(${arg_CODE_COMPILES}
+                ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
+                SOURCES ${_fname}
+                CXX_STANDARD ${CMAKE_CXX_STANDARD}
+                LINK_LIBRARIES ${arg_DEPENDS_ON}
+                OUTPUT_VARIABLE _res)
+    endif()
     file(REMOVE ${_fname})
 
     if(${arg_VERBOSE_OUTPUT})
