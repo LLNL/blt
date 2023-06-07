@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -38,9 +38,9 @@ Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
 which uses MPI to parallelize the calculation over the integration intervals.
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
-in our host config file. Here is a snippet with these settings for LLNL's Pascal Cluster:
+in our host config file. Here is a snippet with these settings for LLNL's Lassen Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake
    :start-after: _blt_tutorial_mpi_config_start
    :end-before:  _blt_tutorial_mpi_config_end
    :language: cmake
@@ -101,9 +101,9 @@ or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call
 ``enable_language(CUDA)``, BLT will set the appropriate host compiler variable
 for you and enable the CUDA language.
 
-Here is a snippet with these settings for LLNL's Pascal Cluster:
+Here is a snippet with these settings for LLNL's Lassen Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
    :start-after: _blt_tutorial_cuda_config_start
    :end-before:  _blt_tutorial_cuda_config_end
    :language: cmake

@@ -45,37 +45,22 @@ quartz_release:
 
 ####
 # Build jobs
-quartz-clang_4_0_0_libcxx:
+quartz-clang_14_0_6:
   variables:
-    HOST_CONFIG: "clang@4.0.0-libcxx.cmake"
+    HOST_CONFIG: "clang@14.0.6.cmake"
   extends: [.build_on_quartz]
 
-quartz-clang_6_0_0_static_analysis:
+quartz-gcc_10_3_1:
   variables:
-    HOST_CONFIG: "clang@6.0.0-static-analysis.cmake"
+    HOST_CONFIG: "gcc@10.3.1.cmake"
   extends: [.build_on_quartz]
 
-quartz-gcc_8_3_1:
+quartz-gcc_10_3_1-export-tpls:
   variables:
-    HOST_CONFIG: "gcc@8.3.1.cmake"
+    HOST_CONFIG: "gcc@10.3.1-export-tpls.cmake"
   extends: [.build_on_quartz]
 
-quartz-gcc_8_3_1_export_tpls:
+quartz-intel_2022_1_0_cxx17:
   variables:
-    HOST_CONFIG: "gcc@8.3.1-export-tpls.cmake"
-  extends: [.build_on_quartz]
-
-quartz-inteloneapi_2021_3:
-  variables:
-    HOST_CONFIG: "intel-oneapi@2021.3.cmake"
-  extends: [.build_on_quartz]
-
-quartz-inteloneapi_2021_3_cxx17:
-  variables:
-    HOST_CONFIG: "intel-oneapi@2021.3-c++17.cmake"
-  extends: [.build_on_quartz]
-
-quartz-pgi_20_1:
-  variables:
-    HOST_CONFIG: "pgi@20.1.cmake"
+    HOST_CONFIG: "intel@2022.1.0-c++17.cmake"
   extends: [.build_on_quartz]

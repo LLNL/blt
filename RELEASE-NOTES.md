@@ -9,6 +9,26 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.3] - Release date 2023-06-05
+
+### Changed
+- Updated Googletest to main from 04/13/2023.
+  Commit: [12a5852e451baabc79c63a86c634912c563d57bc](https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc).
+  Note: this version of Googletest requires C++14, and PGI is not supported. If you are using PGI, set ENABLE_GTEST OFF.
+- Updated GoogleBenchmark to 1.8
+
+### Added
+- Added `blt_print_variables` macro to print variables in current scope, with regex filtering on variable names and values
+- Added `DEPENDS_ON` optional parameter to `blt_check_code_compiles` macro to allow for checking if a feature is available in a third-party imported target.
+- Added `CONFIGURATIONS` and `OMP_NUM_THREADS` options to `blt_add_benchmark`
+
+### Fixed
+- Guard HIP compiler flag ``--rocm-path=/path/to/rocm`` against Crayftn compiler earlier than 15.0.0.
+- Fix doubling of `INTERFACE_INCLUDE_DIRECTORIES` in `blt_patch_target(... TREAT_INCLUDES_AS_SYSTEM true)`.
+
+### Removed
+- Removed tracking all sources in a project via ``${PROJECT_NAME}_ALL_SOURCES``.
+
 ## [Version 0.5.2] - Release date 2022-10-05
 
 ### Added
@@ -268,7 +288,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.2...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.3...develop
+[Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.2...v0.5.3
 [Version 0.5.2]: https://github.com/LLNL/blt/compare/v0.5.1...v0.5.2
 [Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1
 [Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0

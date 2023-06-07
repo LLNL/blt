@@ -15,7 +15,7 @@
 .with_cuda:
   before_script:
     - module load cmake/3.18.0
-    - module load cuda/11.1.1
+    - module load cuda/11.2.0
 
 ####
 # Template
@@ -28,32 +28,22 @@
 
 ####
 # Build jobs
-lassen-clang_upstream_link_with_nvcc:
+lassen-clang_10.0.1_nvcc_c++14_export_tpls:
   variables:
-    HOST_CONFIG: "clang@upstream_link_with_nvcc.cmake"
+    HOST_CONFIG: "clang@10.0.1_nvcc_c++14_export_tpls.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-lassen-clang_upstream_nvcc_c++17:
+lassen-clang_10.0.1_nvcc_c++14_xlf:
   variables:
-    HOST_CONFIG: "clang@upstream_nvcc_c++17.cmake"
+    HOST_CONFIG: "clang@10.0.1_nvcc_c++14_xlf.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-lassen-clang_upstream_nvcc_c++17_no_separable:
+lassen-clang_10.0.1_nvcc_c++17:
   variables:
-    HOST_CONFIG: "clang@upstream_nvcc_c++17_no_separable.cmake"
+    HOST_CONFIG: "clang@10.0.1_nvcc_c++17.cmake"
   extends: [.build_on_lassen, .with_cuda]
 
-lassen-clang_upstream_nvcc_c++14_export_tpls:
+lassen-clang_10.0.1_nvcc_c++17_no_separable:
   variables:
-    HOST_CONFIG: "clang@upstream_nvcc_c++14-export-tpls.cmake"
-  extends: [.build_on_lassen, .with_cuda]
-
-lassen-clang_upstream_nvcc_xlf:
-  variables:
-    HOST_CONFIG: "clang@upstream_nvcc_xlf.cmake"
-  extends: [.build_on_lassen, .with_cuda]
-
-lassen-pgi_20.4_nvcc:
-  variables:
-    HOST_CONFIG: "pgi@20.4_nvcc.cmake"
+    HOST_CONFIG: "clang@10.0.1_nvcc_c++17_no_separable.cmake"
   extends: [.build_on_lassen, .with_cuda]

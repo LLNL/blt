@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -20,7 +20,7 @@ if(NOT BLT_SOURCE_DIR)
 endif()
 
 if (NOT BLT_CXX_STD)
-    set(BLT_CXX_STD "c++11" CACHE STRING "")
+    set(BLT_CXX_STD "c++14" CACHE STRING "")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
@@ -257,9 +257,10 @@ if (ENABLE_CUDA AND ENABLE_MPI AND
                  NUM_MPI_TASKS 4)
 endif()
 
+# Exercise blt_print_target_properties macro
 message(STATUS "")
 message(STATUS "Exercising blt_print_target_properties macro default options.")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+foreach(_target gtest gbenchmark example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
@@ -281,6 +282,18 @@ blt_register_library(NAME foo DEPENDS_ON bar)
 blt_register_library(NAME bar DEPENDS_ON foo)
 blt_print_target_properties(TARGET bar CHILDREN true)
 
+# Exercise blt_print_variables macro
+message(STATUS "")
+message(STATUS [[Exercising blt_print_variables macro on using 'NAME_REGEX "blt" IGNORE_CASE':]])
+blt_print_variables( NAME_REGEX "blt" IGNORE_CASE)
+message(STATUS "")
+message(STATUS [[Exercising blt_print_variables macro on using 'NAME_REGEX "_FOUND" VALUE_REGEX "^on$|^true$|^1$" IGNORE_CASE']])
+blt_print_variables( NAME_REGEX "_FOUND" VALUE_REGEX "^on$|^true$|^1$" IGNORE_CASE)
+message(STATUS "")
+message(STATUS [[Exercising blt_print_variables macro on using 'NAME_REGEX "LIB|LIBS|LIBRARY|LIBRARIES"']])
+blt_print_variables( NAME_REGEX "LIB|LIBS|LIBRARY|LIBRARIES")
+
+# Test object libraries
 add_subdirectory(src/object_library_test)
 
 if(ENABLE_CLANGQUERY OR ENABLE_CLANGTIDY)

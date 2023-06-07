@@ -1,0 +1,4 @@
+Googletest version is from 04/13/2023.
+https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc
+
+Note: this version of Googletest requires C++14, and PGI is not supported. If you are using PGI, set ENABLE_GTEST OFF.

@@ -1,16 +1,13 @@
-# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
-
-# Author: Noel Chalmers @ Advanced Micro Devices, Inc.
-# Date: March 11, 2019
 
 ################################
 # HIP
 ################################
 
-if (NOT ROCM_PATH)
+if(NOT ROCM_PATH)
     find_path(ROCM_PATH
         hip
         ENV{ROCM_DIR}
@@ -43,7 +40,7 @@ if(DEFINED AMDGPU_TARGETS)
     get_target_property(_hip_link_libs hip::device INTERFACE_LINK_LIBRARIES)
 
     foreach(_target ${AMDGPU_TARGETS})
-        if (NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
+        if(NOT "${CMAKE_HIP_ARCHITECTURES}" MATCHES "${_target}")
             set(_flag "--offload-arch=${_target}")
             set(_generator_compile_flag "$<$<COMPILE_LANGUAGE:CXX>:SHELL:${_flag}>")
             set(_generator_link_flag "$<$<LINK_LANGUAGE:CXX>:${_flag}>")
@@ -65,14 +62,22 @@ endif()
 
 # hip targets must be global for aliases when created as imported targets
 set(_blt_hip_is_global On)
-if (${BLT_EXPORT_THIRDPARTY})
+if(${BLT_EXPORT_THIRDPARTY})
     set(_blt_hip_is_global Off)
-endif ()
+endif()
 
-blt_import_library(NAME       blt_hip
-                   COMPILE_FLAGS "--rocm-path=${ROCM_PATH}"
-                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ${_blt_hip_is_global})
+# Guard against `--rocm-path` being added to crayftn less than version 15.0.0 due to
+# invalid command line option error
+if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray" AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 15.0.0)
+    set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
+else()
+    set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
+endif()
+
+blt_import_library(NAME          blt_hip
+                   COMPILE_FLAGS ${_blt_hip_compile_flags}
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   GLOBAL        ${_blt_hip_is_global})
 
 # Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
 # information in our target blt_hip
@@ -81,10 +86,10 @@ blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 add_library(blt::hip ALIAS blt_hip)
 
 blt_import_library(NAME          blt_hip_runtime
-                   INCLUDES ${HIP_INCLUDE_DIRS}
+                   INCLUDES      ${HIP_INCLUDE_DIRS}
                    TREAT_INCLUDES_AS_SYSTEM ON
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL ${_blt_hip_is_global})
+                   GLOBAL        ${_blt_hip_is_global})
 
 blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
 

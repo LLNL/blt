@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -13,9 +13,11 @@ blt_add_benchmark
 
 .. code-block:: cmake
 
-    blt_add_benchmark( NAME          [name]
-                       COMMAND       [command]
-                       NUM_MPI_TASKS [n])
+    blt_add_benchmark( NAME            [name]
+                       COMMAND         [command]
+                       NUM_MPI_TASKS   [n]
+                       NUM_OMP_THREADS [n]
+                       CONFIGURATIONS  [config1 [config2...]])
 
 Adds a benchmark to the project.
 
@@ -27,6 +29,14 @@ COMMAND
 
 NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
+
+NUM_OMP_THREADS
+  Indicates this test requires the defined environment variable ``OMP_NUM_THREADS``
+  set to the given variable.
+
+CONFIGURATIONS
+  Optionally set additional CTest configuration(s) for this test. Benchmark tests
+  will always be added to the ``Benchmark`` CTest configuration.
 
 This macro adds a benchmark test to the ``Benchmark`` CTest configuration
 which can be run by the ``run_benchmarks`` build target.  These tests are
@@ -43,6 +53,9 @@ library in its ``DEPENDS_ON`` list.
 Any calls to this macro should be guarded with ``ENABLE_BENCHMARKS`` unless this option
 is always on in your build project.
 
+If ``NUM_OMP_THREADS`` is given, this macro will set the environment variable ``OMP_NUM_THREADS``
+before running this test.  This is done by appending to the CMake tests property.
+
 .. note::
   BLT provides a built-in Google Benchmark that is enabled by default if you set
   ``ENABLE_BENCHMARKS=ON`` and can be turned off with the option ``ENABLE_GBENCHMARK``.
@@ -57,7 +70,7 @@ is always on in your build project.
                            DEPENDS gbenchmark)
         blt_add_benchmark(
              NAME    component_benchmark
-             COMMAND component_benchmark "--benchmark_min_time=0.0 --v=3 --benchmark_format=json")
+             COMMAND component_benchmark "--benchmark_min_time=0.0001s --v=3 --benchmark_format=json")
     endif()
 
 

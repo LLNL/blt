@@ -20,7 +20,7 @@ if(NOT BLT_SOURCE_DIR)
 endif()
 
 if (NOT BLT_CXX_STD)
-    set(BLT_CXX_STD "c++11" CACHE STRING "")
+    set(BLT_CXX_STD "c++14" CACHE STRING "")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
@@ -172,4 +172,30 @@ if(_hello_world_compiled)
   message(STATUS "... passed")
 else()
   message(FATAL_ERROR "... failed to compile.")
+endif()
+
+if(ENABLE_HIP)
+  message(STATUS "Checking blt_hip_runtime imported target in blt_check_code_compiles")
+  blt_check_code_compiles(CODE_COMPILES  _hello_world_with_libs_compiled
+                          VERBOSE_OUTPUT ON
+                          DEPENDS_ON blt_hip_runtime
+                          SOURCE_STRING
+  [=[
+  #include <iostream>
+  #include "hip/hip_runtime.h"
+
+  int main(int, char**)
+  {
+
+      std::cout << "Hello World!" << std::endl;
+
+      return 0;
+  }
+  ]=])
+
+  if(_hello_world_with_libs_compiled)
+    message(STATUS "... passed")
+  else()
+    message(FATAL_ERROR "... failed to compile.")
+  endif()
 endif()

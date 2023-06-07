@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6af41437..eea2266f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -34,6 +34,6 @@ option(GTEST_HAS_ABSL "Use Abseil and RE2. Requires Abseil and RE2 to be separat
+ 
+ if(BUILD_GMOCK)
+   add_subdirectory( googlemock )
+-else()
++elseif(BUILD_GTEST)
+   add_subdirectory( googletest )
+ endif()

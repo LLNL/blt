@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2022, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -480,18 +480,8 @@ macro(blt_patch_target)
         endif()
     endif()
 
-    # PGI does not support -isystem
-    if( (${arg_TREAT_INCLUDES_AS_SYSTEM}) AND (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI"))
-        get_target_property(_target_includes ${arg_NAME} INTERFACE_INCLUDE_DIRECTORIES)
-        # Don't copy if the target had no include directories
-        if(_target_includes)
-            if(_standard_lib_interface)
-                target_include_directories(${arg_NAME} SYSTEM ${_scope} ${_target_includes})
-            else()
-                set_property(TARGET ${arg_NAME} PROPERTY
-                            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${_target_includes})
-            endif()
-        endif()
+    if(${arg_TREAT_INCLUDES_AS_SYSTEM})
+        blt_convert_to_system_includes(TARGET ${arg_NAME})
     endif()
 
     # FIXME: Is this all that's needed?
@@ -725,8 +715,6 @@ macro(blt_add_library)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
-    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS})
-
     if ( arg_SOURCES )
         # Don't clean header-only libraries because you would have to handle
         # the white-list of properties that are allowed
@@ -831,8 +819,6 @@ macro(blt_add_executable)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
-    blt_update_project_sources( TARGET_SOURCES ${arg_SOURCES} ${arg_HEADERS} )
-
     blt_clean_target(TARGET ${arg_NAME})
 
 endmacro(blt_add_executable)
@@ -929,15 +915,17 @@ endmacro(blt_add_test)
 ##------------------------------------------------------------------------------
 ## blt_add_benchmark( NAME          [name] 
 ##                    COMMAND       [command]
-##                    NUM_MPI_TASKS [n])
+##                    NUM_MPI_TASKS [n]
+##                    NUM_OMP_THREADS [n]
+##                    CONFIGURATIONS  [config1 [config2...]])
 ##
 ## Adds a benchmark to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_benchmark)
 
     set(options)
-    set(singleValueArgs NAME NUM_MPI_TASKS)      
-    set(multiValueArgs COMMAND)
+    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS)
+    set(multiValueArgs COMMAND CONFIGURATIONS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -945,10 +933,11 @@ macro(blt_add_benchmark)
 
     # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
     # from the general list of tests
-    blt_add_test( NAME           ${arg_NAME}
-                  COMMAND        ${arg_COMMAND}
-                  NUM_MPI_TASKS  ${arg_NUM_MPI_TASKS}
-                  CONFIGURATIONS Benchmark)
+    blt_add_test( NAME            ${arg_NAME}
+                  COMMAND         ${arg_COMMAND}
+                  NUM_MPI_TASKS   ${arg_NUM_MPI_TASKS}
+                  NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
+                  CONFIGURATIONS  Benchmark ${arg_CONFIGURATIONS})
 
 endmacro(blt_add_benchmark)
 
@@ -1364,6 +1353,134 @@ endmacro(blt_print_target_properties)
 
 
 ##------------------------------------------------------------------------------
+## blt_print_variables([NAME_REGEX  <regular_expression_string>]
+##                     [VALUE_REGEX <regular_expression_string>]
+##                     [IGNORE_CASE])
+##
+## Prints all (or filtered) variables and their values in the current scope.
+## 
+## Defaults:
+## The regexes are case-sensitive unless the IGNORE_CASE option is supplied
+## NAME_REGEX = .* (print every property name)
+## VALUE_REGEX = .* (print every property value)
+## 
+##------------------------------------------------------------------------------
+macro(blt_print_variables)
+
+    set(options            IGNORE_CASE)
+    set(singleValuedArgs   NAME_REGEX VALUE_REGEX)
+    set(multiValuedArgs)
+
+    # parse and initialize arguments to the macro
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+
+    message(STATUS "[blt_print_variables] The following variables are defined at the calling site in '${CMAKE_CURRENT_LIST_FILE}' -- ")
+
+    if(NOT DEFINED arg_IGNORE_CASE)
+        set(arg_IGNORE_CASE FALSE)
+    endif()
+
+    if(arg_IGNORE_CASE)
+        set(_case_sensitivity "case insensitive")
+    else()
+        set(_case_sensitivity "case sensitive")
+    endif()
+
+    if(DEFINED arg_NAME_REGEX)
+        message(STATUS "[blt_print_variables] matching NAME_REGEX '${arg_NAME_REGEX}' (${_case_sensitivity})")
+    else()
+        set(arg_NAME_REGEX ".*")
+    endif()
+
+    if(DEFINED arg_VALUE_REGEX)
+        message(STATUS "[blt_print_variables] matching VALUE_REGEX '${arg_VALUE_REGEX}' (${_case_sensitivity})")
+    else()
+        set(arg_VALUE_REGEX ".*")
+    endif()
+
+
+    # Note: 'if(DEFINED CACHE{var})' is only avaliable in CMake@3.14+
+    set(_has_defined_cache FALSE)
+    if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14.0")
+        set(_has_defined_cache TRUE)
+    endif()
+
+    # Start with a sorted, unique list of all variables
+    get_cmake_property(_vars VARIABLES)
+    list (SORT _vars)
+    list (REMOVE_DUPLICATES _vars)
+
+    # Filter and print each variable
+    foreach (_v ${_vars})
+        # Apply regex to variable name, accounting for case sensitivity
+        set(_match_name FALSE)
+        if(arg_IGNORE_CASE)
+            string(TOUPPER ${_v} _v_upper)
+            string(REGEX MATCH ${arg_NAME_REGEX} _match_upper ${_v_upper})
+
+            string(TOLOWER ${_v} _v_lower)
+            string(REGEX MATCH ${arg_NAME_REGEX} _match_lower ${_v_lower})
+
+            if(_match_upper OR _match_lower)
+                set(_match_name TRUE)
+            endif()
+        else()
+            string(REGEX MATCH ${arg_NAME_REGEX} _match_name ${_v})
+        endif()
+
+        # Apply regex to variable value, accounting for case sensitivity
+        # Optimization: Only apply VALUE_REGEX to matched names
+        # Practicality: Only apply VALUE_REGEX to non-empty variables. 
+        # This avoids the following CMake error:
+        #     "string sub-command REGEX, mode MATCH regex ".*" matched an empty string"
+        set(_match_value FALSE)
+        if(_match_name AND ${_v})
+            set(_val "${${_v}}")
+            if(arg_IGNORE_CASE)
+                string(TOUPPER "${_val}" _val_upper)
+                string(REGEX MATCH ${arg_VALUE_REGEX} _match_upper "${_val_upper}")
+
+                string(TOLOWER "${_val}" _val_lower)
+                string(REGEX MATCH ${arg_VALUE_REGEX} _match_lower "${_val_lower}")
+
+                if(_match_upper OR _match_lower)
+                    set(_match_value TRUE)
+                endif()
+            else()
+                string(REGEX MATCH ${arg_VALUE_REGEX} _match_value "${_val}")
+            endif()
+        endif()
+
+        # Format variable name and value and print
+        if (_match_name AND _match_value)
+            set(_v_print_name ${_v})
+            # If it's a cache variable, wrap in "CACHE{}"
+            if(_has_defined_cache AND DEFINED CACHE{${_v}})
+                # Append TYPE to cache variable name, if non-empty
+                get_property(_type CACHE ${_v} PROPERTY TYPE)
+                if(NOT "" STREQUAL "${_type}")
+                    set(_v_print_name "CACHE{${_v}}:${_type}")
+                else()
+                    set(_v_print_name "CACHE{${_v}}")
+                endif()
+            endif()
+            
+            message(STATUS "[blt_print_variables]   ${_v_print_name} := ${${_v}}")
+        endif()
+    endforeach()
+
+    message(STATUS "[blt_print_variables] ----------------------------------------------------------")
+
+    unset(_case_sensitive)
+    unset(_vars)
+    unset(_has_defined_cache)
+    unset(_match_name)
+    unset(_match_value)
+endmacro(blt_print_variables)
+
+##------------------------------------------------------------------------------
 ## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)
 ##
 ## Add targets for BLT's third-party libraries to the given export-set, prefixed
@@ -1402,6 +1519,7 @@ macro(blt_export_tpl_targets)
     endforeach()
 endmacro()
 
+
 ##------------------------------------------------------------------------------
 ## blt_convert_to_system_includes(TARGET <target>)
 ##
@@ -1420,8 +1538,18 @@ macro(blt_convert_to_system_includes)
        message(FATAL_ERROR "TARGET is a required parameter for the blt_convert_to_system_includes macro.")
     endif()
 
-    get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
-    set_property(TARGET ${arg_TARGET} APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${_include_dirs}")
+    # PGI does not support -isystem
+    if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+        get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+        # Don't copy if the target had no include directories
+        if(_include_dirs)
+            # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES so it is not doubled
+            # by target_include_directories
+            set_property(TARGET ${arg_TARGET} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+            target_include_directories(${arg_TARGET} SYSTEM INTERFACE ${_include_dirs})
+        endif()
+    endif()
+
     unset(_include_dirs)
 endmacro()
 
@@ -1429,6 +1557,7 @@ endmacro()
 ##------------------------------------------------------------------------------
 ## blt_check_code_compiles(CODE_COMPILES <variable>
 ##                         VERBOSE_OUTPUT <ON|OFF (default OFF)>
+##                         DEPENDS_ON <libs>
 ##                         SOURCE_STRING <quoted C++ program>)
 ##
 ## This macro checks if a snippet of C++ code compiles.
@@ -1442,13 +1571,15 @@ endmacro()
 ## CODE_COMPILES A boolean variable the contains the compilation result.
 ##
 ## VERBOSE_OUTPUT Optional parameter to output debug information (Default: off)
+##
+## DEPENDS_ON Optional parameter for a list of additional dependencies
 ##------------------------------------------------------------------------------
 macro(blt_check_code_compiles)
 
     set(options)
     set(singleValueArgs CODE_COMPILES VERBOSE_OUTPUT )
     # NOTE: SOURCE_STRING must be a multiValueArg otherwise CMake removes all semi-colons
-    set(multiValueArgs SOURCE_STRING)
+    set(multiValueArgs DEPENDS_ON SOURCE_STRING)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -1475,11 +1606,20 @@ macro(blt_check_code_compiles)
     string(RANDOM LENGTH 5 _rand)
     set(_fname ${CMAKE_CURRENT_BINARY_DIR}/_bltCheckCompiles${_rand}.cpp)
     file(WRITE ${_fname} "${arg_SOURCE_STRING}")
-    try_compile(${arg_CODE_COMPILES}
+    if(NOT DEFINED arg_DEPENDS_ON)
+        try_compile(${arg_CODE_COMPILES}
                 ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
                 SOURCES ${_fname}
                 CXX_STANDARD ${CMAKE_CXX_STANDARD}
                 OUTPUT_VARIABLE _res)
+    else()
+        try_compile(${arg_CODE_COMPILES}
+                ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
+                SOURCES ${_fname}
+                CXX_STANDARD ${CMAKE_CXX_STANDARD}
+                LINK_LIBRARIES ${arg_DEPENDS_ON}
+                OUTPUT_VARIABLE _res)
+    endif()
     file(REMOVE ${_fname})
 
     if(${arg_VERBOSE_OUTPUT})

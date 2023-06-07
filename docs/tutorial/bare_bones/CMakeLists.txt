@@ -33,9 +33,9 @@ else()
     endif()
 endif()
 
-# Default to C++11 if not set so GTest/GMock can build
+# Default to C++14 if not set so GTest/GMock can build
 if (NOT BLT_CXX_STD)
-    set(BLT_CXX_STD "c++11" CACHE STRING "")
+    set(BLT_CXX_STD "c++14" CACHE STRING "")
 endif()
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
