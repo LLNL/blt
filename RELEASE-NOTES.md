@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.5.3] - Release date 2023-06-05
+
 ### Changed
 - Updated Googletest to main from 04/13/2023.
   Commit: [12a5852e451baabc79c63a86c634912c563d57bc](https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc).
@@ -286,7 +288,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.2...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.3...develop
+[Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.2...v0.5.3
 [Version 0.5.2]: https://github.com/LLNL/blt/compare/v0.5.1...v0.5.2
 [Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1
 [Version 0.5.0]: https://github.com/LLNL/blt/compare/v0.4.1...v0.5.0
