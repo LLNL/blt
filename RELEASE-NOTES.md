@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added support for C++23. Note: XL and PGI do not support C++23.
+
 ## [Version 0.5.3] - Release date 2023-06-05
 
 ### Changed
