@@ -110,6 +110,9 @@ if(CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "Ninja"
 
     blt_find_executable(NAME        ClangTidy
                         EXECUTABLES clang-tidy)
+
+    blt_find_executable(NAME        ClangApplyReplacements
+                        EXECUTABLES clang-apply-replacements)
 endif()
 
 #------------------------------------

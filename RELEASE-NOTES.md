@@ -11,6 +11,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added support for C++23. Note: XL and PGI do not support C++23.
+- Adds a `clang_tidy_style` target to allow `clang-tidy` to fix errors in-place.
+  This requires a `CLANGAPPLYREPLACEMENTS_EXECUTABLE` CMake variable to point to
+  the `clang-apply-replacements` executable in addition to the `CLANGTIDY_EXECUTABLE`.
 
 ## [Version 0.5.3] - Release date 2023-06-05
 
