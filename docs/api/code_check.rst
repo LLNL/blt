@@ -273,6 +273,10 @@ coding standards and rules on your source code.  Clang-tidy is documented `here 
 ``CHECKS`` are the static analysis "rules" to specifically run on the target.
 If no checks are specified, clang-tidy will run the default available static analysis checks.
 
+.. note::
+  The ``FIX`` option requires ``clang-apply-replacements``, which is controlled by the ``ENABLE_CLANGAPPLYREPLACEMENTS`` CMake variable
+  and can be provided with the ``CLANGAPPLYREPLACEMENTS_EXECUTABLE`` CMake variable.
+
 
 .. _blt_add_astyle_target:
 

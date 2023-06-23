@@ -14,6 +14,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Adds a `clang_tidy_style` target to allow `clang-tidy` to fix errors in-place.
   This requires a `CLANGAPPLYREPLACEMENTS_EXECUTABLE` CMake variable to point to
   the `clang-apply-replacements` executable in addition to the `CLANGTIDY_EXECUTABLE`.
+  Also adds a corresponding `ENABLE_CLANGAPPLYREPLACEMENTS` CMake option.
 
 ## [Version 0.5.3] - Release date 2023-06-05
 
