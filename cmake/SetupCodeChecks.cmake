@@ -87,10 +87,10 @@ if(CLANGTIDY_FOUND)
     add_custom_target(clang_tidy_check)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_tidy_check)
 
-    # targets for modifying code based via clang-tidy
+    # targets for modifying code based via clang-tidy; also require clang-apply-replacements
     if(CLANGAPPLYREPLACEMENTS_FOUND)
         add_custom_target(clang_tidy_style)
-        add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_tidy_style)
+        add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} clang_tidy_style)
     endif()
 endif()
 
@@ -481,7 +481,11 @@ macro(blt_add_clang_tidy_target)
         endif()
 
         # hook our new target into the proper dependency chain
-        add_dependencies(clang_tidy_check ${arg_NAME})
+        if(arg_FIX)
+            add_dependencies(clang_tidy_style ${arg_NAME})
+        else()
+            add_dependencies(clang_tidy_check ${arg_NAME})
+        endif()
 
         # Code check targets should only be run on demand
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)
