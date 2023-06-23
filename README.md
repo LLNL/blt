@@ -1,4 +1,4 @@
-# <img src="/share/blt/logo/blt_logo.png?raw=true" width="128" valign="middle" alt="BLT"/>
+# <img src="/share/blt/logo/blt_logo_transparent.png?raw=true" width="128" valign="middle" alt="BLT"/>
 
 [![Build
 Status](https://dev.azure.com/llnl-blt/blt/_apis/build/status/LLNL.blt?branchName=develop)](https://dev.azure.com/llnl-blt/blt/_build/latest?definitionId=1&branchName=develop)
