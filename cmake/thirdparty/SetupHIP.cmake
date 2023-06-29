@@ -7,6 +7,12 @@
 # HIP
 ################################
 
+# Don't create the blt_hip and blt_hip_runtime targets if either already exist.
+if (TARGET blt_hip OR TARGET blt_hip_runtime)
+    message(FATAL_ERROR "BLT's HIP targets have already been created.")
+    return()
+endif()
+
 if(NOT ROCM_PATH)
     # First try finding paths given by the user
     find_path(ROCM_PATH

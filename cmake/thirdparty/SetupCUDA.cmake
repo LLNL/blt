@@ -7,6 +7,12 @@
 # Sanity Checks
 ################################
 
+# Don't create the cuda and cuda_runtime targets if either already exist.
+if (TARGET cuda OR TARGET cuda_runtime)
+    message(FATAL_ERROR "BLT's CUDA targets have already been created.")
+    return()
+endif()
+
 # Rare case of two flags being incompatible
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     if (NOT CMAKE_SKIP_BUILD_RPATH AND CUDA_LINK_WITH_NVCC)

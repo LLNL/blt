@@ -7,6 +7,12 @@
 # MPI
 ################################
 
+# Don't create the mpi target if it already exists.
+if (TARGET mpi)
+    message(FATAL_ERROR "BLT's MPI target has already been created.")
+    return()
+endif()
+
 # CMake changed some of the output variables that we use from Find(MPI)
 # in 3.10+.  This toggles the variables based on the CMake version
 # the user is running.

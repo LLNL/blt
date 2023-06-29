@@ -1519,6 +1519,32 @@ macro(blt_export_tpl_targets)
     endforeach()
 endmacro()
 
+##------------------------------------------------------------------------------
+## blt_export_tpl_setups()
+##
+## Install CMake config files for third-party libraries.
+## add directory to macro, so that the base project can determine location of CMake configs
+## 
+##------------------------------------------------------------------------------
+macro(blt_install_tpl_setups)
+    # SetupThirdPartyLibraries.cmake will include the third-party library config
+    # files if necessary.  Installing this into the project's cmake directory enables
+    # this to occur during CMake's configuration of the project using BLT, isntead of
+    # during BLT's configuration.
+    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake)
+    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/BLTMacros.cmake)
+    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/BLTPrivateMacros.cmake)
+
+    set(_blt_tpl_configs)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake IF ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake IF ENABLE_HIP)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupOpenMP.cmake IF ENABLE_OPENMP)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupMPI.cmake IF ENABLE_MPI)
+    
+    foreach(config_file ${_blt_tpl_configs})
+        install(FILES config_file)
+    endforeach()
+endmacro()
 
 ##------------------------------------------------------------------------------
 ## blt_convert_to_system_includes(TARGET <target>)

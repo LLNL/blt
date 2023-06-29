@@ -10,6 +10,12 @@
 
 find_package(OpenMP REQUIRED)
 
+# Don't create the openmp target if it already exists.
+if (TARGET openmp)
+    message(FATAL_ERROR "BLT's openmp target has already been created.")
+    return()
+endif()
+
 # check if the openmp flags used for C/C++ are different from the openmp flags
 # used by the Fortran compiler
 set(BLT_OPENMP_FLAGS_DIFFER FALSE CACHE BOOL "")
