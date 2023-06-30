@@ -1527,23 +1527,38 @@ endmacro()
 ## 
 ##------------------------------------------------------------------------------
 macro(blt_install_tpl_setups)
+    set(singleValuedArgs DESTINATION)
+    cmake_parse_arguments(arg
+         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    if(NOT DEFINED arg_DESTINATION)
+        message(FATAL_ERROR "DESTINATION is a required parameter for the blt_install_tpl_setups macro.")
+    endif()
+
     # SetupThirdPartyLibraries.cmake will include the third-party library config
     # files if necessary.  Installing this into the project's cmake directory enables
     # this to occur during CMake's configuration of the project using BLT, isntead of
     # during BLT's configuration.
-    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake)
-    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/BLTMacros.cmake)
-    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/BLTPrivateMacros.cmake)
+    install(FILES ${BLT_ROOT_DIR}/cmake/BLTOptions.cmake
+            DESTINATION ${arg_DESTINATION})
+    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake
+            DESTINATION ${arg_DESTINATION})
+    install(FILES ${BLT_ROOT_DIR}/cmake/BLTMacros.cmake
+            DESTINATION ${arg_DESTINATION})
+    install(FILES ${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake
+            DESTINATION ${arg_DESTINATION})
 
     set(_blt_tpl_configs)
     blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake IF ENABLE_CUDA)
     blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake IF ENABLE_HIP)
     blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupOpenMP.cmake IF ENABLE_OPENMP)
     blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupMPI.cmake IF ENABLE_MPI)
-    
+
     foreach(config_file ${_blt_tpl_configs})
-        install(FILES config_file)
+        install(FILES ${config_file}
+                DESTINATION ${arg_DESTINATION})
     endforeach()
+
 endmacro()
 
 ##------------------------------------------------------------------------------

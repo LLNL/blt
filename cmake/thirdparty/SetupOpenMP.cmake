@@ -10,12 +10,6 @@
 
 find_package(OpenMP REQUIRED)
 
-# Don't create the openmp target if it already exists.
-if (TARGET openmp)
-    message(FATAL_ERROR "BLT's openmp target has already been created.")
-    return()
-endif()
-
 # check if the openmp flags used for C/C++ are different from the openmp flags
 # used by the Fortran compiler
 set(BLT_OPENMP_FLAGS_DIFFER FALSE CACHE BOOL "")
@@ -58,7 +52,18 @@ endif()
 message(STATUS "OpenMP Compile Flags: ${_compile_flags}")
 message(STATUS "OpenMP Link Flags:    ${_link_flags}")
 
-blt_import_library(NAME openmp
+# Don't create the openmp target if it already exists.
+if (NOT TARGET blt::openmp)
+    blt_import_library(NAME openmp
                    COMPILE_FLAGS ${_compile_flags}
                    LINK_FLAGS    ${_link_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+else()
+# Even if the target has been created, the compile and link flags may no 
+# longer necessarily be correct.  For example, the base project configuring
+# BLT may have not needed FORTRAN, but the downstream project depending upon
+# base may need FORTRAN.
+    set_target_properties(blt::openmp PROPERTIES 
+                        INTERFACE_COMPILE_OPTIONS "${_compile_flags}"
+                        INTERFACE_LINK_OPTIONS "${_link_flags}")
+endif()
