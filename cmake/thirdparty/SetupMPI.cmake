@@ -1,6 +1,6 @@
 # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
-# 
+#
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 ################################
@@ -113,7 +113,7 @@ if (ENABLE_FIND_MPI)
         # Convert rpath flag if linking with CUDA
         string(REPLACE "-Wl,-rpath," "-Xlinker -rpath -Xlinker "
                        _mpi_link_flags "${_mpi_link_flags}")
-        # -pthread just doesn't work with nvcc                       
+        # -pthread just doesn't work with nvcc
         string(REPLACE "-pthread" " "
                        _mpi_link_flags "${_mpi_link_flags}")
     endif()
@@ -173,7 +173,7 @@ if (ENABLE_FORTRAN)
         PATHS ${_mpi_includes}
         NO_DEFAULT_PATH
         )
-    
+
     if(mpif_path)
         set(MPI_Fortran_USE_MPIF ON CACHE PATH "")
         message(STATUS "Using MPI Fortran header: mpif.h")
@@ -190,7 +190,14 @@ if (NOT TARGET blt::mpi)
                    TREAT_INCLUDES_AS_SYSTEM ON
                    LIBRARIES     ${_mpi_libraries}
                    COMPILE_FLAGS ${_mpi_compile_flags}
-                   LINK_FLAGS    ${_mpi_link_flags} 
+                   LINK_FLAGS    ${_mpi_link_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
     return()
+else()
+   blt_patch_target(NAME          blt::mpi
+                    INCLUDES      ${_mpi_includes}
+                    TREAT_INCLUDES_AS_SYSTEM ON
+                    LIBRARIES     ${_mpi_libraries}
+                    COMPILE_FLAGS ${_mpi_compile_flags}
+                    LINK_FLAGS    ${_mpi_link_flags})
 endif()

@@ -1520,7 +1520,7 @@ macro(blt_export_tpl_targets)
 endmacro()
 
 ##------------------------------------------------------------------------------
-## blt_export_tpl_setups()
+## blt_install_tpl_setups(DESTINATION <path relative to your install prefix>)
 ##
 ## Install CMake config files for third-party libraries.
 ## add directory to macro, so that the base project can determine location of CMake configs
