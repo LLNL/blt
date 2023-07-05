@@ -27,6 +27,8 @@ option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
 option(ENABLE_SPHINX       "Enables Sphinx support" ON)
 
 # Quality
+option(ENABLE_CLANGAPPLYREPLACEMENTS    
+                           "Enables clang-apply-replacements support" ON)
 option(ENABLE_CLANGQUERY   "Enables Clang-query support" ON)
 option(ENABLE_CLANGTIDY    "Enables clang-tidy support" ON)
 option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
