@@ -11,10 +11,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added support for C++23. Note: XL and PGI do not support C++23.
-- Adds a `clang_tidy_style` target to allow `clang-tidy` to fix errors in-place.
+- Adds a `clang_tidy_style` CMake target to allow `clang-tidy` to fix errors in-place.
   This requires a `CLANGAPPLYREPLACEMENTS_EXECUTABLE` CMake variable to point to
   the `clang-apply-replacements` executable in addition to the `CLANGTIDY_EXECUTABLE`.
   Also adds a corresponding `ENABLE_CLANGAPPLYREPLACEMENTS` CMake option.
+  Note that the `clang_tidy_style` target is not added to the `style` target and must be run separately.
 
 ## [Version 0.5.3] - Release date 2023-06-05
 
@@ -23,6 +24,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   Commit: [12a5852e451baabc79c63a86c634912c563d57bc](https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc).
   Note: this version of Googletest requires C++14, and PGI is not supported. If you are using PGI, set ENABLE_GTEST OFF.
 - Updated GoogleBenchmark to 1.8
+- The `clang_tidy_check` target is no longer registered with the main `check` target since its changes are not always safe/valid.
 
 ### Added
 - Added `blt_print_variables` macro to print variables in current scope, with regex filtering on variable names and values

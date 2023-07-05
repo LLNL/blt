@@ -82,15 +82,15 @@ if(CLANGQUERY_FOUND)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_query_check)
 endif()
 
+# Note: clang-tidy targets are not added to the main `check` and `style` targets
+# since the changes are not always safe to apply
 if(CLANGTIDY_FOUND)
     # targets for verifying clang-tidy
     add_custom_target(clang_tidy_check)
-    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_tidy_check)
 
     # targets for modifying code based via clang-tidy; also require clang-apply-replacements
     if(CLANGAPPLYREPLACEMENTS_FOUND)
         add_custom_target(clang_tidy_style)
-        add_dependencies(${BLT_CODE_STYLE_TARGET_NAME} clang_tidy_style)
     endif()
 endif()
 
