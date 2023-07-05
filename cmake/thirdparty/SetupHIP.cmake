@@ -27,7 +27,6 @@ if(NOT ROCM_PATH)
 
     # If that fails, use CMake default paths
     if(NOT ROCM_PATH)
-        # First try finding paths given by the user
         find_path(ROCM_PATH hip)
     endif()
 endif()
