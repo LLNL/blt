@@ -7,12 +7,6 @@
 # HIP
 ################################
 
-# Don't create the blt_hip and blt_hip_runtime targets if either already exist.
-if (TARGET blt_hip OR TARGET blt_hip_runtime)
-    message(FATAL_ERROR "BLT's HIP targets have already been created.")
-    return()
-endif()
-
 if(NOT ROCM_PATH)
     # First try finding paths given by the user
     find_path(ROCM_PATH
@@ -92,23 +86,37 @@ else()
     set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
 endif()
 
-blt_import_library(NAME          blt_hip
-                   COMPILE_FLAGS ${_blt_hip_compile_flags}
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL        ${_blt_hip_is_global})
+if (NOT TARGET blt_hip)
+    blt_import_library(NAME          blt_hip
+                    COMPILE_FLAGS ${_blt_hip_compile_flags}
+                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                    GLOBAL        ${_blt_hip_is_global})
+    # Hard-copy inheritable properties instead of depending on hip::device so that we can export
+    # all required information in our target blt_hip
+    blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
+    add_library(blt::hip ALIAS blt_hip)
+else()
+    # Even if the target already exists, we need to revise the compile and link flags as needed 
+    # by downstream libraries.
+    blt_patch_target(NAME          blt::blt_hip
+                    COMPILE_FLAGS ${_blt_hip_compile_flags}
+                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                    GLOBAL        ${_blt_hip_is_global})
+endif()
 
-# Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
-# information in our target blt_hip
-blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
-
-add_library(blt::hip ALIAS blt_hip)
-
-blt_import_library(NAME          blt_hip_runtime
-                   INCLUDES      ${HIP_INCLUDE_DIRS}
-                   TREAT_INCLUDES_AS_SYSTEM ON
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   GLOBAL        ${_blt_hip_is_global})
-
-blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
-
-add_library(blt::hip_runtime ALIAS blt_hip_runtime)
+if (NOT TARGET blt_hip_runtime)
+    blt_import_library(NAME          blt_hip_runtime
+                    INCLUDES      ${HIP_INCLUDE_DIRS}
+                    TREAT_INCLUDES_AS_SYSTEM ON
+                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                    GLOBAL        ${_blt_hip_is_global})
+    blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
+    
+    add_library(blt::hip_runtime ALIAS blt_hip_runtime)
+else()
+    blt_patch_target(NAME          blt::blt_hip_runtime
+                    INCLUDES      ${HIP_INCLUDE_DIRS}
+                    TREAT_INCLUDES_AS_SYSTEM ON
+                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                    GLOBAL        ${_blt_hip_is_global})
+endif()

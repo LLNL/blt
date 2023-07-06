@@ -7,12 +7,6 @@
 # Sanity Checks
 ################################
 
-# Don't create the cuda and cuda_runtime targets if either already exist.
-if (TARGET cuda OR TARGET cuda_runtime)
-    message(FATAL_ERROR "BLT's CUDA targets have already been created.")
-    return()
-endif()
-
 # Rare case of two flags being incompatible
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     if (NOT CMAKE_SKIP_BUILD_RPATH AND CUDA_LINK_WITH_NVCC)
@@ -161,13 +155,27 @@ endif()
 # leaving it to the default source file language.
 # This logic is handled in the blt_add_library/executable
 # macros
-blt_import_library(NAME          cuda
-                   COMPILE_FLAGS ${_cuda_compile_flags}
-                   INCLUDES      ${CUDA_INCLUDE_DIRS}
-                   LIBRARIES     ${CUDA_LIBRARIES}
-                   LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   )
+if (NOT TARGET cuda)
+    blt_import_library(NAME          cuda
+                    COMPILE_FLAGS ${_cuda_compile_flags}
+                    INCLUDES      ${CUDA_INCLUDE_DIRS}
+                    LIBRARIES     ${CUDA_LIBRARIES}
+                    LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
+                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+    )
+else()
+    # Even if the target already exists, we need to revise 
+    # the compile and link flags as needed by downstream
+    # libraries.
+    blt_patch_target(NAME          blt::cuda
+                    COMPILE_FLAGS ${_cuda_compile_flags}
+                    INCLUDES      ${CUDA_INCLUDE_DIRS}
+                    LIBRARIES     ${CUDA_LIBRARIES}
+                    LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
+                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+    )
+endif()
+
 
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 
@@ -175,7 +183,14 @@ blt_import_library(NAME          cuda
 # linking with nvcc.
 # This logic is handled in the blt_add_library/executable
 # macros
-blt_import_library(NAME       cuda_runtime
-                   INCLUDES   ${CUDA_INCLUDE_DIRS}
-                   LIBRARIES  ${CUDA_LIBRARIES}
-                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+if (NOT TARGET cuda_runtime)
+    blt_import_library(NAME       cuda_runtime
+                    INCLUDES   ${CUDA_INCLUDE_DIRS}
+                    LIBRARIES  ${CUDA_LIBRARIES}
+                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+else()
+    blt_patch_target(NAME       blt::cuda_runtime
+                    INCLUDES   ${CUDA_INCLUDE_DIRS}
+                    LIBRARIES  ${CUDA_LIBRARIES}
+                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+endif()
