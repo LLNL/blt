@@ -17,6 +17,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   Also adds a corresponding `ENABLE_CLANGAPPLYREPLACEMENTS` CMake option.
   Note that the `clang_tidy_style` target is not added to the `style` target and must be run separately.
 
+### Changed
+- SetupHIP now searches for user-defined or environment variables before CMake paths to find the ROCM_PATH.
+
 ## [Version 0.5.3] - Release date 2023-06-05
 
 ### Changed

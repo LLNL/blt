@@ -8,15 +8,27 @@
 ################################
 
 if(NOT ROCM_PATH)
+    # First try finding paths given by the user
     find_path(ROCM_PATH
         hip
-        ENV{ROCM_DIR}
-        ENV{ROCM_PATH}
-        ENV{HIP_PATH}
-        ${HIP_PATH}/..
-        ${HIP_ROOT_DIR}/../
-        ${ROCM_ROOT_DIR}
-        /opt/rocm)
+        PATHS
+          $ENV{ROCM_DIR}
+          $ENV{ROCM_PATH}
+          $ENV{HIP_PATH}
+          ${HIP_PATH}/..
+          ${HIP_ROOT_DIR}/../
+          ${ROCM_ROOT_DIR}
+          /opt/rocm
+        NO_DEFAULT_PATH
+        NO_CMAKE_ENVIRONMENT_PATH
+        NO_CMAKE_PATH
+        NO_SYSTEM_ENVIRONMENT_PATH
+        NO_CMAKE_SYSTEM_PATH)
+
+    # If that fails, use CMake default paths
+    if(NOT ROCM_PATH)
+        find_path(ROCM_PATH hip)
+    endif()
 endif()
 
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
