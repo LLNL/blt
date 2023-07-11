@@ -156,11 +156,11 @@ endif()
 # This logic is handled in the blt_add_library/executable
 # macros
 blt_import_library(NAME          cuda
-                COMPILE_FLAGS ${_cuda_compile_flags}
-                INCLUDES      ${CUDA_INCLUDE_DIRS}
-                LIBRARIES     ${CUDA_LIBRARIES}
-                LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
-                EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   COMPILE_FLAGS ${_cuda_compile_flags}
+                   INCLUDES      ${CUDA_INCLUDE_DIRS}
+                   LIBRARIES     ${CUDA_LIBRARIES}
+                   LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
 )
 
 # same as 'cuda' but we don't flag your source files as
@@ -170,6 +170,6 @@ blt_import_library(NAME          cuda
 # This logic is handled in the blt_add_library/executable
 # macros
 blt_import_library(NAME       cuda_runtime
-                INCLUDES   ${CUDA_INCLUDE_DIRS}
-                LIBRARIES  ${CUDA_LIBRARIES}
-                EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+                   INCLUDES   ${CUDA_INCLUDE_DIRS}
+                   LIBRARIES  ${CUDA_LIBRARIES}
+                   EXPORTABLE ${BLT_EXPORT_THIRDPARTY})

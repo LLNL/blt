@@ -1554,7 +1554,7 @@ macro(blt_install_tpl_setups)
     # to guard against users simultaneously exporting and installing flexible TPL targets.
     set(INSTALL_TPL_SETUPS TRUE)
 
-    # SetupThirdPartyLibraries.cmake will include the third-party library config
+    # SetupThirdPartyTargetsDownstream.cmake will include the third-party library config
     # files if necessary.  Installing this into the project's cmake directory enables
     # this to occur during config time in downstream projects, instead of
     # during BLT's configuration.
