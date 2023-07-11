@@ -183,21 +183,10 @@ if (ENABLE_FORTRAN)
     endif()
 endif()
 
-# Don't create the mpi target if it already exists.
-if (NOT TARGET blt::mpi)
-    blt_import_library(NAME          mpi
-                   INCLUDES      ${_mpi_includes}
-                   TREAT_INCLUDES_AS_SYSTEM ON
-                   LIBRARIES     ${_mpi_libraries}
-                   COMPILE_FLAGS ${_mpi_compile_flags}
-                   LINK_FLAGS    ${_mpi_link_flags}
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
-    return()
-else()
-   blt_patch_target(NAME          blt::mpi
-                    INCLUDES      ${_mpi_includes}
-                    TREAT_INCLUDES_AS_SYSTEM ON
-                    LIBRARIES     ${_mpi_libraries}
-                    COMPILE_FLAGS ${_mpi_compile_flags}
-                    LINK_FLAGS    ${_mpi_link_flags})
-endif()
+blt_import_library(NAME          mpi
+                INCLUDES      ${_mpi_includes}
+                TREAT_INCLUDES_AS_SYSTEM ON
+                LIBRARIES     ${_mpi_libraries}
+                COMPILE_FLAGS ${_mpi_compile_flags}
+                LINK_FLAGS    ${_mpi_link_flags}
+                EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})

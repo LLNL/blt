@@ -1499,6 +1499,14 @@ macro(blt_export_tpl_targets)
         message(FATAL_ERROR "EXPORT is a required parameter for the blt_export_tpl_targets macro.")
     endif()
 
+    if(INSTALL_TPL_SETUPS)
+        message(FATAL_ERROR "TPL setup files have already been installed using blt_install_tpl_setups.  
+                             TPL libraries cannot be both exported and installed.")
+    endif()
+    # Set the variable indicating that TPL libraries will be exported to guard against users
+    # simultaneously exporting and installing flexible TPL targets.
+    set(EXPORT_TPL_TARGETS TRUE)
+
     set(_blt_tpl_targets)
     blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
     blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
@@ -1522,8 +1530,11 @@ endmacro()
 ##------------------------------------------------------------------------------
 ## blt_install_tpl_setups(DESTINATION <path relative to your install prefix>)
 ##
-## Install CMake config files for third-party libraries.
-## add directory to macro, so that the base project can determine location of CMake configs
+## Install CMake config files for third-party libraries.  This macro should be called
+## whenever a project uses a third-party library like CUDA, MPI, OpenMP, or HIP.  It is
+## a more correct way to configure third-party libraries than blt_export_tpl_targets,
+## because compile flags and link flags can be set at config time by downstream 
+## libraries.
 ## 
 ##------------------------------------------------------------------------------
 macro(blt_install_tpl_setups)
@@ -1535,13 +1546,21 @@ macro(blt_install_tpl_setups)
         message(FATAL_ERROR "DESTINATION is a required parameter for the blt_install_tpl_setups macro.")
     endif()
 
+    if(EXPORT_TPL_TARGETS)
+        message(FATAL_ERROR "TPL targets have already been exported using blt_export_tpl_targets.  
+                             TPL libraries cannot be both exported and installed.")
+    endif()
+    # Set the variable indicating that TPL libraries will have their config files installed 
+    # to guard against users simultaneously exporting and installing flexible TPL targets.
+    set(INSTALL_TPL_SETUPS TRUE)
+
     # SetupThirdPartyLibraries.cmake will include the third-party library config
     # files if necessary.  Installing this into the project's cmake directory enables
-    # this to occur during CMake's configuration of the project using BLT, isntead of
+    # this to occur during config time in downstream projects, instead of
     # during BLT's configuration.
     install(FILES ${BLT_ROOT_DIR}/cmake/BLTOptions.cmake
             DESTINATION ${arg_DESTINATION})
-    install(FILES ${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake
+    install(FILES ${BLT_ROOT_DIR}/cmake/SetupThirdPartyTargetsDownstream.cmake
             DESTINATION ${arg_DESTINATION})
     install(FILES ${BLT_ROOT_DIR}/cmake/BLTMacros.cmake
             DESTINATION ${arg_DESTINATION})
