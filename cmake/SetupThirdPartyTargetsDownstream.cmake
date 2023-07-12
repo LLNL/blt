@@ -7,12 +7,9 @@
 # This file is used by projects that link to foo, to create a target for OpenMP
 # with valid config flags. 
 include("${CMAKE_CURRENT_LIST_DIR}/BLTOptions.cmake")
-# Despite the inclusion of BLTMacros and BLTPrivateMacros, these macros are not
-# guaranteed to work as expected in arbitrary downstream projects.  Instead,
-# they are included here so that SetupMPI, SetupOpenMP, SetupCUDA, and SetupHIP 
-# can function as expected. 
-include("${CMAKE_CURRENT_LIST_DIR}/BLTPrivateMacros.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/BLTMacros.cmake")
+# BLTInstallableMacros provides helper macros for setting up and creating
+# third-party library targets.
+include("${CMAKE_CURRENT_LIST_DIR}/BLTInstallableMacros.cmake")
 
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/SetupMPI.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/SetupMPI.cmake")
