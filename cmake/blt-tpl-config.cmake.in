@@ -1,0 +1,17 @@
+if ("@ENABLE_CUDA@")
+    set(ENABLE_CUDA     "@ENABLE_CUDA@")
+endif()
+
+if ("@ENABLE_HIP@")
+    set(ENABLE_HIP      "@ENABLE_HIP@")
+endif()
+
+if ("@ENABLE_MPI@")
+    set(ENABLE_MPI      "@ENABLE_MPI@")
+endif()
+
+if ("@ENABLE_OPENMP@")
+    set(ENABLE_OPENMP   "@ENABLE_OPENMP@")
+endif()
+
+set (ENABLE_FIND_MPI "@ENABLE_FIND_MPI@")

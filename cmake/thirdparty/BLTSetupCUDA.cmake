@@ -155,7 +155,7 @@ endif()
 # leaving it to the default source file language.
 # This logic is handled in the blt_add_library/executable
 # macros
-if (NOT TARGET blt::cuda)
+if (NOT TARGET cuda)
     blt_import_library(NAME          cuda
                        COMPILE_FLAGS ${_cuda_compile_flags}
                        INCLUDES      ${CUDA_INCLUDE_DIRS}
@@ -170,7 +170,7 @@ endif()
 # linking with nvcc.
 # This logic is handled in the blt_add_library/executable
 # macros
-if (NOT TARGET blt::cuda_runtime)
+if (NOT TARGET cuda_runtime)
     blt_import_library(NAME       cuda_runtime
                        INCLUDES   ${CUDA_INCLUDE_DIRS}
                        LIBRARIES  ${CUDA_LIBRARIES}

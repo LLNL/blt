@@ -1086,6 +1086,14 @@ macro(blt_print_variables)
     unset(_match_value)
 endmacro(blt_print_variables)
 
+# The following variables control whether third-party libraries (TPLs) should have targets exported from  
+# a project using BLT, or if the the TPLs should be configured downstream and have their setup CMake files 
+# installed.  These are set by calling either blt_install_tpl_setups or blt_export_tpl_targets.
+set(BLT_EXPORT_TPL_TARGETS FALSE)
+mark_as_advanced(BLT_EXPORT_TPL_TARGETS)
+set(BLT_INSTALL_TPL_SETUPS FALSE)
+mark_as_advanced(BLT_INSTALL_TPL_SETUPS)
+
 ##------------------------------------------------------------------------------
 ## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)
 ##
@@ -1164,22 +1172,32 @@ macro(blt_install_tpl_setups)
     # files if necessary.  Installing this into the project's cmake directory enables
     # this to occur during config time in downstream projects, instead of
     # during BLT's configuration.
-    install(FILES ${BLT_ROOT_DIR}/cmake/BLTOptions.cmake
-            DESTINATION ${arg_DESTINATION})
-    install(FILES ${BLT_ROOT_DIR}/cmake/SetupThirdPartyTargetsDownstream.cmake
+    install(FILES ${BLT_ROOT_DIR}/cmake/BLTSetupTargets.cmake
             DESTINATION ${arg_DESTINATION})
     install(FILES ${BLT_ROOT_DIR}/cmake/BLTInstallableMacros.cmake
             DESTINATION ${arg_DESTINATION})
 
+    configure_file(
+        ${BLT_ROOT_DIR}/cmake/blt-tpl-config.cmake.in
+        ${BLT_BUILD_DIR}/BLT-TPL-config.cmake
+    )
+
+    install(FILES ${BLT_BUILD_DIR}/BLT-TPL-config.cmake
+        DESTINATION ${arg_DESTINATION})
+
     set(_blt_tpl_configs)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake IF ENABLE_CUDA)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake IF ENABLE_HIP)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupOpenMP.cmake IF ENABLE_OPENMP)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/SetupMPI.cmake IF ENABLE_MPI)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupCUDA.cmake IF ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupHIP.cmake IF ENABLE_HIP)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupOpenMP.cmake IF ENABLE_OPENMP)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupMPI.cmake IF ENABLE_MPI)
+
+    if (_blt_tpl_configs) 
+        install(DIRECTORY DESTINATION ${arg_DESTINATION}/thirdparty)
+    endif()
 
     foreach(config_file ${_blt_tpl_configs})
         install(FILES ${config_file}
-                DESTINATION ${arg_DESTINATION})
+                DESTINATION ${arg_DESTINATION}/thirdparty)
     endforeach()
 
 endmacro()
