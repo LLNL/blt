@@ -63,7 +63,7 @@ endif()
 # Basics
 ############################################################
 # language check fails when using clang-cuda
-if (NOT ENABLE_CLANG_CUDA)
+if (NOT BLT_ENABLE_CLANG_CUDA)
   enable_language(CUDA)
 endif ()
 
@@ -144,7 +144,7 @@ endif()
 
 
 set(_cuda_compile_flags " ")
-if (ENABLE_CLANG_CUDA)
+if (BLT_ENABLE_CLANG_CUDA)
     set (_cuda_compile_flags -x cuda --cuda-gpu-arch=${BLT_CLANG_CUDA_ARCH} --cuda-path=${CUDA_TOOLKIT_ROOT_DIR})
     message(STATUS "Clang CUDA Enabled. CUDA compile flags added: ${_cuda_compile_flags}")    
 endif()

@@ -14,6 +14,16 @@ include("${CMAKE_CURRENT_LIST_DIR}/BLTInstallableMacros.cmake")
 # If the generated TPL config file exists, include it here.
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLT-TPL-config.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/BLT-TPL-config.cmake")
+# Otherwise, configure the TPL flags.  We have to prefix these variable with
+# BLT so that they never conflict with user-level CMake variables in downstream
+# projects.
+else()
+  set(BLT_ENABLE_CUDA         ${ENABLE_CUDA})
+  set(BLT_ENABLE_HIP          ${ENABLE_HIP})
+  set(BLT_ENABLE_MPI          ${ENABLE_MPI})
+  set(BLT_ENABLE_OPENMP       ${ENABLE_OPENMP})
+  set(BLT_ENABLE_FIND_MPI     ${ENABLE_FIND_MPI})
+  set(BLT_ENABLE_CLANG_CUDA   ${ENABLE_CLANG_CUDA})
 endif()
 
 # Detect if Fortran has been introduced.
@@ -27,14 +37,16 @@ endif()
 # Only update ENABLE_FORTRAN if it is a new requirement, don't turn 
 # the flag off if required by an upstream dependency.
 if (NOT ENABLE_FORTRAN)
-  set(ENABLE_FORTRAN ${_fortran_already_enabled})
+  set(BLT_ENABLE_FORTRAN ${_fortran_already_enabled})
+else()
+  set(BLT_ENABLE_FORTRAN ENABLE_FORTRAN)
 endif()
 
 #------------------------------------
 # MPI
 #------------------------------------
-message(STATUS "MPI Support is ${ENABLE_MPI}")
-if (ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
+message(STATUS "MPI Support is ${BLT_ENABLE_MPI}")
+if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake" AND NOT EXISTS)
   include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
 endif()
 
@@ -42,8 +54,8 @@ endif()
 #------------------------------------
 # OpenMP
 #------------------------------------
-message(STATUS "OpenMP Support is ${ENABLE_OPENMP}")
-if (ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
+message(STATUS "OpenMP Support is ${BLT_ENABLE_OPENMP}")
+if (BLT_ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
 endif()
 
@@ -51,8 +63,8 @@ endif()
 #------------------------------------
 # CUDA
 #------------------------------------
-message(STATUS "CUDA Support is ${ENABLE_CUDA}")
-if (ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
+message(STATUS "CUDA Support is ${BLT_ENABLE_CUDA}")
+if (BLT_ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
 endif()
 
@@ -60,7 +72,7 @@ endif()
 #------------------------------------
 # HIP
 #------------------------------------
-message(STATUS "HIP Support is ${ENABLE_HIP}")
-if (ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
+message(STATUS "HIP Support is ${BLT_ENABLE_HIP}")
+if (BLT_ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
 endif()
