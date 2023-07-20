@@ -46,7 +46,7 @@ endif()
 # MPI
 #------------------------------------
 message(STATUS "MPI Support is ${BLT_ENABLE_MPI}")
-if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake" AND NOT EXISTS)
+if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
 endif()
 
