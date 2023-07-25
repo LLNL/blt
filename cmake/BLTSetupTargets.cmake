@@ -9,11 +9,14 @@
 # into the destination specified by the argument <dir>.
 
 # BLTInstallableMacros provides helper macros for setting up and creating
-# third-party library targets.
-include("${CMAKE_CURRENT_LIST_DIR}/BLTInstallableMacros.cmake")
+# third-party library targets.  The below guard prevents the file from 
+# included twice when a project builds using BLT.
+if (NOT BLT_LOADED)
+  include("${CMAKE_CURRENT_LIST_DIR}/BLTInstallableMacros.cmake")
+endif()
 # If the generated TPL config file exists, include it here.
-if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLT-TPL-config.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/BLT-TPL-config.cmake")
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
 # Otherwise, configure the TPL flags.  We have to prefix these variable with
 # BLT so that they never conflict with user-level CMake variables in downstream
 # projects.

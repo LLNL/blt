@@ -1178,11 +1178,11 @@ macro(blt_install_tpl_setups)
             DESTINATION ${arg_DESTINATION})
 
     configure_file(
-        ${BLT_ROOT_DIR}/cmake/blt-tpl-config.cmake.in
-        ${BLT_BUILD_DIR}/BLT-TPL-config.cmake
+        ${BLT_ROOT_DIR}/cmake/BLTThirdPartyConfigFlags.cmake.in
+        ${BLT_BUILD_DIR}/BLTThirdPartyConfigFlags.cmake
     )
 
-    install(FILES ${BLT_BUILD_DIR}/BLT-TPL-config.cmake
+    install(FILES ${BLT_BUILD_DIR}/BLTThirdPartyConfigFlags.cmake
         DESTINATION ${arg_DESTINATION})
 
     set(_blt_tpl_configs)

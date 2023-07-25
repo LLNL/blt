@@ -86,7 +86,7 @@ else()
     set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
 endif()
 
-if (NOT TARGET blt::blt_hip)
+if (NOT TARGET blt_hip)
     blt_import_library(NAME          blt_hip
                        COMPILE_FLAGS ${_blt_hip_compile_flags}
                        EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
@@ -99,7 +99,7 @@ if (NOT TARGET blt::blt_hip)
     add_library(blt::hip ALIAS blt_hip)
 endif()
 
-if (NOT TARGET blt::blt_hip_runtime)
+if (NOT TARGET blt_hip_runtime)
     blt_import_library(NAME          blt_hip_runtime
                        INCLUDES      ${HIP_INCLUDE_DIRS}
                        TREAT_INCLUDES_AS_SYSTEM ON

@@ -184,7 +184,7 @@ if (BLT_ENABLE_FORTRAN)
 endif()
 
 # Don't create the mpi target if it already exists.
-if (NOT TARGET blt::mpi)
+if (NOT TARGET mpi)
     blt_import_library(NAME          mpi
                        INCLUDES      ${_mpi_includes}
                        TREAT_INCLUDES_AS_SYSTEM ON
