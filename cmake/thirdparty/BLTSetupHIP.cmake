@@ -86,27 +86,24 @@ else()
     set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
 endif()
 
-if (NOT TARGET blt_hip)
-    blt_import_library(NAME          blt_hip
-                       COMPILE_FLAGS ${_blt_hip_compile_flags}
-                       EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                       GLOBAL        ${_blt_hip_is_global})
+blt_import_library(NAME          blt_hip
+                   COMPILE_FLAGS ${_blt_hip_compile_flags}
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   GLOBAL        ${_blt_hip_is_global})
 
-    # Hard-copy inheritable properties instead of depending on hip::device so that we can export
-    # all required information in our target blt_hip
-    blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
+# Hard-copy inheritable properties instead of depending on hip::device so that we can export
+# all required information in our target blt_hip
+blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 
-    add_library(blt::hip ALIAS blt_hip)
-endif()
+add_library(blt::hip ALIAS blt_hip)
 
-if (NOT TARGET blt_hip_runtime)
-    blt_import_library(NAME          blt_hip_runtime
-                       INCLUDES      ${HIP_INCLUDE_DIRS}
-                       TREAT_INCLUDES_AS_SYSTEM ON
-                       EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                       GLOBAL        ${_blt_hip_is_global})
 
-    blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
+blt_import_library(NAME          blt_hip_runtime
+                   INCLUDES      ${HIP_INCLUDE_DIRS}
+                   TREAT_INCLUDES_AS_SYSTEM ON
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   GLOBAL        ${_blt_hip_is_global})
 
-    add_library(blt::hip_runtime ALIAS blt_hip_runtime)
-endif()
+blt_inherit_target_info(TO blt_hip_runtime FROM hip::host OBJECT FALSE)
+
+add_library(blt::hip_runtime ALIAS blt_hip_runtime)

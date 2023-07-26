@@ -17,10 +17,10 @@ endif()
 # If the generated TPL config file exists, include it here.
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
-# Otherwise, configure the TPL flags.  We have to prefix these variable with
-# BLT so that they never conflict with user-level CMake variables in downstream
-# projects.
 else()
+  # Otherwise, configure the TPL flags.  We have to prefix these variable with
+  # BLT so that they never conflict with user-level CMake variables in downstream
+  # projects.
   set(BLT_ENABLE_CUDA         ${ENABLE_CUDA})
   set(BLT_ENABLE_HIP          ${ENABLE_HIP})
   set(BLT_ENABLE_MPI          ${ENABLE_MPI})
@@ -48,34 +48,42 @@ endif()
 #------------------------------------
 # MPI
 #------------------------------------
-message(STATUS "MPI Support is ${BLT_ENABLE_MPI}")
-if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
+if (NOT TARGET mpi)
+  message(STATUS "MPI Support is ${BLT_ENABLE_MPI}")
+  if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
+  endif()
 endif()
 
 
 #------------------------------------
 # OpenMP
 #------------------------------------
-message(STATUS "OpenMP Support is ${BLT_ENABLE_OPENMP}")
-if (BLT_ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
+if (NOT TARGET openmp)
+  message(STATUS "OpenMP Support is ${BLT_ENABLE_OPENMP}")
+  if (BLT_ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
+  endif()
 endif()
 
 
 #------------------------------------
 # CUDA
 #------------------------------------
-message(STATUS "CUDA Support is ${BLT_ENABLE_CUDA}")
-if (BLT_ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
+if (NOT TARGET cuda)
+  message(STATUS "CUDA Support is ${BLT_ENABLE_CUDA}")
+  if (BLT_ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
+  endif()
 endif()
 
 
 #------------------------------------
 # HIP
 #------------------------------------
-message(STATUS "HIP Support is ${BLT_ENABLE_HIP}")
-if (BLT_ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
+if (NOT TARGET blt_hip)
+  message(STATUS "HIP Support is ${BLT_ENABLE_HIP}")
+  if (BLT_ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
+  endif()
 endif()

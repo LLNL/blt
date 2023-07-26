@@ -53,9 +53,7 @@ message(STATUS "OpenMP Compile Flags: ${_compile_flags}")
 message(STATUS "OpenMP Link Flags:    ${_link_flags}")
 
 # Don't create the openmp target if it already exists.
-if (NOT TARGET openmp)
-    blt_import_library(NAME openmp
-                       COMPILE_FLAGS ${_compile_flags}
-                       LINK_FLAGS    ${_link_flags}
-                       EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
-endif()
+blt_import_library(NAME openmp
+                   COMPILE_FLAGS ${_compile_flags}
+                   LINK_FLAGS    ${_link_flags}
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
