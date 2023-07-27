@@ -538,7 +538,8 @@ blt_export_tpl_targets
     blt_export_tpl_targets(EXPORT  <export-set-name>
                            [NAMESPACE <namespace>])
 
-Install BLT-provided third-party library targets to the given export set.
+This macro is now deprecated in favor of ``blt_install_tpl_setups``.  Install
+ BLT-provided third-party library targets to the given export set.
 
 EXPORT
   CMake export set the targets are being added to
@@ -555,3 +556,39 @@ targets, without the downstream project itself requiring the use of BLT.
   It is highly recommended that the NAMESPACE argument is used to ensure that
   the targets are given a unique prefix that will reduce the chance of
   conflicts.
+
+.. blt_install_tpl_setups:
+
+blt_install_tpl_setups
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_install_tpl_setups(DESTINATION <dir>)
+
+Install CMake files for configuring and importing third-party libraries (TPLs).
+
+DESTINATION
+  Directory under the project's installation directory to install the TPL setups.
+  The directory lib/cmake/ is recommended.
+
+
+This macro will install files used to configure the TPLs OpenMP, MPI, CUDA, and HIP.  Each file 
+uses generator expressions to determine compile and link flags needed by a TPL, then
+calls ``blt_import_library`` to setup the TPL.  Any project that requires OpenMP, MPI, CUDA, 
+or HIP should call this macro, and must ``include`` the file ``BLTSetupTargets.cmake`` from its 
+``*-config.cmake`` file.  The file ``BLTSetupTargets.cmake`` is also installed by this macro.
+This file will then setup the TPLs when a downstream project calls ``find_package`` on the base 
+project.
+
+This macro is meant to replace ``blt_export_tpl_targets`` as the favored way to configure TPLs
+for use by projects downstream.  An internal flag makes it impossible to call both from the same 
+project, and calling both macros from the same project is untested and unsupported. 
+
+.. note::
+  The line 
+  ``include("${CMAKE_CURRENT_LIST_DIR}/../BLTSetupTargets.cmake")`` MUST be added
+  to the project's ``*-config.cmake`` in order for TPLs to actually be configured 
+  by downstream users.
+
+  Passing lib/cmake/ as DESTINATION is highly recommended.
