@@ -583,7 +583,7 @@ project.
 
 This macro is meant to replace ``blt_export_tpl_targets`` as the favored way to configure TPLs
 for use by projects downstream.  An internal flag makes it impossible to call both from the same 
-project, and calling both macros from the same project is untested and unsupported. 
+project.
 
 .. note::
   The line 
