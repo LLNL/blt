@@ -570,8 +570,6 @@ Install CMake files for configuring and importing third-party libraries (TPLs).
 
 DESTINATION
   Directory under the project's installation directory to install the TPL setups.
-  The directory lib/cmake/ is recommended.
-
 
 This macro will install files used to configure the TPLs OpenMP, MPI, CUDA, and HIP.  Each file 
 uses generator expressions to determine compile and link flags needed by a TPL, then
@@ -586,9 +584,7 @@ for use by projects downstream.  An internal flag makes it impossible to call bo
 project.
 
 .. note::
-  The line 
-  ``include("${CMAKE_CURRENT_LIST_DIR}/../BLTSetupTargets.cmake")`` MUST be added
-  to the project's ``*-config.cmake`` in order for TPLs to actually be configured 
-  by downstream users.
-
-  Passing lib/cmake/ as DESTINATION is highly recommended.
+  ``BLTSetupTargets.cmake`` MUST be included from ``<project-name>-config.cmake`` in order for 
+  this macro to work correctly.  In order for this file to be found, it should be included
+  as ``include(<project-installation-directory>/<DESTINATION>)``, where ``DESTINATION`` is the 
+  argument passed to ``blt_install_tpl_setups``. 
