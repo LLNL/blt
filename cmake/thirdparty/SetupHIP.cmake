@@ -33,7 +33,7 @@ endif()
 
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
 # found.
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_ROOT_DIR}/lib/cmake;${ROCM_PATH}")
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH};${ROCM_ROOT_DIR}/lib/cmake")
 
 find_package(hip REQUIRED CONFIG PATHS  ${HIP_PATH} ${ROCM_PATH} ${ROCM_ROOT_DIR}/lib/cmake/hip)
 
