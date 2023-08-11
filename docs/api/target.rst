@@ -576,13 +576,13 @@ DESTINATION
 
 This macro will install setup files used to recreate the necessary BLT targets OpenMP, MPI, CUDA, and HIP.
 
-The setup files are located in cmake/thirdparty relative to BLT. These setup files will call the necessary 
-`find_packages` for each needed target and populate them with the necessary target information, such as compile
-and link flags. The BLT targets are then recreated via ``blt_import_library``.  ``BLTSetupTargets.cmake`` MUST 
-be included from your project created config file, such as ``<lowercasePackageName>-config.cmake`` or
-``<PackageName>Config.cmake``. For example, as long as you called this macro with the same ``DESTINATION`` as 
-your exported project targets, ``include(${CMAKE_CURRENT_LIST_DIR}/BLTSetupTargets.cmake)`` will recreate the 
-BLT targets in a downstream project.
+The installed setup files are the same files that originally created the BLT targets and will recreate the 
+same process in your downstream projects. These call the necessary `find_packages` for each needed target 
+and populate them with the necessary target information, such as compile and link flags. The BLT targets 
+are then recreated via ``blt_import_library``.  ``BLTSetupTargets.cmake`` MUST be included from your project
+created config file, such as ``<lowercasePackageName>-config.cmake`` or ``<PackageName>Config.cmake``. 
+For example, as long as you called this macro with the same ``DESTINATION`` as your exported project targets,
+``include(${CMAKE_CURRENT_LIST_DIR}/BLTSetupTargets.cmake)`` will recreate the BLT targets in a downstream project.
  
 .. note::
   This macro is meant to replace ``blt_export_tpl_targets`` as the favored way to configure TPLs
