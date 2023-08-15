@@ -1087,12 +1087,12 @@ macro(blt_print_variables)
 endmacro(blt_print_variables)
 
 # The following variables control whether third-party libraries (TPLs) should have targets exported from  
-# a project using BLT, or if the the TPLs should be configured downstream and have their setup CMake files 
+# a project using BLT, or if the TPLs should be configured downstream and have their setup CMake files 
 # installed.  These are set by calling either blt_install_tpl_setups or blt_export_tpl_targets.
-set(BLT_EXPORT_TPL_TARGETS FALSE)
-mark_as_advanced(BLT_EXPORT_TPL_TARGETS)
-set(BLT_INSTALL_TPL_SETUPS FALSE)
-mark_as_advanced(BLT_INSTALL_TPL_SETUPS)
+set(_BLT_EXPORT_TPL_TARGETS FALSE)
+mark_as_advanced(_BLT_EXPORT_TPL_TARGETS)
+set(_BLT_INSTALL_TPL_SETUPS FALSE)
+mark_as_advanced(_BLT_INSTALL_TPL_SETUPS)
 
 ##------------------------------------------------------------------------------
 ## blt_export_tpl_targets(EXPORT <export-set> NAMESPACE <namespace>)
@@ -1113,13 +1113,13 @@ macro(blt_export_tpl_targets)
         message(FATAL_ERROR "EXPORT is a required parameter for the blt_export_tpl_targets macro.")
     endif()
 
-    if(INSTALL_TPL_SETUPS)
+    if(_BLT_INSTALL_TPL_SETUPS)
         message(FATAL_ERROR "TPL setup files have already been installed using blt_install_tpl_setups.  
                              TPL libraries cannot be both exported and installed.")
     endif()
     # Set the variable indicating that TPL libraries will be exported to guard against users
     # simultaneously exporting and installing flexible TPL targets.
-    set(EXPORT_TPL_TARGETS TRUE)
+    set(_BLT_EXPORT_TPL_TARGETS TRUE)
 
     set(_blt_tpl_targets)
     blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
@@ -1160,13 +1160,13 @@ macro(blt_install_tpl_setups)
         message(FATAL_ERROR "DESTINATION is a required parameter for the blt_install_tpl_setups macro.")
     endif()
 
-    if(EXPORT_TPL_TARGETS)
+    if(_BLT_EXPORT_TPL_TARGETS)
         message(FATAL_ERROR "TPL targets have already been exported using blt_export_tpl_targets.  
                              TPL libraries cannot be both exported and installed.")
     endif()
     # Set the variable indicating that TPL libraries will have their config files installed 
     # to guard against users simultaneously exporting and installing flexible TPL targets.
-    set(INSTALL_TPL_SETUPS TRUE)
+    set(_BLT_INSTALL_TPL_SETUPS TRUE)
 
     # SetupThirdPartyTargetsDownstream.cmake will include the third-party library config
     # files if necessary.  Installing this into the project's cmake directory enables

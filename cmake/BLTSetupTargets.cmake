@@ -18,7 +18,7 @@ endif()
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
 else()
-  # Otherwise, configure the TPL flags.  We have to prefix these variable with
+  # Otherwise, configure the TPL flags.  We have to prefix these variables with
   # BLT so that they never conflict with user-level CMake variables in downstream
   # projects.
   set(BLT_ENABLE_CUDA         ${ENABLE_CUDA})
