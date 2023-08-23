@@ -63,7 +63,7 @@ endif()
 # Basics
 ############################################################
 # language check fails when using clang-cuda
-if (NOT ENABLE_CLANG_CUDA)
+if (NOT BLT_ENABLE_CLANG_CUDA)
   enable_language(CUDA)
 endif ()
 
@@ -144,7 +144,7 @@ endif()
 
 
 set(_cuda_compile_flags " ")
-if (ENABLE_CLANG_CUDA)
+if (BLT_ENABLE_CLANG_CUDA)
     set (_cuda_compile_flags -x cuda --cuda-gpu-arch=${BLT_CLANG_CUDA_ARCH} --cuda-path=${CUDA_TOOLKIT_ROOT_DIR})
     message(STATUS "Clang CUDA Enabled. CUDA compile flags added: ${_cuda_compile_flags}")    
 endif()
@@ -160,8 +160,7 @@ blt_import_library(NAME          cuda
                    INCLUDES      ${CUDA_INCLUDE_DIRS}
                    LIBRARIES     ${CUDA_LIBRARIES}
                    LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   )
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 

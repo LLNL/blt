@@ -1,0 +1,18 @@
+if ("@ENABLE_CUDA@")
+    set(BLT_ENABLE_CUDA     "@ENABLE_CUDA@")
+endif()
+
+if ("@ENABLE_HIP@")
+    set(BLT_ENABLE_HIP      "@ENABLE_HIP@")
+endif()
+
+if ("@ENABLE_MPI@")
+    set(BLT_ENABLE_MPI      "@ENABLE_MPI@")
+endif()
+
+if ("@ENABLE_OPENMP@")
+    set(BLT_ENABLE_OPENMP   "@ENABLE_OPENMP@")
+endif()
+
+set(BLT_ENABLE_FIND_MPI     "@ENABLE_FIND_MPI@")
+set(BLT_ENABLE_CLANG_CUDA   "@ENABLE_CLANG_CUDA")

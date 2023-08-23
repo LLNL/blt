@@ -91,11 +91,12 @@ blt_import_library(NAME          blt_hip
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
                    GLOBAL        ${_blt_hip_is_global})
 
-# Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
-# information in our target blt_hip
+# Hard-copy inheritable properties instead of depending on hip::device so that we can export
+# all required information in our target blt_hip
 blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 
 add_library(blt::hip ALIAS blt_hip)
+
 
 blt_import_library(NAME          blt_hip_runtime
                    INCLUDES      ${HIP_INCLUDE_DIRS}

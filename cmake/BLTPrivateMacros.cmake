@@ -3,73 +3,10 @@
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
 
+include(${BLT_ROOT_DIR}/cmake/BLTInstallableMacros.cmake)
 include(CMakeParseArguments)
 
 ## Internal BLT CMake Macros
-
-
-##-----------------------------------------------------------------------------
-## blt_determine_scope(TARGET <target>
-##                     SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
-##                     OUT    <out variable name>)
-##
-## Returns the normalized scope string for a given SCOPE and TARGET to be used
-## in BLT macros.
-##
-## TARGET - Name of CMake Target that the property is being added to
-##          Note: the only real purpose of this parameter is to make sure we aren't
-##                adding returning other than INTERFACE for Interface Libraries
-## SCOPE  - case-insensitive scope string, defaults to PUBLIC
-## OUT    - variable that is filled with the uppercased scope
-##
-##-----------------------------------------------------------------------------
-macro(blt_determine_scope)
-
-    set(options)
-    set(singleValueArgs TARGET SCOPE OUT)
-    set(multiValueArgs )
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                        "${multiValueArgs}" ${ARGN} )
-
-    # Convert to upper case and strip white space
-    string(TOUPPER "${arg_SCOPE}" _uppercaseScope)
-    string(STRIP "${_uppercaseScope}" _uppercaseScope )
-
-    if("${_uppercaseScope}" STREQUAL "")
-        # Default to public
-        set(_uppercaseScope PUBLIC)
-    elseif(NOT ("${_uppercaseScope}" STREQUAL "PUBLIC" OR
-                "${_uppercaseScope}" STREQUAL "INTERFACE" OR
-                "${_uppercaseScope}" STREQUAL "PRIVATE"))
-        message(FATAL_ERROR "Given SCOPE (${arg_SCOPE}) is not valid, valid options are:"
-                            "PUBLIC, INTERFACE, or PRIVATE")
-    endif()
-
-    if(TARGET ${arg_TARGET})
-        get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
-        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
-            # Interface targets can only set INTERFACE
-            if("${_uppercaseScope}" STREQUAL "PUBLIC" OR
-               "${_uppercaseScope}" STREQUAL "INTERFACE")
-                set(${arg_OUT} INTERFACE)
-            else()
-                message(FATAL_ERROR "Cannot set PRIVATE scope to Interface Library."
-                                    "Change to Scope to INTERFACE.")
-            endif()
-        else()
-            set(${arg_OUT} ${_uppercaseScope})
-        endif()
-    else()
-        set(${arg_OUT} ${_uppercaseScope})
-    endif()
-
-    unset(_targetType)
-    unset(_uppercaseScope)
-
-endmacro(blt_determine_scope)
-
 
 ##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()

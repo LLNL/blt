@@ -143,7 +143,6 @@ set(BLT_CODE_STYLE_TARGET_NAME "style" CACHE STRING "Name of the master code for
 set(BLT_DOCS_TARGET_NAME "docs" CACHE STRING "Name of the master documentation generation target")
 set(BLT_RUN_BENCHMARKS_TARGET_NAME "run_benchmarks" CACHE STRING "Name of the target to run benchmark tests")
 
-
 # All advanced options should be marked as advanced
 mark_as_advanced(
     ENABLE_FIND_MPI
