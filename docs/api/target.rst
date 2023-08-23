@@ -569,6 +569,9 @@ blt_install_tpl_setups
 
     blt_install_tpl_setups(DESTINATION <dir>)
 
+.. warning::
+    This macro is experimental until BLT's CI pipelines can be updated to provide adequate test coverage.
+
 Install CMake files for configuring and importing BLT's third-party library (TPL) targets in downstream projects.
 
 DESTINATION
