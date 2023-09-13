@@ -6,51 +6,6 @@
 include(${BLT_ROOT_DIR}/cmake/BLTPrivateMacros.cmake)
 
 ##------------------------------------------------------------------------------
-## blt_assert_exists( [DIRECTORIES [<dir1> <dir2> ...] ]
-##                    [TARGETS [<target1> <target2> ...] ]
-##                    [FILES <file1> <file2> ...] )
-##
-## Throws a FATAL_ERROR message if any of the specified directories, files, or 
-## targets do not exist.
-##------------------------------------------------------------------------------
-macro(blt_assert_exists)
-
-    set(options)
-    set(singleValueArgs)
-    set(multiValueArgs DIRECTORIES TARGETS FILES)
-
-    # parse macro arguments
-    cmake_parse_arguments(arg
-        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    if (DEFINED arg_DIRECTORIES)
-        foreach (_dir ${arg_DIRECTORIES})
-            if (NOT IS_DIRECTORY ${_dir})
-                message(FATAL_ERROR "directory [${_dir}] does not exist!")
-            endif()
-        endforeach()
-    endif()
-
-    if (DEFINED arg_FILES)
-        foreach (_file ${arg_FILES})
-            if (NOT EXISTS ${_file})
-                message(FATAL_ERROR "file [${_file}] does not exist!")
-            endif()
-        endforeach()
-    endif()
-
-    if (DEFINED arg_TARGETS)
-        foreach (_target ${arg_TARGETS})
-            if (NOT TARGET ${_target})
-                message(FATAL_ERROR "target [${_target}] does not exist!")
-            endif()
-        endforeach()
-    endif()
-
-endmacro(blt_assert_exists)
-
-
-##------------------------------------------------------------------------------
 ## blt_set_target_folder(TARGET <target> FOLDER <folder>)
 ##
 ## Sets the folder property of cmake target <target> to <folder>.
