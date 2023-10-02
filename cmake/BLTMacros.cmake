@@ -198,7 +198,7 @@ macro(blt_add_library)
 
         add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
 
-        if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+        if (BLT_ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
             blt_setup_cuda_target(
                 NAME         ${arg_NAME}
                 SOURCES      ${arg_SOURCES}
@@ -319,7 +319,7 @@ macro(blt_add_executable)
 
     add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
 
-    if (ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
+    if (BLT_ENABLE_CUDA AND NOT ENABLE_CLANG_CUDA)
         blt_setup_cuda_target(
             NAME         ${arg_NAME}
             SOURCES      ${arg_SOURCES}
@@ -1077,10 +1077,10 @@ macro(blt_export_tpl_targets)
     set(_BLT_EXPORT_TPL_TARGETS TRUE)
 
     set(_blt_tpl_targets)
-    blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
-    blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
-    blt_list_append(TO _blt_tpl_targets ELEMENTS openmp IF ENABLE_OPENMP)
-    blt_list_append(TO _blt_tpl_targets ELEMENTS mpi IF ENABLE_MPI)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS cuda cuda_runtime IF BLT_ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS blt_hip blt_hip_runtime IF BLT_ENABLE_HIP)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS openmp IF BLT_ENABLE_OPENMP)
+    blt_list_append(TO _blt_tpl_targets ELEMENTS mpi IF BLT_ENABLE_MPI)
     
     foreach(dep ${_blt_tpl_targets})
         # If the target is EXPORTABLE, add it to the export set
@@ -1135,16 +1135,17 @@ macro(blt_install_tpl_setups)
     configure_file(
         ${BLT_ROOT_DIR}/cmake/BLTThirdPartyConfigFlags.cmake.in
         ${BLT_BUILD_DIR}/BLTThirdPartyConfigFlags.cmake
+        @ONLY
     )
 
     install(FILES ${BLT_BUILD_DIR}/BLTThirdPartyConfigFlags.cmake
         DESTINATION ${arg_DESTINATION})
 
     set(_blt_tpl_configs)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupCUDA.cmake IF ENABLE_CUDA)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupHIP.cmake IF ENABLE_HIP)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupOpenMP.cmake IF ENABLE_OPENMP)
-    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupMPI.cmake IF ENABLE_MPI)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupCUDA.cmake IF BLT_ENABLE_CUDA)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupHIP.cmake IF BLT_ENABLE_HIP)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupOpenMP.cmake IF BLT_ENABLE_OPENMP)
+    blt_list_append(TO _blt_tpl_configs ELEMENTS ${BLT_ROOT_DIR}/cmake/thirdparty/BLTSetupMPI.cmake IF BLT_ENABLE_MPI)
 
     if (_blt_tpl_configs) 
         install(DIRECTORY DESTINATION ${arg_DESTINATION}/thirdparty)
