@@ -41,7 +41,6 @@ else()
   endif()
   set(BLT_ENABLE_CLANG_CUDA       ${ENABLE_CLANG_CUDA})
   set(BLT_CLANG_CUDA_ARCH         ${CLANG_CUDA_ARCH})
-  set(BLT_CUDA_TOOLKIT_ROOT_DIR   ${CUDA_TOOLKIT_ROOT_DIR})
   set(BLT_ROCM_PATH               ${ROCM_PATH})
 endif()
 

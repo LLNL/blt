@@ -33,14 +33,10 @@ elseif (DEFINED CLANG_CUDA_ARCH)
 endif()
 
 if ("@CUDA_TOOLKIT_ROOT_DIR@" AND NOT DEFINED CUDA_TOOLKIT_ROOT_DIR)
-    set(BLT_CUDA_TOOLKIT_ROOT_DIR "@CUDA_TOOLKIT_ROOT_DIR@")
-elseif (DEFINED CUDA_TOOLKIT_ROOT_DIR)
-    set(BLT_CUDA_TOOLKIT_ROOT_DIR ${CUDA_TOOLKIT_ROOT_DIR})
+    set(CUDA_TOOLKIT_ROOT_DIR     "@CUDA_TOOLKIT_ROOT_DIR@")
 endif()
 
 # User configurable HIP options needed by downstream
 if ("@ROCM_PATH@" AND NOT DEFINED ROCM_PATH)
-    set(BLT_ROCM_PATH              "@ROCM_PATH@")
-elseif (DEFINED ROCM_PATH)
-    set(BLT_ROCM_PATH              ROCM_PATH)
+    set(ROCM_PATH                 "@ROCM_PATH@")
 endif()

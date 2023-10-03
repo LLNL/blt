@@ -7,13 +7,13 @@
 # HIP
 ################################
 
-if(NOT BLT_ROCM_PATH)
+if(NOT ROCM_PATH)
     # First try finding paths given by the user
-    find_path(BLT_ROCM_PATH
+    find_path(ROCM_PATH
         hip
         PATHS
           $ENV{ROCM_DIR}
-          $ENV{BLT_ROCM_PATH}
+          $ENV{ROCM_PATH}
           $ENV{HIP_PATH}
           ${HIP_PATH}/..
           ${HIP_ROOT_DIR}/../
@@ -26,18 +26,18 @@ if(NOT BLT_ROCM_PATH)
         NO_CMAKE_SYSTEM_PATH)
 
     # If that fails, use CMake default paths
-    if(NOT BLT_ROCM_PATH)
-        find_path(BLT_ROCM_PATH hip)
+    if(NOT ROCM_PATH)
+        find_path(ROCM_PATH hip)
     endif()
 endif()
 
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
 # found.
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${BLT_ROCM_PATH};${ROCM_ROOT_DIR}/lib/cmake")
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH};${ROCM_ROOT_DIR}/lib/cmake")
 
-find_package(hip REQUIRED CONFIG PATHS  ${HIP_PATH} ${BLT_ROCM_PATH} ${ROCM_ROOT_DIR}/lib/cmake/hip)
+find_package(hip REQUIRED CONFIG PATHS  ${HIP_PATH} ${ROCM_PATH} ${ROCM_ROOT_DIR}/lib/cmake/hip)
 
-message(STATUS "ROCM path:        ${BLT_ROCM_PATH}")
+message(STATUS "ROCM path:        ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
 
 # AMDGPU_TARGETS should be defined in the hip-config.cmake that gets "included" via find_package(hip)
@@ -81,9 +81,9 @@ endif()
 # Guard against `--rocm-path` being added to crayftn less than version 15.0.0 due to
 # invalid command line option error
 if(CMAKE_Fortran_COMPILER_ID STREQUAL "Cray" AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 15.0.0)
-    set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${BLT_ROCM_PATH}>")
+    set(_blt_hip_compile_flags "$<$<COMPILE_LANGUAGE:CXX>:SHELL:--rocm-path=${ROCM_PATH}>")
 else()
-    set(_blt_hip_compile_flags "--rocm-path=${BLT_ROCM_PATH}")
+    set(_blt_hip_compile_flags "--rocm-path=${ROCM_PATH}")
 endif()
 
 blt_import_library(NAME          blt_hip
