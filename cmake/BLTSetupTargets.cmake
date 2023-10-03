@@ -40,8 +40,6 @@ else()
     set(BLT_ENABLE_FIND_MPI         ${ENABLE_FIND_MPI})
   endif()
   set(BLT_ENABLE_CLANG_CUDA       ${ENABLE_CLANG_CUDA})
-  set(BLT_CLANG_CUDA_ARCH         ${CLANG_CUDA_ARCH})
-  set(BLT_ROCM_PATH               ${ROCM_PATH})
 endif()
 
 # Detect if Fortran has been introduced.
