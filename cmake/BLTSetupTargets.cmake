@@ -21,12 +21,25 @@ else()
   # Otherwise, configure the TPL flags.  We have to prefix these variables with
   # BLT so that they never conflict with user-level CMake variables in downstream
   # projects.
-  set(BLT_ENABLE_CUDA         ${ENABLE_CUDA})
-  set(BLT_ENABLE_HIP          ${ENABLE_HIP})
-  set(BLT_ENABLE_MPI          ${ENABLE_MPI})
-  set(BLT_ENABLE_OPENMP       ${ENABLE_OPENMP})
-  set(BLT_ENABLE_FIND_MPI     ${ENABLE_FIND_MPI})
-  set(BLT_ENABLE_CLANG_CUDA   ${ENABLE_CLANG_CUDA})
+  # 
+  # We have to do some checks before we overwrite these internal variables to assure
+  # that we don't turn off a third-party library enabled by the dependency.
+  if (NOT DEFINED BLT_ENABLE_HIP OR NOT ${BLT_ENABLE_HIP})
+    set(BLT_ENABLE_HIP              ${ENABLE_HIP})
+  endif()
+  if (NOT DEFINED BLT_ENABLE_CUDA OR NOT ${BLT_ENABLE_CUDA})
+    set(BLT_ENABLE_CUDA             ${ENABLE_CUDA})
+  endif()
+  if (NOT DEFINED BLT_ENABLE_MPI OR NOT ${BLT_ENABLE_MPI})
+    set(BLT_ENABLE_MPI              ${ENABLE_MPI})
+  endif()
+  if (NOT DEFINED BLT_ENABLE_OPENMP OR NOT ${BLT_ENABLE_OPENMP})
+    set(BLT_ENABLE_OPENMP           ${ENABLE_OPENMP})
+  endif()
+  if (NOT DEFINED BLT_ENABLE_FIND_MPI OR NOT ${BLT_ENABLE_FIND_MPI})
+    set(BLT_ENABLE_FIND_MPI         ${ENABLE_FIND_MPI})
+  endif()
+  set(BLT_ENABLE_CLANG_CUDA       ${ENABLE_CLANG_CUDA})
 endif()
 
 # Detect if Fortran has been introduced.

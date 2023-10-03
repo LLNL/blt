@@ -6,6 +6,138 @@
 # Macros used to create targets for third-party libraries in downstream targets.
 
 ##------------------------------------------------------------------------------
+## blt_assert_exists( [DIRECTORIES [<dir1> <dir2> ...] ]
+##                    [TARGETS [<target1> <target2> ...] ]
+##                    [FILES <file1> <file2> ...] )
+##
+## Throws a FATAL_ERROR message if any of the specified directories, files, or 
+## targets do not exist.
+##------------------------------------------------------------------------------
+macro(blt_assert_exists)
+
+    set(options)
+    set(singleValueArgs)
+    set(multiValueArgs DIRECTORIES TARGETS FILES)
+
+    # parse macro arguments
+    cmake_parse_arguments(arg
+        "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if (DEFINED arg_DIRECTORIES)
+        foreach (_dir ${arg_DIRECTORIES})
+            if (NOT IS_DIRECTORY ${_dir})
+                message(FATAL_ERROR "directory [${_dir}] does not exist!")
+            endif()
+        endforeach()
+    endif()
+
+    if (DEFINED arg_FILES)
+        foreach (_file ${arg_FILES})
+            if (NOT EXISTS ${_file})
+                message(FATAL_ERROR "file [${_file}] does not exist!")
+            endif()
+        endforeach()
+    endif()
+
+    if (DEFINED arg_TARGETS)
+        foreach (_target ${arg_TARGETS})
+            if (NOT TARGET ${_target})
+                message(FATAL_ERROR "target [${_target}] does not exist!")
+            endif()
+        endforeach()
+    endif()
+
+endmacro(blt_assert_exists)
+
+
+##------------------------------------------------------------------------------
+## blt_inherit_target_info( TO       <target>
+##                          FROM     <target>
+##                          OBJECT   [TRUE|FALSE])
+##
+##  The purpose of this macro is if you want to grab all the inheritable info
+##  from the FROM target but don't want to make the TO target depend on it.
+##  Which is useful if you don't want to export the FROM target.
+##
+##  The OBJECT parameter is because object libraries can only inherit certain
+##  properties.
+##
+##  This inherits the following properties:
+##    INTERFACE_COMPILE_DEFINITIONS
+##    INTERFACE_INCLUDE_DIRECTORIES
+##    INTERFACE_LINK_DIRECTORIES
+##    INTERFACE_LINK_LIBRARIES
+##    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+##------------------------------------------------------------------------------
+macro(blt_inherit_target_info)
+    set(options)
+    set(singleValueArgs TO FROM OBJECT)
+    set(multiValueArgs)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                        "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_TO )
+        message( FATAL_ERROR "Must provide a TO argument to the 'blt_inherit_target' macro" )
+    endif()
+
+    if ( NOT DEFINED arg_FROM )
+        message( FATAL_ERROR "Must provide a FROM argument to the 'blt_inherit_target' macro" )
+    endif()
+
+    blt_determine_scope(TARGET ${arg_TO} OUT _scope)
+
+    get_target_property(_interface_system_includes
+                        ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+    if ( _interface_system_includes )
+        target_include_directories(${arg_TO} SYSTEM ${_scope} ${_interface_system_includes})
+    endif()
+
+    get_target_property(_interface_includes
+                        ${arg_FROM} INTERFACE_INCLUDE_DIRECTORIES)
+    if ( _interface_includes )
+        target_include_directories(${arg_TO} ${_scope} ${_interface_includes})
+    endif()
+
+    get_target_property(_interface_defines
+                        ${arg_FROM} INTERFACE_COMPILE_DEFINITIONS)
+    if ( _interface_defines )
+        target_compile_definitions( ${arg_TO} ${_scope} ${_interface_defines})
+    endif()
+
+    if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
+        get_target_property(_interface_link_options
+                            ${arg_FROM} INTERFACE_LINK_OPTIONS)
+        if ( _interface_link_options )
+            target_link_options( ${arg_TO} ${_scope} ${_interface_link_options})
+        endif()
+    endif()
+
+    get_target_property(_interface_compile_options
+                        ${arg_FROM} INTERFACE_COMPILE_OPTIONS)
+    if ( _interface_compile_options )
+        target_compile_options( ${arg_TO} ${_scope} ${_interface_compile_options})
+    endif()
+
+    if ( NOT arg_OBJECT )
+        get_target_property(_interface_link_directories
+                            ${arg_FROM} INTERFACE_LINK_DIRECTORIES)
+        if ( _interface_link_directories )
+            target_link_directories( ${arg_TO} ${_scope} ${_interface_link_directories})
+        endif()
+
+        get_target_property(_interface_link_libraries
+                            ${arg_FROM} INTERFACE_LINK_LIBRARIES)
+        if ( _interface_link_libraries )
+            target_link_libraries( ${arg_TO} ${_scope} ${_interface_link_libraries})
+        endif()
+    endif()
+
+endmacro(blt_inherit_target_info)
+
+##------------------------------------------------------------------------------
 ## blt_list_append( TO <list> ELEMENTS [ <element>...] IF <bool> )
 ##
 ## Appends elements to a list if the specified bool evaluates to true.
