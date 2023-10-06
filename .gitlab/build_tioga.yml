@@ -18,9 +18,25 @@
   extends: [.build_script, .on_tioga]
 
 ####
+# Template
+.run_blt_test_on_tioga:
+  stage: test
+  variables:
+    ALLOC_COMMAND: "flux mini run -t10m -n1"
+  extends: [.run_blt_test_repo, .on_tioga]
+
+####
 # Build jobs
 tioga-clang_14_0_0_hip:
   variables:
     HOST_CONFIG: "clang@14.0.0_hip.cmake"
   extends: .src_build_on_tioga
   allow_failure: true
+
+####
+# HIP blt_test tests
+tioga-clang_14.0.1_hip_config_test:
+  variables:
+    ENABLED_BLT_TESTS: "hip-config-test"
+    HOST_CONFIG: "hip-config-test/base/clang@14.0.0_hip.cmake"
+  extends: [.run_blt_test_on_tioga]

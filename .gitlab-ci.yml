@@ -30,6 +30,22 @@ stages:
     reports:
       junit: build/junit.xml
 
+####
+# Template
+.run_blt_test_repo:
+  script:
+    #Use pre-existing allocation if any
+    - JOBID=$(if [[ $SYS_TYPE = toss_* ]]; then squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A; fi)
+    - ASSIGN_ID=$(if [[ -n "${JOBID}" ]]; then echo "--jobid=${JOBID}"; fi)
+   #BUILD + TEST
+    - echo -e "section_start:$(date +%s):run_blt_test_repo\r\e[0K
+      Run blt_test integration tests ${CI_PROJECT_NAME}"
+    - ${ALLOC_COMMAND} .gitlab/run_blt_test.sh
+    - echo -e "section_end:$(date +%s):build_and_test\r\e[0K"
+  artifacts:
+    reports:
+      junit: build/junit.xml
+
 
 # This is where jobs are included
 include:
