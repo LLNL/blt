@@ -78,5 +78,6 @@ quartz-intel_2022_1_0_cxx17:
 # HIP blt_test tests
 quartz_openmp_mpi_fortran_tests:
   variables:
+    HOST_CONFIG: test/openmp-cpp-fortran/base/clang@14.0.6.cmake
     ENABLED_BLT_TESTS: "mpi-cpp-fortran,openmp-cpp-fortran,openmp-mpi-cpp"
   extends: [.run_blt_test_on_quartz]
