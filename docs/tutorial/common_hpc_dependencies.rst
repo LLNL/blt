@@ -40,7 +40,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
 in our host config file. Here is a snippet with these settings for LLNL's Lassen Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1.cmake
    :start-after: _blt_tutorial_mpi_config_start
    :end-before:  _blt_tutorial_mpi_config_end
    :language: cmake
@@ -103,7 +103,7 @@ for you and enable the CUDA language.
 
 Here is a snippet with these settings for LLNL's Lassen Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17.cmake
    :start-after: _blt_tutorial_cuda_config_start
    :end-before:  _blt_tutorial_cuda_config_end
    :language: cmake
@@ -124,7 +124,7 @@ compile each source file with ``nvcc``.
 
 Some other useful CUDA flags are:
 
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_xlf.cmake
    :start-after: _blt_tutorial_useful_cuda_flags_start
    :end-before:  _blt_tutorial_useful_cuda_flags_end
    :language: cmake
@@ -143,17 +143,6 @@ Here is an example of how to add an OpenMP enabled executable:
    :start-after: _blt_tutorial_openmp_executable_start
    :end-before:  _blt_tutorial_openmp_executable_end
    :language: cmake
-
-.. note::
-  While we have tried to ensure that BLT chooses the correct compile and link flags for
-  OpenMP, there are several niche cases where the default options are insufficient.
-  For example, linking with NVCC requires to link in the OpenMP libraries directly instead
-  of relying on the compile and link flags returned by CMake's FindOpenMP package.  An
-  example of this is in ``host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_link_with_nvcc.cmake``. 
-  We provide two variables to override BLT's OpenMP flag logic: 
-  
-  * ``BLT_OPENMP_COMPILE_FLAGS``
-  * ``BLT_OPENMP_LINK_FLAGS``
 
 Here is an example of how to add an OpenMP enabled test that sets the amount of threads used:
 
