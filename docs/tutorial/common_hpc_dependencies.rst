@@ -124,7 +124,7 @@ compile each source file with ``nvcc``.
 
 Some other useful CUDA flags are:
 
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++14_xlf.cmake.cmake
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++14_xlf.cmake
    :start-after: _blt_tutorial_useful_cuda_flags_start
    :end-before:  _blt_tutorial_useful_cuda_flags_end
    :language: cmake
