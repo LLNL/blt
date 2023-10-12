@@ -7,4 +7,8 @@ git submodule update --init --recursive
 ls `pwd`/blt_test/
 cd `pwd`/blt_test/
 
-python3 $RUNNER_SCRIPT --run-test $ENABLED_BLT_TESTS --host-config $HOST_CONFIG --verbose --clean --blt-source-dir $BLT_DIR
+if [[ -z $HOST_CONFIG  ]]; then
+    python3 $RUNNER_SCRIPT --run-test $ENABLED_BLT_TESTS --verbose --clean --blt-source-dir $BLT_DIR
+else
+    python3 $RUNNER_SCRIPT --run-test $ENABLED_BLT_TESTS --host-config $HOST_CONFIG --verbose --clean --blt-source-dir $BLT_DIR
+fi

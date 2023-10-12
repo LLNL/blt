@@ -78,5 +78,5 @@ quartz-intel_2022_1_0_cxx17:
 # HIP blt_test tests
 quartz_openmp_mpi_fortran_tests:
   variables:
-    ENABLED_BLT_TESTS: "mpi-cpp-fortran openmp-cpp-fortran openmp-mpi-cpp"
+    ENABLED_BLT_TESTS: "mpi-cpp-fortran,openmp-cpp-fortran,openmp-mpi-cpp"
   extends: [.run_blt_test_on_quartz]
