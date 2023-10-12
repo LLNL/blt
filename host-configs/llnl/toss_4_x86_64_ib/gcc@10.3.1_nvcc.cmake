@@ -16,20 +16,17 @@
 # gcc@10.3.1 compilers
 #------------------------------------------------------------------------------
 
+# _blt_pascal_compiler_config_start
 set(GCC_VERSION "gcc-10.3.1")
 set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}")
 
-# c compiler
 set(CMAKE_C_COMPILER "${GCC_HOME}/bin/gcc" CACHE PATH "")
-
-# cpp compiler
 set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
 
-# fortran support
+# Fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
-
-# fortran compiler
 set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
+# _blt_pascal_compiler_config_end
 
 #------------------------------------------------------------------------------
 # MPI Support

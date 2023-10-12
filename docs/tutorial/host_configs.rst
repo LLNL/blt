@@ -34,8 +34,8 @@ Here is a snippet from a host-config file that specifies compiler details for
 using specific gcc (version 10.3.1 in this case) on the LLNL Pascal cluster. 
 
 .. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake
-   :start-after: _blt_tutorial_compiler_config_start
-   :end-before:  _blt_tutorial_compiler_config_end
+   :start-after: _blt_pascal_compiler_config_start
+   :end-before:  _blt_pascal_compiler_config_end
    :language: cmake
 
 
