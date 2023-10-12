@@ -531,7 +531,7 @@ Internal variable names are prefixed with ``_`` to avoid collision with input pa
 .. _blt_export_tpl_targets:
 
 blt_export_tpl_targets
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
@@ -563,7 +563,7 @@ targets, without the downstream project itself requiring the use of BLT.
 .. blt_install_tpl_setups:
 
 blt_install_tpl_setups
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
