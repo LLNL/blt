@@ -175,3 +175,4 @@ blt_import_library(NAME       cuda_runtime
                    INCLUDES   ${CUDA_INCLUDE_DIRS}
                    LIBRARIES  ${CUDA_LIBRARIES}
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+add_library(blt::cuda_runtime ALIAS cuda)
