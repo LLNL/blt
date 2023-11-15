@@ -2,6 +2,9 @@
 
 set -e
 
+echo "TESTING" > ~/mytest.txt
+
+
 BUILD_DIR=`pwd`/build
 
 echo "~~~~~~~~~~ START:build_and_test.sh ~~~~~~~~~~~"
