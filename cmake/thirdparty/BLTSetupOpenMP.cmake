@@ -56,3 +56,5 @@ blt_import_library(NAME openmp
                    COMPILE_FLAGS ${_compile_flags}
                    LINK_FLAGS    ${_link_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+
+add_library(blt::openmp ALIAS openmp)

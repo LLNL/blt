@@ -54,7 +54,7 @@ Typical usage of the ``BLT_EXPORT_THIRDPARTY`` option is as follows:
     # Later, a project might mark a target as dependent on MPI
     blt_add_executable( NAME    example_1
                         SOURCES example_1.cpp
-                        DEPENDS_ON mpi )
+                        DEPENDS_ON blt::mpi )
 
     # Add the example_1 target to the example-targets export set
     install(TARGETS example_1 EXPORT example-targets)
