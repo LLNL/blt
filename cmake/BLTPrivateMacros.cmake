@@ -779,46 +779,39 @@ macro(blt_find_target_dependencies)
         message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
+    set(_depends_on "")
+
+    # Get dependencies if BLT registered library
     string(TOUPPER ${arg_TARGET} _target_upper)
     if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
-        # recursive call
-        set (_depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
-        foreach(t ${_depends_on})
-            if (NOT "${t}" IN_LIST ${arg_TLIST})
-                list(APPEND ${arg_TLIST} ${t})
-                blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
-            endif()
-        endforeach()
-        unset(_depends_on)
+        list(APPEND _depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
     endif()
 
-    # check if this is a valid cmake target
+    # Get dependencies if CMake target
     if(TARGET ${arg_TARGET})
-        # get link libaries if whitelisted
-        set(_property_list "")
         get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
         if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
-            get_property(_propval TARGET ${arg_TARGET} PROPERTY LINK_LIBRARIES SET)
             get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
-            if (_propval AND NOT "${_propval}" IN_LIST ${arg_TLIST})
-                list(APPEND _property_list ${_propval})
+            if(_propval)
+                list(APPEND _depends_on ${_propval})
             endif()
         endif()
 
         # get interface link libraries
-        get_property(_propval TARGET ${arg_TARGET} PROPERTY INTERFACE_LINK_LIBRARIES SET)
         get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
-        if (_propval AND NOT "${_propval}" IN_LIST ${arg_TLIST})
-            list(APPEND _property_list ${_propval})
+        if (_propval)
+            list(APPEND _depends_on ${_propval})
         endif()
-    
-        # recursive call
-        foreach(t ${_property_list})
+    endif()
+
+    blt_list_remove_duplicates(TO _depends_on)
+    foreach(t ${_depends_on})
+        if (NOT "${t}" IN_LIST ${arg_TLIST})
             list(APPEND ${arg_TLIST} ${t})
             blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
-        endforeach()
+        endif()
+    endforeach()
 
-        unset(_property_list)
-        unset(_propval)
-    endif()
+    unset(_depends_on)
+
 endmacro(blt_find_target_dependencies)
