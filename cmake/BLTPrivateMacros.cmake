@@ -369,13 +369,15 @@ macro(blt_setup_cuda_target)
 
     # Determine if cuda or cuda_runtime are in DEPENDS_ON
     list(FIND arg_DEPENDS_ON "cuda" _cuda_index)
+    list(FIND arg_DEPENDS_ON "blt::cuda" _cuda_index2)
     set(_depends_on_cuda FALSE)
-    if(${_cuda_index} GREATER -1)
+    if(${_cuda_index} GREATER -1 OR ${_cuda_index2} GREATER -1)
         set(_depends_on_cuda TRUE)
     endif()
     list(FIND arg_DEPENDS_ON "cuda_runtime" _cuda_runtime_index)
+    list(FIND arg_DEPENDS_ON "blt::cuda_runtime" _cuda_runtime_index2)
     set(_depends_on_cuda_runtime FALSE)
-    if(${_cuda_runtime_index} GREATER -1)
+    if(${_cuda_runtime_index} GREATER -1 OR ${_cuda_runtime_index2} GREATER -1)
         set(_depends_on_cuda_runtime TRUE)
     endif()
 

@@ -163,6 +163,8 @@ blt_import_library(NAME          cuda
                    LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 
+add_library(blt::cuda ALIAS cuda)
+
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 
 # the regular C/CXX compiler. This is separate from 
@@ -173,3 +175,4 @@ blt_import_library(NAME       cuda_runtime
                    INCLUDES   ${CUDA_INCLUDE_DIRS}
                    LIBRARIES  ${CUDA_LIBRARIES}
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+add_library(blt::cuda_runtime ALIAS cuda_runtime)
