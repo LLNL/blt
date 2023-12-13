@@ -191,3 +191,5 @@ blt_import_library(NAME          mpi
                    COMPILE_FLAGS ${_mpi_compile_flags}
                    LINK_FLAGS    ${_mpi_link_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+
+add_library(blt::mpi ALIAS mpi)

@@ -38,11 +38,13 @@ function(blt_fix_fortran_openmp_flags target_name)
             # from a "real" target back to a "fake" one as this is a sink vertex in
             # the DAG.  Only the link flags need to be modified.
             list(FIND target_link_libs "openmp" _omp_index)
-            if(${_omp_index} GREATER -1)
+            list(FIND target_link_libs "blt::openmp" _blt_omp_index)
+            if(${_omp_index} GREATER -1 OR ${_blt_omp_index} GREATER -1)
                 message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
 
                 # Remove openmp from libraries
                 list(REMOVE_ITEM target_link_libs "openmp")
+                list(REMOVE_ITEM target_link_libs "blt::openmp")
                 set_target_properties( ${target_name} PROPERTIES
                                        LINK_LIBRARIES "${target_link_libs}" )
 

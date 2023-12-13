@@ -19,6 +19,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added the `blt_install_tpl_setups` macro, which installs files to setup and create
   targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to 
   replace `blt_export_tpl_targets` as the preferred way to setup third-party libraries with BLT.
+- Added `blt::`` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
+  These targets still exist but but will be deprecated in a future release. It is recommended that you
+  move to the new alias names, `blt::cuda`, `blt::cuda_runtime`, `blt::mpi`, and `blt::openmp`
 
 ### Changed
 - SetupHIP now searches for user-defined or environment variables before CMake paths to find the ROCM_PATH.
