@@ -71,9 +71,9 @@ if(ENABLE_GTEST)
     if(MPI_FOUND)
     # _blt_tutorial_calcpi_test2_executable_start
         blt_add_library( NAME       calc_pi_mpi
-                        HEADERS    calc_pi_mpi.hpp calc_pi_mpi_exports.h
-                        SOURCES    calc_pi_mpi.cpp 
-                        DEPENDS_ON mpi)
+                         HEADERS    calc_pi_mpi.hpp calc_pi_mpi_exports.h
+                         SOURCES    calc_pi_mpi.cpp 
+                         DEPENDS_ON blt::mpi)
 
         if(WIN32 AND BUILD_SHARED_LIBS)
             target_compile_definitions(calc_pi_mpi PUBLIC WIN32_SHARED_LIBS)
@@ -86,8 +86,8 @@ if(ENABLE_GTEST)
 
     # _blt_tutorial_calcpi_test2_test_start
         blt_add_test( NAME          test_2 
-                    COMMAND       test_2
-                    NUM_MPI_TASKS 2) # number of mpi tasks to use
+                      COMMAND       test_2
+                      NUM_MPI_TASKS 2) # number of mpi tasks to use
     # _blt_tutorial_calcpi_test2_test_end
     endif()
 
@@ -99,9 +99,9 @@ if(ENABLE_GTEST)
     # _blt_tutorial_calcpi_cuda_start
         
         blt_add_library( NAME       calc_pi_cuda
-                        HEADERS    calc_pi_cuda.hpp calc_pi_cuda_exports.h
-                        SOURCES    calc_pi_cuda.cpp 
-                        DEPENDS_ON cuda)
+                         HEADERS    calc_pi_cuda.hpp calc_pi_cuda_exports.h
+                         SOURCES    calc_pi_cuda.cpp 
+                         DEPENDS_ON blt::cuda)
 
         if(WIN32 AND BUILD_SHARED_LIBS)
             target_compile_definitions(calc_pi_cuda PUBLIC WIN32_SHARED_LIBS)
@@ -109,10 +109,10 @@ if(ENABLE_GTEST)
 
         blt_add_executable( NAME       test_3
                             SOURCES    test_3.cpp 
-                            DEPENDS_ON calc_pi calc_pi_cuda gtest cuda_runtime)
+                            DEPENDS_ON calc_pi calc_pi_cuda gtest)
 
         blt_add_test( NAME    test_3
-                    COMMAND test_3)
+                      COMMAND test_3)
     # _blt_tutorial_calcpi_cuda_end
     endif()
 

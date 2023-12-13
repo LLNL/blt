@@ -3,73 +3,10 @@
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
 
+include(${BLT_ROOT_DIR}/cmake/BLTInstallableMacros.cmake)
 include(CMakeParseArguments)
 
 ## Internal BLT CMake Macros
-
-
-##-----------------------------------------------------------------------------
-## blt_determine_scope(TARGET <target>
-##                     SCOPE  <PUBLIC (Default)| INTERFACE | PRIVATE>
-##                     OUT    <out variable name>)
-##
-## Returns the normalized scope string for a given SCOPE and TARGET to be used
-## in BLT macros.
-##
-## TARGET - Name of CMake Target that the property is being added to
-##          Note: the only real purpose of this parameter is to make sure we aren't
-##                adding returning other than INTERFACE for Interface Libraries
-## SCOPE  - case-insensitive scope string, defaults to PUBLIC
-## OUT    - variable that is filled with the uppercased scope
-##
-##-----------------------------------------------------------------------------
-macro(blt_determine_scope)
-
-    set(options)
-    set(singleValueArgs TARGET SCOPE OUT)
-    set(multiValueArgs )
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                        "${multiValueArgs}" ${ARGN} )
-
-    # Convert to upper case and strip white space
-    string(TOUPPER "${arg_SCOPE}" _uppercaseScope)
-    string(STRIP "${_uppercaseScope}" _uppercaseScope )
-
-    if("${_uppercaseScope}" STREQUAL "")
-        # Default to public
-        set(_uppercaseScope PUBLIC)
-    elseif(NOT ("${_uppercaseScope}" STREQUAL "PUBLIC" OR
-                "${_uppercaseScope}" STREQUAL "INTERFACE" OR
-                "${_uppercaseScope}" STREQUAL "PRIVATE"))
-        message(FATAL_ERROR "Given SCOPE (${arg_SCOPE}) is not valid, valid options are:"
-                            "PUBLIC, INTERFACE, or PRIVATE")
-    endif()
-
-    if(TARGET ${arg_TARGET})
-        get_property(_targetType TARGET ${arg_TARGET} PROPERTY TYPE)
-        if(${_targetType} STREQUAL "INTERFACE_LIBRARY")
-            # Interface targets can only set INTERFACE
-            if("${_uppercaseScope}" STREQUAL "PUBLIC" OR
-               "${_uppercaseScope}" STREQUAL "INTERFACE")
-                set(${arg_OUT} INTERFACE)
-            else()
-                message(FATAL_ERROR "Cannot set PRIVATE scope to Interface Library."
-                                    "Change to Scope to INTERFACE.")
-            endif()
-        else()
-            set(${arg_OUT} ${_uppercaseScope})
-        endif()
-    else()
-        set(${arg_OUT} ${_uppercaseScope})
-    endif()
-
-    unset(_targetType)
-    unset(_uppercaseScope)
-
-endmacro(blt_determine_scope)
-
 
 ##-----------------------------------------------------------------------------
 ## blt_error_if_target_exists()
@@ -101,11 +38,13 @@ function(blt_fix_fortran_openmp_flags target_name)
             # from a "real" target back to a "fake" one as this is a sink vertex in
             # the DAG.  Only the link flags need to be modified.
             list(FIND target_link_libs "openmp" _omp_index)
-            if(${_omp_index} GREATER -1)
+            list(FIND target_link_libs "blt::openmp" _blt_omp_index)
+            if(${_omp_index} GREATER -1 OR ${_blt_omp_index} GREATER -1)
                 message(STATUS "Fixing OpenMP Flags for target[${target_name}]")
 
                 # Remove openmp from libraries
                 list(REMOVE_ITEM target_link_libs "openmp")
+                list(REMOVE_ITEM target_link_libs "blt::openmp")
                 set_target_properties( ${target_name} PROPERTIES
                                        LINK_LIBRARIES "${target_link_libs}" )
 
@@ -215,93 +154,6 @@ macro(blt_find_executable)
     endif()
 endmacro(blt_find_executable)
 
-
-##------------------------------------------------------------------------------
-## blt_inherit_target_info( TO       <target>
-##                          FROM     <target>
-##                          OBJECT   [TRUE|FALSE])
-##
-##  The purpose of this macro is if you want to grab all the inheritable info
-##  from the FROM target but don't want to make the TO target depend on it.
-##  Which is useful if you don't want to export the FROM target.
-##
-##  The OBJECT parameter is because object libraries can only inherit certain
-##  properties.
-##
-##  This inherits the following properties:
-##    INTERFACE_COMPILE_DEFINITIONS
-##    INTERFACE_INCLUDE_DIRECTORIES
-##    INTERFACE_LINK_DIRECTORIES
-##    INTERFACE_LINK_LIBRARIES
-##    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-##------------------------------------------------------------------------------
-macro(blt_inherit_target_info)
-    set(options)
-    set(singleValueArgs TO FROM OBJECT)
-    set(multiValueArgs)
-
-    # Parse the arguments
-    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
-                        "${multiValueArgs}" ${ARGN} )
-
-    # Check arguments
-    if ( NOT DEFINED arg_TO )
-        message( FATAL_ERROR "Must provide a TO argument to the 'blt_inherit_target' macro" )
-    endif()
-
-    if ( NOT DEFINED arg_FROM )
-        message( FATAL_ERROR "Must provide a FROM argument to the 'blt_inherit_target' macro" )
-    endif()
-
-    blt_determine_scope(TARGET ${arg_TO} OUT _scope)
-
-    get_target_property(_interface_system_includes
-                        ${arg_FROM} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-    if ( _interface_system_includes )
-        target_include_directories(${arg_TO} SYSTEM ${_scope} ${_interface_system_includes})
-    endif()
-
-    get_target_property(_interface_includes
-                        ${arg_FROM} INTERFACE_INCLUDE_DIRECTORIES)
-    if ( _interface_includes )
-        target_include_directories(${arg_TO} ${_scope} ${_interface_includes})
-    endif()
-
-    get_target_property(_interface_defines
-                        ${arg_FROM} INTERFACE_COMPILE_DEFINITIONS)
-    if ( _interface_defines )
-        target_compile_definitions( ${arg_TO} ${_scope} ${_interface_defines})
-    endif()
-
-    if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0" )
-        get_target_property(_interface_link_options
-                            ${arg_FROM} INTERFACE_LINK_OPTIONS)
-        if ( _interface_link_options )
-            target_link_options( ${arg_TO} ${_scope} ${_interface_link_options})
-        endif()
-    endif()
-
-    get_target_property(_interface_compile_options
-                        ${arg_FROM} INTERFACE_COMPILE_OPTIONS)
-    if ( _interface_compile_options )
-        target_compile_options( ${arg_TO} ${_scope} ${_interface_compile_options})
-    endif()
-
-    if ( NOT arg_OBJECT )
-        get_target_property(_interface_link_directories
-                            ${arg_FROM} INTERFACE_LINK_DIRECTORIES)
-        if ( _interface_link_directories )
-            target_link_directories( ${arg_TO} ${_scope} ${_interface_link_directories})
-        endif()
-
-        get_target_property(_interface_link_libraries
-                            ${arg_FROM} INTERFACE_LINK_LIBRARIES)
-        if ( _interface_link_libraries )
-            target_link_libraries( ${arg_TO} ${_scope} ${_interface_link_libraries})
-        endif()
-    endif()
-
-endmacro(blt_inherit_target_info)
 
 ##------------------------------------------------------------------------------
 ## blt_expand_depends( DEPENDS_ON [dep1 ...]
@@ -519,13 +371,15 @@ macro(blt_setup_cuda_target)
 
     # Determine if cuda or cuda_runtime are in DEPENDS_ON
     list(FIND arg_DEPENDS_ON "cuda" _cuda_index)
+    list(FIND arg_DEPENDS_ON "blt::cuda" _cuda_index2)
     set(_depends_on_cuda FALSE)
-    if(${_cuda_index} GREATER -1)
+    if(${_cuda_index} GREATER -1 OR ${_cuda_index2} GREATER -1)
         set(_depends_on_cuda TRUE)
     endif()
     list(FIND arg_DEPENDS_ON "cuda_runtime" _cuda_runtime_index)
+    list(FIND arg_DEPENDS_ON "blt::cuda_runtime" _cuda_runtime_index2)
     set(_depends_on_cuda_runtime FALSE)
-    if(${_cuda_runtime_index} GREATER -1)
+    if(${_cuda_runtime_index} GREATER -1 OR ${_cuda_runtime_index2} GREATER -1)
         set(_depends_on_cuda_runtime TRUE)
     endif()
 
@@ -927,46 +781,39 @@ macro(blt_find_target_dependencies)
         message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
     endif()
 
+    set(_depends_on "")
+
+    # Get dependencies if BLT registered library
     string(TOUPPER ${arg_TARGET} _target_upper)
     if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
-        # recursive call
-        set (_depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
-        foreach(t ${_depends_on})
-            if (NOT "${t}" IN_LIST ${arg_TLIST})
-                list(APPEND ${arg_TLIST} ${t})
-                blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
-            endif()
-        endforeach()
-        unset(_depends_on)
+        list(APPEND _depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
     endif()
 
-    # check if this is a valid cmake target
+    # Get dependencies if CMake target
     if(TARGET ${arg_TARGET})
-        # get link libaries if whitelisted
-        set(_property_list "")
         get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
         if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
-            get_property(_propval TARGET ${arg_TARGET} PROPERTY LINK_LIBRARIES SET)
             get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
-            if (_propval AND NOT "${_propval}" IN_LIST ${arg_TLIST})
-                list(APPEND _property_list ${_propval})
+            if(_propval)
+                list(APPEND _depends_on ${_propval})
             endif()
         endif()
 
         # get interface link libraries
-        get_property(_propval TARGET ${arg_TARGET} PROPERTY INTERFACE_LINK_LIBRARIES SET)
         get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
-        if (_propval AND NOT "${_propval}" IN_LIST ${arg_TLIST})
-            list(APPEND _property_list ${_propval})
+        if (_propval)
+            list(APPEND _depends_on ${_propval})
         endif()
-    
-        # recursive call
-        foreach(t ${_property_list})
+    endif()
+
+    blt_list_remove_duplicates(TO _depends_on)
+    foreach(t ${_depends_on})
+        if (NOT "${t}" IN_LIST ${arg_TLIST})
             list(APPEND ${arg_TLIST} ${t})
             blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
-        endforeach()
+        endif()
+    endforeach()
 
-        unset(_property_list)
-        unset(_propval)
-    endif()
+    unset(_depends_on)
+
 endmacro(blt_find_target_dependencies)

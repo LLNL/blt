@@ -127,7 +127,7 @@ if (NOT BLT_LOADED)
     ################################
     # Standard TPL support
     ################################
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupThirdParty.cmake)
+    include(${BLT_ROOT_DIR}/cmake/SetupThirdParty.cmake)
 
     ################################
     # Git related Macros
