@@ -2,7 +2,6 @@
 
 BLT_DIR=`pwd`
 RUNNER_SCRIPT=`pwd`/blt_test/run_tests.py
-git submodule update --init --recursive
 cd `pwd`/blt_test/
 
 if [[ -z $HOST_CONFIG  ]]; then
