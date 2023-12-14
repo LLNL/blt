@@ -45,11 +45,11 @@ quartz_release:
 
 ####
 # Template
-.run_blt_test_on_quartz:
+.run_project_integration_test_on_quartz:
   stage: build
   variables:
     ALLOC_COMMAND: "srun -p pdebug -t 10 -N 1 ${ASSIGN_ID} --interactive"
-  extends: [.run_blt_test_repo, .on_quartz]
+  extends: [.run_project_integration_tests, .on_quartz]
   needs: [quartz_allocate]
 
 ####
@@ -75,9 +75,9 @@ quartz-intel_2022_1_0_cxx17:
   extends: [.build_on_quartz]
 
 ####
-# HIP blt_test tests
+# HIP project tests
 quartz_openmp_mpi_fortran_tests:
   variables:
     HOST_CONFIG: test/openmp-cpp-fortran/base/clang@14.0.6.cmake
     ENABLED_BLT_TESTS: "mpi-cpp-fortran,openmp-cpp-fortran,openmp-mpi-cpp"
-  extends: [.run_blt_test_on_quartz]
+  extends: [.run_project_integration_test_on_quartz]
