@@ -17,7 +17,7 @@ blt_add_library(
   NAME cuda-mpi-cpp
   SOURCES cuda-mpi-cpp.cu
   HEADERS cuda-mpi-cpp.cuh
-  DEPENDS_ON cuda)
+  DEPENDS_ON blt::cuda)
 
 # Add the header file to the installation.
 install(FILES cuda-mpi-cpp.cuh DESTINATION include)

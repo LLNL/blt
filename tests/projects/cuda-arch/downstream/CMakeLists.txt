@@ -16,14 +16,14 @@ find_package(cuda-clang-cpp REQUIRED
   PATHS ${base_install_dir}/lib/cmake/cuda-clang-cpp
   ${base_install_dir})
 
-if (NOT TARGET cuda)
+if (NOT TARGET blt::cuda)
   message(FATAL_ERROR "Target cuda was not configured successfully during"
                       "downstream project configuration.")
 endif()
 
 # Check that the cuda target created during the `find_package` call contains the expected 
 # user provided flags for clang cuda.
-get_target_property(cuda_compile_flags cuda INTERFACE_COMPILE_OPTIONS)
+get_target_property(cuda_compile_flags blt::cuda INTERFACE_COMPILE_OPTIONS)
 
 message(STATUS "CUDA target created with compile flags set to: ${cuda_compile_flags}")
 
@@ -47,7 +47,7 @@ endif()
 blt_add_executable(
   NAME hello-cuda
   SOURCES cuda-clang-cpp-user.cpp
-  DEPENDS_ON cuda-clang-cpp cuda
+  DEPENDS_ON cuda-clang-cpp blt::cuda
 )
 
 target_include_directories(hello-cuda PUBLIC ${base_install_dir}/include)

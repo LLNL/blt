@@ -18,7 +18,7 @@ blt_add_library(
   NAME cuda-clang-cpp
   SOURCES cuda-clang-cpp.cu
   HEADERS cuda-clang-cpp.cuh
-  DEPENDS_ON cuda)
+  DEPENDS_ON blt::cuda)
 
 # Add the header file to the installation.
 install(FILES cuda-clang-cpp.cuh DESTINATION include)
