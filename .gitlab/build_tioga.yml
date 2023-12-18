@@ -20,7 +20,7 @@
 ####
 # Template
 .run_project_integration_test_on_tioga:
-  stage: test
+  stage: build
   variables:
     ALLOC_COMMAND: "flux mini run -t10m -n1"
   extends: [.run_project_integration_tests, .on_tioga]
