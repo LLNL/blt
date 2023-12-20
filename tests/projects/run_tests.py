@@ -142,7 +142,7 @@ def parse_args():
         return None
 
     if args["run-test"] is not None:
-        all_tests = set(os.listdir(os.path.relpath("test")))
+        all_tests = set(os.listdir(os.path.relpath(".")))
         user_tests = set(args["run-test"].split(","))
         if not user_tests.issubset(all_tests):
             user_tests_str = ", ".join(user_tests.difference(all_tests))
@@ -181,7 +181,7 @@ def main():
     clean = args["clean"]
 
     failed_tests = []
-    tests_dir = os.path.relpath("test")
+    tests_dir = os.path.relpath(".")
     tests_to_run = os.listdir(tests_dir)
     # Run only a subset of tests if specified.
     if args["run-test"] is not None:
