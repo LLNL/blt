@@ -20,9 +20,9 @@ if (ENABLE_COVERAGE)
     # Additional flags that might be useful: 
     #       " -fno-inline -fno-inline-small-functions -fno-default-inline"
     blt_append_custom_compiler_flag(FLAGS_VAR   COVERAGE_FLAGS 
-                                    DEFAULT "--coverage"
-                                    GNU     "-fno-inline -fno-inline-small-functions -fno-default-inline"
-                                    CLANG   "")
+                                    DEFAULT " "
+                                    GNU     "--coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+                                    CLANG   "--coverage")
         
     SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}" )
     SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${COVERAGE_FLAGS}" )
