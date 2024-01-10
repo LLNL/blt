@@ -222,14 +222,17 @@ blt_convert_to_system_includes
 
 .. code-block:: cmake
 
-    blt_convert_to_system_includes(TARGET <target>)
+    blt_convert_to_system_includes(TARGETS [<target>...]
+                                   [QUIET]
+                                   [INTRANSITIVE])
 
 Converts existing interface includes to system interface includes.
+Warns if a target does not exist unless ``QUIET`` is specified.
+Recurses through interface link libraries unless ``INTRANSITIVE`` is specified.
 
 .. code-block:: cmake
    :caption: **Example**
    :linenos:
 
-   ## convert to system includes for the foo target
-   blt_convert_to_system_includes(TARGET foo)
+   blt_convert_to_system_includes(TARGETS foo)
 

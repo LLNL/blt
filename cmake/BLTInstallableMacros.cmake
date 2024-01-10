@@ -428,37 +428,80 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
-## blt_convert_to_system_includes(TARGET <target>)
+## blt_convert_to_system_includes(TARGETS [<target>...]
+##                                [QUIET]
+##                                [INTRANSITIVE])
 ##
 ## Converts existing interface includes to system interface includes.
 ##------------------------------------------------------------------------------
-macro(blt_convert_to_system_includes)
-    set(options)
+function(blt_convert_to_system_includes)
+    set(options INTRANSITIVE QUIET)
     set(singleValuedArgs TARGET)
-    set(multiValuedArgs)
+    set(multiValuedArgs TARGETS)
 
     ## parse the arguments to the macro
     cmake_parse_arguments(arg
-         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+        "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
 
-    if(NOT DEFINED arg_TARGET)
-       message(FATAL_ERROR "TARGET is a required parameter for the blt_convert_to_system_includes macro.")
+    if(DEFINED arg_TARGETS)
+        message(WARNING "TARGET is a deprecated parameter for the blt_convert_to_system_includes macro.")
+        list(APPEND arg_TARGETS ${arg_TARGET})
+    endif()
+
+    if(NOT DEFINED arg_TARGETS)
+        message(FATAL_ERROR "TARGETS is a required parameter for the blt_convert_to_system_includes macro.")
+    endif()
+
+    if(NOT ${arg_QUIET})
+        foreach(_target ${arg_TARGETS})
+            if(NOT TARGET ${_target})
+                message(WARNING "${_target} does not exist!")
+            endif()
+        endforeach()
     endif()
 
     # PGI does not support -isystem
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
-        get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
-        # Don't copy if the target had no include directories
-        if(_include_dirs)
-            # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES so it is not doubled
-            # by target_include_directories
-            set_property(TARGET ${arg_TARGET} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-            target_include_directories(${arg_TARGET} SYSTEM INTERFACE ${_include_dirs})
-        endif()
-    endif()
+        foreach(_target ${arg_TARGETS})
+            if(TARGET ${_target})
+                if(NOT ${arg_INTRANSITIVE})
+                    get_target_property(_interface_link_libs
+                                        ${_target}
+                                        INTERFACE_LINK_LIBRARIES)
 
-    unset(_include_dirs)
-endmacro()
+
+                    # Don't recurse if the target had no interface link libraries
+                    if(_interface_link_libs)
+                        # TODO: Warn if interface link library is not a target?
+                        blt_convert_to_system_includes(TARGETS ${_interface_link_libs})
+                    endif()
+
+                    unset(_interface_link_libs)
+                endif()
+
+                get_target_property(_interface_include_dirs
+                                    ${_target}
+                                    INTERFACE_INCLUDE_DIRECTORIES)
+
+                # Don't update properties if the target had no interface include directories
+                if(_interface_include_dirs)
+                    # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES
+                    # so it is not doubled by target_include_directories
+                    set_target_properties(${_target}
+                                          PROPERTIES
+                                            INTERFACE_INCLUDE_DIRECTORIES)
+
+                    target_include_directories(${_target}
+                                               SYSTEM
+                                               INTERFACE
+                                               ${_interface_include_dirs})
+                endif()
+
+                unset(_interface_include_dirs)
+            endif()
+        endforeach()
+    endif()
+endfunction(blt_convert_to_system_includes)
 
 
 ##------------------------------------------------------------------------------
