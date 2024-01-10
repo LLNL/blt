@@ -429,14 +429,14 @@ endmacro(blt_add_target_compile_flags)
 
 ##------------------------------------------------------------------------------
 ## blt_convert_to_system_includes(TARGETS [<target>...]
-##                                [QUIET]
-##                                [INTRANSITIVE])
+##                                CHILDREN [TRUE|FALSE]
+##                                [QUIET])
 ##
 ## Converts existing interface includes to system interface includes.
 ##------------------------------------------------------------------------------
 function(blt_convert_to_system_includes)
-    set(options INTRANSITIVE QUIET)
-    set(singleValuedArgs TARGET)
+    set(options QUIET)
+    set(singleValuedArgs CHILDREN TARGET)
     set(multiValuedArgs TARGETS)
 
     ## parse the arguments to the macro
@@ -452,6 +452,10 @@ function(blt_convert_to_system_includes)
         message(FATAL_ERROR "TARGETS is a required parameter for the blt_convert_to_system_includes macro.")
     endif()
 
+    if(NOT DEFINED arg_CHILDREN)
+        set(arg_CHILDREN TRUE)
+    endif()
+
     if(NOT ${arg_QUIET})
         foreach(_target ${arg_TARGETS})
             if(NOT TARGET ${_target})
@@ -464,7 +468,7 @@ function(blt_convert_to_system_includes)
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
         foreach(_target ${arg_TARGETS})
             if(TARGET ${_target})
-                if(NOT ${arg_INTRANSITIVE})
+                if(${arg_CHILDREN})
                     get_target_property(_interface_link_libs
                                         ${_target}
                                         INTERFACE_LINK_LIBRARIES)
