@@ -34,6 +34,10 @@ set(MPI_CXX_COMPILER "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
 
 set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 
+set(MPIEXEC_EXECUTABLE "/usr/global/tools/flux_wrappers/bin/srun" CACHE PATH "")
+
+set(MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING "")
+
 #------------------------------------------------------------------------------
 # HIP support
 #------------------------------------------------------------------------------
