@@ -28,6 +28,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Fixed
 - Fixed infinite loop in `blt_find_target_dependencies`
+- `blt_check_code_compiles` now works with alias targets
 
 ## [Version 0.5.3] - Release date 2023-06-05
 
