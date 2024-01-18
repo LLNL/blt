@@ -1217,11 +1217,25 @@ macro(blt_check_code_compiles)
                 CXX_STANDARD ${CMAKE_CXX_STANDARD}
                 OUTPUT_VARIABLE _res)
     else()
+
+        if(${CMAKE_VERSION} VERSION_LESS "3.28.0")
+            # Workaround CMake bug where try_compile doesn't work with alias targets
+            set(_deps)
+            foreach(_dep ${arg_DEPENDS_ON})
+                get_target_property(_real_target ${_dep} ALIASED_TARGET)
+                if (NOT _real_target)
+                    list(APPEND _deps ${_dep})
+                else()
+                    list(APPEND _deps ${_real_target})
+                endif()
+            endforeach()
+        endif()
+
         try_compile(${arg_CODE_COMPILES}
                 ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
                 SOURCES ${_fname}
                 CXX_STANDARD ${CMAKE_CXX_STANDARD}
-                LINK_LIBRARIES ${arg_DEPENDS_ON}
+                LINK_LIBRARIES ${_deps}
                 OUTPUT_VARIABLE _res)
     endif()
     file(REMOVE ${_fname})
