@@ -1229,6 +1229,8 @@ macro(blt_check_code_compiles)
                     list(APPEND _deps ${_real_target})
                 endif()
             endforeach()
+        else()
+            set(_deps {arg_DEPENDS_ON})
         endif()
 
         try_compile(${arg_CODE_COMPILES}
