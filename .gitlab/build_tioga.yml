@@ -14,7 +14,7 @@
 .src_build_on_tioga:
   stage: build
   variables:
-    ALLOC_COMMAND: "flux run -t10m -n1"
+    ALLOC_COMMAND: "flux run -t10m -n1 --queue pci"
   extends: [.build_script, .on_tioga]
 
 ####
@@ -22,7 +22,7 @@
 .run_project_integration_test_on_tioga:
   stage: build
   variables:
-    ALLOC_COMMAND: "flux mini run -t10m -n1"
+    ALLOC_COMMAND: "flux run -t10m -n1 --queue pci"
   extends: [.run_project_integration_tests, .on_tioga]
 
 ####

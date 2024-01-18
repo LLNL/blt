@@ -19,7 +19,7 @@ quartz_allocate:
   extends: [.on_quartz]
   stage: allocate
   script:
-    - salloc -p pdebug -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
+    - salloc --res=ci -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
   needs: []
 
 ####
@@ -39,7 +39,7 @@ quartz_release:
 .build_on_quartz:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pdebug -t 10 -N 1 ${ASSIGN_ID} --interactive"
+    ALLOC_COMMAND: "srun --res=ci -t 10 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.build_script, .on_quartz]
   needs: [quartz_allocate]
 
@@ -48,7 +48,7 @@ quartz_release:
 .run_project_integration_test_on_quartz:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pdebug -t 10 -N 1 ${ASSIGN_ID} --interactive"
+    ALLOC_COMMAND: "srun --res=ci -t 10 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.run_project_integration_tests, .on_quartz]
   needs: [quartz_allocate]
 
