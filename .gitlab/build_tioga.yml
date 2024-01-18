@@ -14,7 +14,7 @@
 .src_build_on_tioga:
   stage: build
   variables:
-    ALLOC_COMMAND: "flux run -t10m -n1"
+    ALLOC_COMMAND: "flux run -t15m -n1 --queue pci"
   extends: [.build_script, .on_tioga]
 
 ####
@@ -22,7 +22,7 @@
 .run_project_integration_test_on_tioga:
   stage: build
   variables:
-    ALLOC_COMMAND: "flux mini run -t10m -n1"
+    ALLOC_COMMAND: "flux run -t15m -n1 --queue pci"
   extends: [.run_project_integration_tests, .on_tioga]
 
 ####
@@ -31,7 +31,7 @@ tioga-clang_14_0_0_hip:
   variables:
     HOST_CONFIG: "clang@14.0.0_hip.cmake"
   extends: .src_build_on_tioga
-  allow_failure: true
+
 
 ####
 # HIP project tests
