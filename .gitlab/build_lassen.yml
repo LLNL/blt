@@ -22,7 +22,7 @@
 .build_on_lassen:
   stage: build
   variables:
-    ALLOC_COMMAND: "lalloc 1 -W 10 -q pci"
+    ALLOC_COMMAND: "lalloc 1 -W 15 -q pci"
   extends: [.build_script, .on_lassen]
   needs: []
 
@@ -31,7 +31,7 @@
 .run_project_integration_test_on_lassen:
   stage: build
   variables:
-    ALLOC_COMMAND: "lalloc 1 -W 10 -q pci"
+    ALLOC_COMMAND: "lalloc 1 -W 15 -q pci"
   extends: [.run_project_integration_tests, .on_lassen]
   needs: []
 
