@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -33,6 +33,10 @@ set(MPI_C_COMPILER "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 set(MPI_CXX_COMPILER "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
 
 set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
+
+set(MPIEXEC_EXECUTABLE "/usr/global/tools/flux_wrappers/bin/srun" CACHE PATH "")
+
+set(MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING "")
 
 #------------------------------------------------------------------------------
 # HIP support
