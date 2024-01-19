@@ -175,10 +175,10 @@ else()
 endif()
 
 if(ENABLE_HIP)
-  message(STATUS "Checking blt_hip_runtime imported target in blt_check_code_compiles")
+  message(STATUS "Checking blt::hip_runtime imported target in blt_check_code_compiles")
   blt_check_code_compiles(CODE_COMPILES  _hello_world_with_libs_compiled
                           VERBOSE_OUTPUT ON
-                          DEPENDS_ON blt_hip_runtime
+                          DEPENDS_ON blt::hip_runtime
                           SOURCE_STRING
   [=[
   #include <iostream>

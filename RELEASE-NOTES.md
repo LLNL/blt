@@ -9,6 +9,29 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.6.0] - Release date 2024-01-18
+
+### Added
+- Added support for C++23. Note: XL and PGI do not support C++23.
+- Adds a `clang_tidy_style` CMake target to allow `clang-tidy` to fix errors in-place.
+  This requires a `CLANGAPPLYREPLACEMENTS_EXECUTABLE` CMake variable to point to
+  the `clang-apply-replacements` executable in addition to the `CLANGTIDY_EXECUTABLE`.
+  Also adds a corresponding `ENABLE_CLANGAPPLYREPLACEMENTS` CMake option.
+  Note that the `clang_tidy_style` target is not added to the `style` target and must be run separately.
+- Added the `blt_install_tpl_setups` macro, which installs files to setup and create
+  targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to 
+  replace `blt_export_tpl_targets` as the preferred way to setup third-party libraries with BLT.
+- Added `blt::`` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
+  These targets still exist but but will be deprecated in a future release. It is recommended that you
+  move to the new alias names, `blt::cuda`, `blt::cuda_runtime`, `blt::mpi`, and `blt::openmp`
+
+### Changed
+- SetupHIP now searches for user-defined or environment variables before CMake paths to find the ROCM_PATH.
+
+### Fixed
+- Fixed infinite loop in `blt_find_target_dependencies`
+- `blt_check_code_compiles` now works with alias targets
+
 ## [Version 0.5.3] - Release date 2023-06-05
 
 ### Changed
@@ -16,6 +39,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   Commit: [12a5852e451baabc79c63a86c634912c563d57bc](https://github.com/google/googletest/commit/12a5852e451baabc79c63a86c634912c563d57bc).
   Note: this version of Googletest requires C++14, and PGI is not supported. If you are using PGI, set ENABLE_GTEST OFF.
 - Updated GoogleBenchmark to 1.8
+- The `clang_tidy_check` target is no longer registered with the main `check` target since its changes are not always safe/valid.
 
 ### Added
 - Added `blt_print_variables` macro to print variables in current scope, with regex filtering on variable names and values
@@ -288,7 +312,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.3...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.0...develop
+[Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0
 [Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.2...v0.5.3
 [Version 0.5.2]: https://github.com/LLNL/blt/compare/v0.5.1...v0.5.2
 [Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1

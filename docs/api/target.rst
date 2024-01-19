@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -531,13 +531,17 @@ Internal variable names are prefixed with ``_`` to avoid collision with input pa
 .. _blt_export_tpl_targets:
 
 blt_export_tpl_targets
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
     blt_export_tpl_targets(EXPORT  <export-set-name>
                            [NAMESPACE <namespace>])
 
+.. warning::
+    This macro is now deprecated in favor of ``blt_install_tpl_setups`` due to problems with 
+    evaluating generator expressions early.
+    
 Install BLT-provided third-party library targets to the given export set.
 
 EXPORT
@@ -555,3 +559,35 @@ targets, without the downstream project itself requiring the use of BLT.
   It is highly recommended that the NAMESPACE argument is used to ensure that
   the targets are given a unique prefix that will reduce the chance of
   conflicts.
+
+.. blt_install_tpl_setups:
+
+blt_install_tpl_setups
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    blt_install_tpl_setups(DESTINATION <dir>)
+
+.. warning::
+    This macro is experimental until BLT's CI pipelines can be updated to provide adequate test coverage.
+
+Install CMake files for configuring and importing BLT's third-party library (TPL) targets in downstream projects.
+
+DESTINATION
+  Directory relative to the project's installation directory where the installed BLT setup files will end up.
+
+This macro will install setup files used to recreate the necessary BLT targets OpenMP, MPI, CUDA, and HIP.
+
+The installed setup files are the same files that originally created the BLT targets and will recreate the 
+same process in your downstream projects. These call the necessary `find_packages` for each needed target 
+and populate them with the necessary target information, such as compile and link flags. The BLT targets 
+are then recreated via ``blt_import_library``.  ``BLTSetupTargets.cmake`` MUST be included from your project
+created config file, such as ``<lowercasePackageName>-config.cmake`` or ``<PackageName>Config.cmake``. 
+For example, as long as you called this macro with the same ``DESTINATION`` as your exported project targets,
+``include(${CMAKE_CURRENT_LIST_DIR}/BLTSetupTargets.cmake)`` will recreate the BLT targets in a downstream project.
+ 
+.. note::
+  This macro is meant to replace ``blt_export_tpl_targets`` as the favored way to configure TPLs
+  for use by projects downstream.  An internal flag makes it impossible to call both from the same 
+  project.

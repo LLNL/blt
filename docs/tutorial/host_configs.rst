@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -31,11 +31,11 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
 Here is a snippet from a host-config file that specifies compiler details for
-using specific gcc (version 4.9.3 in this case) on the LLNL Pascal cluster. 
+using specific gcc (version 10.3.1 in this case) on the LLNL Pascal cluster: 
 
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
-   :start-after: _blt_tutorial_compiler_config_start
-   :end-before:  _blt_tutorial_compiler_config_end
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake
+   :start-after: _blt_pascal_compiler_config_start
+   :end-before:  _blt_pascal_compiler_config_end
    :language: cmake
 
 
@@ -52,7 +52,7 @@ MPI and CUDA enabled on Pascal:
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake  ..
+    cmake -C ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake  ..
 
 After building (``make``), you can run ``make test`` on a batch node (where the GPUs reside) 
 to run the unit tests that are using MPI and CUDA:
@@ -90,8 +90,8 @@ to run the unit tests that are using MPI and CUDA:
 Building and Testing on Ray
 ---------------------------
 
-Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
-enabled on the LLNL BlueOS Ray cluster:
+Here is how you can use the host-config file to configure a build of the
+``calc_pi``  project with MPI and CUDA enabled on the LLNL BlueOS Lassen cluster:
 
 .. code-block:: bash
     
@@ -99,7 +99,7 @@ enabled on the LLNL BlueOS Ray cluster:
     mkdir build
     cd build
     # configure using host-config
-    cmake -C ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake  ..
+    cmake -C ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17.cmake  ..
 
 And here is how to build and test the code on Ray:
 
@@ -134,8 +134,8 @@ And here is how to build and test the code on Ray:
 Building and Testing on Summit
 -------------------------------
 
-Here is how you can use the host-config file to configure a build of the ``calc_pi``  project with MPI and CUDA 
-enabled on the OLCF Summit cluster:
+Here is how you can use the host-config file to configure a build of the
+``calc_pi``  project with MPI and CUDA enabled on the OLCF Summit cluster:
 
 .. code-block:: bash
     
@@ -198,20 +198,20 @@ Basic TOSS3 (for example: Quartz) host-config that has C, C++, and Fortran Compi
 
         ``gcc@8.3.1 host-config``
 
-    .. literalinclude::  ../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake
+    .. literalinclude::  ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1.cmake
         :language: cmake
         :linenos:
 
-Here are the full example host-config files for LLNL's Pascal, Ray, and Quartz Clusters that uses
-the default compilers on the system:
+Here are the full example host-config files for LLNL's Pascal, Lassen, 
+and Quartz Clusters that uses the default compilers on the system:
 
 .. container:: toggle
 
     .. container:: label
 
-        ``gcc@4.9.3 host-config``
+        ``gcc@10.3.1 host-config``
 
-    .. literalinclude::  ../../host-configs/llnl/toss_3_x86_64_ib/gcc@4.9.3_nvcc.cmake
+    .. literalinclude::  ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake
         :language: cmake
         :linenos:
 
@@ -223,7 +223,7 @@ More complicated BlueOS host-config that has C, C++, MPI, and CUDA support:
 
         ``clang@upstream C++17 host-config``
 
-    .. literalinclude::  ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17_no_separable.cmake
+    .. literalinclude::  ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17_no_separable.cmake
         :language: cmake
         :linenos:
 

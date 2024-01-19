@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -82,16 +82,23 @@ if(CLANGQUERY_FOUND)
     add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_query_check)
 endif()
 
+# Note: clang-tidy targets are not added to the main `check` and `style` targets
+# since the changes are not always safe to apply
 if(CLANGTIDY_FOUND)
+    # targets for verifying clang-tidy
     add_custom_target(clang_tidy_check)
-    add_dependencies(${BLT_CODE_CHECK_TARGET_NAME} clang_tidy_check)
+
+    # targets for modifying code based via clang-tidy; also require clang-apply-replacements
+    if(CLANGAPPLYREPLACEMENTS_FOUND)
+        add_custom_target(clang_tidy_style)
+    endif()
 endif()
 
 # Code check targets should only be run on demand
 foreach(target 
         check cmakeformat_check yapf_check uncrustify_check astyle_check clangformat_check cppcheck_check
         style cmakeformat_style yapf_style uncrustify_style astyle_style clangformat_style
-        clang_query_check interactive_clang_query_check clang_tidy_check)
+        clang_query_check interactive_clang_query_check clang_tidy_check clang_tidy_style)
     if(TARGET ${target})
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL TRUE)
         set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_DEFAULT_BUILD TRUE)
@@ -308,7 +315,17 @@ macro(blt_add_code_checks)
         blt_error_if_target_exists(${_clang_tidy_target_name} ${_error_msg})
         blt_add_clang_tidy_target( NAME              ${_clang_tidy_target_name}
                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                   FIX               FALSE
                                    SRC_FILES         ${_c_sources})
+
+        if(CLANGAPPLYREPLACEMENTS_FOUND)
+            set(_clang_tidy_target_name ${arg_PREFIX}_clang_tidy_style)
+            blt_error_if_target_exists(${_clang_tidy_target_name} ${_error_msg})
+            blt_add_clang_tidy_target( NAME              ${_clang_tidy_target_name}
+                                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                                       FIX               TRUE
+                                       SRC_FILES         ${_c_sources})
+        endif()
     endif()
 
 endmacro(blt_add_code_checks)
@@ -413,6 +430,9 @@ endmacro(blt_add_clang_query_target)
 ##                            SRC_FILES         [FILE1 [FILE2 ...]] )
 ##
 ## Creates a new target with the given NAME for running clang-tidy over the given SRC_FILES
+##
+## Note: The FIX option requires the CLANGAPPLYREPLACEMENTS_EXECUTABLE CMake variable
+## to be defined and to point to the `clang-apply-replacements` executable.
 ##-----------------------------------------------------------------------------
 macro(blt_add_clang_tidy_target)
     if(CLANGTIDY_FOUND)
@@ -427,7 +447,7 @@ macro(blt_add_clang_tidy_target)
 
         # Check required parameters
         if(NOT DEFINED arg_NAME)
-             message(FATAL_ERROR "blt_add_clang_tidy_target requires a NAME parameter")
+            message(FATAL_ERROR "blt_add_clang_tidy_target requires a NAME parameter")
         endif()
 
         if(NOT DEFINED arg_SRC_FILES)
@@ -441,10 +461,10 @@ macro(blt_add_clang_tidy_target)
         endif()
    
         set(CLANG_TIDY_HELPER_SCRIPT ${BLT_ROOT_DIR}/cmake/run-clang-tidy.py)
-        set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_SCRIPT} -clang-tidy-binary=${CLANGTIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR})
+        set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_SCRIPT} -clang-tidy-binary=${CLANGTIDY_EXECUTABLE} -p=${CMAKE_BINARY_DIR})
 
         if(arg_FIX)
-            set(CLANG_TIDY_HELPER_COMMAND ${CLANG_TIDY_HELPER_COMMAND} -fix)
+            list(APPEND CLANG_TIDY_HELPER_COMMAND -clang-apply-replacements-binary=${CLANGAPPLYREPLACEMENTS_EXECUTABLE} -fix)
         endif()
 
         if(DEFINED arg_CHECKS)
@@ -461,7 +481,11 @@ macro(blt_add_clang_tidy_target)
         endif()
 
         # hook our new target into the proper dependency chain
-        add_dependencies(clang_tidy_check ${arg_NAME})
+        if(arg_FIX)
+            add_dependencies(clang_tidy_style ${arg_NAME})
+        else()
+            add_dependencies(clang_tidy_check ${arg_NAME})
+        endif()
 
         # Code check targets should only be run on demand
         set_property(TARGET ${arg_NAME} PROPERTY EXCLUDE_FROM_ALL TRUE)

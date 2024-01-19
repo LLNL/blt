@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -8,22 +8,34 @@
 ################################
 
 if(NOT ROCM_PATH)
+    # First try finding paths given by the user
     find_path(ROCM_PATH
         hip
-        ENV{ROCM_DIR}
-        ENV{ROCM_PATH}
-        ENV{HIP_PATH}
-        ${HIP_PATH}/..
-        ${HIP_ROOT_DIR}/../
-        ${ROCM_ROOT_DIR}
-        /opt/rocm)
+        PATHS
+          $ENV{ROCM_DIR}
+          $ENV{ROCM_PATH}
+          $ENV{HIP_PATH}
+          ${HIP_PATH}/..
+          ${HIP_ROOT_DIR}/../
+          ${ROCM_ROOT_DIR}
+          /opt/rocm
+        NO_DEFAULT_PATH
+        NO_CMAKE_ENVIRONMENT_PATH
+        NO_CMAKE_PATH
+        NO_SYSTEM_ENVIRONMENT_PATH
+        NO_CMAKE_SYSTEM_PATH)
+
+    # If that fails, use CMake default paths
+    if(NOT ROCM_PATH)
+        find_path(ROCM_PATH hip)
+    endif()
 endif()
 
 # Update CMAKE_PREFIX_PATH to make sure all the configs that hip depends on are
 # found.
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH}")
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${ROCM_PATH};${ROCM_ROOT_DIR}/lib/cmake")
 
-find_package(hip REQUIRED CONFIG PATHS ${HIP_PATH} ${ROCM_PATH})
+find_package(hip REQUIRED CONFIG PATHS  ${HIP_PATH} ${ROCM_PATH} ${ROCM_ROOT_DIR}/lib/cmake/hip)
 
 message(STATUS "ROCM path:        ${ROCM_PATH}")
 message(STATUS "HIP version:      ${hip_VERSION}")
@@ -79,11 +91,12 @@ blt_import_library(NAME          blt_hip
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
                    GLOBAL        ${_blt_hip_is_global})
 
-# Hard-copy inheritable properties instead of depending on hip::device so that we can export all required
-# information in our target blt_hip
+# Hard-copy inheritable properties instead of depending on hip::device so that we can export
+# all required information in our target blt_hip
 blt_inherit_target_info(TO blt_hip FROM hip::device OBJECT FALSE)
 
 add_library(blt::hip ALIAS blt_hip)
+
 
 blt_import_library(NAME          blt_hip_runtime
                    INCLUDES      ${HIP_INCLUDE_DIRS}

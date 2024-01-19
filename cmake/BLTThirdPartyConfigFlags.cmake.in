@@ -1,0 +1,40 @@
+if ("@ENABLE_CUDA@")
+    set(BLT_ENABLE_CUDA           "@ENABLE_CUDA@")
+endif()
+
+if ("@ENABLE_HIP@")
+    set(BLT_ENABLE_HIP            "@ENABLE_HIP@")
+endif()
+
+if ("@ENABLE_MPI@")
+    set(BLT_ENABLE_MPI            "@ENABLE_MPI@")
+endif()
+
+if ("@ENABLE_OPENMP@")
+    set(BLT_ENABLE_OPENMP         "@ENABLE_OPENMP@")
+endif()
+
+set(BLT_ENABLE_FIND_MPI           "@ENABLE_FIND_MPI@")
+
+# User configurable CUDA options needed by downstream.  Normally, exporting
+# these targets would pass these flags to downstream targets, but this
+# must be done manually if targets aren't exported.
+if ("@ENABLE_CLANG_CUDA@" AND NOT DEFINED ENABLE_CLANG_CUDA)
+    set(BLT_ENABLE_CLANG_CUDA     "@ENABLE_CLANG_CUDA@")
+# If the user specifies this variable, ignore the inherited flag.
+elseif (DEFINED ENABLE_CLANG_CUDA)
+    set(BLT_ENABLE_CLANG_CUDA     ${ENABLE_CLANG_CUDA})
+endif()
+
+if ("@BLT_CLANG_CUDA_ARCH@" AND NOT DEFINED BLT_CLANG_CUDA_ARCH)
+    set(BLT_CLANG_CUDA_ARCH       "@BLT_CLANG_CUDA_ARCH@")
+endif()
+
+if ("@CUDA_TOOLKIT_ROOT_DIR@" AND NOT DEFINED CUDA_TOOLKIT_ROOT_DIR)
+    set(CUDA_TOOLKIT_ROOT_DIR     "@CUDA_TOOLKIT_ROOT_DIR@")
+endif()
+
+# User configurable HIP options needed by downstream
+if ("@ROCM_PATH@" AND NOT DEFINED ROCM_PATH)
+    set(ROCM_PATH                 "@ROCM_PATH@")
+endif()

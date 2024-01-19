@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -27,6 +27,8 @@ option(ENABLE_DOXYGEN      "Enables Doxygen support" ON)
 option(ENABLE_SPHINX       "Enables Sphinx support" ON)
 
 # Quality
+option(ENABLE_CLANGAPPLYREPLACEMENTS    
+                           "Enables clang-apply-replacements support" ON)
 option(ENABLE_CLANGQUERY   "Enables Clang-query support" ON)
 option(ENABLE_CLANGTIDY    "Enables clang-tidy support" ON)
 option(ENABLE_CPPCHECK     "Enables Cppcheck support" ON)
@@ -140,7 +142,6 @@ set(BLT_CODE_CHECK_TARGET_NAME "check" CACHE STRING "Name of the master code che
 set(BLT_CODE_STYLE_TARGET_NAME "style" CACHE STRING "Name of the master code formatting target")
 set(BLT_DOCS_TARGET_NAME "docs" CACHE STRING "Name of the master documentation generation target")
 set(BLT_RUN_BENCHMARKS_TARGET_NAME "run_benchmarks" CACHE STRING "Name of the target to run benchmark tests")
-
 
 # All advanced options should be marked as advanced
 mark_as_advanced(

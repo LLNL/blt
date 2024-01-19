@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -63,9 +63,9 @@ endif()
 # Basics
 ############################################################
 # language check fails when using clang-cuda
-if (NOT ENABLE_CLANG_CUDA)
-  enable_language(CUDA)
-endif ()
+if (NOT BLT_ENABLE_CLANG_CUDA)
+    enable_language(CUDA)
+endif()
 
 if(CMAKE_CUDA_STANDARD STREQUAL "17")
     if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
@@ -99,6 +99,7 @@ endif()
 
 # If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)
 find_package(CUDA REQUIRED)
+
 blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
 
 # Append the path to the NVIDIA SDK to the link flags
@@ -109,18 +110,18 @@ if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib}" )
     list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib" )
 endif()
 
-message(STATUS "CUDA Version:       ${CUDA_VERSION_STRING}")
-message(STATUS "CUDA Toolkit Root Dir: ${CUDA_TOOLKIT_ROOT_DIR}")
-message(STATUS "CUDA Compiler:      ${CMAKE_CUDA_COMPILER}")
+message(STATUS "CUDA Version:                   ${CUDA_VERSION_STRING}")
+message(STATUS "CUDA Toolkit Root Dir:          ${CUDA_TOOLKIT_ROOT_DIR}")
+message(STATUS "CUDA Compiler:                  ${CMAKE_CUDA_COMPILER}")
 if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
-    message(STATUS "CUDA Host Compiler: ${CMAKE_CUDA_HOST_COMPILER}")
+    message(STATUS "CUDA Host Compiler:         ${CMAKE_CUDA_HOST_COMPILER}")
 else()
-    message(STATUS "CUDA Host Compiler: ${CUDA_HOST_COMPILER}")
+    message(STATUS "CUDA Host Compiler:         ${CUDA_HOST_COMPILER}")
 endif()
-message(STATUS "CUDA Include Path:  ${CUDA_INCLUDE_DIRS}")
-message(STATUS "CUDA Libraries:     ${CUDA_LIBRARIES}")
-message(STATUS "CUDA Compile Flags: ${CMAKE_CUDA_FLAGS}")
-message(STATUS "CUDA Link Flags:    ${CMAKE_CUDA_LINK_FLAGS}")
+message(STATUS "CUDA Include Path:              ${CUDA_INCLUDE_DIRS}")
+message(STATUS "CUDA Libraries:                 ${CUDA_LIBRARIES}")
+message(STATUS "CUDA Compile Flags:             ${CMAKE_CUDA_FLAGS}")
+message(STATUS "CUDA Link Flags:                ${CMAKE_CUDA_LINK_FLAGS}")
 message(STATUS "BLT CUDA Separable Compilation: ${CUDA_SEPARABLE_COMPILATION}")
 message(STATUS "CUDA Separable Compilation:     ${CMAKE_CUDA_SEPARABLE_COMPILATION}")
 message(STATUS "CUDA Link with NVCC:            ${CUDA_LINK_WITH_NVCC}")
@@ -144,7 +145,7 @@ endif()
 
 
 set(_cuda_compile_flags " ")
-if (ENABLE_CLANG_CUDA)
+if (BLT_ENABLE_CLANG_CUDA)
     set (_cuda_compile_flags -x cuda --cuda-gpu-arch=${BLT_CLANG_CUDA_ARCH} --cuda-path=${CUDA_TOOLKIT_ROOT_DIR})
     message(STATUS "Clang CUDA Enabled. CUDA compile flags added: ${_cuda_compile_flags}")    
 endif()
@@ -160,8 +161,9 @@ blt_import_library(NAME          cuda
                    INCLUDES      ${CUDA_INCLUDE_DIRS}
                    LIBRARIES     ${CUDA_LIBRARIES}
                    LINK_FLAGS    "${CMAKE_CUDA_LINK_FLAGS}"
-                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
-                   )
+                   EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
+
+add_library(blt::cuda ALIAS cuda)
 
 # same as 'cuda' but we don't flag your source files as
 # CUDA language.  This causes your source files to use 
@@ -173,3 +175,5 @@ blt_import_library(NAME       cuda_runtime
                    INCLUDES   ${CUDA_INCLUDE_DIRS}
                    LIBRARIES  ${CUDA_LIBRARIES}
                    EXPORTABLE ${BLT_EXPORT_THIRDPARTY})
+
+add_library(blt::cuda_runtime ALIAS cuda_runtime)

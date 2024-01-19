@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -16,9 +16,10 @@ As previously mentioned in :ref:`AddingTests`, BLT also provides
 bundled versions of GoogleTest, GoogleMock, GoogleBenchmark, and FRUIT.  Not only are the source
 for these included, we provide named CMake targets for them as well.
 
-BLT's ``mpi``, ``cuda``, ``cuda_runtime``, ``blt::hip``, ``blt::hip_runtime``,and ``openmp`` targets are
-all defined via the :ref:`blt_import_library` macro. This creates a true CMake imported target that is inherited
-properly through the CMake's dependency graph.
+BLT's ``blt::mpi``, ``blt::cuda``, ``blt::cuda_runtime``, ``blt::hip``, ``blt::hip_runtime``,
+and ``blt::openmp`` targets are all defined via the :ref:`blt_import_library` macro.
+This creates a true CMake imported target that is inherited properly through the CMake's
+dependency graph.
 
 .. note::
     BLT also supports exporting its third-party targets via the ``BLT_EXPORT_THIRDPARTY`` option.
@@ -40,7 +41,7 @@ which uses MPI to parallelize the calculation over the integration intervals.
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
 in our host config file. Here is a snippet with these settings for LLNL's Lassen Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/toss_3_x86_64_ib/gcc@8.3.1.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1.cmake
    :start-after: _blt_tutorial_mpi_config_start
    :end-before:  _blt_tutorial_mpi_config_end
    :language: cmake
@@ -94,16 +95,16 @@ CUDA
 Finally, ``test_3`` builds and tests the ``calc_pi_cuda`` library,
 which uses CUDA to parallelize the calculation over the integration intervals.
 
-To enable CUDA, we set ``ENABLE_CUDA``, ``CMAKE_CUDA_COMPILER``, and
-``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.  Also before enabling the
-CUDA language in CMake, you need to set ``CMAKE_CUDA_HOST_COMPILER`` in CMake 3.9+
-or ``CUDA_HOST_COMPILER`` in previous versions.  If you do not call 
-``enable_language(CUDA)``, BLT will set the appropriate host compiler variable
-for you and enable the CUDA language.
+To enable CUDA, we set ``ENABLE_CUDA``, ``CMAKE_CUDA_COMPILER``, 
+``CMAKE_CUDA_ARCHITECTURES``, and ``CUDA_TOOLKIT_ROOT_DIR`` in our host config file.
+Also before enabling the CUDA language in CMake, you need to set 
+``CMAKE_CUDA_HOST_COMPILER`` in CMake 3.9+ or ``CUDA_HOST_COMPILER`` in previous versions.
+If you do not call ``enable_language(CUDA)``, BLT will set the appropriate host
+compiler variable for you and enable the CUDA language.
 
 Here is a snippet with these settings for LLNL's Lassen Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_c++17.cmake
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17.cmake
    :start-after: _blt_tutorial_cuda_config_start
    :end-before:  _blt_tutorial_cuda_config_end
    :language: cmake
@@ -115,16 +116,16 @@ Here, you can see how ``calc_pi_cuda`` and ``test_3`` use ``DEPENDS_ON``:
    :end-before:  _blt_tutorial_calcpi_cuda_end
    :language: cmake
 
-The ``cuda`` dependency for ``calc_pi_cuda``  is a little special, 
+The ``blt::cuda`` dependency for ``calc_pi_cuda`` is a little special, 
 along with adding the normal CUDA library and headers to your library or executable,
 it also tells BLT that this target's C/C++/CUDA source files need to be compiled via
 ``nvcc`` or ``cuda-clang``. If this is not a requirement, you can use the dependency
-``cuda_runtime`` which also adds the CUDA runtime library and headers but will not
+``blt::cuda_runtime`` which also adds the CUDA runtime library and headers but will not
 compile each source file with ``nvcc``.
 
 Some other useful CUDA flags are:
 
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_nvcc_xlf.cmake
+.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++14_xlf.cmake
    :start-after: _blt_tutorial_useful_cuda_flags_start
    :end-before:  _blt_tutorial_useful_cuda_flags_end
    :language: cmake
@@ -134,7 +135,7 @@ OpenMP
 ~~~~~~
 
 To enable OpenMP, set ``ENABLE_OPENMP`` in your host-config file or before loading
-``SetupBLT.cmake``.  Once OpenMP is enabled, simply add ``openmp`` to your library
+``SetupBLT.cmake``.  Once OpenMP is enabled, simply add ``blt::openmp`` to your library
 executable's ``DEPENDS_ON`` list.
 
 Here is an example of how to add an OpenMP enabled executable:
@@ -143,17 +144,6 @@ Here is an example of how to add an OpenMP enabled executable:
    :start-after: _blt_tutorial_openmp_executable_start
    :end-before:  _blt_tutorial_openmp_executable_end
    :language: cmake
-
-.. note::
-  While we have tried to ensure that BLT chooses the correct compile and link flags for
-  OpenMP, there are several niche cases where the default options are insufficient.
-  For example, linking with NVCC requires to link in the OpenMP libraries directly instead
-  of relying on the compile and link flags returned by CMake's FindOpenMP package.  An
-  example of this is in ``host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@upstream_link_with_nvcc.cmake``. 
-  We provide two variables to override BLT's OpenMP flag logic: 
-  
-  * ``BLT_OPENMP_COMPILE_FLAGS``
-  * ``BLT_OPENMP_LINK_FLAGS``
 
 Here is an example of how to add an OpenMP enabled test that sets the amount of threads used:
 
@@ -174,6 +164,7 @@ BLT also supports AMD's HIP via a mechanism very similar to our CUDA support.
 
 * ``ENABLE_HIP`` : Enables HIP support in BLT
 * ``HIP_ROOT_DIR`` : Root directory for HIP installation
+* ``CMAKE_HIP_ARCHITECTURES`` : GPU architecture to use when generating HIP/ROCm code
 
 **BLT Targets**
 

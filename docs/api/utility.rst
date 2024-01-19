@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -9,7 +9,7 @@ Utility Macros
 .. _blt_assert_exists:
 
 blt_assert_exists
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 
@@ -218,7 +218,7 @@ command but doesn't throw an error if the list is empty or not defined.
 .. _blt_convert_to_system_includes:
 
 blt_convert_to_system_includes
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: cmake
 

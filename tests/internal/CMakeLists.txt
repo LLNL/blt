@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -247,7 +247,7 @@ if (ENABLE_CUDA AND ENABLE_MPI AND
     blt_add_executable(
       NAME       test_cuda_mpi
       SOURCES    src/test_cuda_mpi.cpp
-      DEPENDS_ON cuda mpi hwloc)
+      DEPENDS_ON blt::cuda blt::mpi hwloc)
 
     # Tests on a 2^24 elements array.
     # It can go much bigger, but will not
@@ -260,13 +260,13 @@ endif()
 # Exercise blt_print_target_properties macro
 message(STATUS "")
 message(STATUS "Exercising blt_print_target_properties macro default options.")
-foreach(_target gtest gbenchmark example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+foreach(_target gtest gbenchmark example t_example_smoke not-a-target blt_header_only blt::mpi blt::cuda blt::cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target})
 endforeach()
 
 message(STATUS "")
 message(STATUS "Exercising blt_print_target_properties macro using regex arguments.")
-foreach(_target gtest example t_example_smoke not-a-target blt_header_only mpi cuda cuda_runtime blt::hip blt::hip_runtime)
+foreach(_target gtest example t_example_smoke not-a-target blt_header_only blt::mpi blt::cuda blt::cuda_runtime blt::hip blt::hip_runtime)
     blt_print_target_properties(TARGET ${_target} CHILDREN true PROPERTY_NAME_REGEX "CXX_STANDARD_REQUIRED" PROPERTY_VALUE_REGEX "ON")
 endforeach()
 
@@ -449,10 +449,10 @@ endif()
 
 # create example depending on all available TPLs to test export
 set(_example_tpl_depends)
-blt_list_append(TO _example_tpl_depends ELEMENTS cuda cuda_runtime IF ENABLE_CUDA)
-blt_list_append(TO _example_tpl_depends ELEMENTS blt_hip blt_hip_runtime IF ENABLE_HIP)
-blt_list_append(TO _example_tpl_depends ELEMENTS openmp IF ENABLE_OPENMP)
-blt_list_append(TO _example_tpl_depends ELEMENTS mpi IF ENABLE_MPI)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt::cuda blt::cuda_runtime IF ENABLE_CUDA)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt::hip blt::hip_runtime IF ENABLE_HIP)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt::openmp IF ENABLE_OPENMP)
+blt_list_append(TO _example_tpl_depends ELEMENTS blt::mpi IF ENABLE_MPI)
 
 blt_add_library( NAME    example-with-tpls
                  SOURCES "src/Example.cpp"

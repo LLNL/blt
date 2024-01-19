@@ -1,7 +1,9 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
+
+include("${CMAKE_CURRENT_LIST_DIR}/BLTSetupTargets.cmake")
 
 #------------------------------------
 # Git
@@ -18,42 +20,6 @@ if (ENABLE_GIT)
     endif()
 else()
     message(STATUS "Git Support is OFF")
-endif()
-
-
-#------------------------------------
-# MPI
-#------------------------------------
-message(STATUS "MPI Support is ${ENABLE_MPI}")
-if (ENABLE_MPI)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupMPI.cmake)
-endif()
-
-
-#------------------------------------
-# OpenMP
-#------------------------------------
-message(STATUS "OpenMP Support is ${ENABLE_OPENMP}")
-if (ENABLE_OPENMP)
-    include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupOpenMP.cmake)
-endif()
-
-
-#------------------------------------
-# CUDA
-#------------------------------------
-message(STATUS "CUDA Support is ${ENABLE_CUDA}")
-if (ENABLE_CUDA)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupCUDA.cmake)
-endif()
-
-
-#------------------------------------
-# HIP
-#------------------------------------
-message(STATUS "HIP Support is ${ENABLE_HIP}")
-if (ENABLE_HIP)
-  include(${BLT_ROOT_DIR}/cmake/thirdparty/SetupHIP.cmake)
 endif()
 
 
@@ -110,6 +76,9 @@ if(CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "Ninja"
 
     blt_find_executable(NAME        ClangTidy
                         EXECUTABLES clang-tidy)
+
+    blt_find_executable(NAME        ClangApplyReplacements
+                        EXECUTABLES clang-apply-replacements)
 endif()
 
 #------------------------------------

@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. #
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -63,6 +63,20 @@ functionality you will need to call the individual code check macros yourself.
   other codes.  The following check ``if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")``
   will stop your code checks from running unless you are the main CMake project.
 
+Enabled code checks produce a ``check`` build target that will test to see if you
+are out of compliance with your code formatting and a ``style`` build target that will actually
+modify your source files. These default names can be modified via the ``BLT_CODE_CHECK_TARGET_NAME``
+and ``BLT_CODE_STYLE_TARGET_NAME`` variables (e.g. if they conflict with existing project target names).
+
+Depending on enabled features, it also creates build targets that follow the following pattern
+``<PREFIX>_<astyle|clangformat|uncrustify|clang_tidy|cppcheck|clang_query>_<check|style>``.
+
+.. note::
+  Since clang-tidy can produce unsafe changes, BLT does not add ``clang_tidy_check`` to the main ``check``
+  target or ``clang_tidy_style`` to the main ``style`` target. User projects can do so by adding the following
+  CMake commands: ``add_dependencies(check clang_tidy_check)`` and/or ``add_dependencies(style clang_tidy_style)`` 
+  or can manually run the ``clang_tidy_check`` and ``clang_tidy_style`` targets.
+
 Sources are filtered based on file extensions for use in these code
 checks.  If you need additional file extensions defined add them to
 ``BLT_C_FILE_EXTS``, ``BLT_Python_FILE_EXTS``, ``BLT_CMAKE_FILE_EXTS``, and
@@ -88,7 +102,7 @@ This macro supports C/C++ code formatting with either AStyle, ClangFormat, or Un
   * ``UNCRUSTIFY_EXECUTABLE`` is defined and found prior to calling this macro
 
 .. note::
-  ClangFormat does not support a command line option for config files.  To work around this,
+  ClangFormat and clang-tidy do not support a command line option for config files.  To work around this,
   we copy the given config file to the build directory where this macro runs from.
 
 This macro also supports Python code formatting with Yapf only if the following requirements
@@ -102,10 +116,6 @@ This macro also supports CMake code formatting with CMakeFormat only if the foll
 * ``CMAKEFORMAT_CFG_FILE`` is given
 * ``CMAKEFORMAT_EXECUTABLE`` is defined and found prior to calling this macro
 
-Enabled code formatting checks produce a ``check`` build target that will test to see if you
-are out of compliance with your code formatting and a ``style`` build target that will actually
-modify your source files.  It also creates smaller child build targets that follow the pattern
-``<PREFIX>_<astyle|clangformat|uncrustify>_<check|style>``.
 
 If a particular version of a code formatting tool is required, you can
 configure BLT to enforce that version by setting
@@ -134,9 +144,8 @@ This macro supports the following static analysis tools with their requirements:
 - clang-tidy
 
   * ``CLANGTIDY_EXECUTABLE`` is defined and found prior to calling this macro
-
-These are added as children to the ``check`` build target and produce child build targets
-that follow the pattern ``<PREFIX>_<cppcheck|clang_query|clang_tidy>_check``.
+  * <optional> ``CLANGAPPLYREPLACEMENTS_EXECUTABLE`` should be defined and found prior to calling this macro
+    to support applying clang-tidy changes 
 
 
 .. _blt_add_clang_query_target:
@@ -272,6 +281,10 @@ coding standards and rules on your source code.  Clang-tidy is documented `here 
 
 ``CHECKS`` are the static analysis "rules" to specifically run on the target.
 If no checks are specified, clang-tidy will run the default available static analysis checks.
+
+.. note::
+  The ``FIX`` option requires ``clang-apply-replacements``, which is controlled by the ``ENABLE_CLANGAPPLYREPLACEMENTS`` CMake variable
+  and can be provided with the ``CLANGAPPLYREPLACEMENTS_EXECUTABLE`` CMake variable.
 
 
 .. _blt_add_astyle_target:

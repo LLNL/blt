@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2023, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -16,24 +16,23 @@
 # gcc@10.3.1 compilers
 #------------------------------------------------------------------------------
 
+# _blt_tutorial_compiler_config_start
 set(GCC_VERSION "gcc-10.3.1")
 set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}")
 
-# c compiler
 set(CMAKE_C_COMPILER "${GCC_HOME}/bin/gcc" CACHE PATH "")
 
-# cpp compiler
 set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
 
-# fortran support
+# Fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
-
-# fortran compiler
 set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
+#_blt_tutorial_compiler_config_end
 
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
+# _blt_tutorial_mpi_config_start
 set(ENABLE_MPI ON CACHE BOOL "")
 
 set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3.6-${GCC_VERSION}" CACHE PATH "")
@@ -44,3 +43,4 @@ set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
 
 set(MPIEXEC              "/usr/bin/srun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG "-n" CACHE PATH "")
+# _blt_tutorial_mpi_config_end
