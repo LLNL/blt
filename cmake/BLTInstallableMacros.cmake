@@ -443,7 +443,7 @@ function(blt_convert_to_system_includes)
     cmake_parse_arguments(arg
         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
 
-    if(DEFINED arg_TARGETS)
+    if(DEFINED arg_TARGET)
         message(WARNING "TARGET is a deprecated parameter for the blt_convert_to_system_includes macro.")
         list(APPEND arg_TARGETS ${arg_TARGET})
     endif()
@@ -456,55 +456,50 @@ function(blt_convert_to_system_includes)
         set(arg_CHILDREN TRUE)
     endif()
 
-    if(NOT ${arg_QUIET})
-        foreach(_target ${arg_TARGETS})
-            if(NOT TARGET ${_target})
-                message(WARNING "${_target} does not exist!")
-            endif()
-        endforeach()
-    endif()
-
     # PGI does not support -isystem
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+        set(_target_list)
+
         foreach(_target ${arg_TARGETS})
             if(TARGET ${_target})
                 if(${arg_CHILDREN})
-                    get_target_property(_interface_link_libs
-                                        ${_target}
-                                        INTERFACE_LINK_LIBRARIES)
-
-
-                    # Don't recurse if the target had no interface link libraries
-                    if(_interface_link_libs)
-                        # TODO: Warn if interface link library is not a target?
-                        blt_convert_to_system_includes(TARGETS ${_interface_link_libs})
-                    endif()
-
-                    unset(_interface_link_libs)
+                    blt_find_target_dependencies(TARGET ${_target} TLIST _target_list)
                 endif()
 
-                get_target_property(_interface_include_dirs
-                                    ${_target}
-                                    INTERFACE_INCLUDE_DIRECTORIES)
-
-                # Don't update properties if the target had no interface include directories
-                if(_interface_include_dirs)
-                    # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES
-                    # so it is not doubled by target_include_directories
-                    set_target_properties(${_target}
-                                          PROPERTIES
-                                            INTERFACE_INCLUDE_DIRECTORIES)
-
-                    target_include_directories(${_target}
-                                               SYSTEM
-                                               INTERFACE
-                                               ${_interface_include_dirs})
-                endif()
-
-                unset(_interface_include_dirs)
+                list(APPEND _target_list ${_target})
+            elseif(NOT ${arg_QUIET)
+                message(WARNING "${_target} does not exist!")
             endif()
         endforeach()
-    endif()
+
+        blt_list_remove_duplicates(TO _target_list)
+
+        foreach(_target ${_target_list})
+            get_target_property(_interface_include_dirs
+                                ${_target}
+                                INTERFACE_INCLUDE_DIRECTORIES)
+
+            # Don't update properties if the target had no interface include directories
+            if(_interface_include_dirs)
+                # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES
+                # so it is not doubled by target_include_directories
+                set_target_properties(${_target}
+                                      PROPERTIES
+                                      INTERFACE_INCLUDE_DIRECTORIES)
+
+                target_include_directories(${_target}
+                                           SYSTEM
+                                           INTERFACE
+                                           ${_interface_include_dirs})
+            endif()
+
+            unset(_interface_include_dirs)
+        endforeach()
+
+        unset(_target_list)
+     elseif(NOT ${arg_QUIET})
+        message(WARNING "PGI compiler does not support system includes")
+     endif()
 endfunction(blt_convert_to_system_includes)
 
 
