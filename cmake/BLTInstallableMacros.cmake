@@ -519,7 +519,7 @@ function(blt_convert_to_system_includes)
 
     # PGI does not support -isystem
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
-        set(_target_list)
+        set(_target_list "")
 
         foreach(_target ${arg_TARGETS})
             if(TARGET ${_target})
@@ -644,7 +644,7 @@ macro(blt_patch_target)
     endif()
 
     if(${arg_TREAT_INCLUDES_AS_SYSTEM})
-        blt_convert_to_system_includes(TARGET ${arg_NAME})
+        blt_convert_to_system_includes(TARGETS ${arg_NAME})
     endif()
 
     # FIXME: Is this all that's needed?
