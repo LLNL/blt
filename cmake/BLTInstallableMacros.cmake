@@ -536,25 +536,28 @@ function(blt_convert_to_system_includes)
         blt_list_remove_duplicates(TO _target_list)
 
         foreach(_target ${_target_list})
-            get_target_property(_interface_include_dirs
-                                ${_target}
-                                INTERFACE_INCLUDE_DIRECTORIES)
+            # Ignore entries that are not actual CMake targets
+            if(TARGET ${_target})
+                get_target_property(_interface_include_dirs
+                                    ${_target}
+                                    INTERFACE_INCLUDE_DIRECTORIES)
 
-            # Don't update properties if the target had no interface include directories
-            if(_interface_include_dirs)
-                # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES
-                # so it is not doubled by target_include_directories
-                set_target_properties(${_target}
-                                      PROPERTIES
-                                      INTERFACE_INCLUDE_DIRECTORIES)
+                # Don't update properties if the target had no interface include directories
+                if(_interface_include_dirs)
+                    # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES
+                    # so it is not doubled by target_include_directories
+                    set_target_properties(${_target}
+                                          PROPERTIES
+                                          INTERFACE_INCLUDE_DIRECTORIES)
 
-                target_include_directories(${_target}
-                                           SYSTEM
-                                           INTERFACE
-                                           ${_interface_include_dirs})
+                    target_include_directories(${_target}
+                                               SYSTEM
+                                               INTERFACE
+                                               ${_interface_include_dirs})
+                endif()
+
+                unset(_interface_include_dirs)
             endif()
-
-            unset(_interface_include_dirs)
         endforeach()
 
         unset(_target_list)
