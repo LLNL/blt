@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.6.0] - Release date 2024-01-18
+
 ### Added
 - Added support for C++23. Note: XL and PGI do not support C++23.
 - Adds a `clang_tidy_style` CMake target to allow `clang-tidy` to fix errors in-place.
@@ -310,7 +312,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.5.3...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.0...develop
+[Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0
 [Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.2...v0.5.3
 [Version 0.5.2]: https://github.com/LLNL/blt/compare/v0.5.1...v0.5.2
 [Version 0.5.1]: https://github.com/LLNL/blt/compare/v0.5.0...v0.5.1
