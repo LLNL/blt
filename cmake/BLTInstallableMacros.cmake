@@ -458,6 +458,7 @@ macro(blt_find_target_dependencies)
     if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
         list(APPEND _depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
     endif()
+    unset(_target_upper)
 
     # Get dependencies if CMake target
     if(TARGET ${arg_TARGET})
@@ -522,7 +523,9 @@ function(blt_convert_to_system_includes)
         set(_target_list "")
 
         foreach(_target ${arg_TARGETS})
-            if(TARGET ${_target})
+            string(TOUPPER ${_target} _target_upper)
+
+            if(TARGET ${_target} OR ${_BLT_${_target_upper}_IS_REGISTERED_LIBRARY})
                 if(${arg_CHILDREN})
                     blt_find_target_dependencies(TARGET ${_target} TLIST _target_list)
                 endif()
@@ -531,13 +534,15 @@ function(blt_convert_to_system_includes)
             elseif(NOT ${arg_QUIET)
                 message(WARNING "${_target} does not exist!")
             endif()
+
+            unset(_target_upper)
         endforeach()
 
         blt_list_remove_duplicates(TO _target_list)
 
         foreach(_target ${_target_list})
-            # Ignore entries that are not actual CMake targets
             if(TARGET ${_target})
+                # Handle CMake target
                 get_target_property(_interface_include_dirs
                                     ${_target}
                                     INTERFACE_INCLUDE_DIRECTORIES)
@@ -557,6 +562,15 @@ function(blt_convert_to_system_includes)
                 endif()
 
                 unset(_interface_include_dirs)
+            else()
+                string(TOUPPER ${_target} _target_upper)
+
+                if(${_BLT_${_target_upper}_IS_REGISTERED_LIBRARY})
+                    # Handle BLT registered target
+                    set(_BLT_${_target_upper}_TREAT_INCLUDES_AS_SYSTEM TRUE)
+                endif()
+
+                unset(_target_upper)
             endif()
         endforeach()
 
