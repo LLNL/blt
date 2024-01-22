@@ -548,7 +548,7 @@ function(blt_convert_to_system_includes)
                     # so it is not doubled by target_include_directories
                     set_target_properties(${_target}
                                           PROPERTIES
-                                          INTERFACE_INCLUDE_DIRECTORIES)
+                                          INTERFACE_INCLUDE_DIRECTORIES "")
 
                     target_include_directories(${_target}
                                                SYSTEM
