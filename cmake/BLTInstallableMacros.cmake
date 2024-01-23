@@ -525,7 +525,7 @@ function(blt_convert_to_system_includes)
         foreach(_target ${arg_TARGETS})
             string(TOUPPER ${_target} _target_upper)
 
-            if(TARGET ${_target} OR ${_BLT_${_target_upper}_IS_REGISTERED_LIBRARY})
+            if(TARGET ${_target} OR _BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
                 if(${arg_CHILDREN})
                     blt_find_target_dependencies(TARGET ${_target} TLIST _target_list)
                 endif()
