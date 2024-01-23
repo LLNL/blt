@@ -19,7 +19,7 @@ quartz_allocate:
   extends: [.on_quartz]
   stage: allocate
   script:
-    - salloc -p pdebug -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
+    - salloc --res=ci -N 1 -t 10 --no-shell --job-name=${PROJECT_ALLOC_NAME} --mpibind=off
   needs: []
 
 ####
@@ -39,8 +39,17 @@ quartz_release:
 .build_on_quartz:
   stage: build
   variables:
-    ALLOC_COMMAND: "srun -p pdebug -t 10 -N 1 ${ASSIGN_ID} --interactive"
+    ALLOC_COMMAND: "srun -t 15 -N 1 ${ASSIGN_ID} --interactive"
   extends: [.build_script, .on_quartz]
+  needs: [quartz_allocate]
+
+####
+# Template
+.run_project_integration_test_on_quartz:
+  stage: build
+  variables:
+    ALLOC_COMMAND: "srun -t 15 -N 1 ${ASSIGN_ID} --interactive"
+  extends: [.run_project_integration_tests, .on_quartz]
   needs: [quartz_allocate]
 
 ####
@@ -64,3 +73,11 @@ quartz-intel_2022_1_0_cxx17:
   variables:
     HOST_CONFIG: "intel@2022.1.0-c++17.cmake"
   extends: [.build_on_quartz]
+
+####
+# HIP project tests
+quartz_openmp_mpi_fortran_tests:
+  variables:
+    HOST_CONFIG: openmp-cpp-fortran/base/clang@14.0.6.cmake
+    ENABLED_BLT_TESTS: "mpi-cpp-fortran,openmp-cpp-fortran,openmp-mpi-cpp"
+  extends: [.run_project_integration_test_on_quartz]
