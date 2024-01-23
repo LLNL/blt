@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Fixed
+- Turned off GoogleTest finding Python
+
 ## [Version 0.6.0] - Release date 2024-01-18
 
 ### Added
