@@ -11,6 +11,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Fixed
 - Turned off GoogleTest finding Python
+- Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies
 
 ## [Version 0.6.0] - Release date 2024-01-18
 
