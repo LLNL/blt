@@ -565,7 +565,7 @@ function(blt_convert_to_system_includes)
             else()
                 string(TOUPPER ${_target} _target_upper)
 
-                if(${_BLT_${_target_upper}_IS_REGISTERED_LIBRARY})
+                if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
                     # Handle BLT registered target
                     set(_BLT_${_target_upper}_TREAT_INCLUDES_AS_SYSTEM TRUE)
                 endif()
