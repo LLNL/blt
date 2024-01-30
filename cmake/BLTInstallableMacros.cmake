@@ -515,7 +515,7 @@ function(blt_convert_to_system_includes)
     endif()
 
     if(NOT DEFINED arg_CHILDREN)
-        set(arg_CHILDREN TRUE)
+        set(arg_CHILDREN FALSE)
     endif()
 
     # PGI does not support -isystem

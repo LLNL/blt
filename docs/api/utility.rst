@@ -236,7 +236,7 @@ blt_convert_to_system_includes
 .. code-block:: cmake
 
     blt_convert_to_system_includes(TARGETS [<target>...]
-                                   CHILDREN [TRUE (default) | FALSE ]
+                                   CHILDREN [TRUE | FALSE (default)]
                                    [QUIET])
 
 Converts existing interface includes to system interface includes.
