@@ -260,16 +260,22 @@ if (POLICY CMP0094)
   cmake_policy(SET CMP0094 NEW)
 endif()
 
-# Sets PYTHONINTERP_FOUND and PYTHON_EXECUTABLE.
-if ("${CMAKE_VERSION}" VERSION_LESS "3.12.0")
-  find_package(PythonInterp)
-  set(PYTHONINTERP_FOUND ${PYTHONINTERP_FOUND} CACHE INTERNAL "")
-  set(PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE} CACHE INTERNAL "")
-else()
-  find_package(Python COMPONENTS Interpreter)
-  set(PYTHONINTERP_FOUND ${Python_Interpreter_FOUND} CACHE INTERNAL "")
-  set(PYTHON_EXECUTABLE ${Python_EXECUTABLE} CACHE INTERNAL "")
-endif()
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# BLT CHANGE
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Avoid finding Python.
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# # Sets PYTHONINTERP_FOUND and PYTHON_EXECUTABLE.
+# if ("${CMAKE_VERSION}" VERSION_LESS "3.12.0")
+#   find_package(PythonInterp)
+#   set(PYTHONINTERP_FOUND ${PYTHONINTERP_FOUND} CACHE INTERNAL "")
+#   set(PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE} CACHE INTERNAL "")
+# else()
+#   find_package(Python COMPONENTS Interpreter)
+#   set(PYTHONINTERP_FOUND ${Python_Interpreter_FOUND} CACHE INTERNAL "")
+#   set(PYTHON_EXECUTABLE ${Python_EXECUTABLE} CACHE INTERNAL "")
+# endif()
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # cxx_test_with_flags(name cxx_flags libs srcs...)
 #
