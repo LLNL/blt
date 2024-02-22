@@ -358,12 +358,22 @@ endforeach()
 ##################################
 # Remove implicit link directories
 ##################################
+message(STATUS "CMake's C implicit Link Directories: ${CMAKE_C_IMPLICIT_LINK_DIRECTORIES}")
+message(STATUS "CMake's CXX implicit Link Directories: ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}")
+if (ENABLE_FORTRAN)
+    message(STATUS "CMake's Fortran implicit Link Directories: ${CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES}")
+endif ()
+if (ENABLE_CUDA)
+    message(STATUS "CMake's CUDA implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
+endif ()
+
 if(BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE)
     message(STATUS "Removing implicit link directories: ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE}")
-    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
-    message(STATUS "Updated CXX implicit Link Directories: ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}")
+
     list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
     message(STATUS "Updated C implicit Link Directories: ${CMAKE_C_IMPLICIT_LINK_DIRECTORIES}")
+    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
+    message(STATUS "Updated CXX implicit Link Directories: ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}")
     if (ENABLE_FORTRAN)
         list(REMOVE_ITEM CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES ${BLT_CMAKE_IMPLICIT_LINK_DIRECTORIES_EXCLUDE})
         message(STATUS "Updated Fortran implicit Link Directories: ${CMAKE_Fortran_IMPLICIT_LINK_DIRECTORIES}")
@@ -377,12 +387,22 @@ endif()
 ##################################
 # Remove implicit link libraries
 ##################################
+message(STATUS "CMake's C implicit Link Libraries: ${CMAKE_C_IMPLICIT_LINK_LIBRARIES}")
+message(STATUS "CMake's CXX implicit Link Libraries: ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}")
+if (ENABLE_FORTRAN)
+    message(STATUS "CMake's Fortran implicit Link Libraries: ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}")
+endif ()
+if (ENABLE_CUDA)
+    message(STATUS "CMake's CUDA implicit Link Libraries: ${CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES}")
+endif ()
+
 if(BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE)
     message(STATUS "Removing implicit link libraries: ${BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE}")
-    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_LIBRARIES ${BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE})
-    message(STATUS "Updated CXX implicit Link Libraries: ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}")
+
     list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ${BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE})
     message(STATUS "Updated C implicit Link Libraries: ${CMAKE_C_IMPLICIT_LINK_LIBRARIES}")
+    list(REMOVE_ITEM CMAKE_CXX_IMPLICIT_LINK_LIBRARIES ${BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE})
+    message(STATUS "Updated CXX implicit Link Libraries: ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES}")
     if (ENABLE_FORTRAN)
         list(REMOVE_ITEM CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES ${BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE})
         message(STATUS "Updated Fortran implicit Link Libraries: ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}")
