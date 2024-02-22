@@ -88,6 +88,13 @@ if (NOT BLT_LOADED)
     endif()
 
     ################################
+    # Enable various find commands to look in non-default paths
+    ################################
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS TRUE)
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS TRUE)
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIBX32_PATHS TRUE)
+
+    ################################
     # Invoke CMake Fortran setup
     # if ENABLE_FORTRAN == ON
     ################################
