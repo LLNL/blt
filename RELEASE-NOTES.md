@@ -15,7 +15,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 ### Changed
 - OpenMP target now uses a generator expression for Fortran flags instead of replacing flags in
   Fortran targets created with BLT macros.
-
+- Remove setting CMP0076 to OLD which left relative paths in `target_sources()` instead of altering
+  them to absolute paths.
 
 ## [Version 0.6.1] - Release date 2024-01-29
 
