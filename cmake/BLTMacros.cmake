@@ -210,7 +210,7 @@ macro(blt_add_library)
 
         add_library( ${arg_NAME} INTERFACE)
 	# Add header sources for IDE support
-	target_sources( ${arg_NAME} PRIVATE ${arg_HEADERS})
+	set_target_properties( ${arg_NAME} PROPERTIES PRIVATE_HEADER "${arg_HEADERS}")
     endif()
 
     # Clear value of _have_fortran from previous calls
