@@ -208,7 +208,9 @@ macro(blt_add_library)
     else()
         #  Header-only library support
 
-        add_library( ${arg_NAME} INTERFACE ${arg_HEADERS})
+        add_library( ${arg_NAME} INTERFACE)
+	# Add header sources for IDE support
+	target_sources( ${arg_NAME} PRIVATE ${arg_HEADERS})
     endif()
 
     # Clear value of _have_fortran from previous calls
