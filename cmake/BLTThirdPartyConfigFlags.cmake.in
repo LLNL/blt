@@ -3,7 +3,11 @@ set(BLT_ENABLE_HIP            @ENABLE_HIP@)
 set(BLT_ENABLE_MPI            @ENABLE_MPI@)
 set(BLT_ENABLE_OPENMP         @ENABLE_OPENMP@)
 set(BLT_ENABLE_FIND_MPI       @ENABLE_FIND_MPI@)
-set(BLT_ENABLE_CLANG_CUDA     @ENABLE_CLANG_CUDA@)
+
+# Always prefer the current project if they turned it on
+if(ENABLE_CLANG_CUDA)
+    set(BLT_ENABLE_CLANG_CUDA     @ENABLE_CLANG_CUDA@)
+endif()
 
 if (NOT DEFINED BLT_CLANG_CUDA_ARCH)
     set(BLT_CLANG_CUDA_ARCH       "@BLT_CLANG_CUDA_ARCH@")
