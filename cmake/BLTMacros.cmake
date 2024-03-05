@@ -206,11 +206,17 @@ macro(blt_add_library)
                 LIBRARY_TYPE ${_lib_type})
         endif()
     else()
+        #
         #  Header-only library support
-
-        add_library( ${arg_NAME} INTERFACE)
-	# Add header sources for IDE support
-	set_target_properties( ${arg_NAME} PROPERTIES PRIVATE_HEADER "${arg_HEADERS}")
+        #
+        #  Note: Will not add header files to header-only interface libraries in older versions
+        #  of CMake when CMP0076 is set to NEW
+        #
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
+            add_library( ${arg_NAME} INTERFACE ${arg_HEADERS} )
+        else()
+            add_library( ${arg_NAME} INTERFACE )
+        endif()
     endif()
 
     # Clear value of _have_fortran from previous calls
