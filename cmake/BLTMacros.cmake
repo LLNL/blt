@@ -209,10 +209,9 @@ macro(blt_add_library)
         #
         #  Header-only library support
         #
-        #  Note: Will not add header files to header-only interface libraries in older versions
-        #  of CMake when CMP0076 is set to NEW
-        #
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
+            # Adding headers here allows them to show up in IDE projects but is not
+            # necessary for building
             add_library( ${arg_NAME} INTERFACE ${arg_HEADERS} )
         else()
             add_library( ${arg_NAME} INTERFACE )
