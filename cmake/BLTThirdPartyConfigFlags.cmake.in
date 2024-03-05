@@ -6,6 +6,8 @@ set(BLT_ENABLE_FIND_MPI       @ENABLE_FIND_MPI@)
 
 # Always prefer the current project if they turned it on
 if(ENABLE_CLANG_CUDA)
+    set(BLT_ENABLE_CLANG_CUDA     ${ENABLE_CLANG_CUDA})
+else()
     set(BLT_ENABLE_CLANG_CUDA     @ENABLE_CLANG_CUDA@)
 endif()
 
