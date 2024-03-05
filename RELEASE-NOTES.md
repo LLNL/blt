@@ -17,6 +17,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   Fortran targets created with BLT macros.
 - Remove setting CMP0076 to OLD which left relative paths in `target_sources()` instead of altering
   them to absolute paths.
+- Header-only libraries headers now show up under their own target in IDE project views instead of
+  under downstream targes. This only works in CMake >= 3.19, otherwise they will not show up at all.
 
 ## [Version 0.6.1] - Release date 2024-01-29
 

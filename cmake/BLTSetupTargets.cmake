@@ -3,9 +3,9 @@
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
-# This file is intended to be included in the *-config.cmake files of
-# any project using a third-party library.  The macro 
-# `blt_install_tpl_setups(DESTINATION <dir>)`  installs this file
+# This file is intended to be included in the installed config files of
+# any project using BLT's third-party library as well as in a BLT project.
+# The macro `blt_install_tpl_setups(DESTINATION <dir>)` installs this file
 # into the destination specified by the argument <dir>.
 
 # BLTInstallableMacros provides helper macros for setting up and creating
@@ -14,21 +14,15 @@
 if (NOT BLT_LOADED)
   include("${CMAKE_CURRENT_LIST_DIR}/BLTInstallableMacros.cmake")
 endif()
-# If the generated TPL config file exists, include it here.
+
+# Handle the two cases of TPL config variables, installed from upstream project
+# and the current/main BLT project. Prefix all variables here to not conflict with
+# non-BLT projects that load this as a configuration file.
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
   # Case: Imported BLT project (ie. an installed TPL loading its BLT targets)
   include("${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
 else()
   # Case: Main BLT project (ie. a project loading it's own BLT)
-  # Otherwise, configure the TPL flags.  We have to prefix these variables with
-  # BLT so that they never conflict with user-level CMake variables in downstream
-  # projects.
-  # 
-  # We have to do some checks before we overwrite these internal variables to assure
-  # that we don't turn off a third-party library enabled by the dependency.
-  if (DEFINED BLT_ENABLE_HIP)
-    message(FATAL_ERROR "This variable should never exist at this point. Something has gone horribly wrong.")
-  endif()
   set(BLT_ENABLE_HIP              ${ENABLE_HIP})
   set(BLT_ENABLE_CUDA             ${ENABLE_CUDA})
   set(BLT_ENABLE_MPI              ${ENABLE_MPI})
