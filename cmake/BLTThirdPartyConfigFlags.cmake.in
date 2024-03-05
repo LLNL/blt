@@ -1,20 +1,14 @@
-if ("@ENABLE_CUDA@")
-    set(BLT_ENABLE_CUDA           "@ENABLE_CUDA@")
-endif()
+set(BLT_ENABLE_CUDA           @ENABLE_CUDA@)
+set(BLT_ENABLE_HIP            @ENABLE_HIP@)
+set(BLT_ENABLE_MPI            @ENABLE_MPI@)
+set(BLT_ENABLE_OPENMP         @ENABLE_OPENMP@)
+set(BLT_ENABLE_FIND_MPI       @ENABLE_FIND_MPI@)
 
-if ("@ENABLE_HIP@")
-    set(BLT_ENABLE_HIP            "@ENABLE_HIP@")
-endif()
-
-if ("@ENABLE_MPI@")
-    set(BLT_ENABLE_MPI            "@ENABLE_MPI@")
-endif()
-
-if ("@ENABLE_OPENMP@")
-    set(BLT_ENABLE_OPENMP         "@ENABLE_OPENMP@")
-endif()
-
-set(BLT_ENABLE_FIND_MPI           "@ENABLE_FIND_MPI@")
+foreach(_var BLT_ENABLE_CUDA BLT_ENABLE_HIP BLT_ENABLE_MPI BLT_ENABLE_OPENMP BLT_ENABLE_FIND_MPI)
+    if(NOT ${_var})
+        set(${_var} OFF)
+    endif()
+endforeach()
 
 # User configurable CUDA options needed by downstream.  Normally, exporting
 # these targets would pass these flags to downstream targets, but this
