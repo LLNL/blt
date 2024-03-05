@@ -33,5 +33,3 @@ endif()
 if (NOT DEFINED ROCM_PATH)
     set(ROCM_PATH                 "@ROCM_PATH@")
 endif()
-
-set(_current_project_name @PROJECT_NAME@)

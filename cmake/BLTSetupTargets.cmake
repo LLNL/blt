@@ -44,7 +44,10 @@ else()
     set(BLT_ENABLE_CLANG_CUDA       ${ENABLE_CLANG_CUDA})
   endif()
 
-  set(_current_project_name       ${PROJECT_NAME})
+  message(STATUS "BLT MPI support is ${BLT_ENABLE_MPI}")
+  message(STATUS "BLT OpenMP support is ${BLT_ENABLE_OPENMP}")
+  message(STATUS "BLT CUDA support is ${BLT_ENABLE_CUDA}")
+  message(STATUS "BLT HIP support is ${BLT_ENABLE_HIP}")
 endif()
 
 # Detect if Fortran has been introduced.
@@ -66,9 +69,9 @@ endif()
 #------------------------------------
 # MPI
 #------------------------------------
-message(STATUS "${_current_project_name} MPI support is ${BLT_ENABLE_MPI}")
 if (NOT TARGET mpi)
   if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
+    message(STATUS "Creating BLT MPI targets...")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
   endif()
 endif()
@@ -77,9 +80,9 @@ endif()
 #------------------------------------
 # OpenMP
 #------------------------------------
-message(STATUS "${_current_project_name} OpenMP support is ${BLT_ENABLE_OPENMP}")
 if (NOT TARGET openmp)
   if (BLT_ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
+    message(STATUS "Creating BLT OpenMP targets...")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
   endif()
 endif()
@@ -88,9 +91,9 @@ endif()
 #------------------------------------
 # CUDA
 #------------------------------------
-message(STATUS "${_current_project_name} CUDA support is ${BLT_ENABLE_CUDA}")
 if (NOT TARGET cuda)
   if (BLT_ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
+    message(STATUS "Creating BLT CUDA targets...")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
   endif()
 endif()
@@ -99,9 +102,9 @@ endif()
 #------------------------------------
 # HIP
 #------------------------------------
-message(STATUS "${_current_project_name} HIP support is ${BLT_ENABLE_HIP}")
 if (NOT TARGET blt_hip)
   if (BLT_ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
+    message(STATUS "Creating BLT HIP targets...")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
   endif()
 endif()
