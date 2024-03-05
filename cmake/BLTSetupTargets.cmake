@@ -58,8 +58,8 @@ endif()
 #------------------------------------
 # MPI
 #------------------------------------
+message(STATUS "${_current_project_name} MPI support is ${BLT_ENABLE_MPI}")
 if (NOT TARGET mpi)
-  message(STATUS "${_current_project_name} MPI support is ${BLT_ENABLE_MPI}")
   if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
   endif()
@@ -69,8 +69,8 @@ endif()
 #------------------------------------
 # OpenMP
 #------------------------------------
+message(STATUS "${_current_project_name} OpenMP support is ${BLT_ENABLE_OPENMP}")
 if (NOT TARGET openmp)
-  message(STATUS "${_current_project_name} OpenMP support is ${BLT_ENABLE_OPENMP}")
   if (BLT_ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
   endif()
@@ -80,8 +80,8 @@ endif()
 #------------------------------------
 # CUDA
 #------------------------------------
+message(STATUS "${_current_project_name} CUDA support is ${BLT_ENABLE_CUDA}")
 if (NOT TARGET cuda)
-  message(STATUS "${_current_project_name} CUDA support is ${BLT_ENABLE_CUDA}")
   if (BLT_ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
   endif()
@@ -91,8 +91,8 @@ endif()
 #------------------------------------
 # HIP
 #------------------------------------
+message(STATUS "${_current_project_name} HIP support is ${BLT_ENABLE_HIP}")
 if (NOT TARGET blt_hip)
-  message(STATUS "${_current_project_name} HIP support is ${BLT_ENABLE_HIP}")
   if (BLT_ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
   endif()
