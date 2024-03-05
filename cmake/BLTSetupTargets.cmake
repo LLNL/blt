@@ -35,6 +35,8 @@ else()
   set(BLT_ENABLE_OPENMP           ${ENABLE_OPENMP})
   set(BLT_ENABLE_FIND_MPI         ${ENABLE_FIND_MPI})
   set(BLT_ENABLE_CLANG_CUDA       ${ENABLE_CLANG_CUDA})
+
+  set(_current_project_name       ${PROJECT_NAME})
 endif()
 
 # Detect if Fortran has been introduced.
@@ -57,7 +59,7 @@ endif()
 # MPI
 #------------------------------------
 if (NOT TARGET mpi)
-  message(STATUS "MPI Support is ${BLT_ENABLE_MPI}")
+  message(STATUS "${_current_project_name} MPI support is ${BLT_ENABLE_MPI}")
   if (BLT_ENABLE_MPI AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupMPI.cmake")
   endif()
@@ -68,7 +70,7 @@ endif()
 # OpenMP
 #------------------------------------
 if (NOT TARGET openmp)
-  message(STATUS "OpenMP Support is ${BLT_ENABLE_OPENMP}")
+  message(STATUS "${_current_project_name} OpenMP support is ${BLT_ENABLE_OPENMP}")
   if (BLT_ENABLE_OPENMP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupOpenMP.cmake")
   endif()
@@ -79,7 +81,7 @@ endif()
 # CUDA
 #------------------------------------
 if (NOT TARGET cuda)
-  message(STATUS "CUDA Support is ${BLT_ENABLE_CUDA}")
+  message(STATUS "${_current_project_name} CUDA support is ${BLT_ENABLE_CUDA}")
   if (BLT_ENABLE_CUDA AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupCUDA.cmake")
   endif()
@@ -90,7 +92,7 @@ endif()
 # HIP
 #------------------------------------
 if (NOT TARGET blt_hip)
-  message(STATUS "HIP Support is ${BLT_ENABLE_HIP}")
+  message(STATUS "${_current_project_name} HIP support is ${BLT_ENABLE_HIP}")
   if (BLT_ENABLE_HIP AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/thirdparty/BLTSetupHIP.cmake")
   endif()
