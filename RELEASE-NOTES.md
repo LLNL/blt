@@ -18,7 +18,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Remove setting CMP0076 to OLD which left relative paths in `target_sources()` instead of altering
   them to absolute paths.
 - Header-only libraries headers now show up under their own target in IDE project views instead of
-  under downstream targes. This only works in CMake >= 3.19, otherwise they will not show up at all.
+  under downstream targets. This only works in CMake >= 3.19, otherwise they will not show up at all.
 - Raised version for base CMake version supported by BLT to 3.15 to support ALIAS targets across BLT.
 
 ## [Version 0.6.1] - Release date 2024-01-29
