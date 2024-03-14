@@ -215,6 +215,19 @@ command but doesn't throw an error if the list is empty or not defined.
     set(mylist A B A)
     blt_list_remove_duplicates( TO mylist )
 
+.. _blt_find_target_dependencies:
+
+blt_find_target_dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cmake
+
+    set(_target_list "")
+    blt_find_target_dependencies(TARGET <target> TLIST _target_list)
+
+Recursively adds all link libraries and interface link libraries of the given
+target to the given list. Handles CMake targets and BLT registered libraries.
+
 .. _blt_convert_to_system_includes:
 
 blt_convert_to_system_includes
@@ -222,14 +235,18 @@ blt_convert_to_system_includes
 
 .. code-block:: cmake
 
-    blt_convert_to_system_includes(TARGET <target>)
+    blt_convert_to_system_includes(TARGETS [<target>...]
+                                   CHILDREN [TRUE | FALSE (default)]
+                                   [QUIET])
 
 Converts existing interface includes to system interface includes.
+Warns if a target does not exist unless ``QUIET`` is specified.
+Recurses through link libraries and interface link libraries unless
+``CHILDREN FALSE`` is specified.
 
 .. code-block:: cmake
    :caption: **Example**
    :linenos:
 
-   ## convert to system includes for the foo target
-   blt_convert_to_system_includes(TARGET foo)
+   blt_convert_to_system_includes(TARGETS foo)
 
