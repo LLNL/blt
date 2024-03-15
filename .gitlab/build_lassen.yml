@@ -67,5 +67,5 @@ lassen-clang_14.0.5_with_gcc_8.3.1_nvcc_c++_only:
 lassen-clang_10.0.1_nvcc_cuda_clang_test:
   variables:
     ENABLED_BLT_TESTS: "cuda-arch cuda-mpi-cpp"
-    HOST_CONFIG: "host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17.cmake"
+    HOST_CONFIG: "clang@10.0.1_nvcc_c++17.cmake"
   extends: [.run_project_integration_test_on_lassen, .with_cuda]
