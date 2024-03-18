@@ -209,19 +209,13 @@ macro(blt_add_library)
         #
         #  Header-only library support
         #
-        foreach (_file ${arg_HEADERS})
-            # Determine build location of headers
-            get_filename_component(_absolute ${_file} ABSOLUTE)
-            list(APPEND _build_headers ${_absolute})
-        endforeach()
-
-        #Note: This only works if both libraries are handled in the same directory,
-        #  otherwise just don't include non-header files in your source list.
-        set_source_files_properties(${_build_headers} PROPERTIES HEADER_FILE_ONLY ON)
-
-        add_library( ${arg_NAME} INTERFACE )
-        target_sources( ${arg_NAME} INTERFACE
-                        $<BUILD_INTERFACE:${_build_headers}>)
+        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
+            # Adding headers here allows them to show up in IDE projects but is not
+            # necessary for building
+            add_library( ${arg_NAME} INTERFACE ${arg_HEADERS} )
+        else()
+            add_library( ${arg_NAME} INTERFACE )
+        endif()
     endif()
 
     # Clear value of _have_fortran from previous calls
@@ -346,12 +340,6 @@ macro(blt_add_executable)
         # This is the final link (b/c executable), so override the actual LINKER_LANGUAGE
         # BLT currently uses this to override for HIP and CUDA linkers
         set_target_properties(${arg_NAME} PROPERTIES LINKER_LANGUAGE ${_blt_link_lang})
-    endif()
-
-    # fix the openmp flags for fortran if needed
-    # NOTE: this needs to be called after blt_setup_target()
-    if (_lang STREQUAL Fortran)
-       blt_fix_fortran_openmp_flags( ${arg_NAME} )
     endif()
 
     if ( arg_INCLUDES )

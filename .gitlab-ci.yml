@@ -19,7 +19,7 @@ stages:
 .build_script:
   script:
     #Use pre-existing allocation if any
-    - JOBID=$(if [[ $SYS_TYPE = toss_* ]]; then squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A; fi)
+    - JOBID=$(if [[ "$SYS_TYPE" == "toss_4_x86_64_ib" ]]; then squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A; fi)
     - ASSIGN_ID=$(if [[ -n "${JOBID}" ]]; then echo "--jobid=${JOBID}"; fi)
    #BUILD + TEST
     - echo -e "section_start:$(date +%s):build_and_test\r\e[0K

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 if (NOT BLT_LOADED)
-    set(BLT_VERSION "0.6.1" CACHE STRING "")
+    set(BLT_VERSION "0.6.2" CACHE STRING "")
     mark_as_advanced(BLT_VERSION)
     message(STATUS "BLT Version: ${BLT_VERSION}")
 
@@ -41,10 +41,10 @@ if (NOT BLT_LOADED)
     endif()
     unset(_is_multi_config)
 
-    if(${CMAKE_VERSION} VERSION_LESS 3.8.0)
+    if(${CMAKE_VERSION} VERSION_LESS 3.15.0)
         message("*************************************")
         message("* Unsupported version of CMake detected.")
-        message("* BLT requires CMake 3.8 or above.")
+        message("* BLT requires CMake 3.15 or above.")
         message("* Some BLT features may not work.")
         message("*************************************")
     endif()
@@ -79,13 +79,12 @@ if (NOT BLT_LOADED)
         cmake_policy(SET CMP0074 NEW)
     endif()
 
-    # New turns relative target_sources() paths to absolute
-    # Policy added in 3.13+
-    # NOTE: this will be deprecated eventually but NEW causes
-    #  problems in header only libraries, OLD keeps current behavior
-    if(POLICY CMP0076)
-        cmake_policy(SET CMP0076 OLD)
-    endif()
+    ################################
+    # Enable various find commands to look in non-default paths
+    ################################
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB32_PATHS TRUE)
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS TRUE)
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIBX32_PATHS TRUE)
 
     ################################
     # Invoke CMake Fortran setup
