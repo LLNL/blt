@@ -1,3 +1,10 @@
+# Clear variables set in the host-config so we can test that they are inherited
+# from the upstream project
+foreach(_option MPI CUDA HIP OPENMP)
+    unset(ENABLE_${_option} CACHE)
+    unset(ENABLE_${_option})
+endforeach()
+
 cmake_minimum_required(VERSION 3.14)
 
 project(cuda-mpi-cpp-user LANGUAGES CXX)
