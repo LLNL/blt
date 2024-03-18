@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.6.2] - Release date 2024-03-15
+
 ### Added
 - Added output for CMake's implicitly added link libraries and directories.
 
@@ -329,7 +331,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.1...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.2...develop
+[Version 0.6.2]: https://github.com/LLNL/blt/compare/v0.6.1...v0.6.2
 [Version 0.6.1]: https://github.com/LLNL/blt/compare/v0.6.0...v0.6.1
 [Version 0.6.0]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0
 [Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.2...v0.5.3

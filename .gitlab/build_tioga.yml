@@ -38,5 +38,5 @@ tioga-clang_14_0_0_hip:
 tioga-clang_14.0.1_hip_config_test:
   variables:
     ENABLED_BLT_TESTS: "hip-config-test"
-    HOST_CONFIG: "hip-config-test/base/clang@14.0.0_hip.cmake"
+    HOST_CONFIG: "clang@14.0.0_hip.cmake"
   extends: [.run_project_integration_test_on_tioga]
