@@ -18,7 +18,11 @@ endif()
 # Handle the two cases of TPL config variables, installed from upstream project
 # and the current/main BLT project. Prefix all variables here to not conflict with
 # non-BLT projects that load this as a configuration file.
-if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
+# If BLT_DISABLE_UPSTREAM_CONFIGS_FROM_BLT_TARGETS is set, always use configs from
+# the current project (ignoring upstream projects). Note that this can result in
+# inconsistent configurations between projects and should only be used in special
+# cases (such as building compile lines for use by tools such as clang-query).
+if (NOT BLT_DISABLE_UPSTREAM_CONFIGS_FROM_BLT_TARGETS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
   # Case: Imported BLT project (ie. an installed TPL loading its BLT targets)
   include("${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
 else()
