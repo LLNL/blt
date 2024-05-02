@@ -8,6 +8,12 @@
 # The macro `blt_install_tpl_setups(DESTINATION <dir>)` installs this file
 # into the destination specified by the argument <dir>.
 
+# Support IN_LIST operator for if()
+# Policy added in 3.3+
+if(POLICY CMP0057)
+    cmake_policy(SET CMP0057 NEW)
+endif()
+
 # BLTInstallableMacros provides helper macros for setting up and creating
 # third-party library targets.  The below guard prevents the file from 
 # included twice when a project builds using BLT.
