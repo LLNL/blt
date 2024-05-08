@@ -37,7 +37,7 @@ stages:
     #Use pre-existing allocation if any
     - JOBID=$(if [[ $SYS_TYPE = toss_* ]]; then squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A; fi)
     - ASSIGN_ID=$(if [[ -n "${JOBID}" ]]; then echo "--jobid=${JOBID}"; fi)
-   #BUILD + TEST
+    #BUILD + TEST
     - echo -e "section_start:$(date +%s):run_project_integration_tests\r\e[0K
       Run project integration tests ${CI_PROJECT_NAME}"
     - ${ALLOC_COMMAND} .gitlab/run_project_integration_tests.sh
