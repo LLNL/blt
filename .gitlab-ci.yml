@@ -52,3 +52,6 @@ include:
   - local: .gitlab/build_lassen.yml
   - local: .gitlab/build_quartz.yml
   - local: .gitlab/build_tioga.yml
+  # ID token requirement for Gitlab 17.0+
+  - project: 'lc-templates/id_tokens'
+    file: 'id_tokens.yml'
