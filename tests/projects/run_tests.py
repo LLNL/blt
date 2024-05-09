@@ -1,5 +1,6 @@
 #!/bin/sh
 "exec" "python3" "-u" "-B" "$0" "$@"
+
 # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 

@@ -9,6 +9,20 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.6.2] - Release date 2024-03-15
+
+### Added
+- Added output for CMake's implicitly added link libraries and directories.
+
+### Changed
+- OpenMP target now uses a generator expression for Fortran flags instead of replacing flags in
+  Fortran targets created with BLT macros.
+- Remove setting CMP0076 to OLD which left relative paths in `target_sources()` instead of altering
+  them to absolute paths.
+- Header-only libraries headers now show up under their own target in IDE project views instead of
+  under downstream targets. This only works in CMake >= 3.19, otherwise they will not show up at all.
+- Raised version for base CMake version supported by BLT to 3.15 to support ALIAS targets across BLT.
+
 ## [Version 0.6.1] - Release date 2024-01-29
 
 ### Fixed
@@ -27,7 +41,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added the `blt_install_tpl_setups` macro, which installs files to setup and create
   targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to 
   replace `blt_export_tpl_targets` as the preferred way to setup third-party libraries with BLT.
-- Added `blt::`` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
+- Added `blt::` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
   These targets still exist but but will be deprecated in a future release. It is recommended that you
   move to the new alias names, `blt::cuda`, `blt::cuda_runtime`, `blt::mpi`, and `blt::openmp`
 
@@ -318,7 +332,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.1...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.2...develop
+[Version 0.6.2]: https://github.com/LLNL/blt/compare/v0.6.1...v0.6.2
 [Version 0.6.1]: https://github.com/LLNL/blt/compare/v0.6.0...v0.6.1
 [Version 0.6.0]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0
 [Version 0.5.3]: https://github.com/LLNL/blt/compare/v0.5.2...v0.5.3

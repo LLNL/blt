@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
-#  C,C++, & Fortran compilers + MPI
+#  C,C++, & Fortran compilers + MPI + OpenMP
 #------------------------------------------------------------------------------
 # clang-14.0.6 compilers
 
@@ -26,6 +26,8 @@ set(ENABLE_FORTRAN ON CACHE BOOL "")
 
 # fortran compiler
 set(CMAKE_Fortran_COMPILER "${GNU_HOME}/bin/gfortran" CACHE PATH "")
+
+set(ENABLE_OPENMP ON CACHE BOOL "")
 
 #------------------------------------------------------------------------------
 # Static Analysis Support
