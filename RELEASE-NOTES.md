@@ -9,6 +9,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Fixed
+- Removed GoogleTest, GoogleMock, and GoogleBenchmarks calling CMake's `GNUInstallDirs`
+  which was causing non-deterministic install variables depending on your combination of
+  static/shared libraries and if any of the previously mentioned TPLs were enabled.
+
 ## [Version 0.6.2] - Release date 2024-03-15
 
 ### Added
