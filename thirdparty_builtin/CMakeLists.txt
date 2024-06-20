@@ -13,6 +13,30 @@ if(ENABLE_GBENCHMARK OR ENABLE_GTEST OR ENABLE_GMOCK)
   endif()
 endif()
 
+# NOTE: GoogleBenchmark, GoogleTest, and GoogleMock all rely on GNUInstallDir.
+# This was causing bleeding of settings in BLT projects that don't use that,
+# so we removed it and temporarily created variables it was creating, if the user
+# project has not set them already. These are restored to their values below.
+set(CMAKE_INSTALL_BINDIR_saved ${CMAKE_INSTALL_BINDIR})
+if(CMAKE_INSTALL_BINDIR)
+  set(CMAKE_INSTALL_BINDIR "bin")
+endif()
+
+set(CMAKE_INSTALL_DOCDIR_saved ${CMAKE_INSTALL_DOCDIR})
+if(CMAKE_INSTALL_DOCDIR)
+  set(CMAKE_INSTALL_DOCDIR "share/docs")
+endif()
+
+set(CMAKE_INSTALL_INCLUDEDIR_saved ${CMAKE_INSTALL_INCLUDEDIR})
+if(CMAKE_INSTALL_INCLUDEDIR)
+  set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+
+set(CMAKE_INSTALL_LIBDIR_saved ${CMAKE_INSTALL_LIBDIR})
+if(NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+
 if(ENABLE_TESTS)
     include(CTest)
 
@@ -165,6 +189,14 @@ if(ENABLE_BENCHMARKS)
                       COMMAND ctest -C Benchmark -VV
                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
+
+# Restore user set install variables
+
+foreach(_var CMAKE_INSTALL_BINDIR CMAKE_INSTALL_DOCDIR CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
+    if(${_var}_saved)
+      set(${_var} ${${_var}_saved} CACHE PATH "")
+    endif()
+endforeach()
 
 # Set the folder property of the blt thirdparty libraries 
 if(ENABLE_FOLDERS)
