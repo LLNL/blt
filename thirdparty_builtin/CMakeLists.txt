@@ -18,17 +18,17 @@ endif()
 # so we removed it and temporarily created variables it was creating, if the user
 # project has not set them already. These are restored to their values below.
 set(CMAKE_INSTALL_BINDIR_saved ${CMAKE_INSTALL_BINDIR})
-if(CMAKE_INSTALL_BINDIR)
+if(NOT CMAKE_INSTALL_BINDIR)
   set(CMAKE_INSTALL_BINDIR "bin")
 endif()
 
 set(CMAKE_INSTALL_DOCDIR_saved ${CMAKE_INSTALL_DOCDIR})
-if(CMAKE_INSTALL_DOCDIR)
+if(NOT CMAKE_INSTALL_DOCDIR)
   set(CMAKE_INSTALL_DOCDIR "share/docs")
 endif()
 
 set(CMAKE_INSTALL_INCLUDEDIR_saved ${CMAKE_INSTALL_INCLUDEDIR})
-if(CMAKE_INSTALL_INCLUDEDIR)
+if(NOT CMAKE_INSTALL_INCLUDEDIR)
   set(CMAKE_INSTALL_INCLUDEDIR "include")
 endif()
 
