@@ -38,7 +38,8 @@ repository.
 .. code-block:: bash
 
     cd <your repository>
-    git clone https://github.com/LLNL/blt.git
+    git clone https://github.com/LLNL/blt.git blt
+    git add blt
     rm -rf blt/.git
     git commit -m "Adding BLT"
     git push
