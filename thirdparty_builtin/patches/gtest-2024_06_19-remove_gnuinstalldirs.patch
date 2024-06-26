@@ -1,0 +1,12 @@
+diff --git a/thirdparty_builtin/googletest/CMakeLists.txt b/thirdparty_builtin/googletest/CMakeLists.txt
+index b5ae2b0..7a18477 100644
+--- a/thirdparty_builtin/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest/CMakeLists.txt
+@@ -23,7 +23,6 @@ endif()
+ enable_testing()
+ 
+ include(CMakeDependentOption)
+-include(GNUInstallDirs)
+ 
+ #Note that googlemock target already builds googletest
+ option(BUILD_GMOCK "Builds the googlemock subproject" ON)
