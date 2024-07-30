@@ -195,7 +195,7 @@ The following two code snippets show an example of a basic host-config with HIP 
 
 Here is an example of using the BLT HIP target to create an executable:
 
-.. literalinclude:: ../../tests/smoke/blt_hip_smoke.cpp
+.. literalinclude:: ../../tests/smoke/CMakeLists.txt
    :start-after: _blt_tutorial_hip_executable_start
    :end-before:  _blt_tutorial_hip_executable_end
    :language: cmake
