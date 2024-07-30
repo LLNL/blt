@@ -59,7 +59,7 @@ set(BLT_CMAKE_IMPLICIT_LINK_LIBRARIES_EXCLUDE "xlomp_ser" CACHE STRING "")
 #------------------------------------------------------------------------------
 # CUDA support
 #------------------------------------------------------------------------------
-#_blt_tutorial_useful_cuda_flags_start
+#_blt_tutorial_useful_cuda_variables_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
 set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-11.2.0" CACHE PATH "")
@@ -73,7 +73,7 @@ set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
 
 # nvcc does not like gtest's 'pthreads' flag
 set(gtest_disable_pthreads ON CACHE BOOL "")
-#_blt_tutorial_useful_cuda_flags_end
+#_blt_tutorial_useful_cuda_variables_end
 
 # Very specific fix for working around CMake adding implicit link directories returned by the BlueOS
 # compilers to link CUDA executables 

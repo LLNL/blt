@@ -190,11 +190,13 @@ endif()
 #  HIP test
 ################
 if (ENABLE_HIP)
+#_blt_tutorial_hip_executable_start
     blt_add_executable(NAME blt_hip_smoke
                        SOURCES blt_hip_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
                        DEPENDS_ON blt::hip
                        FOLDER blt/tests )
+#_blt_tutorial_hip_executable_end
 
     blt_add_test(NAME blt_hip_smoke
                  COMMAND blt_hip_smoke)
