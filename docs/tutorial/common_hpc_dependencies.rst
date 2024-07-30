@@ -187,6 +187,7 @@ The following two code snippets show an example of a basic host-config with HIP 
    :end-before:  _blt_tutorial_hip_compiler_end
    :language: cmake
 
+
 .. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib_cray/clang@16.0.0_hip.cmake
    :start-after: _blt_tutorial_useful_hip_variables_start
    :end-before:  _blt_tutorial_useful_hip_variables_end
