@@ -102,6 +102,10 @@ Also before enabling the CUDA language in CMake, you need to set
 If you do not call ``enable_language(CUDA)``, BLT will set the appropriate host
 compiler variable for you and enable the CUDA language.
 
+.. note::
+   The ``BLT_CXX_STD`` variable is useful to set the C++ and CUDA language standard to the
+   same level. For example, ``c++17`` will set a both to C++17.
+
 Here is a snippet with these settings for LLNL's Lassen Cluster:
 
 .. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17.cmake
@@ -123,11 +127,11 @@ it also tells BLT that this target's C/C++/CUDA source files need to be compiled
 ``blt::cuda_runtime`` which also adds the CUDA runtime library and headers but will not
 compile each source file with ``nvcc``.
 
-Some other useful CUDA flags are:
+Some other useful CUDA variables are:
 
 .. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++14_xlf.cmake
-   :start-after: _blt_tutorial_useful_cuda_flags_start
-   :end-before:  _blt_tutorial_useful_cuda_flags_end
+   :start-after: _blt_tutorial_useful_cuda_variables_start
+   :end-before:  _blt_tutorial_useful_cuda_variables_end
    :language: cmake
 
 
@@ -156,9 +160,9 @@ Here is an example of how to add an OpenMP enabled test that sets the amount of 
 HIP
 ~~~
 
-**HIP tutorial coming soon!**
-
-BLT also supports AMD's HIP via a mechanism very similar to our CUDA support.  
+BLT's AMD HIP support is very similar to it's CUDA support with one caveat. Our HIP support was
+implemented before CMake had full HIP language support and therefore requires that the HIP
+compilers be set as the main compilers. This will change soon.
 
 **Important Setup Variables**
 
@@ -170,3 +174,29 @@ BLT also supports AMD's HIP via a mechanism very similar to our CUDA support.
 
 * ``blt::hip`` : Adds include directories, hip runtime libraries, and compiles source with hipcc
 * ``blt::hip_runtime`` : Adds include directories and hip runtime libraries
+
+.. note::
+   The ``BLT_CXX_STD`` variable is useful to set the C++ and HIP language standard to the
+   same level. For example, ``c++17`` will set a both to C++17.
+
+The following two code snippets show an example of a basic host-config with HIP enabled for the
+`toss_4_x86_64_ib_cray` platform:
+
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib_cray/clang@16.0.0_hip.cmake
+   :start-after: _blt_tutorial_hip_compiler_start
+   :end-before:  _blt_tutorial_hip_compiler_end
+   :language: cmake
+
+
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib_cray/clang@16.0.0_hip.cmake
+   :start-after: _blt_tutorial_useful_hip_variables_start
+   :end-before:  _blt_tutorial_useful_hip_variables_end
+   :language: cmake
+
+Here is an example of using the BLT HIP target to create an executable:
+
+.. literalinclude:: ../../tests/smoke/CMakeLists.txt
+   :start-after: _blt_tutorial_hip_executable_start
+   :end-before:  _blt_tutorial_hip_executable_end
+   :language: cmake
+
