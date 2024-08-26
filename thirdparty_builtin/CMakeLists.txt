@@ -84,7 +84,19 @@ if(ENABLE_TESTS)
 
     message(STATUS "Google Test Support is ${ENABLE_GTEST}")
     message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
-    
+
+    # GoogleMock and GoogleTest both require the C language enabled.
+    # This can cause problems due to the language being enabled globally
+    # but variables like CMAKE_C_COMPILE_OBJECT being created directory scoped.
+    # Enable the C language for them but omit a warning.
+    if(ENABLE_GTEST OR ENABLE_GMOCK)
+      get_property(_enabled_langs GLOBAL PROPERTY ENABLED_LANGUAGES)
+      if(NOT "C" IN_LIST _enabled_langs)
+          message(WARNING "Enabling the C language due to Google Mock|Test requiring it. To quiet this warning, add C to your project(...) call.")
+          enable_language(C)
+      endif()
+    endif()
+
     #
     # Guard of googletest w/ ENABLE_GTEST
     # In BLT, ENABLE_GTEST is also required when using ENABLE_GMOCK
