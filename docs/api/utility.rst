@@ -235,14 +235,16 @@ blt_convert_to_system_includes
 
 .. code-block:: cmake
 
-    blt_convert_to_system_includes(TARGETS [<target>...]
+    blt_convert_to_system_includes(TARGET   <target>
+                                   TARGETS  [<target>...]
                                    CHILDREN [TRUE | FALSE (default)]
                                    [QUIET])
 
 Converts existing interface includes to system interface includes.
 Warns if a target does not exist unless ``QUIET`` is specified.
-Recurses through link libraries and interface link libraries unless
-``CHILDREN FALSE`` is specified.
+Recurses through link libraries and interface link libraries if
+``CHILDREN TRUE`` is specified. If both ``TARGET`` and ``TARGETS``
+is given, all given target include directories will be converted.
 
 .. code-block:: cmake
    :caption: **Example**

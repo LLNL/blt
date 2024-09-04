@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Changed
+- Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies
+
 ### Fixed
 - Removed GoogleTest, GoogleMock, and GoogleBenchmarks calling CMake's `GNUInstallDirs`
   which was causing non-deterministic install variables depending on your combination of
@@ -35,7 +38,6 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Fixed
 - Turned off GoogleTest finding Python
-- Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies
 
 ## [Version 0.6.0] - Release date 2024-01-18
 

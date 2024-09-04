@@ -490,7 +490,8 @@ endmacro(blt_find_target_dependencies)
 
 
 ##------------------------------------------------------------------------------
-## blt_convert_to_system_includes(TARGETS [<target>...]
+## blt_convert_to_system_includes(TARGET   <target>
+##                                TARGETS  [<target>...]
 ##                                CHILDREN [TRUE|FALSE]
 ##                                [QUIET])
 ##
@@ -505,8 +506,11 @@ function(blt_convert_to_system_includes)
     cmake_parse_arguments(arg
         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
 
+    if(NOT DEFINED arg_TARGET AND NOT DEFINED arg_TARGETS)
+        message(FATAL_ERROR "Neither required TARGET or TARGETS parameters for the blt_convert_to_system_includes macro were provided.")
+    endif()
+
     if(DEFINED arg_TARGET)
-        message(WARNING "TARGET is a deprecated parameter for the blt_convert_to_system_includes macro.")
         list(APPEND arg_TARGETS ${arg_TARGET})
     endif()
 
