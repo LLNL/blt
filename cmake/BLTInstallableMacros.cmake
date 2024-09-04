@@ -496,6 +496,11 @@ endmacro(blt_find_target_dependencies)
 ##                                [QUIET])
 ##
 ## Converts existing interface includes to system interface includes.
+##
+## Note: The argument ``TARGET`` will be deprecated in the near future. Until then,
+## if both ``TARGET`` and ``TARGETS`` is given, all given target include
+## directories will be converted.
+##
 ##------------------------------------------------------------------------------
 function(blt_convert_to_system_includes)
     set(options QUIET)
