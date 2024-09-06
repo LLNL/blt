@@ -486,7 +486,7 @@ macro(blt_add_benchmark)
                   COMMAND         ${arg_COMMAND}
                   NUM_MPI_TASKS   ${arg_NUM_MPI_TASKS}
                   NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
-                  CONFIGURATIONS  Benchmarks ${arg_CONFIGURATIONS})
+                  CONFIGURATIONS  Benchmark ${arg_CONFIGURATIONS})
 
     # The 'LABELS Benchmark` prevents regular tests from
     # running when running benchmarks custom target
