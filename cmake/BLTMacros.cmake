@@ -480,11 +480,13 @@ macro(blt_add_benchmark)
     cmake_parse_arguments(arg
      "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN} )
 
+    # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
+    # from the general list of tests
     blt_add_test( NAME            ${arg_NAME}
                   COMMAND         ${arg_COMMAND}
                   NUM_MPI_TASKS   ${arg_NUM_MPI_TASKS}
                   NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
-                  CONFIGURATIONS  ${arg_CONFIGURATIONS})
+                  CONFIGURATIONS  Benchmarks ${arg_CONFIGURATIONS})
 
     # The 'LABELS Benchmark` prevents regular tests from
     # running when running benchmarks custom target

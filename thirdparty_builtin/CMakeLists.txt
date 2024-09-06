@@ -198,7 +198,7 @@ if(ENABLE_BENCHMARKS)
 
     # This sets up a target to run the benchmarks
     add_custom_target(${BLT_RUN_BENCHMARKS_TARGET_NAME}
-                      COMMAND ctest -L Benchmark -VV
+                      COMMAND ctest -C Benchmark -L Benchmark -VV
                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
 
