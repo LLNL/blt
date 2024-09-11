@@ -488,6 +488,11 @@ macro(blt_add_benchmark)
                   NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
                   CONFIGURATIONS  Benchmark ${arg_CONFIGURATIONS})
 
+    # The 'LABELS Benchmark` prevents regular tests from
+    # running when running benchmarks custom target
+    set_tests_properties( ${arg_NAME}
+                          PROPERTIES LABELS "Benchmark")
+
 endmacro(blt_add_benchmark)
 
 

@@ -19,6 +19,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Enable C language support and emit a warning when GoogleTest or GoogleMock are enabled but
   not the C language.
 - Guard HIP C smoketest against projects that don't enable C as a language in their projects.
+- Changes benchmark custom target `run_benchmarks` to exclusively run benchmarks (not other general tests).
 
 ## [Version 0.6.2] - Release date 2024-03-15
 

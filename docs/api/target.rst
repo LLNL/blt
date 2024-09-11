@@ -40,7 +40,8 @@ CONFIGURATIONS
 
 This macro adds a benchmark test to the ``Benchmark`` CTest configuration
 which can be run by the ``run_benchmarks`` build target.  These tests are
-not run when you use the regular ``test`` build target.
+not run when you use the regular ``test`` build target.  The ``run_benchmarks``
+build target will not run regular tests.
 
 This macro is just a thin wrapper around :ref:`blt_add_test` and assists 
 with building up the correct command line for running the benchmark.  For more
