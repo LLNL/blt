@@ -471,11 +471,11 @@ endmacro(blt_add_test)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_benchmark( NAME          [name] 
-##                    COMMAND       [command]
-##                    NUM_MPI_TASKS [n]
-##                    NUM_OMP_THREADS [n]
-##                    CONFIGURATIONS  [config1 [config2...]]
+## blt_add_benchmark( NAME              [name] 
+##                    COMMAND           [command]
+##                    NUM_MPI_TASKS     [n]
+##                    NUM_OMP_THREADS   [n]
+##                    CONFIGURATIONS    [config1 [config2...]]
 ##                    WORKING_DIRECTORY [dir])
 ##
 ## Adds a benchmark to the project.
