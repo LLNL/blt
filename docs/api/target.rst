@@ -13,11 +13,12 @@ blt_add_benchmark
 
 .. code-block:: cmake
 
-    blt_add_benchmark( NAME            [name]
-                       COMMAND         [command]
-                       NUM_MPI_TASKS   [n]
-                       NUM_OMP_THREADS [n]
-                       CONFIGURATIONS  [config1 [config2...]])
+    blt_add_benchmark( NAME              [name]
+                       COMMAND           [command]
+                       NUM_MPI_TASKS     [n]
+                       NUM_OMP_THREADS   [n]
+                       CONFIGURATIONS    [config1 [config2...]]
+                       WORKING_DIRECTORY [dir])
 
 Adds a benchmark to the project.
 
@@ -37,6 +38,11 @@ NUM_OMP_THREADS
 CONFIGURATIONS
   Optionally set additional CTest configuration(s) for this test. Benchmark tests
   will always be added to the ``Benchmark`` CTest configuration.
+
+WORKING_DIRECTORY
+  Set the test property ``WORKING_DIRECTORY`` in which to execute the test. If
+  not specified, the test will be run in ``CMAKE_CURRENT_BINARY_DIR``. The working
+  directory may be specified using generator expressions.
 
 This macro adds a benchmark test to the ``Benchmark`` CTest configuration
 which can be run by the ``run_benchmarks`` build target.  These tests are
@@ -261,11 +267,12 @@ blt_add_test
 
 .. code-block:: cmake
 
-    blt_add_test( NAME            [name]
-                  COMMAND         [command]
-                  NUM_MPI_TASKS   [n]
-                  NUM_OMP_THREADS [n]
-                  CONFIGURATIONS  [config1 [config2...]])
+    blt_add_test( NAME              [name]
+                  COMMAND           [command]
+                  NUM_MPI_TASKS     [n]
+                  NUM_OMP_THREADS   [n]
+                  CONFIGURATIONS    [config1 [config2...]]
+                  WORKING_DIRECTORY [dir])
 
 Adds a test to the project.
 
@@ -285,6 +292,11 @@ NUM_OMP_THREADS
 CONFIGURATIONS
   Set the CTest configuration for this test.  When not specified, the test
   will be added to the default CTest configuration.
+
+WORKING_DIRECTORY
+  Set the test property ``WORKING_DIRECTORY`` in which to execute the test. If
+  not specified, the test will be run in ``CMAKE_CURRENT_BINARY_DIR``. The working
+  directory may be specified using generator expressions.
 
 This macro adds the named test to CTest, which is run by the build target ``test``. This macro
 does not build the executable and requires a prior call to :ref:`blt_add_executable`.
