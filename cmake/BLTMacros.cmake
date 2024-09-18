@@ -456,9 +456,9 @@ macro(blt_add_test)
         set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
     endif()
 
-    add_test(NAME           ${arg_NAME}
-             COMMAND        ${_test_command}
-             CONFIGURATIONS ${arg_CONFIGURATIONS}
+    add_test(NAME              ${arg_NAME}
+             COMMAND           ${_test_command}
+             CONFIGURATIONS    ${arg_CONFIGURATIONS}
              WORKING_DIRECTORY ${_working_directory})
 
     # Handle OpenMP
@@ -492,11 +492,11 @@ macro(blt_add_benchmark)
 
     # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
     # from the general list of tests
-    blt_add_test( NAME            ${arg_NAME}
-                  COMMAND         ${arg_COMMAND}
-                  NUM_MPI_TASKS   ${arg_NUM_MPI_TASKS}
-                  NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
-                  CONFIGURATIONS  Benchmark ${arg_CONFIGURATIONS}
+    blt_add_test( NAME              ${arg_NAME}
+                  COMMAND           ${arg_COMMAND}
+                  NUM_MPI_TASKS     ${arg_NUM_MPI_TASKS}
+                  NUM_OMP_THREADS   ${arg_NUM_OMP_THREADS}
+                  CONFIGURATIONS    Benchmark ${arg_CONFIGURATIONS}
                   WORKING_DIRECTORY ${arg_WORKING_DIRECTORY})
 
     # The 'LABELS Benchmark` prevents regular tests from
