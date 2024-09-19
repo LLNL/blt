@@ -9,8 +9,11 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Added ``WORKING_DIRECTORY`` option to ``blt_add_test`` and ``blt_add_benchmark``.
+
 ### Changed
-- Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies
+- Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies.
 
 ### Fixed
 - Removed GoogleTest, GoogleMock, and GoogleBenchmarks calling CMake's `GNUInstallDirs`
