@@ -353,6 +353,50 @@ macro(blt_setup_cuda_target)
     endif()
 endmacro(blt_setup_cuda_target)
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_target(NAME <name of target>
+##                       SOURCES <list of sources>
+##                       DEPENDS_ON <list of dependencies>
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_target)
+
+    set(options)
+    set(singleValueArgs NAME)
+    set(multiValueArgs SOURCES DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_hip_target' macro")
+    endif()
+
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_hip_target' macro")
+    endif()
+
+    # Determine if cuda or cuda_runtime are in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "blt_hip" _hip_index)
+    list(FIND arg_DEPENDS_ON "blt::hip" _hip_index2)
+    set(_depends_on_hip FALSE)
+    if(${_hip_index} GREATER -1 OR ${_hip_index2} GREATER -1)
+        set(_depends_on_hip TRUE)
+    endif()
+
+    if (${_depends_on_hip})
+        set(_hip_sources)
+        set(_non_hip_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _hip_sources
+                                          Fortran_LIST _non_hip_sources)
+
+        set_source_files_properties( ${_hip_sources} PROPERTIES LANGUAGE hip)
+
+    endif()
+endmacro(blt_setup_hip_target)
+
 
 ##-----------------------------------------------------------------------------
 ## blt_make_file_ext_regex( EXTENSIONS   [ext1 [ext2 ...]]

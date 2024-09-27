@@ -7,6 +7,8 @@
 # HIP
 ################################
 
+enable_language(HIP)
+
 if(NOT ROCM_PATH)
     # First try finding paths given by the user
     find_path(ROCM_PATH
