@@ -392,7 +392,7 @@ macro(blt_setup_hip_target)
                                           C_LIST       _hip_sources
                                           Fortran_LIST _non_hip_sources)
 
-        set_source_files_properties( ${_hip_sources} PROPERTIES LANGUAGE hip)
+        set_source_files_properties( ${_hip_sources} PROPERTIES LANGUAGE HIP)
 
     endif()
 endmacro(blt_setup_hip_target)
