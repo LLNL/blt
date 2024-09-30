@@ -49,9 +49,11 @@ set(ENABLE_MPI ON CACHE BOOL "")
 
 set(_rocm_root "/opt/rocm-6.0.2")
 
+set(ROCM_ROOT_DIR "${_rocm_root}" CACHE PATH "")
+
 set(ENABLE_HIP ON CACHE BOOL "")
 
-set(CMAKE_HIP_COMPILER "${_compiler_root}/bin/amdclang++" CACHE PATH "")
+set(CMAKE_HIP_COMPILER "${_rocm_root}/bin/amdclang++" CACHE PATH "")
 
 set(CMAKE_HIP_ARCHITECTURES "gfx90a" CACHE STRING "")
 

@@ -389,8 +389,8 @@ macro(blt_setup_hip_target)
         set(_hip_sources)
         set(_non_hip_sources)
         blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
-                                          C_LIST       _hip_sources
-                                          CXX_LIST     _non_hip_sources
+                                          C_LIST       _non_hip_sources
+                                          CXX_LIST     _hip_sources
                                           Fortran_LIST _non_hip_sources)
 
         set_source_files_properties( ${_hip_sources} PROPERTIES LANGUAGE HIP)
