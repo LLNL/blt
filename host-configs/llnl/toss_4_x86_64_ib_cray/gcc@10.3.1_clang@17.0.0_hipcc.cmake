@@ -7,21 +7,17 @@
 #------------------------------------------------------------------------------
 # Compilers
 #------------------------------------------------------------------------------
-# Compiler Spec: clang@17.0.0
+# Compiler Spec: gcc@17.0.0
 #------------------------------------------------------------------------------
 
-set(_compiler_root "/opt/rocm-6.0.2")
+set(GCC_VERSION "gcc-10.3.1")
+set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}")
 
-set(CMAKE_C_COMPILER "${_compiler_root}/bin/amdclang" CACHE PATH "")
-
-set(CMAKE_CXX_COMPILER "${_compiler_root}/bin/amdclang++" CACHE PATH "")
-
-set(CMAKE_Fortran_COMPILER "${_compiler_root}/bin/amdflang" CACHE PATH "")
-
-set(CMAKE_Fortran_FLAGS "-Mfreeform" CACHE STRING "")
+set(CMAKE_C_COMPILER "${GCC_HOME}/bin/gcc" CACHE PATH "")
+set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
+set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
 
 set(ENABLE_FORTRAN ON CACHE BOOL "")
-#_blt_tutorial_hip_compiler_end
 
 #------------------------------------------------------------------------------
 # MPI
@@ -51,19 +47,13 @@ set(ENABLE_MPI ON CACHE BOOL "")
 
 #------------------------------------------------------------------------------
 
-#_blt_tutorial_useful_hip_variables_start
 set(_rocm_root "/opt/rocm-6.0.2")
 
 set(ENABLE_HIP ON CACHE BOOL "")
 
-set(HIP_ROOT_DIR "${_rocm_root}/hip" CACHE STRING "")
-
-set(CMAKE_HIP_COMPILER "${_compiler_root}/bin/hipcc" CACHE PATH "")
+set(CMAKE_HIP_COMPILER "${_compiler_root}/bin/amdclang++" CACHE PATH "")
 
 set(CMAKE_HIP_ARCHITECTURES "gfx90a" CACHE STRING "")
-
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags -L${_rocm_root}/hip/../llvm/lib -L${_rocm_root}/hip/lib -Wl,-rpath,${_rocm_root}/hip/../llvm/lib:${_rocm_root}/hip/lib -lpgmath -lflang -lflangrti -lompstub -lamdhip64  -L${_rocm_root}/hip/../lib64 -Wl,-rpath,${_rocm_root}/hip/../lib64  -L${_rocm_root}/hip/../lib -Wl,-rpath,${_rocm_root}/hip/../lib -lamd_comgr -lhsa-runtime64 " CACHE STRING "")
-#_blt_tutorial_useful_hip_variables_end
 
 #------------------------------------------------
 # Hardware Specifics
