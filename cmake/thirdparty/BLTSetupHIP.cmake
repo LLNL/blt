@@ -6,6 +6,10 @@
 ################################
 # HIP
 ################################
+ 
+if( ${CMAKE_VERSION} VERSION_LESS "3.21.0" )
+  message(FATAL_ERROR "HIP support requires CMake >= 3.21.0")
+endif ()
 
 enable_language(HIP)
 
