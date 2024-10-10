@@ -40,3 +40,9 @@ tioga-clang_16.0.0_hip_config_test:
     ENABLED_BLT_TESTS: "hip-config-test"
     HOST_CONFIG: "clang@16.0.0_hip.cmake"
   extends: [.run_project_integration_test_on_tioga]
+
+tioga-gcc_10.3.1_clang_17.0.0_hip_config_test:
+  variables:
+    ENABLED_BLT_TESTS: "hip-config-test"
+    HOST_CONFIG: "gcc@10.3.1_clang@17.0.0_hip.cmake"
+  extends: [.run_project_integration_test_on_tioga]
