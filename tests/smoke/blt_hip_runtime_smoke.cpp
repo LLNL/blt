@@ -8,27 +8,31 @@
 // file: blt_hip_runtime_smoke.cpp
 //
 //-----------------------------------------------------------------------------
-
-#include <iostream>
+#include <cstdio>
 #include "hip/hip_runtime_api.h"
-#include <stdio.h>
 
 int main()
 {
-  int nDevices;
+  hipError_t rc = hipSuccess; 
+  int nDevices{0};
 
-  if(hipSuccess != hipGetDeviceCount(&nDevices))
+  rc = hipGetDeviceCount(&nDevices);
+  if (rc != hipSuccess)
   {
-    std::cout << "ERROR: hipGetDeviceCount failed!" << std::endl;
+    fprintf(stderr, "[HIP ERROR]: %s", hipGetErrorString(rc));
+    return -1;
   }
 
   for (int i = 0; i < nDevices; i++)
   {
     hipDeviceProp_t prop;
-    if(hipSuccess != hipGetDeviceProperties(&prop, i))
+    rc = hipGetDeviceProperties(&prop, i);
+    if (rc != hipSuccess)
     {
-      std::cout << "ERROR: hipGetDeviceProperties failed!" << std::endl;
+      fprintf(stderr, "[HIP ERROR]: %s", hipGetErrorString(rc));
+      return -1;
     }
+
     printf("Device Number: %d\n", i);
     printf("  Device name: %s\n", prop.name);
     printf("  Memory Clock Rate (KHz): %d\n",
