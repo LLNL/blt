@@ -192,6 +192,9 @@ else()
     # See #631 for rationale.
     add_cxx_compiler_flag(-wd1786)
   endif()
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+    add_cxx_compiler_flag(-Wno-tautological-compare)
+  endif()
   # Disable deprecation warnings for release builds (when -Werror is enabled).
   if(BENCHMARK_ENABLE_WERROR)
       add_cxx_compiler_flag(-Wno-deprecated)
