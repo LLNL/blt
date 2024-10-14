@@ -195,7 +195,7 @@ if (NOT BLT_LOADED)
     # Note: this filtering is case-insensitive
     set(BLT_C_FILE_EXTS ".c" ".h"
                CACHE STRING "List of known file extensions used for C sources")
-    set(BLT_CXX_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".c" ".h" ".cc" ".hh" ".inl" ".cu" ".cuh"
+    set(BLT_CXX_FILE_EXTS ".cpp" ".hpp" ".cxx" ".hxx" ".cc" ".hh" ".inl" ".cu" ".cuh"
                CACHE STRING "List of known file extensions used for CXX sources")
     set(BLT_Fortran_FILE_EXTS ".f" ".f90"
                CACHE STRING "List of known file extensions used for Fortran sources")
