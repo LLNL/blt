@@ -353,6 +353,51 @@ macro(blt_setup_cuda_target)
     endif()
 endmacro(blt_setup_cuda_target)
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_target(NAME <name of target>
+##                       SOURCES <list of sources>
+##                       DEPENDS_ON <list of dependencies>
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_target)
+
+    set(options)
+    set(singleValueArgs NAME)
+    set(multiValueArgs SOURCES DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_hip_target' macro")
+    endif()
+
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_hip_target' macro")
+    endif()
+
+    # Determine if hip is in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "blt_hip" _hip_index)
+    list(FIND arg_DEPENDS_ON "blt::hip" _hip_index2)
+    set(_depends_on_hip FALSE)
+    if(${_hip_index} GREATER -1 OR ${_hip_index2} GREATER -1)
+        set(_depends_on_hip TRUE)
+    endif()
+
+    if (${_depends_on_hip})
+        set(_hip_sources)
+        set(_non_hip_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _non_hip_sources
+                                          CXX_LIST     _hip_sources
+                                          Fortran_LIST _non_hip_sources)
+
+        set_source_files_properties( ${_hip_sources} PROPERTIES LANGUAGE HIP)
+
+    endif()
+endmacro(blt_setup_hip_target)
+
 
 ##-----------------------------------------------------------------------------
 ## blt_make_file_ext_regex( EXTENSIONS   [ext1 [ext2 ...]]
@@ -399,6 +444,7 @@ endmacro(blt_make_file_ext_regex)
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
+##                                    CXX_LIST <list name>
 ##                                    Fortran_LIST <list name>
 ##                                    Python_LIST <list name>
 ##                                    CMAKE_LIST <list name>)
@@ -414,7 +460,7 @@ endmacro(blt_make_file_ext_regex)
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST Python_LIST CMAKE_LIST)
+    set(singleValueArgs C_LIST CXX_LIST Fortran_LIST Python_LIST CMAKE_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -430,6 +476,9 @@ macro(blt_split_source_list_by_language)
     set(BLT_C_FILE_REGEX)
     blt_make_file_ext_regex(EXTENSIONS   ${BLT_C_FILE_EXTS}
                             OUTPUT_REGEX BLT_C_FILE_REGEX)
+    set(BLT_CXX_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_CXX_FILE_EXTS}
+                            OUTPUT_REGEX BLT_CXX_FILE_REGEX)
     set(BLT_Fortran_FILE_REGEX)
     blt_make_file_ext_regex(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
                             OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
@@ -461,6 +510,13 @@ macro(blt_split_source_list_by_language)
 
         if("${_lower_file}" MATCHES "${BLT_C_FILE_REGEX}")
             if (DEFINED arg_C_LIST)
+                list(APPEND ${arg_C_LIST} "${_file}")
+            endif()
+        elseif("${_lower_file}" MATCHES "${BLT_CXX_FILE_REGEX}")
+            if (DEFINED arg_CXX_LIST)
+                list(APPEND ${arg_CXX_LIST} "${_file}")
+            # maintain backwards compatibilty by adding to C list if CXX list not set
+            else()
                 list(APPEND ${arg_C_LIST} "${_file}")
             endif()
         elseif("${_lower_file}" MATCHES "${BLT_Fortran_FILE_REGEX}")
