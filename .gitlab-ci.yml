@@ -34,10 +34,6 @@ stages:
 # Template
 .run_project_integration_tests:
   script:
-    #Use pre-existing allocation if any
-    - JOBID=$(if [[ $SYS_TYPE = toss_* ]]; then squeue -h --name=${PROJECT_ALLOC_NAME} --format=%A; fi)
-    - ASSIGN_ID=$(if [[ -n "${JOBID}" ]]; then echo "--jobid=${JOBID}"; fi)
-   #BUILD + TEST
     - echo -e "section_start:$(date +%s):run_project_integration_tests\r\e[0K
       Run project integration tests ${CI_PROJECT_NAME}"
     - ${ALLOC_COMMAND} .gitlab/run_project_integration_tests.sh
@@ -50,5 +46,8 @@ stages:
 # This is where jobs are included
 include:
   - local: .gitlab/build_lassen.yml
-  - local: .gitlab/build_quartz.yml
+  - local: .gitlab/build_ruby.yml
   - local: .gitlab/build_tioga.yml
+  # ID token requirement for Gitlab 17.0+
+  - project: 'lc-templates/id_tokens'
+    file: 'id_tokens.yml'

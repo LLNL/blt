@@ -9,12 +9,11 @@
 //
 //-----------------------------------------------------------------------------
 
-#include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include "hip/hip_runtime.h"
 
 __device__ const char STR[] = "HELLO WORLD!";
-const char STR_LENGTH = 12;
+const int STR_LENGTH = 12;
 
 __global__ void hello()
 {
@@ -23,12 +22,23 @@ __global__ void hello()
 
 int main()
 {
+  hipError_t rc = hipSuccess;
   int num_threads = STR_LENGTH;
   int num_blocks = 1;
+
   hipLaunchKernelGGL((hello), dim3(num_blocks), dim3(num_threads),0,0);
-  if(hipSuccess != hipDeviceSynchronize())
+  rc = hipGetLastError();
+  if (rc != hipSuccess) 
   {
-    std::cout << "ERROR: hipDeviceSynchronize failed!" << std::endl;
+    fprintf(stderr,"[HIP ERROR]: %s\n", hipGetErrorString(rc));
+    return -1;
+  }
+
+  rc = hipDeviceSynchronize(); 
+  if (rc != hipSuccess) 
+  {
+    fprintf(stderr, "[HIP ERROR]: %s\n", hipGetErrorString(rc));
+    return -1;
   }
 
   return 0;

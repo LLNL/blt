@@ -23,7 +23,6 @@ endif()
 enable_testing()
 
 include(CMakeDependentOption)
-include(GNUInstallDirs)
 
 #Note that googlemock target already builds googletest
 option(BUILD_GMOCK "Builds the googlemock subproject" ON)

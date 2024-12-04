@@ -134,6 +134,8 @@ macro(config_compiler_and_linker)
     set(cxx_no_exception_flags "+noeh -DGTEST_HAS_EXCEPTIONS=0")
     # RTTI can not be disabled in HP aCC compiler.
     set(cxx_no_rtti_flags "")
+  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+    set(cxx_base_flags "-Wno-tautological-compare")
   endif()
 
   # The pthreads library is available and allowed?
