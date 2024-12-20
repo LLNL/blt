@@ -1,6 +1,3 @@
-# Require CMake 3.10. If available, use the policies up to CMake 3.22.
-cmake_minimum_required (VERSION 3.13...3.22)
-
 project (benchmark VERSION 1.9.1 LANGUAGES CXX)
 
 option(BENCHMARK_ENABLE_TESTING "Enable testing of the benchmark library." ON)
