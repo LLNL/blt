@@ -135,19 +135,25 @@ void ColorPrintf(std::ostream& out, LogColor color, const char* fmt,
   // Gets the current text color.
   CONSOLE_SCREEN_BUFFER_INFO buffer_info;
   GetConsoleScreenBufferInfo(stdout_handle, &buffer_info);
-  const WORD old_color_attrs = buffer_info.wAttributes;
+  const WORD original_color_attrs = buffer_info.wAttributes;
 
   // We need to flush the stream buffers into the console before each
   // SetConsoleTextAttribute call lest it affect the text that is already
   // printed but has not yet reached the console.
-  fflush(stdout);
-  SetConsoleTextAttribute(stdout_handle,
-                          GetPlatformColorCode(color) | FOREGROUND_INTENSITY);
-  vprintf(fmt, args);
+  out.flush();
 
-  fflush(stdout);
-  // Restores the text color.
-  SetConsoleTextAttribute(stdout_handle, old_color_attrs);
+  const WORD original_background_attrs =
+      original_color_attrs & (BACKGROUND_RED | BACKGROUND_GREEN |
+                              BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+
+  SetConsoleTextAttribute(stdout_handle, GetPlatformColorCode(color) |
+                                             FOREGROUND_INTENSITY |
+                                             original_background_attrs);
+  out << FormatString(fmt, args);
+
+  out.flush();
+  // Restores the text and background color.
+  SetConsoleTextAttribute(stdout_handle, original_color_attrs);
 #else
   const char* color_code = GetPlatformColorCode(color);
   if (color_code) out << FormatString("\033[0;3%sm", color_code);
@@ -163,12 +169,24 @@ bool IsColorTerminal() {
 #else
   // On non-Windows platforms, we rely on the TERM variable. This list of
   // supported TERM values is copied from Google Test:
-  // <https://github.com/google/googletest/blob/main/googletest/src/gtest.cc#L2925>.
+  // <https://github.com/google/googletest/blob/v1.13.0/googletest/src/gtest.cc#L3225-L3259>.
   const char* const SUPPORTED_TERM_VALUES[] = {
-      "xterm",         "xterm-color",     "xterm-256color",
-      "screen",        "screen-256color", "tmux",
-      "tmux-256color", "rxvt-unicode",    "rxvt-unicode-256color",
-      "linux",         "cygwin",
+      "xterm",
+      "xterm-color",
+      "xterm-256color",
+      "screen",
+      "screen-256color",
+      "tmux",
+      "tmux-256color",
+      "rxvt-unicode",
+      "rxvt-unicode-256color",
+      "linux",
+      "cygwin",
+      "xterm-kitty",
+      "alacritty",
+      "foot",
+      "foot-extra",
+      "wezterm",
   };
 
   const char* const term = getenv("TERM");

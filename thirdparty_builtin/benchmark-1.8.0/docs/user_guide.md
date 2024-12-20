@@ -28,6 +28,8 @@
 
 [Templated Benchmarks](#templated-benchmarks)
 
+[Templated Benchmarks that take arguments](#templated-benchmarks-with-arguments)
+
 [Fixtures](#fixtures)
 
 [Custom Counters](#custom-counters)
@@ -80,9 +82,9 @@ tabular data on stdout. Example tabular output looks like:
 ```
 Benchmark                               Time(ns)    CPU(ns) Iterations
 ----------------------------------------------------------------------
-BM_SetInsert/1024/1                        28928      29349      23853  133.097kB/s   33.2742k items/s
-BM_SetInsert/1024/8                        32065      32913      21375  949.487kB/s   237.372k items/s
-BM_SetInsert/1024/10                       33157      33648      21431  1.13369MB/s   290.225k items/s
+BM_SetInsert/1024/1                        28928      29349      23853  133.097kiB/s   33.2742k items/s
+BM_SetInsert/1024/8                        32065      32913      21375  949.487kiB/s   237.372k items/s
+BM_SetInsert/1024/10                       33157      33648      21431  1.13369MiB/s   290.225k items/s
 ```
 
 The JSON format outputs human readable json split into two top level attributes.
@@ -164,6 +166,13 @@ line interface or by setting environment variables before execution. For every
 `OPTION_FLAG=<value>` exist and is used as default if set (CLI switches always
  prevails). A complete list of CLI options is available running benchmarks
  with the `--help` switch.
+
+### Dry runs
+
+To confirm that benchmarks can run successfully without needing to wait for
+multiple repetitions and iterations, the `--benchmark_dry_run` flag can be
+used.  This will run the benchmarks as normal, but for 1 iteration and 1
+repetition only.
 
 <a name="running-a-subset-of-benchmarks" />
 
@@ -574,6 +583,30 @@ Three macros are provided for adding benchmark templates.
 #define BENCHMARK_TEMPLATE2(func, arg1, arg2)
 ```
 
+<a name="templated-benchmarks-with-arguments" />
+
+## Templated Benchmarks that take arguments
+
+Sometimes there is a need to template benchmarks, and provide arguments to them.
+
+```c++
+template <class Q> void BM_Sequential_With_Step(benchmark::State& state, int step) {
+  Q q;
+  typename Q::value_type v;
+  for (auto _ : state) {
+    for (int i = state.range(0); i-=step; )
+      q.push(v);
+    for (int e = state.range(0); e-=step; )
+      q.Wait(&v);
+  }
+  // actually messages, not bytes:
+  state.SetBytesProcessed(
+      static_cast<int64_t>(state.iterations())*state.range(0));
+}
+
+BENCHMARK_TEMPLATE1_CAPTURE(BM_Sequential, WaitQueue<int>, Step1, 1)->Range(1<<0, 1<<10);
+```
+
 <a name="fixtures" />
 
 ## Fixtures
@@ -591,27 +624,29 @@ For Example:
 ```c++
 class MyFixture : public benchmark::Fixture {
 public:
-  void SetUp(const ::benchmark::State& state) {
+  void SetUp(::benchmark::State& state) {
   }
 
-  void TearDown(const ::benchmark::State& state) {
+  void TearDown(::benchmark::State& state) {
   }
 };
 
+// Defines and registers `FooTest` using the class `MyFixture`.
 BENCHMARK_F(MyFixture, FooTest)(benchmark::State& st) {
    for (auto _ : st) {
      ...
   }
 }
 
+// Only defines `BarTest` using the class `MyFixture`.
 BENCHMARK_DEFINE_F(MyFixture, BarTest)(benchmark::State& st) {
    for (auto _ : st) {
      ...
   }
 }
-/* BarTest is NOT registered */
+// `BarTest` is NOT registered.
 BENCHMARK_REGISTER_F(MyFixture, BarTest)->Threads(2);
-/* BarTest is now registered */
+// `BarTest` is now registered.
 ```
 
 ### Templated Fixtures
@@ -627,19 +662,22 @@ For example:
 template<typename T>
 class MyFixture : public benchmark::Fixture {};
 
+// Defines and registers `IntTest` using the class template `MyFixture<int>`.
 BENCHMARK_TEMPLATE_F(MyFixture, IntTest, int)(benchmark::State& st) {
    for (auto _ : st) {
      ...
   }
 }
 
+// Only defines `DoubleTest` using the class template `MyFixture<double>`.
 BENCHMARK_TEMPLATE_DEFINE_F(MyFixture, DoubleTest, double)(benchmark::State& st) {
    for (auto _ : st) {
      ...
   }
 }
-
+// `DoubleTest` is NOT registered.
 BENCHMARK_REGISTER_F(MyFixture, DoubleTest)->Threads(2);
+// `DoubleTest` is now registered.
 ```
 
 <a name="custom-counters" />
@@ -861,7 +899,7 @@ BENCHMARK(BM_OpenMP)->Range(8, 8<<10);
 
 // Measure the user-visible time, the wall clock (literally, the time that
 // has passed on the clock on the wall), use it to decide for how long to
-// run the benchmark loop. This will always be meaningful, an will match the
+// run the benchmark loop. This will always be meaningful, and will match the
 // time spent by the main thread in single-threaded case, in general decreasing
 // with the number of internal threads doing the work.
 BENCHMARK(BM_OpenMP)->Range(8, 8<<10)->UseRealTime();
@@ -986,11 +1024,11 @@ in any way. `<expr>` may even be removed entirely when the result is already
 known. For example:
 
 ```c++
-  /* Example 1: `<expr>` is removed entirely. */
+  // Example 1: `<expr>` is removed entirely.
   int foo(int x) { return x + 42; }
   while (...) DoNotOptimize(foo(0)); // Optimized to DoNotOptimize(42);
 
-  /*  Example 2: Result of '<expr>' is only reused */
+  // Example 2: Result of '<expr>' is only reused.
   int bar(int) __attribute__((const));
   while (...) DoNotOptimize(bar(0)); // Optimized to:
   // int __result__ = bar(0);
@@ -1068,6 +1106,7 @@ void BM_spin_empty(benchmark::State& state) {
 }
 
 BENCHMARK(BM_spin_empty)
+  ->Repetitions(3) // or add option --benchmark_repetitions=3
   ->ComputeStatistics("max", [](const std::vector<double>& v) -> double {
     return *(std::max_element(std::begin(v), std::end(v)));
   })
@@ -1087,8 +1126,9 @@ void BM_spin_empty(benchmark::State& state) {
 }
 
 BENCHMARK(BM_spin_empty)
+  ->Repetitions(3) // or add option --benchmark_repetitions=3
   ->ComputeStatistics("ratio", [](const std::vector<double>& v) -> double {
-    return std::begin(v) / std::end(v);
+    return v.front() / v.back();
   }, benchmark::StatisticUnit::kPercentage)
   ->Arg(512);
 ```
@@ -1107,6 +1147,21 @@ a report on the number of allocations, bytes used, etc.
 
 This data will then be reported alongside other performance data, currently
 only when using JSON output.
+
+<a name="profiling" />
+
+## Profiling
+
+It's often useful to also profile benchmarks in particular ways, in addition to
+CPU performance. For this reason, benchmark offers the `RegisterProfilerManager`
+method that allows a custom `ProfilerManager` to be injected.
+
+If set, the `ProfilerManager::AfterSetupStart` and
+`ProfilerManager::BeforeTeardownStop` methods will be called at the start and
+end of a separate benchmark run to allow user code to collect and report
+user-provided profile metrics.
+
+Output collected from this profiling run must be reported separately.
 
 <a name="using-register-benchmark" />
 

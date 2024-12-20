@@ -8,23 +8,24 @@
     * `git log $(git describe --abbrev=0 --tags)..HEAD` gives you the list of
       commits between the last annotated tag and HEAD
     * Pick the most interesting.
-* Create one last commit that updates the version saved in `CMakeLists.txt` and the
-  `__version__` variable in `bindings/python/google_benchmark/__init__.py`to the release
-  version you're creating. (This version will be used if benchmark is installed from the
-  archive you'll be creating in the next step.)
+* Create one last commit that updates the version saved in `CMakeLists.txt`, `MODULE.bazel`,
+  and `bindings/python/google_benchmark/__init__.py` to the release version you're creating.
+  (This version will be used if benchmark is installed from the archive you'll be creating
+  in the next step.)
 
 ```
-project (benchmark VERSION 1.6.0 LANGUAGES CXX)
+# CMakeLists.txt
+project (benchmark VERSION 1.9.0 LANGUAGES CXX)
 ```
 
-```python
-# bindings/python/google_benchmark/__init__.py
+```
+# MODULE.bazel
+module(name = "com_github_google_benchmark", version="1.9.0")
+```
 
-# ...
-
-__version__ = "1.6.0"  # <-- change this to the release version you are creating
-
-# ...
+```
+# google_benchmark/__init__.py
+__version__ = "1.9.0"
 ```
 
 * Create a release through github's interface
@@ -34,4 +35,4 @@ __version__ = "1.6.0"  # <-- change this to the release version you are creating
       * `git tag -a -f <tag> <tag>`
       * `git push --force --tags origin`
 * Confirm that the "Build and upload Python wheels" action runs to completion
-    * run it manually if it hasn't run
+    * Run it manually if it hasn't run.

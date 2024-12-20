@@ -45,7 +45,7 @@ SubMap& GetSubstitutions() {
   static SubMap map = {
       {"%float", "[0-9]*[.]?[0-9]+([eE][-+][0-9]+)?"},
       // human-readable float
-      {"%hrfloat", "[0-9]*[.]?[0-9]+([eE][-+][0-9]+)?[kMGTPEZYmunpfazy]?"},
+      {"%hrfloat", "[0-9]*[.]?[0-9]+([eE][-+][0-9]+)?[kKMGTPEZYmunpfazy]?i?"},
       {"%percentage", percentage_re},
       {"%int", "[ ]*[0-9]+"},
       {" %s ", "[ ]+"},
@@ -65,6 +65,7 @@ SubMap& GetSubstitutions() {
       {"%csv_us_report", "[0-9]+," + safe_dec_re + "," + safe_dec_re + ",us,,,,,"},
       {"%csv_ms_report", "[0-9]+," + safe_dec_re + "," + safe_dec_re + ",ms,,,,,"},
       {"%csv_s_report", "[0-9]+," + safe_dec_re + "," + safe_dec_re + ",s,,,,,"},
+      {"%csv_cv_report", "[0-9]+," + safe_dec_re + "," + safe_dec_re + ",,,,,,"},
       {"%csv_bytes_report",
        "[0-9]+," + safe_dec_re + "," + safe_dec_re + ",ns," + safe_dec_re + ",,,,"},
       {"%csv_items_report",

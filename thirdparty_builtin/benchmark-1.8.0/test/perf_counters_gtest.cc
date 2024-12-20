@@ -2,6 +2,7 @@
 #include <thread>
 
 #include "../src/perf_counters.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #ifndef GTEST_SKIP
@@ -14,11 +15,13 @@ struct MsgHandler {
 using benchmark::internal::PerfCounters;
 using benchmark::internal::PerfCountersMeasurement;
 using benchmark::internal::PerfCounterValues;
+using ::testing::AllOf;
+using ::testing::Gt;
+using ::testing::Lt;
 
 namespace {
 const char kGenericPerfEvent1[] = "CYCLES";
-const char kGenericPerfEvent2[] = "BRANCHES";
-const char kGenericPerfEvent3[] = "INSTRUCTIONS";
+const char kGenericPerfEvent2[] = "INSTRUCTIONS";
 
 TEST(PerfCountersTest, Init) {
   EXPECT_EQ(PerfCounters::Initialize(), PerfCounters::kSupported);
@@ -38,7 +41,7 @@ TEST(PerfCountersTest, NegativeTest) {
     return;
   }
   EXPECT_TRUE(PerfCounters::Initialize());
-  // Sanity checks
+  // Safety checks
   // Create() will always create a valid object, even if passed no or
   // wrong arguments as the new behavior is to warn and drop unsupported
   // counters
@@ -57,27 +60,24 @@ TEST(PerfCountersTest, NegativeTest) {
   {
     // Try sneaking in an outrageous counter, like a fat finger mistake
     auto counter = PerfCounters::Create(
-        {kGenericPerfEvent3, "not a counter name", kGenericPerfEvent1});
+        {kGenericPerfEvent2, "not a counter name", kGenericPerfEvent1});
     EXPECT_EQ(counter.num_counters(), 2);
     EXPECT_EQ(counter.names(), std::vector<std::string>(
-                                   {kGenericPerfEvent3, kGenericPerfEvent1}));
+                                   {kGenericPerfEvent2, kGenericPerfEvent1}));
   }
   {
-    // Finally try a golden input - it should like all them
-    EXPECT_EQ(PerfCounters::Create(
-                  {kGenericPerfEvent1, kGenericPerfEvent2, kGenericPerfEvent3})
+    // Finally try a golden input - it should like both of them
+    EXPECT_EQ(PerfCounters::Create({kGenericPerfEvent1, kGenericPerfEvent2})
                   .num_counters(),
-              3);
+              2);
   }
   {
     // Add a bad apple in the end of the chain to check the edges
-    auto counter = PerfCounters::Create({kGenericPerfEvent1, kGenericPerfEvent2,
-                                         kGenericPerfEvent3,
-                                         "MISPREDICTED_BRANCH_RETIRED"});
-    EXPECT_EQ(counter.num_counters(), 3);
-    EXPECT_EQ(counter.names(),
-              std::vector<std::string>({kGenericPerfEvent1, kGenericPerfEvent2,
-                                        kGenericPerfEvent3}));
+    auto counter = PerfCounters::Create(
+        {kGenericPerfEvent1, kGenericPerfEvent2, "bad event name"});
+    EXPECT_EQ(counter.num_counters(), 2);
+    EXPECT_EQ(counter.names(), std::vector<std::string>(
+                                   {kGenericPerfEvent1, kGenericPerfEvent2}));
   }
 }
 
@@ -116,26 +116,25 @@ TEST(PerfCountersTest, Read2Counters) {
 }
 
 TEST(PerfCountersTest, ReopenExistingCounters) {
-  // This test works in recent and old Intel hardware
-  // However we cannot make assumptions beyond 3 HW counters
+  // This test works in recent and old Intel hardware, Pixel 3, and Pixel 6.
+  // However we cannot make assumptions beyond 2 HW counters due to Pixel 6.
   if (!PerfCounters::kSupported) {
     GTEST_SKIP() << "Test skipped because libpfm is not supported.\n";
   }
   EXPECT_TRUE(PerfCounters::Initialize());
   std::vector<std::string> kMetrics({kGenericPerfEvent1});
-  std::vector<PerfCounters> counters(3);
+  std::vector<PerfCounters> counters(2);
   for (auto& counter : counters) {
     counter = PerfCounters::Create(kMetrics);
   }
   PerfCounterValues values(1);
   EXPECT_TRUE(counters[0].Snapshot(&values));
   EXPECT_TRUE(counters[1].Snapshot(&values));
-  EXPECT_TRUE(counters[2].Snapshot(&values));
 }
 
 TEST(PerfCountersTest, CreateExistingMeasurements) {
   // The test works (i.e. causes read to fail) for the assumptions
-  // about hardware capabilities (i.e. small number (3) hardware
+  // about hardware capabilities (i.e. small number (2) hardware
   // counters) at this date,
   // the same as previous test ReopenExistingCounters.
   if (!PerfCounters::kSupported) {
@@ -148,7 +147,7 @@ TEST(PerfCountersTest, CreateExistingMeasurements) {
   // we could use libpfm to query for the hardware limits on this
   // particular platform.
   const int kMaxCounters = 10;
-  const int kMinValidCounters = 3;
+  const int kMinValidCounters = 2;
 
   // Let's use a ubiquitous counter that is guaranteed to work
   // on all platforms
@@ -169,8 +168,8 @@ TEST(PerfCountersTest, CreateExistingMeasurements) {
   std::vector<std::pair<std::string, double>> measurements;
 
   // Start all counters together to see if they hold
-  int max_counters = kMaxCounters;
-  for (int i = 0; i < kMaxCounters; ++i) {
+  size_t max_counters = kMaxCounters;
+  for (size_t i = 0; i < kMaxCounters; ++i) {
     auto& counter(*perf_counter_measurements[i]);
     EXPECT_EQ(counter.num_counters(), 1);
     if (!counter.Start()) {
@@ -182,13 +181,13 @@ TEST(PerfCountersTest, CreateExistingMeasurements) {
   ASSERT_GE(max_counters, kMinValidCounters);
 
   // Start all together
-  for (int i = 0; i < max_counters; ++i) {
+  for (size_t i = 0; i < max_counters; ++i) {
     auto& counter(*perf_counter_measurements[i]);
     EXPECT_TRUE(counter.Stop(measurements) || (i >= kMinValidCounters));
   }
 
   // Start/stop individually
-  for (int i = 0; i < max_counters; ++i) {
+  for (size_t i = 0; i < max_counters; ++i) {
     auto& counter(*perf_counter_measurements[i]);
     measurements.clear();
     counter.Start();
@@ -226,7 +225,7 @@ void measure(size_t threadcount, PerfCounterValues* before,
   // the scopes overlap, and we need to explicitly control the scope of the
   // threadpool.
   auto counters =
-      PerfCounters::Create({kGenericPerfEvent1, kGenericPerfEvent3});
+      PerfCounters::Create({kGenericPerfEvent1, kGenericPerfEvent2});
   for (auto& t : threads) t = std::thread(work);
   counters.Snapshot(before);
   for (auto& t : threads) t.join();
@@ -257,10 +256,14 @@ TEST(PerfCountersTest, MultiThreaded) {
       static_cast<double>(after[0] - before[0]),
       static_cast<double>(after[1] - before[1])};
 
-  // Some extra work will happen on the main thread - like joining the threads
-  // - so the ratio won't be quite 2.0, but very close.
-  EXPECT_GE(Elapsed4Threads[0], 1.9 * Elapsed2Threads[0]);
-  EXPECT_GE(Elapsed4Threads[1], 1.9 * Elapsed2Threads[1]);
+  // The following expectations fail (at least on a beefy workstation with lots
+  // of cpus) - it seems that in some circumstances the runtime of 4 threads
+  // can even be better than with 2.
+  // So instead of expecting 4 threads to be slower, let's just make sure they
+  // do not differ too much in general (one is not more than 10x than the
+  // other).
+  EXPECT_THAT(Elapsed4Threads[0] / Elapsed2Threads[0], AllOf(Gt(0.1), Lt(10)));
+  EXPECT_THAT(Elapsed4Threads[1] / Elapsed2Threads[1], AllOf(Gt(0.1), Lt(10)));
 }
 
 TEST(PerfCountersTest, HardwareLimits) {
@@ -273,28 +276,16 @@ TEST(PerfCountersTest, HardwareLimits) {
   }
   EXPECT_TRUE(PerfCounters::Initialize());
 
-  // Taken straight from `perf list` on x86-64
-  // Got all hardware names since these are the problematic ones
-  std::vector<std::string> counter_names{"cycles",  // leader
-                                         "instructions",
-                                         "branches",
-                                         "L1-dcache-loads",
-                                         "L1-dcache-load-misses",
-                                         "L1-dcache-prefetches",
-                                         "L1-icache-load-misses",  // leader
-                                         "L1-icache-loads",
-                                         "branch-load-misses",
-                                         "branch-loads",
-                                         "dTLB-load-misses",
-                                         "dTLB-loads",
-                                         "iTLB-load-misses",  // leader
-                                         "iTLB-loads",
-                                         "branch-instructions",
-                                         "branch-misses",
-                                         "cache-misses",
-                                         "cache-references",
-                                         "stalled-cycles-backend",  // leader
-                                         "stalled-cycles-frontend"};
+  // Taken from `perf list`, but focusses only on those HW events that actually
+  // were reported when running `sudo perf stat -a sleep 10`, intersected over
+  // several platforms. All HW events listed in the first command not reported
+  // in the second seem to not work. This is sad as we don't really get to test
+  // the grouping here (groups can contain up to 6 members)...
+  std::vector<std::string> counter_names{
+      "cycles",         // leader
+      "instructions",   //
+      "branch-misses",  //
+  };
 
   // In the off-chance that some of these values are not supported,
   // we filter them out so the test will complete without failure

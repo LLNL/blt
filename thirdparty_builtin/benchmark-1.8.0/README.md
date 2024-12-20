@@ -4,10 +4,9 @@
 [![bazel](https://github.com/google/benchmark/actions/workflows/bazel.yml/badge.svg)](https://github.com/google/benchmark/actions/workflows/bazel.yml)
 [![pylint](https://github.com/google/benchmark/workflows/pylint/badge.svg)](https://github.com/google/benchmark/actions?query=workflow%3Apylint)
 [![test-bindings](https://github.com/google/benchmark/workflows/test-bindings/badge.svg)](https://github.com/google/benchmark/actions?query=workflow%3Atest-bindings)
-
-[![Build Status](https://travis-ci.org/google/benchmark.svg?branch=main)](https://travis-ci.org/google/benchmark)
 [![Coverage Status](https://coveralls.io/repos/google/benchmark/badge.svg)](https://coveralls.io/r/google/benchmark)
 
+[![Discord](https://discordapp.com/api/guilds/1125694995928719494/widget.png?style=shield)](https://discord.gg/cz7UX7wKC2)
 
 A library to benchmark code snippets, similar to unit tests. Example:
 
@@ -51,15 +50,13 @@ IRC channels:
 
 ## Requirements
 
-The library can be used with C++03. However, it requires C++11 to build,
+The library can be used with C++03. However, it requires C++14 to build,
 including compiler and standard library support.
 
-The following minimum versions are required to build the library:
+_See [dependencies.md](docs/dependencies.md) for more details regarding supported
+compilers and standards._
 
-* GCC 4.8
-* Clang 3.4
-* Visual Studio 14 2015
-* Intel 2015 Update 1
+If you have need for a particular compiler to be supported, patches are very welcome.
 
 See [Platform-Specific Build Instructions](docs/platform_specific_build_instructions.md).
 

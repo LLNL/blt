@@ -49,7 +49,7 @@ void BM_diagnostic_test(benchmark::State& state) {
   if (called_once == false) try_invalid_pause_resume(state);
 
   for (auto _ : state) {
-    auto iterations = state.iterations();
+    auto iterations = double(state.iterations()) * double(state.iterations());
     benchmark::DoNotOptimize(iterations);
   }
 
@@ -65,7 +65,7 @@ void BM_diagnostic_test_keep_running(benchmark::State& state) {
   if (called_once == false) try_invalid_pause_resume(state);
 
   while (state.KeepRunning()) {
-    auto iterations = state.iterations();
+    auto iterations = double(state.iterations()) * double(state.iterations());
     benchmark::DoNotOptimize(iterations);
   }
 
@@ -76,7 +76,16 @@ void BM_diagnostic_test_keep_running(benchmark::State& state) {
 BENCHMARK(BM_diagnostic_test_keep_running);
 
 int main(int argc, char* argv[]) {
+#ifdef NDEBUG
+  // This test is exercising functionality for debug builds, which are not
+  // available in release builds. Skip the test if we are in that environment
+  // to avoid a test failure.
+  std::cout << "Diagnostic test disabled in release build" << std::endl;
+  (void)argc;
+  (void)argv;
+#else
   benchmark::internal::GetAbortHandler() = &TestHandler;
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
+#endif
 }

@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: install clang-tidy
       run: sudo apt update && sudo apt -y install clang-tidy
@@ -35,4 +35,4 @@ jobs:
     - name: run
       shell: bash
       working-directory: ${{ runner.workspace }}/_build
-      run: run-clang-tidy
+      run: run-clang-tidy -checks=*,-clang-analyzer-deadcode*

@@ -38,6 +38,7 @@ def sum_million(state):
     while state:
         sum(range(1_000_000))
 
+
 @benchmark.register
 def pause_timing(state):
     """Pause timing every iteration."""
@@ -60,6 +61,7 @@ def skipped(state):
 
 
 @benchmark.register
+@benchmark.option.use_manual_time()
 def manual_timing(state):
     while state:
         # Manually count Python CPU time
@@ -85,7 +87,9 @@ def custom_counters(state):
     # Set a counter as a rate.
     state.counters["foo_rate"] = Counter(num_foo, Counter.kIsRate)
     #  Set a counter as an inverse of rate.
-    state.counters["foo_inv_rate"] = Counter(num_foo, Counter.kIsRate | Counter.kInvert)
+    state.counters["foo_inv_rate"] = Counter(
+        num_foo, Counter.kIsRate | Counter.kInvert
+    )
     # Set a counter as a thread-average quantity.
     state.counters["foo_avg"] = Counter(num_foo, Counter.kAvgThreads)
     # There's also a combined flag:
