@@ -14,6 +14,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Changed
 - Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies.
+- Updated GoogleBenchmark to 1.9.1
 
 ### Fixed
 - Removed GoogleTest, GoogleMock, and GoogleBenchmarks calling CMake's `GNUInstallDirs`
