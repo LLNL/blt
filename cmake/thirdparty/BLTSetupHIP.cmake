@@ -93,7 +93,6 @@ else()
 endif()
 
 blt_import_library(NAME          blt_hip
-                   #COMPILE_FLAGS ${_blt_hip_compile_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
                    GLOBAL        ${_blt_hip_is_global})
 
