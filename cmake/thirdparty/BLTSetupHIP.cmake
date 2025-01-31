@@ -69,6 +69,7 @@ endif()
 
 blt_import_library(NAME          blt_hip
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY}
+                   DEPENDS_ON    blt_hip_runtime
                    GLOBAL        ${_blt_hip_is_global})
 
 add_library(blt::hip ALIAS blt_hip)
