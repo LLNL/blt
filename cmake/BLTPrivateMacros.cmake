@@ -60,7 +60,7 @@ macro(blt_find_executable)
 
         if (${_ucname}_EXECUTABLE)
             if (NOT EXISTS ${${_ucname}_EXECUTABLE})
-                message(FATAL_ERROR "User defined ${_ucname}_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_${_ucname} to OFF.")
+                message(FATAL_ERROR "User defined ${_ucname}_EXECUTABLE (${${_ucname}_EXECUTABLE}) does not exist. Fix/unset variable or set ENABLE_${_ucname} to OFF.")
             endif()
         else()
             find_program(${_ucname}_EXECUTABLE

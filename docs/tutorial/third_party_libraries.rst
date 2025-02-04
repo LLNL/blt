@@ -19,7 +19,7 @@ Some libraries have no support for easily importing their CMake targets into
 external projects, either through properly exporting their targets themselves
 or the CMake community has not written a Find module that eases this work.
 
-BLT provides a :ref:`blt_import_library` macro allows you to reuse all information needed
+BLT provides a :ref:`blt_import_library` macro that allows you to reuse all information needed
 for an external dependency under a single name.  This includes any include
 directories, libraries, compile flags, link flags, defines, etc.  You can also
 hide any warnings created by their headers by setting the

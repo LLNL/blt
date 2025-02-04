@@ -17,6 +17,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies.
 - Modified `blt_split_source_list_by_language` to accept a `CXX_LIST` argument for splitting out C and CXX sources. If not specified, the `C_LIST` will contain both C and C++ sources.
 - HIP support now uses enable_language(HIP), and specifying a HIP compiler must use the variable `CMAKE_HIP_COMPILER`.
+- Updated GoogleBenchmark to 1.9.1
 
 ### Fixed
 - Removed GoogleTest, GoogleMock, and GoogleBenchmarks calling CMake's `GNUInstallDirs`
@@ -27,6 +28,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Guard HIP C smoketest against projects that don't enable C as a language in their projects.
 - Changes benchmark custom target `run_benchmarks` to exclusively run benchmarks (not other general tests).
 - Fix HIP smoketests to fail on HIP errors.
+- Add `-Wno-tautological-compare` to GoogleTest/Mock/Benchmark for IntelLLVM compilers to silence
+  warning.
 
 ## [Version 0.6.2] - Release date 2024-03-15
 
