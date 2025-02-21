@@ -445,7 +445,7 @@ macro(blt_add_test)
             set(_mpiexec ${MPIEXEC})
         endif()
 
-        set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
+        set(_test_command ${_mpiexec} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
     endif()
 
     add_test(NAME           ${arg_NAME}
