@@ -181,8 +181,8 @@ if(ENABLE_BENCHMARKS)
         endif()
 
         set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
-        add_subdirectory(benchmark-1.8.0
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.8.0)
+        add_subdirectory(benchmark-1.9.1
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.9.1)
 
         if (UNIX AND NOT APPLE)
           find_library(RT_LIBRARIES rt)

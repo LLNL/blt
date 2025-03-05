@@ -1,0 +1,10 @@
+diff --git a/thirdparty_builtin/benchmark-1.9.1/src/CMakeLists.txt b/thirdparty_builtin/benchmark-1.9.1/src/CMakeLists.txt
+index 91ea5f4..876ea3b 100644
+--- a/thirdparty_builtin/benchmark-1.9.1/src/CMakeLists.txt
++++ b/thirdparty_builtin/benchmark-1.9.1/src/CMakeLists.txt
+@@ -1,5 +1,4 @@
+ #Allow the source files to find headers in src /
+-include(GNUInstallDirs)
+ include_directories(${PROJECT_SOURCE_DIR}/src)
+ 
+ if (DEFINED BENCHMARK_CXX_LINKER_FLAGS)
