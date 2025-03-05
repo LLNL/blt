@@ -29,7 +29,7 @@
 # Build jobs
 tioga-clang_16_0_0_hip:
   variables:
-    HOST_CONFIG: "clang@16.0.0_hip.cmake"
+    HOST_CONFIG: "clang@18.0.0_hip.cmake"
   extends: .src_build_on_tioga
 
 
