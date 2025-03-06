@@ -59,7 +59,7 @@ set(ENABLE_HIP ON CACHE BOOL "")
 
 set(CMAKE_HIP_ARCHITECTURES "gfx90a" CACHE STRING "")
 
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags -L${ROCM_ROOT_DIR}/hip/../llvm/lib -L${ROCM_ROOT_DIR}/hip/lib -Wl,-rpath,${ROCM_ROOT_DIR}/hip/../llvm/lib:${ROCM_ROOT_DIR}/hip/lib -lpgmath -lflang -lflangrti -lompstub -lamdhip64  -L${ROCM_ROOT_DIR}/hip/../lib64 -Wl,-rpath,${ROCM_ROOT_DIR}/hip/../lib64  -L${ROCM_ROOT_DIR}/hip/../lib -Wl,-rpath,${ROCM_ROOT_DIR}/hip/../lib -lamd_comgr -lhsa-runtime64 " CACHE STRING "")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags -L${ROCM_ROOT_DIR}/llvm/lib -L${ROCM_ROOT_DIR}/lib -Wl,-rpath,${ROCM_ROOT_DIR}/llvm/lib:${ROCM_ROOT_DIR}/lib -lpgmath -lflang -lflangrti -lompstub -lamdhip64  -L${ROCM_ROOT_DIR}/lib64 -Wl,-rpath,${ROCM_ROOT_DIR}/lib64  -L${ROCM_ROOT_DIR}/lib -Wl,-rpath,${ROCM_ROOT_DIR}/lib -lamd_comgr -lhsa-runtime64 " CACHE STRING "")
 
 #_blt_tutorial_useful_hip_variables_end
 
