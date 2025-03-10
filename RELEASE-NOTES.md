@@ -11,9 +11,12 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ### Added
 - Added ``WORKING_DIRECTORY`` option to ``blt_add_test`` and ``blt_add_benchmark``.
+- Added `BLT_CXX_FILE_EXTS` variable (split out of `BLT_C_FILE_EXTS`) for use in modified `blt_split_source_list_by_language` macro.
 
 ### Changed
 - Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies.
+- Modified `blt_split_source_list_by_language` to accept a `CXX_LIST` argument for splitting out C and CXX sources. If not specified, the `C_LIST` will contain both C and C++ sources.
+- HIP support now uses enable_language(HIP), and specifying a HIP compiler must use the variable `CMAKE_HIP_COMPILER`.
 - Updated GoogleBenchmark to 1.9.1
 
 ### Fixed

@@ -167,8 +167,9 @@ compilers be set as the main compilers. This will change soon.
 **Important Setup Variables**
 
 * ``ENABLE_HIP`` : Enables HIP support in BLT
-* ``HIP_ROOT_DIR`` : Root directory for HIP installation
+* ``ROCM_ROOT_DIR`` : Root directory for ROCM installation
 * ``CMAKE_HIP_ARCHITECTURES`` : GPU architecture to use when generating HIP/ROCm code
+* ``CMAKE_HIP_COMPILER``: Compiler to use for HIP compilation, required when the C++ compiler does not support HIP.
 
 **BLT Targets**
 

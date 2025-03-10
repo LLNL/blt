@@ -7,11 +7,11 @@
 #------------------------------------------------------------------------------
 # Compilers
 #------------------------------------------------------------------------------
-# Compiler Spec: clang@16.0.0
+# Compiler Spec: clang@18.0.0
 #------------------------------------------------------------------------------
 
 #_blt_tutorial_hip_compiler_start
-set(_compiler_root "/opt/rocm-5.6.0/llvm")
+set(_compiler_root "/opt/rocm-6.2.1/llvm")
 
 set(CMAKE_C_COMPILER "${_compiler_root}/bin/amdclang" CACHE PATH "")
 
@@ -28,7 +28,7 @@ set(ENABLE_FORTRAN ON CACHE BOOL "")
 # MPI
 #------------------------------------------------------------------------------
 
-set(_mpi_root "/usr/tce/packages/cray-mpich-tce/cray-mpich-8.1.28-rocmcc-5.6.0")
+set(_mpi_root "/usr/tce/packages/cray-mpich-tce/cray-mpich-8.1.31-rocmcc-6.2.1")
 
 set(MPI_C_COMPILER "${_mpi_root}/bin/mpicc" CACHE PATH "")
 
@@ -53,15 +53,14 @@ set(ENABLE_MPI ON CACHE BOOL "")
 #------------------------------------------------------------------------------
 
 #_blt_tutorial_useful_hip_variables_start
-set(_rocm_root "/opt/rocm-5.6.0")
+set(ROCM_ROOT_DIR "/opt/rocm-6.2.1" CACHE PATH "")
 
 set(ENABLE_HIP ON CACHE BOOL "")
 
-set(HIP_ROOT_DIR "${_rocm_root}/hip" CACHE STRING "")
-
 set(CMAKE_HIP_ARCHITECTURES "gfx90a" CACHE STRING "")
 
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags -L${_rocm_root}/hip/../llvm/lib -L${_rocm_root}/hip/lib -Wl,-rpath,${_rocm_root}/hip/../llvm/lib:${_rocm_root}/hip/lib -lpgmath -lflang -lflangrti -lompstub -lamdhip64  -L${_rocm_root}/hip/../lib64 -Wl,-rpath,${_rocm_root}/hip/../lib64  -L${_rocm_root}/hip/../lib -Wl,-rpath,${_rocm_root}/hip/../lib -lamd_comgr -lhsa-runtime64 " CACHE STRING "")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags -L${ROCM_ROOT_DIR}/llvm/lib -L${ROCM_ROOT_DIR}/lib -Wl,-rpath,${ROCM_ROOT_DIR}/llvm/lib:${ROCM_ROOT_DIR}/lib -lpgmath -lflang -lflangrti -lompstub -lamdhip64  -L${ROCM_ROOT_DIR}/lib64 -Wl,-rpath,${ROCM_ROOT_DIR}/lib64  -L${ROCM_ROOT_DIR}/lib -Wl,-rpath,${ROCM_ROOT_DIR}/lib -lamd_comgr -lhsa-runtime64 " CACHE STRING "")
+
 #_blt_tutorial_useful_hip_variables_end
 
 #------------------------------------------------
