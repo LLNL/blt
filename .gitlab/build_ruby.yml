@@ -2,7 +2,7 @@
 # This is the share configuration of jobs for ruby
 .on_ruby:
   variables:
-    SCHEDULER_PARAMETERS: "--res=ci --exclusive=user --deadline=now+1hour -N1 -t ${ALLOC_TIME}"
+    SCHEDULER_PARAMETERS: "--reservation=ci --exclusive=user --deadline=now+1hour -N1 -t ${ALLOC_TIME}"
   tags:
     - batch
     - ruby
