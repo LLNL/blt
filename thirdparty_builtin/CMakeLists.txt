@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -11,6 +11,30 @@ if(ENABLE_GBENCHMARK OR ENABLE_GTEST OR ENABLE_GMOCK)
       message(WARNING "GoogleTest, GoogleMock, and GoogleBenchmark require C++14 or later. "
                       "Set BLT_CXX_STD to 'c++14' or higher before loading BLT.")
   endif()
+endif()
+
+# NOTE: GoogleBenchmark, GoogleTest, and GoogleMock all rely on GNUInstallDir.
+# This was causing bleeding of settings in BLT projects that don't use that,
+# so we removed it and temporarily created variables it was creating, if the user
+# project has not set them already. These are restored to their values below.
+set(CMAKE_INSTALL_BINDIR_saved ${CMAKE_INSTALL_BINDIR})
+if(NOT CMAKE_INSTALL_BINDIR)
+  set(CMAKE_INSTALL_BINDIR "bin")
+endif()
+
+set(CMAKE_INSTALL_DOCDIR_saved ${CMAKE_INSTALL_DOCDIR})
+if(NOT CMAKE_INSTALL_DOCDIR)
+  set(CMAKE_INSTALL_DOCDIR "share/docs")
+endif()
+
+set(CMAKE_INSTALL_INCLUDEDIR_saved ${CMAKE_INSTALL_INCLUDEDIR})
+if(NOT CMAKE_INSTALL_INCLUDEDIR)
+  set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+
+set(CMAKE_INSTALL_LIBDIR_saved ${CMAKE_INSTALL_LIBDIR})
+if(NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
 if(ENABLE_TESTS)
@@ -60,7 +84,19 @@ if(ENABLE_TESTS)
 
     message(STATUS "Google Test Support is ${ENABLE_GTEST}")
     message(STATUS "Google Mock Support is ${ENABLE_GMOCK}")
-    
+
+    # GoogleMock and GoogleTest both require the C language enabled.
+    # This can cause problems due to the language being enabled globally
+    # but variables like CMAKE_C_COMPILE_OBJECT being created directory scoped.
+    # Enable the C language for them but omit a warning.
+    if(ENABLE_GTEST OR ENABLE_GMOCK)
+      get_property(_enabled_langs GLOBAL PROPERTY ENABLED_LANGUAGES)
+      if(NOT "C" IN_LIST _enabled_langs)
+          message(WARNING "Enabling the C language due to Google Mock|Test requiring it. To quiet this warning, add C to your project(...) call.")
+          enable_language(C)
+      endif()
+    endif()
+
     #
     # Guard of googletest w/ ENABLE_GTEST
     # In BLT, ENABLE_GTEST is also required when using ENABLE_GMOCK
@@ -145,8 +181,8 @@ if(ENABLE_BENCHMARKS)
         endif()
 
         set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
-        add_subdirectory(benchmark-1.8.0
-                         ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.8.0)
+        add_subdirectory(benchmark-1.9.1
+                         ${BLT_BUILD_DIR}/thirdparty_builtin/benchmark-1.9.1)
 
         if (UNIX AND NOT APPLE)
           find_library(RT_LIBRARIES rt)
@@ -162,9 +198,17 @@ if(ENABLE_BENCHMARKS)
 
     # This sets up a target to run the benchmarks
     add_custom_target(${BLT_RUN_BENCHMARKS_TARGET_NAME}
-                      COMMAND ctest -C Benchmark -VV
+                      COMMAND ctest -C Benchmark -L Benchmark -VV
                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endif()
+
+# Restore user set install variables
+
+foreach(_var CMAKE_INSTALL_BINDIR CMAKE_INSTALL_DOCDIR CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
+    if(${_var}_saved)
+      set(${_var} ${${_var}_saved} CACHE PATH "")
+    endif()
+endforeach()
 
 # Set the folder property of the blt thirdparty libraries 
 if(ENABLE_FOLDERS)

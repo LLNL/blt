@@ -9,6 +9,30 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.7.0] - Release date 2025-03-11
+
+### Added
+- Added ``WORKING_DIRECTORY`` option to ``blt_add_test`` and ``blt_add_benchmark``.
+- Added `BLT_CXX_FILE_EXTS` variable (split out of `BLT_C_FILE_EXTS`) for use in modified `blt_split_source_list_by_language` macro.
+
+### Changed
+- Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies.
+- Modified `blt_split_source_list_by_language` to accept a `CXX_LIST` argument for splitting out C and CXX sources. If not specified, the `C_LIST` will contain both C and C++ sources.
+- HIP support now uses enable_language(HIP), and specifying a HIP compiler must use the variable `CMAKE_HIP_COMPILER`.
+- Updated GoogleBenchmark to 1.9.1
+
+### Fixed
+- Removed GoogleTest, GoogleMock, and GoogleBenchmarks calling CMake's `GNUInstallDirs`
+  which was causing non-deterministic install variables depending on your combination of
+  static/shared libraries and if any of the previously mentioned TPLs were enabled.
+- Enable C language support and emit a warning when GoogleTest or GoogleMock are enabled but
+  not the C language.
+- Guard HIP C smoketest against projects that don't enable C as a language in their projects.
+- Changes benchmark custom target `run_benchmarks` to exclusively run benchmarks (not other general tests).
+- Fix HIP smoketests to fail on HIP errors.
+- Add `-Wno-tautological-compare` to GoogleTest/Mock/Benchmark for IntelLLVM compilers to silence
+  warning.
+
 ## [Version 0.6.2] - Release date 2024-03-15
 
 ### Added
@@ -40,7 +64,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Added the `blt_install_tpl_setups` macro, which installs files to setup and create
   targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to 
   replace `blt_export_tpl_targets` as the preferred way to setup third-party libraries with BLT.
-- Added `blt::`` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
+- Added `blt::` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
   These targets still exist but but will be deprecated in a future release. It is recommended that you
   move to the new alias names, `blt::cuda`, `blt::cuda_runtime`, `blt::mpi`, and `blt::openmp`
 
@@ -331,7 +355,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.2...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.7.0...develop
+[Version 0.7.0]: https://github.com/LLNL/blt/compare/v0.6.2...v0.7.0
 [Version 0.6.2]: https://github.com/LLNL/blt/compare/v0.6.1...v0.6.2
 [Version 0.6.1]: https://github.com/LLNL/blt/compare/v0.6.0...v0.6.1
 [Version 0.6.0]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0

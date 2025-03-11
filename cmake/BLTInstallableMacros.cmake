@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -428,37 +428,166 @@ endmacro(blt_add_target_compile_flags)
 
 
 ##------------------------------------------------------------------------------
-## blt_convert_to_system_includes(TARGET <target>)
+## blt_find_target_dependencies(TARGET <target> TLIST <list name>)
 ##
-## Converts existing interface includes to system interface includes.
+## Store all target's dependencies (link libraries and interface link libraries)
+## recursively in the variable name TLIST holds.
 ##------------------------------------------------------------------------------
-macro(blt_convert_to_system_includes)
+macro(blt_find_target_dependencies)
     set(options)
-    set(singleValuedArgs TARGET)
+    set(singleValuedArgs TARGET TLIST)
     set(multiValuedArgs)
 
-    ## parse the arguments to the macro
+    # parse the arguments to the macro
     cmake_parse_arguments(arg
          "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
 
+    # check for required arguments
     if(NOT DEFINED arg_TARGET)
-       message(FATAL_ERROR "TARGET is a required parameter for the blt_convert_to_system_includes macro.")
+        message(FATAL_ERROR "TARGET is a required parameter for the blt_find_target_dependencies macro")
+    endif()
+
+    if(NOT DEFINED arg_TLIST OR NOT DEFINED ${arg_TLIST})
+        message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
+    endif()
+
+    set(_depends_on "")
+
+    # Get dependencies if BLT registered library
+    string(TOUPPER ${arg_TARGET} _target_upper)
+    if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+        list(APPEND _depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
+    endif()
+    unset(_target_upper)
+
+    # Get dependencies if CMake target
+    if(TARGET ${arg_TARGET})
+        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
+        if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
+            get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
+            if(_propval)
+                list(APPEND _depends_on ${_propval})
+            endif()
+        endif()
+
+        # get interface link libraries
+        get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
+        if (_propval)
+            list(APPEND _depends_on ${_propval})
+        endif()
+    endif()
+
+    blt_list_remove_duplicates(TO _depends_on)
+    foreach(t ${_depends_on})
+        if (NOT "${t}" IN_LIST ${arg_TLIST})
+            list(APPEND ${arg_TLIST} ${t})
+            blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
+        endif()
+    endforeach()
+
+    unset(_depends_on)
+endmacro(blt_find_target_dependencies)
+
+
+##------------------------------------------------------------------------------
+## blt_convert_to_system_includes(TARGET   <target>
+##                                TARGETS  [<target>...]
+##                                CHILDREN [TRUE|FALSE]
+##                                [QUIET])
+##
+## Converts existing interface includes to system interface includes.
+##
+## Note: The argument ``TARGET`` will be deprecated in the near future. Until then,
+## if both ``TARGET`` and ``TARGETS`` is given, all given target include
+## directories will be converted.
+##
+##------------------------------------------------------------------------------
+function(blt_convert_to_system_includes)
+    set(options QUIET)
+    set(singleValuedArgs CHILDREN TARGET)
+    set(multiValuedArgs TARGETS)
+
+    ## parse the arguments to the macro
+    cmake_parse_arguments(arg
+        "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
+
+    if(NOT DEFINED arg_TARGET AND NOT DEFINED arg_TARGETS)
+        message(FATAL_ERROR "Neither required TARGET or TARGETS parameters for the blt_convert_to_system_includes macro were provided.")
+    endif()
+
+    if(DEFINED arg_TARGET)
+        list(APPEND arg_TARGETS ${arg_TARGET})
+    endif()
+
+    if(NOT DEFINED arg_TARGETS)
+        message(FATAL_ERROR "TARGETS is a required parameter for the blt_convert_to_system_includes macro.")
+    endif()
+
+    if(NOT DEFINED arg_CHILDREN)
+        set(arg_CHILDREN FALSE)
     endif()
 
     # PGI does not support -isystem
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
-        get_target_property(_include_dirs ${arg_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
-        # Don't copy if the target had no include directories
-        if(_include_dirs)
-            # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES so it is not doubled
-            # by target_include_directories
-            set_property(TARGET ${arg_TARGET} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-            target_include_directories(${arg_TARGET} SYSTEM INTERFACE ${_include_dirs})
-        endif()
-    endif()
+        set(_target_list "")
 
-    unset(_include_dirs)
-endmacro()
+        foreach(_target ${arg_TARGETS})
+            string(TOUPPER ${_target} _target_upper)
+
+            if(TARGET ${_target} OR _BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+                if(${arg_CHILDREN})
+                    blt_find_target_dependencies(TARGET ${_target} TLIST _target_list)
+                endif()
+
+                list(APPEND _target_list ${_target})
+            elseif(NOT ${arg_QUIET)
+                message(WARNING "${_target} does not exist!")
+            endif()
+
+            unset(_target_upper)
+        endforeach()
+
+        blt_list_remove_duplicates(TO _target_list)
+
+        foreach(_target ${_target_list})
+            if(TARGET ${_target})
+                # Handle CMake target
+                get_target_property(_interface_include_dirs
+                                    ${_target}
+                                    INTERFACE_INCLUDE_DIRECTORIES)
+
+                # Don't update properties if the target had no interface include directories
+                if(_interface_include_dirs)
+                    # Clear previous value in INTERFACE_INCLUDE_DIRECTORIES
+                    # so it is not doubled by target_include_directories
+                    set_target_properties(${_target}
+                                          PROPERTIES
+                                          INTERFACE_INCLUDE_DIRECTORIES "")
+
+                    target_include_directories(${_target}
+                                               SYSTEM
+                                               INTERFACE
+                                               ${_interface_include_dirs})
+                endif()
+
+                unset(_interface_include_dirs)
+            else()
+                string(TOUPPER ${_target} _target_upper)
+
+                if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
+                    # Handle BLT registered target
+                    set(_BLT_${_target_upper}_TREAT_INCLUDES_AS_SYSTEM TRUE)
+                endif()
+
+                unset(_target_upper)
+            endif()
+        endforeach()
+
+        unset(_target_list)
+     elseif(NOT ${arg_QUIET})
+        message(WARNING "PGI compiler does not support system includes")
+     endif()
+endfunction(blt_convert_to_system_includes)
 
 
 ##------------------------------------------------------------------------------
@@ -541,7 +670,7 @@ macro(blt_patch_target)
     endif()
 
     if(${arg_TREAT_INCLUDES_AS_SYSTEM})
-        blt_convert_to_system_includes(TARGET ${arg_NAME})
+        blt_convert_to_system_includes(TARGETS ${arg_NAME})
     endif()
 
     # FIXME: Is this all that's needed?

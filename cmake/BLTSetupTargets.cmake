@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -7,6 +7,12 @@
 # any project using BLT's third-party library as well as in a BLT project.
 # The macro `blt_install_tpl_setups(DESTINATION <dir>)` installs this file
 # into the destination specified by the argument <dir>.
+
+# Support IN_LIST operator for if()
+# Policy added in 3.3+
+if(POLICY CMP0057)
+    cmake_policy(SET CMP0057 NEW)
+endif()
 
 # BLTInstallableMacros provides helper macros for setting up and creating
 # third-party library targets.  The below guard prevents the file from 
@@ -18,7 +24,11 @@ endif()
 # Handle the two cases of TPL config variables, installed from upstream project
 # and the current/main BLT project. Prefix all variables here to not conflict with
 # non-BLT projects that load this as a configuration file.
-if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
+# If BLT_DISABLE_UPSTREAM_CONFIGS_FROM_BLT_TARGETS is set, always use configs from
+# the current project (ignoring upstream projects). Note that this can result in
+# inconsistent configurations between projects and should only be used in special
+# cases (such as building compile lines for use by tools such as clang-query).
+if (NOT BLT_DISABLE_UPSTREAM_CONFIGS_FROM_BLT_TARGETS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
   # Case: Imported BLT project (ie. an installed TPL loading its BLT targets)
   include("${CMAKE_CURRENT_LIST_DIR}/BLTThirdPartyConfigFlags.cmake")
 else()

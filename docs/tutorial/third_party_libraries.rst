@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -19,7 +19,7 @@ Some libraries have no support for easily importing their CMake targets into
 external projects, either through properly exporting their targets themselves
 or the CMake community has not written a Find module that eases this work.
 
-BLT provides a :ref:`blt_import_library` macro allows you to reuse all information needed
+BLT provides a :ref:`blt_import_library` macro that allows you to reuse all information needed
 for an external dependency under a single name.  This includes any include
 directories, libraries, compile flags, link flags, defines, etc.  You can also
 hide any warnings created by their headers by setting the

@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -43,7 +43,7 @@ strategy:
       MPI_DIR: '/usr'
       CMAKE_FLAGS: '$(C_COMPILERS) $(MPI_FLAGS) -DENABLE_GTEST_DEATH_TESTS=OFF -DENABLE_OPENMP=ON'
     osx_gcc:
-      VM_ImageName: 'macos-12'
+      VM_ImageName: 'macos-14'
       CMAKE_FLAGS: ''
     windows:
       VM_ImageName: 'windows-2022'

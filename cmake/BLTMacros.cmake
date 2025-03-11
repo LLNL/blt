@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -205,6 +205,13 @@ macro(blt_add_library)
                 DEPENDS_ON   ${arg_DEPENDS_ON}
                 LIBRARY_TYPE ${_lib_type})
         endif()
+
+        if(BLT_ENABLE_HIP)
+            blt_setup_hip_target(
+                NAME         ${arg_NAME}
+                SOURCES      ${arg_SOURCES}
+                DEPENDS_ON   ${arg_DEPENDS_ON})
+        endif()
     else()
         #
         #  Header-only library support
@@ -320,6 +327,13 @@ macro(blt_add_executable)
             DEPENDS_ON   ${arg_DEPENDS_ON})
     endif()
     
+    if(BLT_ENABLE_HIP)
+        blt_setup_hip_target(
+            NAME         ${arg_NAME}
+            SOURCES      ${arg_SOURCES}
+            DEPENDS_ON   ${arg_DEPENDS_ON})
+    endif()
+    
     # CMake wants to load with C++ if any of the libraries are C++.
     # Force to load with Fortran if the first file is Fortran.
     list(GET arg_SOURCES 0 _first)
@@ -374,18 +388,19 @@ endmacro(blt_add_executable)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_test( NAME            [name]
-##               COMMAND         [command] 
-##               NUM_MPI_TASKS   [n]
-##               NUM_OMP_THREADS [n]
-##               CONFIGURATIONS  [config1 [config2...]])
+## blt_add_test( NAME              [name]
+##               COMMAND           [command] 
+##               NUM_MPI_TASKS     [n]
+##               NUM_OMP_THREADS   [n]
+##               CONFIGURATIONS    [config1 [config2...]]
+##               WORKING_DIRECTORY [dir])
 ##
 ## Adds a test to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_test)
 
     set(options )
-    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS)
+    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS WORKING_DIRECTORY)
     set(multiValueArgs COMMAND CONFIGURATIONS)
 
     # Parse the arguments to the macro
@@ -398,6 +413,13 @@ macro(blt_add_test)
 
     if ( NOT DEFINED arg_COMMAND )
         message(FATAL_ERROR "COMMAND is a required parameter to blt_add_test")
+    endif()
+
+    # Set default working directory if not set
+    if ( NOT DEFINED arg_WORKING_DIRECTORY )
+        set(_working_directory ${CMAKE_CURRENT_BINARY_DIR})
+    else()
+        set(_working_directory ${arg_WORKING_DIRECTORY})
     endif()
 
     # Extract test directory and executable from arg_NAME and arg_COMMAND
@@ -415,14 +437,14 @@ macro(blt_add_test)
     endif()
     
     # Append the test_directory to the test argument, accounting for multi-config generators
-    if(NOT CMAKE_CONFIGURATION_TYPES)
+    if( NOT CMAKE_CONFIGURATION_TYPES )
         if(NOT "${_test_directory}" STREQUAL "")
             set(_test_command ${_test_directory}/${arg_COMMAND} )
         else()
             set(_test_command ${arg_COMMAND})
         endif()
     else()
-        if(TARGET ${_test_executable})
+        if( TARGET ${_test_executable} )
             list(INSERT arg_COMMAND 0 "$<TARGET_FILE:${_test_executable}>")
             list(REMOVE_AT arg_COMMAND 1)
         endif()
@@ -448,9 +470,10 @@ macro(blt_add_test)
         set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
     endif()
 
-    add_test(NAME           ${arg_NAME}
-             COMMAND        ${_test_command}
-             CONFIGURATIONS ${arg_CONFIGURATIONS})
+    add_test(NAME              ${arg_NAME}
+             COMMAND           ${_test_command}
+             CONFIGURATIONS    ${arg_CONFIGURATIONS}
+             WORKING_DIRECTORY ${_working_directory})
 
     # Handle OpenMP
     if( arg_NUM_OMP_THREADS )
@@ -462,18 +485,19 @@ endmacro(blt_add_test)
 
 
 ##------------------------------------------------------------------------------
-## blt_add_benchmark( NAME          [name] 
-##                    COMMAND       [command]
-##                    NUM_MPI_TASKS [n]
-##                    NUM_OMP_THREADS [n]
-##                    CONFIGURATIONS  [config1 [config2...]])
+## blt_add_benchmark( NAME              [name] 
+##                    COMMAND           [command]
+##                    NUM_MPI_TASKS     [n]
+##                    NUM_OMP_THREADS   [n]
+##                    CONFIGURATIONS    [config1 [config2...]]
+##                    WORKING_DIRECTORY [dir])
 ##
 ## Adds a benchmark to the project.
 ##------------------------------------------------------------------------------
 macro(blt_add_benchmark)
 
     set(options)
-    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS)
+    set(singleValueArgs NAME NUM_MPI_TASKS NUM_OMP_THREADS WORKING_DIRECTORY)
     set(multiValueArgs COMMAND CONFIGURATIONS)
 
     ## parse the arguments to the macro
@@ -482,11 +506,17 @@ macro(blt_add_benchmark)
 
     # The 'CONFIGURATIONS Benchmark' line excludes benchmarks 
     # from the general list of tests
-    blt_add_test( NAME            ${arg_NAME}
-                  COMMAND         ${arg_COMMAND}
-                  NUM_MPI_TASKS   ${arg_NUM_MPI_TASKS}
-                  NUM_OMP_THREADS ${arg_NUM_OMP_THREADS}
-                  CONFIGURATIONS  Benchmark ${arg_CONFIGURATIONS})
+    blt_add_test( NAME              ${arg_NAME}
+                  COMMAND           ${arg_COMMAND}
+                  NUM_MPI_TASKS     ${arg_NUM_MPI_TASKS}
+                  NUM_OMP_THREADS   ${arg_NUM_OMP_THREADS}
+                  CONFIGURATIONS    Benchmark ${arg_CONFIGURATIONS}
+                  WORKING_DIRECTORY ${arg_WORKING_DIRECTORY})
+
+    # The 'LABELS Benchmark` prevents regular tests from
+    # running when running benchmarks custom target
+    set_tests_properties( ${arg_NAME}
+                          PROPERTIES LABELS "Benchmark")
 
 endmacro(blt_add_benchmark)
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 #
 # SPDX-License-Identifier: (BSD-3-Clause)
@@ -60,7 +60,7 @@ macro(blt_find_executable)
 
         if (${_ucname}_EXECUTABLE)
             if (NOT EXISTS ${${_ucname}_EXECUTABLE})
-                message(FATAL_ERROR "User defined ${_ucname}_EXECUTABLE does not exist. Fix/unset variable or set ENABLE_${_ucname} to OFF.")
+                message(FATAL_ERROR "User defined ${_ucname}_EXECUTABLE (${${_ucname}_EXECUTABLE}) does not exist. Fix/unset variable or set ENABLE_${_ucname} to OFF.")
             endif()
         else()
             find_program(${_ucname}_EXECUTABLE
@@ -353,6 +353,51 @@ macro(blt_setup_cuda_target)
     endif()
 endmacro(blt_setup_cuda_target)
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_target(NAME <name of target>
+##                       SOURCES <list of sources>
+##                       DEPENDS_ON <list of dependencies>
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_target)
+
+    set(options)
+    set(singleValueArgs NAME)
+    set(multiValueArgs SOURCES DEPENDS_ON)
+
+    # Parse the arguments
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}"
+                            "${multiValueArgs}" ${ARGN} )
+
+    # Check arguments
+    if ( NOT DEFINED arg_NAME )
+        message( FATAL_ERROR "Must provide a NAME argument to the 'blt_setup_hip_target' macro")
+    endif()
+
+    if ( NOT DEFINED arg_SOURCES )
+        message( FATAL_ERROR "Must provide SOURCES to the 'blt_setup_hip_target' macro")
+    endif()
+
+    # Determine if hip is in DEPENDS_ON
+    list(FIND arg_DEPENDS_ON "blt_hip" _hip_index)
+    list(FIND arg_DEPENDS_ON "blt::hip" _hip_index2)
+    set(_depends_on_hip FALSE)
+    if(${_hip_index} GREATER -1 OR ${_hip_index2} GREATER -1)
+        set(_depends_on_hip TRUE)
+    endif()
+
+    if (${_depends_on_hip})
+        set(_hip_sources)
+        set(_non_hip_sources)
+        blt_split_source_list_by_language(SOURCES      ${arg_SOURCES}
+                                          C_LIST       _non_hip_sources
+                                          CXX_LIST     _hip_sources
+                                          Fortran_LIST _non_hip_sources)
+
+        set_source_files_properties( ${_hip_sources} PROPERTIES LANGUAGE HIP)
+
+    endif()
+endmacro(blt_setup_hip_target)
+
 
 ##-----------------------------------------------------------------------------
 ## blt_make_file_ext_regex( EXTENSIONS   [ext1 [ext2 ...]]
@@ -399,6 +444,7 @@ endmacro(blt_make_file_ext_regex)
 ##------------------------------------------------------------------------------
 ## blt_split_source_list_by_language( SOURCES <sources>
 ##                                    C_LIST <list name>
+##                                    CXX_LIST <list name>
 ##                                    Fortran_LIST <list name>
 ##                                    Python_LIST <list name>
 ##                                    CMAKE_LIST <list name>)
@@ -414,7 +460,7 @@ endmacro(blt_make_file_ext_regex)
 macro(blt_split_source_list_by_language)
 
     set(options)
-    set(singleValueArgs C_LIST Fortran_LIST Python_LIST CMAKE_LIST)
+    set(singleValueArgs C_LIST CXX_LIST Fortran_LIST Python_LIST CMAKE_LIST)
     set(multiValueArgs SOURCES)
 
     # Parse the arguments
@@ -430,6 +476,9 @@ macro(blt_split_source_list_by_language)
     set(BLT_C_FILE_REGEX)
     blt_make_file_ext_regex(EXTENSIONS   ${BLT_C_FILE_EXTS}
                             OUTPUT_REGEX BLT_C_FILE_REGEX)
+    set(BLT_CXX_FILE_REGEX)
+    blt_make_file_ext_regex(EXTENSIONS   ${BLT_CXX_FILE_EXTS}
+                            OUTPUT_REGEX BLT_CXX_FILE_REGEX)
     set(BLT_Fortran_FILE_REGEX)
     blt_make_file_ext_regex(EXTENSIONS   ${BLT_Fortran_FILE_EXTS}
                             OUTPUT_REGEX BLT_Fortran_FILE_REGEX)
@@ -461,6 +510,13 @@ macro(blt_split_source_list_by_language)
 
         if("${_lower_file}" MATCHES "${BLT_C_FILE_REGEX}")
             if (DEFINED arg_C_LIST)
+                list(APPEND ${arg_C_LIST} "${_file}")
+            endif()
+        elseif("${_lower_file}" MATCHES "${BLT_CXX_FILE_REGEX}")
+            if (DEFINED arg_CXX_LIST)
+                list(APPEND ${arg_CXX_LIST} "${_file}")
+            # maintain backwards compatibilty by adding to C list if CXX list not set
+            else()
                 list(APPEND ${arg_C_LIST} "${_file}")
             endif()
         elseif("${_lower_file}" MATCHES "${BLT_Fortran_FILE_REGEX}")
@@ -678,65 +734,3 @@ macro(blt_print_target_properties_private)
     unset(_is_blt_registered_target)
     unset(_is_cmake_target)
 endmacro(blt_print_target_properties_private)
-
-##------------------------------------------------------------------------------
-## blt_find_target_dependencies(TARGET <target> TLIST <list name>)
-##
-## Store all target's dependencies (link libraries and interface link libraries)
-## recursively in the variable name TLIST holds.
-##------------------------------------------------------------------------------
-macro(blt_find_target_dependencies)
-
-    set(options)
-    set(singleValuedArgs TARGET TLIST)
-    set(multiValuedArgs)
-
-    # parse the arguments to the macro
-    cmake_parse_arguments(arg
-         "${options}" "${singleValuedArgs}" "${multiValuedArgs}" ${ARGN})
-
-    # check for required arguments
-    if(NOT DEFINED arg_TARGET)
-        message(FATAL_ERROR "TARGET is a required parameter for the blt_find_target_dependencies macro")
-    endif()
-
-    if(NOT DEFINED arg_TLIST OR NOT DEFINED ${arg_TLIST})
-        message(FATAL_ERROR "TLIST is a required parameter for the blt_find_target_dependencies macro")
-    endif()
-
-    set(_depends_on "")
-
-    # Get dependencies if BLT registered library
-    string(TOUPPER ${arg_TARGET} _target_upper)
-    if(_BLT_${_target_upper}_IS_REGISTERED_LIBRARY)
-        list(APPEND _depends_on "${_BLT_${_target_upper}_DEPENDS_ON}")
-    endif()
-
-    # Get dependencies if CMake target
-    if(TARGET ${arg_TARGET})
-        get_property(_target_type TARGET ${arg_TARGET} PROPERTY TYPE)
-        if(NOT "${_target_type}" STREQUAL "INTERFACE_LIBRARY")
-            get_target_property(_propval ${arg_TARGET} LINK_LIBRARIES)
-            if(_propval)
-                list(APPEND _depends_on ${_propval})
-            endif()
-        endif()
-
-        # get interface link libraries
-        get_target_property(_propval ${arg_TARGET} INTERFACE_LINK_LIBRARIES)
-        if (_propval)
-            list(APPEND _depends_on ${_propval})
-        endif()
-    endif()
-
-    blt_list_remove_duplicates(TO _depends_on)
-    foreach(t ${_depends_on})
-        if (NOT "${t}" IN_LIST ${arg_TLIST})
-            list(APPEND ${arg_TLIST} ${t})
-            blt_find_target_dependencies(TARGET ${t} TLIST ${arg_TLIST})
-        endif()
-    endforeach()
-
-    unset(_depends_on)
-
-endmacro(blt_find_target_dependencies)

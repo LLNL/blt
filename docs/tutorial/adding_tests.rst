@@ -1,4 +1,4 @@
-.. # Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+.. # Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
 .. # 
 .. # SPDX-License-Identifier: (BSD-3-Clause)
@@ -88,7 +88,7 @@ Note that GoogleTest is initialized before ``MPI_Init()`` is called.
 Other GoogleTest features, such as *fixtures* and *mock* objects (gmock) may
 be used as well. 
 
-See the `GoogleTest Primer <https://github.com/google/googletest/blob/master/googletest/docs/Primer.md>`_ 
+See the `GoogleTest Primer <https://github.com/google/googletest/blob/main/docs/primer.md>`_ 
 for a discussion of GoogleTest concepts, how to use them, and a listing of 
 available assertion macros, etc.
 

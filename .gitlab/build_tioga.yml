@@ -27,16 +27,22 @@
 
 ####
 # Build jobs
-tioga-clang_14_0_0_hip:
+tioga-clang_18_0_0_hip:
   variables:
-    HOST_CONFIG: "clang@14.0.0_hip.cmake"
+    HOST_CONFIG: "clang@18.0.0_hip.cmake"
   extends: .src_build_on_tioga
 
 
 ####
 # HIP project tests
-tioga-clang_14.0.1_hip_config_test:
+tioga-clang_18.0.0_hip_config_test:
   variables:
     ENABLED_BLT_TESTS: "hip-config-test"
-    HOST_CONFIG: "clang@14.0.0_hip.cmake"
+    HOST_CONFIG: "clang@18.0.0_hip.cmake"
+  extends: [.run_project_integration_test_on_tioga]
+
+tioga-gcc_10.3.1_clang_17.0.0_hip_config_test:
+  variables:
+    ENABLED_BLT_TESTS: "hip-config-test"
+    HOST_CONFIG: "gcc@10.3.1_clang@17.0.0_hip.cmake"
   extends: [.run_project_integration_test_on_tioga]
