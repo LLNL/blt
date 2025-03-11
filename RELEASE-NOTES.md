@@ -9,6 +9,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.7.0] - Release date 2025-03-11
+
 ### Added
 - Added ``WORKING_DIRECTORY`` option to ``blt_add_test`` and ``blt_add_benchmark``.
 - Added `BLT_CXX_FILE_EXTS` variable (split out of `BLT_C_FILE_EXTS`) for use in modified `blt_split_source_list_by_language` macro.
@@ -353,7 +355,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.2...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.7.0...develop
+[Version 0.7.0]: https://github.com/LLNL/blt/compare/v0.6.2...v0.7.0
 [Version 0.6.2]: https://github.com/LLNL/blt/compare/v0.6.1...v0.6.2
 [Version 0.6.1]: https://github.com/LLNL/blt/compare/v0.6.0...v0.6.1
 [Version 0.6.0]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0
