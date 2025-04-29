@@ -31,6 +31,6 @@ endif()
 
 if(BUILD_GMOCK)
   add_subdirectory( googlemock )
-else()
+elseif(BUILD_GTEST)
   add_subdirectory( googletest )
 endif()
