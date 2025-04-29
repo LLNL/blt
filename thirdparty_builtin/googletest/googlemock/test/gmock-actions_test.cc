@@ -37,14 +37,18 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <tuple>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gmock/internal/gmock-port.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
+#include "gtest/internal/gtest-port.h"
 
 // Silence C4100 (unreferenced formal parameter) and C4503 (decorated name
 // length exceeded) for MSVC.
@@ -218,7 +222,8 @@ TEST(TypeTraits, IsInvocableRV) {
   // In C++17 and above, where it's guaranteed that functions can return
   // non-moveable objects, everything should work fine for non-moveable rsult
   // types too.
-#if defined(__cplusplus) && __cplusplus >= 201703L
+#if defined(GTEST_INTERNAL_CPLUSPLUS_LANG) && \
+    GTEST_INTERNAL_CPLUSPLUS_LANG >= 201703L
   {
     struct NonMoveable {
       NonMoveable() = default;
@@ -436,8 +441,8 @@ TEST(DefaultValueDeathTest, GetReturnsBuiltInDefaultValueWhenUnset) {
 
   EXPECT_EQ(0, DefaultValue<int>::Get());
 
-  EXPECT_DEATH_IF_SUPPORTED({ DefaultValue<MyNonDefaultConstructible>::Get(); },
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      { DefaultValue<MyNonDefaultConstructible>::Get(); }, "");
 }
 
 TEST(DefaultValueTest, GetWorksForMoveOnlyIfSet) {
@@ -500,8 +505,8 @@ TEST(DefaultValueOfReferenceDeathTest, GetReturnsBuiltInDefaultValueWhenUnset) {
   EXPECT_FALSE(DefaultValue<MyNonDefaultConstructible&>::IsSet());
 
   EXPECT_DEATH_IF_SUPPORTED({ DefaultValue<int&>::Get(); }, "");
-  EXPECT_DEATH_IF_SUPPORTED({ DefaultValue<MyNonDefaultConstructible>::Get(); },
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      { DefaultValue<MyNonDefaultConstructible>::Get(); }, "");
 }
 
 // Tests that ActionInterface can be implemented by defining the
@@ -982,7 +987,7 @@ TEST(ReturnRoundRobinTest, WorksForVector) {
 
 class MockClass {
  public:
-  MockClass() {}
+  MockClass() = default;
 
   MOCK_METHOD1(IntFunc, int(bool flag));  // NOLINT
   MOCK_METHOD0(Foo, MyNonDefaultConstructible());
@@ -1469,6 +1474,54 @@ TEST(DoAll, SupportsTypeErasedActions) {
         .WillOnce(DoAll(initial_action, initial_action, FinalAction{}));
 
     EXPECT_EQ(17, mock.AsStdFunction()());
+  }
+}
+
+// A DoAll action should be convertible to a OnceAction, even when its component
+// sub-actions are user-provided types that define only an Action conversion
+// operator. If they supposed being called more than once then they also support
+// being called at most once.
+TEST(DoAll, ConvertibleToOnceActionWithUserProvidedActionConversion) {
+  // Simplest case: only one sub-action.
+  struct CustomFinal final {
+    operator Action<int()>() {  // NOLINT
+      return Return(17);
+    }
+
+    operator Action<int(int, char)>() {  // NOLINT
+      return Return(19);
+    }
+  };
+
+  {
+    OnceAction<int()> action = DoAll(CustomFinal{});
+    EXPECT_EQ(17, std::move(action).Call());
+  }
+
+  {
+    OnceAction<int(int, char)> action = DoAll(CustomFinal{});
+    EXPECT_EQ(19, std::move(action).Call(0, 0));
+  }
+
+  // It should also work with multiple sub-actions.
+  struct CustomInitial final {
+    operator Action<void()>() {  // NOLINT
+      return [] {};
+    }
+
+    operator Action<void(int, char)>() {  // NOLINT
+      return [] {};
+    }
+  };
+
+  {
+    OnceAction<int()> action = DoAll(CustomInitial{}, CustomFinal{});
+    EXPECT_EQ(17, std::move(action).Call());
+  }
+
+  {
+    OnceAction<int(int, char)> action = DoAll(CustomInitial{}, CustomFinal{});
+    EXPECT_EQ(19, std::move(action).Call(0, 0));
   }
 }
 

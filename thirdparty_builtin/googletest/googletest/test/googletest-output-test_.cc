@@ -35,6 +35,9 @@
 
 #include <stdlib.h>
 
+#include <algorithm>
+#include <string>
+
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 #include "src/gtest-internal-inl.h"
@@ -1003,6 +1006,12 @@ class TestSuiteThatFailsToSetUp : public testing::Test {
   static void SetUpTestSuite() { EXPECT_TRUE(false); }
 };
 TEST_F(TestSuiteThatFailsToSetUp, ShouldNotRun) { std::abort(); }
+
+class TestSuiteThatSkipsInSetUp : public testing::Test {
+ public:
+  static void SetUpTestSuite() { GTEST_SKIP() << "Skip entire test suite"; }
+};
+TEST_F(TestSuiteThatSkipsInSetUp, ShouldNotRun) { std::abort(); }
 
 // The main function.
 //

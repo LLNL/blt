@@ -40,6 +40,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -95,7 +96,7 @@ ExpectationBase::ExpectationBase(const char* a_file, int a_line,
       action_count_checked_(false) {}
 
 // Destructs an ExpectationBase object.
-ExpectationBase::~ExpectationBase() {}
+ExpectationBase::~ExpectationBase() = default;
 
 // Explicitly specifies the cardinality of this expectation.  Used by
 // the subclasses to implement the .Times() clause.
@@ -308,7 +309,7 @@ void ReportUninterestingCall(CallReaction reaction, const std::string& msg) {
 UntypedFunctionMockerBase::UntypedFunctionMockerBase()
     : mock_obj_(nullptr), name_("") {}
 
-UntypedFunctionMockerBase::~UntypedFunctionMockerBase() {}
+UntypedFunctionMockerBase::~UntypedFunctionMockerBase() = default;
 
 // Sets the mock object this mock method belongs to, and registers
 // this information in the global mock registry.  Will be called
@@ -489,6 +490,7 @@ class MockObjectRegistry {
   // failure, unless the user explicitly asked us to ignore it.
   ~MockObjectRegistry() {
     if (!GMOCK_FLAG_GET(catch_leaked_mocks)) return;
+    internal::MutexLock l(&internal::g_gmock_mutex);
 
     int leaked_count = 0;
     for (StateMap::const_iterator it = states_.begin(); it != states_.end();
@@ -529,7 +531,7 @@ class MockObjectRegistry {
 #ifdef GTEST_OS_QURT
       qurt_exception_raise_fatal();
 #else
-      _exit(1);  // We cannot call exit() as it is not reentrant and
+      _Exit(1);  // We cannot call exit() as it is not reentrant and
                  // may already have been called.
 #endif
     }
@@ -745,13 +747,13 @@ void Mock::ClearDefaultActionsLocked(void* mock_obj)
   // needed by VerifyAndClearExpectationsLocked().
 }
 
-Expectation::Expectation() {}
+Expectation::Expectation() = default;
 
 Expectation::Expectation(
     const std::shared_ptr<internal::ExpectationBase>& an_expectation_base)
     : expectation_base_(an_expectation_base) {}
 
-Expectation::~Expectation() {}
+Expectation::~Expectation() = default;
 
 // Adds an expectation to a sequence.
 void Sequence::AddExpectation(const Expectation& expectation) const {

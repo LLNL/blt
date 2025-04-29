@@ -42,9 +42,11 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <set>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -52,6 +54,19 @@
 
 #include "gtest/gtest-printers.h"
 #include "gtest/gtest.h"
+#include "gtest/internal/gtest-port.h"
+
+#ifdef GTEST_HAS_ABSL
+#include "absl/strings/str_format.h"
+#endif
+
+#if GTEST_INTERNAL_HAS_STD_SPAN
+#include <span>  // NOLINT
+#endif  // GTEST_INTERNAL_HAS_STD_SPAN
+
+#if GTEST_INTERNAL_HAS_COMPARE_LIB
+#include <compare>  // NOLINT
+#endif              // GTEST_INTERNAL_HAS_COMPARE_LIB
 
 // Some user-defined types for testing the universal value printer.
 
@@ -106,7 +121,7 @@ class UnprintableTemplateInGlobal {
 // A user-defined streamable type in the global namespace.
 class StreamableInGlobal {
  public:
-  virtual ~StreamableInGlobal() {}
+  virtual ~StreamableInGlobal() = default;
 };
 
 inline void operator<<(::std::ostream& os, const StreamableInGlobal& /* x */) {
@@ -116,6 +131,19 @@ inline void operator<<(::std::ostream& os, const StreamableInGlobal& /* x */) {
 void operator<<(::std::ostream& os, const StreamableInGlobal* /* x */) {
   os << "StreamableInGlobal*";
 }
+
+#ifdef GTEST_HAS_ABSL
+// A user-defined type with AbslStringify
+struct Point {
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const Point& p) {
+    absl::Format(&sink, "(%d, %d)", p.x, p.y);
+  }
+
+  int x = 10;
+  int y = 20;
+};
+#endif
 
 namespace foo {
 
@@ -214,7 +242,7 @@ class PathLike {
   using value_type = char;
   using const_iterator = iterator;
 
-  PathLike() {}
+  PathLike() = default;
 
   iterator begin() const { return iterator(); }
   iterator end() const { return iterator(); }
@@ -314,6 +342,11 @@ TEST(PrintEnumTest, EnumWithPrintTo) {
   EXPECT_EQ("kEWPT1", Print(kEWPT1));
   EXPECT_EQ("invalid", Print(static_cast<EnumWithPrintTo>(0)));
 }
+
+#ifdef GTEST_HAS_ABSL
+// Tests printing a class that defines AbslStringify
+TEST(PrintClassTest, AbslStringify) { EXPECT_EQ("(10, 20)", Print(Point())); }
+#endif
 
 // Tests printing a class implicitly convertible to BiggestInt.
 
@@ -747,7 +780,7 @@ AssertionResult HasPrefix(const StringType& str, const StringType& prefix) {
 
 struct Foo {
  public:
-  virtual ~Foo() {}
+  virtual ~Foo() = default;
   int MyMethod(char x) { return x + 1; }
   virtual char MyVirtualMethod(int /* n */) { return 'a'; }
 
@@ -1153,6 +1186,17 @@ TEST(PrintStlContainerTest, Vector) {
   v.push_back(1);
   v.push_back(2);
   EXPECT_EQ("{ 1, 2 }", Print(v));
+}
+
+TEST(PrintStlContainerTest, StdSpan) {
+#if GTEST_INTERNAL_HAS_STD_SPAN
+  int a[] = {3, 6, 5};
+  std::span<int> s = a;
+
+  EXPECT_EQ("{ 3, 6, 5 }", Print(s));
+#else
+  GTEST_SKIP() << "Does not have std::span.";
+#endif  // GTEST_INTERNAL_HAS_STD_SPAN
 }
 
 TEST(PrintStlContainerTest, LongSequence) {
@@ -1634,6 +1678,12 @@ TEST(PrintToStringTest, PrintReferenceToStreamableInGlobal) {
   EXPECT_STREQ("StreamableInGlobal", PrintToString(r).c_str());
 }
 
+#ifdef GTEST_HAS_ABSL
+TEST(PrintToStringTest, AbslStringify) {
+  EXPECT_PRINT_TO_STRING_(Point(), "(10, 20)");
+}
+#endif
+
 TEST(IsValidUTF8Test, IllFormedUTF8) {
   // The following test strings are ill-formed UTF-8 and are printed
   // as hex only (or ASCII, in case of ASCII bytes) because IsValidUTF8() is
@@ -1924,6 +1974,26 @@ TEST(PrintOneofTest, Basic) {
       PrintToString(Type(NonPrintable{})));
 }
 #endif  // GTEST_INTERNAL_HAS_VARIANT
+
+#if GTEST_INTERNAL_HAS_COMPARE_LIB
+TEST(PrintOrderingTest, Basic) {
+  EXPECT_EQ("(less)", PrintToString(std::strong_ordering::less));
+  EXPECT_EQ("(greater)", PrintToString(std::strong_ordering::greater));
+  // equal == equivalent for strong_ordering.
+  EXPECT_EQ("(equal)", PrintToString(std::strong_ordering::equivalent));
+  EXPECT_EQ("(equal)", PrintToString(std::strong_ordering::equal));
+
+  EXPECT_EQ("(less)", PrintToString(std::weak_ordering::less));
+  EXPECT_EQ("(greater)", PrintToString(std::weak_ordering::greater));
+  EXPECT_EQ("(equivalent)", PrintToString(std::weak_ordering::equivalent));
+
+  EXPECT_EQ("(less)", PrintToString(std::partial_ordering::less));
+  EXPECT_EQ("(greater)", PrintToString(std::partial_ordering::greater));
+  EXPECT_EQ("(equivalent)", PrintToString(std::partial_ordering::equivalent));
+  EXPECT_EQ("(unordered)", PrintToString(std::partial_ordering::unordered));
+}
+#endif
+
 namespace {
 class string_ref;
 
