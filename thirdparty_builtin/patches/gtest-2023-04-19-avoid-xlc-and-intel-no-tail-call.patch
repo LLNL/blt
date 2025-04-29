@@ -1,8 +1,8 @@
-diff --git a/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h b/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h
-index b00aa77..9182767 100644
---- a/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h
-+++ b/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h
-@@ -859,7 +859,10 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
+diff --git a/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h b/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h
+index e7524fe..013dbc3 100644
+--- a/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h
++++ b/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h
+@@ -895,7 +895,10 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
  #define GTEST_NO_INLINE_
  #endif
  
