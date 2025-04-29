@@ -139,13 +139,6 @@ if(GTEST_HAS_ABSL)
 endif()
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 set_target_properties(gtest_main PROPERTIES VERSION ${GOOGLETEST_VERSION})
-string(REPLACE ";" "$<SEMICOLON>" dirs "${gtest_build_include_dirs}")
-target_include_directories(gtest SYSTEM INTERFACE
-  "$<BUILD_INTERFACE:${dirs}>"
-  "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-target_include_directories(gtest_main SYSTEM INTERFACE
-  "$<BUILD_INTERFACE:${dirs}>"
-  "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 if(CMAKE_SYSTEM_NAME MATCHES "QNX" AND CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL 7.1)
   target_link_libraries(gtest PUBLIC regex)
 endif()
