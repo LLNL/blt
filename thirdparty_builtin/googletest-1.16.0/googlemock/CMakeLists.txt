@@ -36,7 +36,6 @@ endif()
 # as ${gmock_SOURCE_DIR} and to the root binary directory as
 # ${gmock_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
-cmake_minimum_required(VERSION 3.13)
 project(gmock VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
 
 if (COMMAND set_up_hermetic_build)
