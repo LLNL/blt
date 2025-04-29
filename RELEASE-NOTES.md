@@ -9,6 +9,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Changed
+- Updated GoogleTest to 1.16.0
+
 ## [Version 0.7.0] - Release date 2025-03-11
 
 ### Added
