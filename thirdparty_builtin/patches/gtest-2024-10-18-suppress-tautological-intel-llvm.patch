@@ -1,8 +1,8 @@
-diff --git a/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake b/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake
-index 6ddb794..0037804 100644
---- a/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake
-+++ b/thirdparty_builtin/googletest/googletest/cmake/internal_utils.cmake
-@@ -134,6 +134,8 @@ macro(config_compiler_and_linker)
+diff --git a/thirdparty_builtin/googletest-1.16.0/googletest/cmake/internal_utils.cmake b/thirdparty_builtin/googletest-1.16.0/googletest/cmake/internal_utils.cmake
+index 580ac1c..c01906a 100644
+--- a/thirdparty_builtin/googletest-1.16.0/googletest/cmake/internal_utils.cmake
++++ b/thirdparty_builtin/googletest-1.16.0/googletest/cmake/internal_utils.cmake
+@@ -136,6 +136,8 @@ macro(config_compiler_and_linker)
      set(cxx_no_exception_flags "+noeh -DGTEST_HAS_EXCEPTIONS=0")
      # RTTI can not be disabled in HP aCC compiler.
      set(cxx_no_rtti_flags "")
