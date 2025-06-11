@@ -53,7 +53,14 @@
 #include <cstdint>
 #include <iomanip>
 #include <limits>
+
+//For c++17 and greater, we see a deprecated warning around
+//the use of get_temporary_buffer in memory.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <memory>
+#pragma GCC diagnostic pop
+
 #include <ostream>
 #include <set>
 #include <sstream>
