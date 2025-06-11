@@ -56,10 +56,17 @@
 
 //For c++17 and greater, we see a deprecated warning around
 //the use of get_temporary_buffer in memory.h
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4996) // Disable deprecation warnings globally
+#include <memory>
+#pragma warning(pop)
+#elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <memory>
 #pragma GCC diagnostic pop
+#endif
 
 #include <ostream>
 #include <set>
