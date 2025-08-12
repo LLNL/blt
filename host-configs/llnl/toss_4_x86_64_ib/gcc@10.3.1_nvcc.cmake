@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 #------------------------------------------------------------------------------
-# Example host-config file for a cluster on a toss4 platform (e.g. quartz) at LLNL
+# Example host-config file for a cluster on a toss4 platform (e.g. dane) at LLNL
 #------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
