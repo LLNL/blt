@@ -110,6 +110,7 @@ message(STATUS "CUDA Implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIREC
 ############################################################
 # Check CUDA language standard is supported
 ############################################################
+# Note: change to use CUDAToolkit_VERSION after moving away from find_package(CUDA)
 if(CMAKE_CUDA_STANDARD STREQUAL "17")
     if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
         message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++17.")
