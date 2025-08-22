@@ -17,9 +17,9 @@ if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     endif()
 endif()
 
-# CUDA_HOST_COMPILER was changed in 3.9.0 to CMAKE_CUDA_HOST_COMPILER and
-# needs to be set prior to enabling the CUDA language
+# CMAKE_CUDA_HOST_COMPILER needs to be set prior to enabling the CUDA language
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+
 if ( NOT CMAKE_CUDA_HOST_COMPILER )
     if("CUDA" IN_LIST _languages )
         message( FATAL_ERROR
