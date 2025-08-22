@@ -67,18 +67,6 @@ if (NOT BLT_ENABLE_CLANG_CUDA)
     enable_language(CUDA)
 endif()
 
-if(CMAKE_CUDA_STANDARD STREQUAL "17")
-    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
-        message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++17.")
-    endif()
-endif()
-
-if(CMAKE_CUDA_STANDARD STREQUAL "20")
-    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
-        message(FATAL_ERROR "CMake's CUDA_STANDARD does not support C++20.")
-    endif()
-endif()
-
 ############################################################
 # Map Legacy FindCUDA variables to native cmake variables
 ############################################################
@@ -97,19 +85,42 @@ if (CUDA_LINK_WITH_NVCC)
     set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "touch <TARGET>.cu ; ${CMAKE_CUDA_COMPILER} <CMAKE_CUDA_LINK_FLAGS> -std=c++${CMAKE_CUDA_STANDARD} -dc <TARGET>.cu -o <TARGET>")
 endif()
 
+############################################################
+# Find CUDA
+############################################################
 # If CUDA_TOOLKIT_ROOT_DIR is not set, it should be set by find_package(CUDA)
 find_package(CUDA REQUIRED)
-
 blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
 
+############################################################
+# Check CUDA language standard is supported
+############################################################
+if(CMAKE_CUDA_STANDARD STREQUAL "17")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++17.")
+    endif()
+endif()
+
+if(CMAKE_CUDA_STANDARD STREQUAL "20")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++20.")
+    endif()
+endif()
+
+############################################################
 # Append the path to the NVIDIA SDK to the link flags
+############################################################
 if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
     list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
 endif()
+
 if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib}" )
     list(APPEND CMAKE_CUDA_LINK_FLAGS "-L${CUDA_TOOLKIT_ROOT_DIR}/lib" )
 endif()
 
+############################################################
+# Output information about CUDA
+############################################################
 message(STATUS "CUDA Version:                   ${CUDA_VERSION_STRING}")
 message(STATUS "CUDA Toolkit Root Dir:          ${CUDA_TOOLKIT_ROOT_DIR}")
 message(STATUS "CUDA Compiler:                  ${CMAKE_CUDA_COMPILER}")
