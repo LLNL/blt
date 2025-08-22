@@ -11,44 +11,27 @@
 if (DEFINED CMAKE_SKIP_BUILD_RPATH AND DEFINED CUDA_LINK_WITH_NVCC)
     if (NOT CMAKE_SKIP_BUILD_RPATH AND CUDA_LINK_WITH_NVCC)
         message( FATAL_ERROR
-                         "CMAKE_SKIP_BUILD_RPATH (FALSE) and CUDA_LINK_WITH_NVCC (TRUE) "
-                         "are incompatible when linking explicit shared libraries. Set "
-                         "CMAKE_SKIP_BUILD_RPATH to TRUE.")
+                 "CMAKE_SKIP_BUILD_RPATH (FALSE) and CUDA_LINK_WITH_NVCC (TRUE) "
+                 "are incompatible when linking explicit shared libraries. Set "
+                 "CMAKE_SKIP_BUILD_RPATH to TRUE.")
     endif()
 endif()
 
 # CUDA_HOST_COMPILER was changed in 3.9.0 to CMAKE_CUDA_HOST_COMPILER and
 # needs to be set prior to enabling the CUDA language
 get_property(_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
-if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
-    if ( NOT CMAKE_CUDA_HOST_COMPILER )
-        if("CUDA" IN_LIST _languages )
-            message( FATAL_ERROR 
+if ( NOT CMAKE_CUDA_HOST_COMPILER )
+    if("CUDA" IN_LIST _languages )
+        message( FATAL_ERROR
                  "CUDA language enabled prior to setting CMAKE_CUDA_HOST_COMPILER. "
                  "Please set CMAKE_CUDA_HOST_COMPILER prior to "
                  "ENABLE_LANGUAGE(CUDA) or PROJECT(.. LANGUAGES CUDA)")
-        endif()    
-  
-        if ( CMAKE_CXX_COMPILER )
-            set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
-        else()
-            set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
-        endif()
     endif()
-else()
-   if (NOT CUDA_HOST_COMPILER)
-        if("CUDA" IN_LIST _languages )
-            message( FATAL_ERROR 
-                 "CUDA language enabled prior to setting CUDA_HOST_COMPILER. "
-                 "Please set CUDA_HOST_COMPILER prior to "
-                 "ENABLE_LANGUAGE(CUDA) or PROJECT(.. LANGUAGES CUDA)")
-        endif()    
 
-        if ( CMAKE_CXX_COMPILER )
-            set(CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
-        else()
-            set(CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
-        endif()
+    if ( CMAKE_CXX_COMPILER )
+        set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
+    else()
+        set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
     endif()
 endif()
 
@@ -93,21 +76,6 @@ find_package(CUDA REQUIRED)
 blt_assert_exists( DIRECTORIES ${CUDA_TOOLKIT_ROOT_DIR} )
 
 ############################################################
-# Check CUDA language standard is supported
-############################################################
-if(CMAKE_CUDA_STANDARD STREQUAL "17")
-    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
-        message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++17.")
-    endif()
-endif()
-
-if(CMAKE_CUDA_STANDARD STREQUAL "20")
-    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
-        message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++20.")
-    endif()
-endif()
-
-############################################################
 # Append the path to the NVIDIA SDK to the link flags
 ############################################################
 if ( IS_DIRECTORY "${CUDA_TOOLKIT_ROOT_DIR}/lib64" )
@@ -124,10 +92,10 @@ endif()
 message(STATUS "CUDA Version:                   ${CUDA_VERSION_STRING}")
 message(STATUS "CUDA Toolkit Root Dir:          ${CUDA_TOOLKIT_ROOT_DIR}")
 message(STATUS "CUDA Compiler:                  ${CMAKE_CUDA_COMPILER}")
-if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0" )
-    message(STATUS "CUDA Host Compiler:             ${CMAKE_CUDA_HOST_COMPILER}")
-else()
-    message(STATUS "CUDA Host Compiler:             ${CUDA_HOST_COMPILER}")
+message(STATUS "CUDA Host Compiler:             ${CMAKE_CUDA_HOST_COMPILER}")
+message(STATUS "CUDA Standard:                  ${CMAKE_CUDA_STANDARD}")
+if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.18" )
+message(STATUS "CUDA Architectures:             ${CMAKE_CUDA_ARCHITECTURES}")
 endif()
 message(STATUS "CUDA Include Path:              ${CUDA_INCLUDE_DIRS}")
 message(STATUS "CUDA Libraries:                 ${CUDA_LIBRARIES}")
@@ -138,6 +106,21 @@ message(STATUS "CUDA Separable Compilation:     ${CMAKE_CUDA_SEPARABLE_COMPILATI
 message(STATUS "CUDA Link with NVCC:            ${CUDA_LINK_WITH_NVCC}")
 message(STATUS "CUDA Implicit Link Libraries:   ${CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES}")
 message(STATUS "CUDA Implicit Link Directories: ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES}")
+
+############################################################
+# Check CUDA language standard is supported
+############################################################
+if(CMAKE_CUDA_STANDARD STREQUAL "17")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_17" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++17.")
+    endif()
+endif()
+
+if(CMAKE_CUDA_STANDARD STREQUAL "20")
+    if(NOT DEFINED CMAKE_CUDA_COMPILE_FEATURES OR (NOT "cuda_std_20" IN_LIST CMAKE_CUDA_COMPILE_FEATURES))
+        message(FATAL_ERROR "CUDA ${CUDA_VERSION_STRING} does not support C++20.")
+    endif()
+endif()
 
 # don't propagate host flags - too easy to break stuff!
 set (CUDA_PROPAGATE_HOST_FLAGS Off)
