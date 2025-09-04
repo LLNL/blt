@@ -1,45 +1,37 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6af41437..b5ae2b0d 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest-1.16.0/CMakeLists.txt b/thirdparty_builtin/googletest-1.16.0/CMakeLists.txt
+index b97d290..ca4aceb 100644
+--- a/thirdparty_builtin/googletest-1.16.0/CMakeLists.txt
++++ b/thirdparty_builtin/googletest-1.16.0/CMakeLists.txt
 @@ -1,8 +1,6 @@
  # Note: CMake support is community-based. The maintainers do not use CMake
  # internally.
  
--cmake_minimum_required(VERSION 3.5)
+-cmake_minimum_required(VERSION 3.13)
 -
- if (POLICY CMP0048)
-   cmake_policy(SET CMP0048 NEW)
- endif (POLICY CMP0048)
-@@ -34,6 +32,6 @@ option(GTEST_HAS_ABSL "Use Abseil and RE2. Requires Abseil and RE2 to be separat
+ project(googletest-distribution)
+ set(GOOGLETEST_VERSION 1.16.0)
  
- if(BUILD_GMOCK)
-   add_subdirectory( googlemock )
--else()
-+elseif(BUILD_GTEST)
-   add_subdirectory( googletest )
- endif()
-diff --git a/googlemock/CMakeLists.txt b/googlemock/CMakeLists.txt
-index 5c1f0daf..2e6d093c 100644
---- a/googlemock/CMakeLists.txt
-+++ b/googlemock/CMakeLists.txt
+diff --git a/thirdparty_builtin/googletest-1.16.0/googlemock/CMakeLists.txt b/thirdparty_builtin/googletest-1.16.0/googlemock/CMakeLists.txt
+index 99b2411..3be7b72 100644
+--- a/thirdparty_builtin/googletest-1.16.0/googlemock/CMakeLists.txt
++++ b/thirdparty_builtin/googletest-1.16.0/googlemock/CMakeLists.txt
 @@ -36,7 +36,6 @@ endif()
  # as ${gmock_SOURCE_DIR} and to the root binary directory as
  # ${gmock_BINARY_DIR}.
  # Language "C" is required for find_package(Threads).
--cmake_minimum_required(VERSION 3.5)
- cmake_policy(SET CMP0048 NEW)
+-cmake_minimum_required(VERSION 3.13)
  project(gmock VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
  
-diff --git a/googletest/CMakeLists.txt b/googletest/CMakeLists.txt
-index 95bfa442..0646652d 100644
---- a/googletest/CMakeLists.txt
-+++ b/googletest/CMakeLists.txt
+ if (COMMAND set_up_hermetic_build)
+diff --git a/thirdparty_builtin/googletest-1.16.0/googletest/CMakeLists.txt b/thirdparty_builtin/googletest-1.16.0/googletest/CMakeLists.txt
+index dce6a7c..5f2d667 100644
+--- a/thirdparty_builtin/googletest-1.16.0/googletest/CMakeLists.txt
++++ b/thirdparty_builtin/googletest-1.16.0/googletest/CMakeLists.txt
 @@ -46,7 +46,6 @@ endif()
  
- # Project version:
+ # Project version.
  
--cmake_minimum_required(VERSION 3.5)
- cmake_policy(SET CMP0048 NEW)
+-cmake_minimum_required(VERSION 3.13)
  project(gtest VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
  
+ if (COMMAND set_up_hermetic_build)

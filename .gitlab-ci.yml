@@ -46,7 +46,7 @@ stages:
 # This is where jobs are included
 include:
   - local: .gitlab/build_lassen.yml
-  - local: .gitlab/build_ruby.yml
+  - local: .gitlab/build_dane.yml
   - local: .gitlab/build_tioga.yml
   # ID token requirement for Gitlab 17.0+
   - project: 'lc-templates/id_tokens'

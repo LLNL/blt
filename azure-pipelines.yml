@@ -10,7 +10,7 @@ variables:
   # Use the 'axom/tpls' images because they contain mpi and fortran
   GCC11_IMAGENAME: 'axom/tpls:gcc-11_02-02-23_01h-47m'
   CLANG10_IMAGENAME: 'axom/tpls:clang-10_02-02-23_01h-47m'
-  VM_ImageName: 'ubuntu-20.04'
+  VM_ImageName: 'ubuntu-22.04'
 
 strategy:
   matrix:

@@ -9,6 +9,12 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+## [Version 0.7.1] - Release date 2025-09-04
+
+### Changed
+- Updated GoogleTest to 1.16.0
+- Improved CMake information output for CUDA builds
+
 ## [Version 0.7.0] - Release date 2025-03-11
 
 ### Added
@@ -355,7 +361,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.7.0...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.7.1...develop
+[Version 0.7.1]: https://github.com/LLNL/blt/compare/v0.7.0...v0.7.1
 [Version 0.7.0]: https://github.com/LLNL/blt/compare/v0.6.2...v0.7.0
 [Version 0.6.2]: https://github.com/LLNL/blt/compare/v0.6.1...v0.6.2
 [Version 0.6.1]: https://github.com/LLNL/blt/compare/v0.6.0...v0.6.1
