@@ -65,7 +65,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   Also adds a corresponding `ENABLE_CLANGAPPLYREPLACEMENTS` CMake option.
   Note that the `clang_tidy_style` target is not added to the `style` target and must be run separately.
 - Added the `blt_install_tpl_setups` macro, which installs files to setup and create
-  targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to 
+  targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to
   replace `blt_export_tpl_targets` as the preferred way to setup third-party libraries with BLT.
 - Added `blt::` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
   These targets still exist but but will be deprecated in a future release. It is recommended that you
@@ -163,7 +163,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - XL: Use compiler flag `-std=c++14` instead of `-std=c++1y` when `BLT_CXX_STD` is set to `c++14`
 
 ### Fixed
-- Simpified the clang-format version regex that was causing hangs on some version strings.
+- Simplified the clang-format version regex that was causing hangs on some version strings.
 
 ## [Version 0.4.0] - Release date 2021-04-09
 
