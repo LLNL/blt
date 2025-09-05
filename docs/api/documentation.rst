@@ -3,7 +3,7 @@
 .. #
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
-Documenation Macros
+Documentation Macros
 ===================
 
 .. _blt_add_doxygen_target:
