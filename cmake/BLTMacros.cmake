@@ -149,8 +149,8 @@ endmacro(blt_register_library)
 macro(blt_add_library)
 
     set(options)
-    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR SHARED OBJECT CLEAR_PREFIX FOLDER)
-    set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON)
+    set(singleValueArgs NAME OUTPUT_NAME OUTPUT_DIR SHARED OBJECT CLEAR_PREFIX FOLDER EARLY_RDC EARLY_RDC_SUFFIX)
+    set(multiValueArgs SOURCES HEADERS INCLUDES DEFINES DEPENDS_ON EARLY_RDC_SOURCES)
 
     # parse the arguments
     cmake_parse_arguments(arg
@@ -175,6 +175,15 @@ macro(blt_add_library)
         endif()
     endif()
 
+    # Early RDC defaults
+    if(NOT DEFINED arg_EARLY_RDC_SUFFIX)
+        if(DEFINED BLT_EARLY_RDC_SUFFIX)
+            set(arg_EARLY_RDC_SUFFIX "${BLT_EARLY_RDC_SUFFIX}")
+        else()
+            set(arg_EARLY_RDC_SUFFIX "_earlyrdc")
+        endif()
+    endif()
+
     if ( arg_SOURCES )
         # Determine type of library to build. STATIC by default and OBJECT takes
         # precedence over global BUILD_SHARED_LIBS variable.
@@ -196,7 +205,29 @@ macro(blt_add_library)
             set(_lib_type "STATIC")
         endif()
 
-        add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
+        # Partition sources if EARLY_RDC is enabled (HIP-only)
+        set(_normal_sources ${arg_SOURCES})
+        set(_erdc_sources)
+        if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) AND arg_EARLY_RDC_SOURCES )
+            # Exclude EARLY_RDC_SOURCES from normal sources
+            foreach(_s ${arg_EARLY_RDC_SOURCES})
+                list(REMOVE_ITEM _normal_sources ${_s})
+                list(APPEND _erdc_sources ${_s})
+            endforeach()
+        endif()
+
+        # Create base target: if no normal sources remain, use INTERFACE to carry usage requirements
+        set(_base_is_interface FALSE)
+        if(_normal_sources)
+            add_library( ${arg_NAME} ${_lib_type} ${_normal_sources} ${arg_HEADERS} )
+        else()
+            set(_base_is_interface TRUE)
+            if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
+                add_library( ${arg_NAME} INTERFACE ${arg_HEADERS} )
+            else()
+                add_library( ${arg_NAME} INTERFACE )
+            endif()
+        endif()
 
         if (BLT_ENABLE_CUDA AND NOT BLT_ENABLE_CLANG_CUDA)
             blt_setup_cuda_target(
@@ -205,12 +236,21 @@ macro(blt_add_library)
                 DEPENDS_ON   ${arg_DEPENDS_ON}
                 LIBRARY_TYPE ${_lib_type})
         endif()
-
+        
         if(BLT_ENABLE_HIP)
-            blt_setup_hip_target(
-                NAME         ${arg_NAME}
-                SOURCES      ${arg_SOURCES}
-                DEPENDS_ON   ${arg_DEPENDS_ON})
+            # Only run HIP setup when there are normal sources to process.
+            if(_normal_sources)
+                blt_setup_hip_target(
+                    NAME         ${arg_NAME}
+                    SOURCES      ${_normal_sources}
+                    DEPENDS_ON   ${arg_DEPENDS_ON})
+            else()
+                if(DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
+                    message(STATUS "[BLT][HIP] Skipping blt_setup_hip_target for ${arg_NAME}: all sources assigned to EARLY_RDC_SOURCES")
+                else()
+                    message(STATUS "[BLT][HIP] Skipping blt_setup_hip_target for ${arg_NAME}: no non-RDC HIP sources to configure")
+                endif()
+            endif()
         endif()
     else()
         #
@@ -245,8 +285,7 @@ macro(blt_add_library)
                       OBJECT     ${arg_OBJECT})
 
     if ( arg_INCLUDES )
-        if (NOT arg_SOURCES )
-            # Header only
+        if (_base_is_interface)
             target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
         else()
             target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
@@ -254,7 +293,11 @@ macro(blt_add_library)
     endif()
 
     if ( arg_DEFINES )
-        target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+        if (_base_is_interface)
+            target_compile_definitions(${arg_NAME} INTERFACE ${arg_DEFINES})
+        else()
+            target_compile_definitions(${arg_NAME} PUBLIC ${arg_DEFINES})
+        endif()
     endif()
 
     if ( arg_OUTPUT_DIR )
@@ -277,10 +320,19 @@ macro(blt_add_library)
         blt_set_target_folder(TARGET ${arg_NAME} FOLDER "${arg_FOLDER}")
     endif()
 
-    if ( arg_SOURCES )
+    if ( arg_SOURCES AND NOT _base_is_interface )
         # Don't clean header-only libraries because you would have to handle
         # the white-list of properties that are allowed
         blt_clean_target(TARGET ${arg_NAME})
+    endif()
+
+    # Create early RDC archive and imported target if requested
+    if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) AND _erdc_sources )
+        blt_setup_hip_early_rdc_target(
+            NAME        ${arg_NAME}
+            RDC_SOURCES ${_erdc_sources}
+            DEPENDS_ON  ${arg_DEPENDS_ON}
+            SUFFIX      ${arg_EARLY_RDC_SUFFIX})
     endif()
 
 endmacro(blt_add_library)

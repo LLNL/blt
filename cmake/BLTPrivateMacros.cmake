@@ -399,6 +399,111 @@ macro(blt_setup_hip_target)
 endmacro(blt_setup_hip_target)
 
 
+##------------------------------------------------------------------------------
+## blt_setup_hip_early_rdc_target(NAME        <base target name>
+##                                 RDC_SOURCES <hip sources requiring rdc>
+##                                 DEPENDS_ON  <deps list>
+##                                 SUFFIX      <earlyrdc suffix, default _earlyrdc>)
+##
+## Internal helper: builds an object lib of RDC sources with -fgpu-rdc, creates
+## an input archive, runs erdc.sh, renames libERDC.a to <NAME><SUFFIX>.a, and
+## exposes an IMPORTED STATIC target <NAME><SUFFIX>. Also links it transitively
+## from <NAME> via INTERFACE.
+##------------------------------------------------------------------------------
+macro(blt_setup_hip_early_rdc_target)
+
+    set(options)
+    set(singleValueArgs NAME SUFFIX)
+    set(multiValueArgs RDC_SOURCES DEPENDS_ON)
+
+    cmake_parse_arguments(arg "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT DEFINED arg_NAME)
+        message(FATAL_ERROR "blt_setup_hip_early_rdc_target requires NAME")
+    endif()
+    if(NOT DEFINED arg_RDC_SOURCES)
+        message(FATAL_ERROR "blt_setup_hip_early_rdc_target requires RDC_SOURCES")
+    endif()
+
+    if(NOT DEFINED arg_SUFFIX)
+        if(DEFINED BLT_EARLY_RDC_SUFFIX)
+            set(arg_SUFFIX "${BLT_EARLY_RDC_SUFFIX}")
+        else()
+            set(arg_SUFFIX "_earlyrdc")
+        endif()
+    endif()
+
+    # Create object library with RDC flags and HIP setup
+    # Use a stable, prefixed object target name to avoid accidental duplication
+    # if NAME already contains an "erdc" suffix.
+    set(_erdc_obj_target erdc_${arg_NAME}_objs)
+    add_library(${_erdc_obj_target} OBJECT ${arg_RDC_SOURCES})
+    # Inherit usage requirements (includes/defs/options) from base target for correct compilation
+    blt_inherit_target_info(TO ${_erdc_obj_target} FROM ${arg_NAME} OBJECT TRUE)
+    target_compile_options(${_erdc_obj_target} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
+    blt_setup_hip_target(NAME ${_erdc_obj_target} SOURCES ${arg_RDC_SOURCES} DEPENDS_ON ${arg_DEPENDS_ON})
+
+    # Determine ROCm path
+    set(_erdc_rocm_path "$ENV{ROCM_PATH}")
+    if(NOT _erdc_rocm_path)
+        if(DEFINED CMAKE_HIP_COMPILER)
+            get_filename_component(_hipcc_dir "${CMAKE_HIP_COMPILER}" DIRECTORY)
+            get_filename_component(_erdc_rocm_path "${_hipcc_dir}/.." ABSOLUTE)
+        endif()
+    endif()
+
+    # ARCH_FLAGS from BLT or AMDGPU_TARGETS
+    if(DEFINED BLT_HIP_ARCH_FLAGS)
+        set(_erdc_arch_flags "${BLT_HIP_ARCH_FLAGS}")
+    elseif(DEFINED AMDGPU_TARGETS)
+        set(_erdc_arch_flags "")
+        foreach(_t ${AMDGPU_TARGETS})
+            set(_erdc_arch_flags "${_erdc_arch_flags} --offload-arch=${_t}")
+        endforeach()
+    else()
+        set(_erdc_arch_flags "")
+    endif()
+
+    # Paths
+    set(_erdc_build_dir "${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}_erdc")
+    file(MAKE_DIRECTORY "${_erdc_build_dir}")
+    set(_erdc_input "${_erdc_build_dir}/${arg_NAME}_erdc_input.a")
+    set(_erdc_output "${_erdc_build_dir}/${arg_NAME}${arg_SUFFIX}.a")
+
+    add_custom_command(
+        OUTPUT ${_erdc_input}
+        COMMAND ${CMAKE_COMMAND} -E echo "Archiving RDC objects for ${arg_NAME}"
+        COMMAND ${CMAKE_COMMAND} -E rm -f ${_erdc_input}
+        COMMAND ${CMAKE_AR} cr ${_erdc_input} $<TARGET_OBJECTS:${_erdc_obj_target}>
+        DEPENDS ${_erdc_obj_target}
+        COMMENT "Create RDC input archive for ${arg_NAME}"
+    )
+
+    add_custom_command(
+        OUTPUT ${_erdc_output}
+        COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${_erdc_rocm_path} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}
+        COMMAND ${CMAKE_COMMAND} -E rename libERDC.a ${_erdc_output}
+        DEPENDS ${_erdc_input}
+        WORKING_DIRECTORY ${_erdc_build_dir}
+        COMMENT "EARLY RDC: process ${_erdc_input} into ${_erdc_output}"
+    )
+
+    add_custom_target(${arg_NAME}_earlyrdc_build DEPENDS ${_erdc_output})
+
+    add_library(${arg_NAME}${arg_SUFFIX} STATIC IMPORTED)
+    set_target_properties(${arg_NAME}${arg_SUFFIX} PROPERTIES IMPORTED_LOCATION ${_erdc_output})
+    add_dependencies(${arg_NAME}${arg_SUFFIX} ${arg_NAME}_earlyrdc_build)
+
+    # Propagate to base target consumers
+    target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX})
+
+    # Ensure the early RDC archive is built when the base target is part of a build
+    # Do not create cyclic dependencies with object libraries; instead depend on the
+    # earlyrdc build at the archive consumer level.
+
+endmacro(blt_setup_hip_early_rdc_target)
+
+
 ##-----------------------------------------------------------------------------
 ## blt_make_file_ext_regex( EXTENSIONS   [ext1 [ext2 ...]]
 ##                          OUTPUT_REGEX <regex variable name>)
