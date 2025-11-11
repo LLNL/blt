@@ -440,6 +440,8 @@ macro(blt_setup_hip_early_rdc_target)
     add_library(${_erdc_obj_target} OBJECT ${arg_RDC_SOURCES})
     # Inherit usage requirements (includes/defs/options) from base target for correct compilation
     blt_inherit_target_info(TO ${_erdc_obj_target} FROM ${arg_NAME} OBJECT TRUE)
+    # Also link the base target to pull in transitive usage requirements from its dependencies
+    target_link_libraries(${_erdc_obj_target} PUBLIC ${arg_NAME})
     target_compile_options(${_erdc_obj_target} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
     blt_setup_hip_target(NAME ${_erdc_obj_target} SOURCES ${arg_RDC_SOURCES} DEPENDS_ON ${arg_DEPENDS_ON})
 
