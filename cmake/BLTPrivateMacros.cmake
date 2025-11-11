@@ -432,12 +432,14 @@ macro(blt_setup_hip_early_rdc_target)
             set(arg_SUFFIX "_earlyrdc")
         endif()
     endif()
+    message(STATUS "[BLT] Configuring HIP early RDC for '${arg_NAME}' with suffix '${arg_SUFFIX}'")
 
     # Create object library with RDC flags and HIP setup
     # Use a stable, prefixed object target name to avoid accidental duplication
     # if NAME already contains an "erdc" suffix.
     set(_erdc_obj_target erdc_${arg_NAME}_objs)
     add_library(${_erdc_obj_target} OBJECT ${arg_RDC_SOURCES})
+    message(STATUS "[BLT] Created RDC object library '${_erdc_obj_target}'")
     # Inherit usage requirements (includes/defs/options) from base target for correct compilation
     blt_inherit_target_info(TO ${_erdc_obj_target} FROM ${arg_NAME} OBJECT TRUE)
     # Also link the base target to pull in transitive usage requirements from its dependencies
@@ -453,6 +455,7 @@ macro(blt_setup_hip_early_rdc_target)
             get_filename_component(_erdc_rocm_path "${_hipcc_dir}/.." ABSOLUTE)
         endif()
     endif()
+    message(STATUS "[BLT] ROCM_PATH='${_erdc_rocm_path}'")
 
     # ARCH_FLAGS from BLT or AMDGPU_TARGETS
     if(DEFINED BLT_HIP_ARCH_FLAGS)
@@ -465,12 +468,15 @@ macro(blt_setup_hip_early_rdc_target)
     else()
         set(_erdc_arch_flags "")
     endif()
+    message(STATUS "[BLT] HIP arch flags='${_erdc_arch_flags}'")
 
     # Paths
     set(_erdc_build_dir "${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}_erdc")
     file(MAKE_DIRECTORY "${_erdc_build_dir}")
     set(_erdc_input "${_erdc_build_dir}/${arg_NAME}_erdc_input.a")
-    set(_erdc_output "${_erdc_build_dir}/${arg_NAME}${arg_SUFFIX}.a")
+    # We'll generate a single uber object and build a real static library target from it
+    set(_erdc_uber_obj "${_erdc_build_dir}/uber_no_cob_sections.o")
+    message(STATUS "[BLT] Early RDC build dir='${_erdc_build_dir}' input='${_erdc_input}' uber_obj='${_erdc_uber_obj}'")
 
     add_custom_command(
         OUTPUT ${_erdc_input}
@@ -482,27 +488,28 @@ macro(blt_setup_hip_early_rdc_target)
     )
 
     add_custom_command(
-        OUTPUT ${_erdc_output}
+        OUTPUT ${_erdc_uber_obj}
         COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${_erdc_rocm_path} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}
-        COMMAND ${CMAKE_COMMAND} -E rename libERDC.a ${_erdc_output}
+        COMMAND ${CMAKE_COMMAND} -E echo "Extracting uber object from libERDC.a"
+        COMMAND ${_erdc_rocm_path}/llvm/bin/llvm-ar x libERDC.a
         DEPENDS ${_erdc_input}
         WORKING_DIRECTORY ${_erdc_build_dir}
-        COMMENT "EARLY RDC: process ${_erdc_input} into ${_erdc_output}"
+        COMMENT "EARLY RDC: generate uber object for ${arg_NAME}"
     )
 
-    add_custom_target(${arg_NAME}_earlyrdc_build DEPENDS ${_erdc_output})
-
-    add_library(${arg_NAME}${arg_SUFFIX} STATIC IMPORTED)
-    set_target_properties(${arg_NAME}${arg_SUFFIX} PROPERTIES IMPORTED_LOCATION ${_erdc_output})
-    add_dependencies(${arg_NAME}${arg_SUFFIX} ${arg_NAME}_earlyrdc_build)
+    # Create a real static library target from the generated uber object
+    add_library(${arg_NAME}${arg_SUFFIX} STATIC ${_erdc_uber_obj})
+    # Help CMake determine the correct link language for the static archive
+    set_target_properties(${arg_NAME}${arg_SUFFIX} PROPERTIES LINKER_LANGUAGE CXX)
+    message(STATUS "[BLT] Created static target '${arg_NAME}${arg_SUFFIX}' from '${_erdc_uber_obj}'")
 
     # Propagate to base target consumers
     target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX})
+    message(STATUS "[BLT] Linked '${arg_NAME}${arg_SUFFIX}' INTERFACE to '${arg_NAME}'")
 
     # Ensure the early RDC archive is built when the base target is part of a build
     # Do not create cyclic dependencies with object libraries; instead depend on the
     # earlyrdc build at the archive consumer level.
-
 endmacro(blt_setup_hip_early_rdc_target)
 
 
