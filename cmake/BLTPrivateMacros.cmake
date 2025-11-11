@@ -489,6 +489,7 @@ macro(blt_setup_hip_early_rdc_target)
 
     add_custom_command(
         OUTPUT ${_erdc_uber_obj}
+        COMMAND ${CMAKE_COMMAND} -E echo "Calling erdc.sh script"
         COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${_erdc_rocm_path} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}
         COMMAND ${CMAKE_COMMAND} -E echo "Extracting uber object from libERDC.a"
         COMMAND ${_erdc_rocm_path}/llvm/bin/llvm-ar x libERDC.a
