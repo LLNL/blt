@@ -335,6 +335,12 @@ macro(blt_add_library)
             SUFFIX      ${arg_EARLY_RDC_SUFFIX})
     endif()
 
+    if(TARGET tabale_earlyrdc)
+      message(WARN "tabale_earlyrdc is defined here 2")
+    else()
+      message(WARN "tabale_earlyrdc is NOT defined here 2")
+    endif()
+
 endmacro(blt_add_library)
 
 
