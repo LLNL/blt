@@ -330,15 +330,11 @@ macro(blt_add_library)
     if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) AND _erdc_sources )
         blt_setup_hip_early_rdc_target(
             NAME        ${arg_NAME}
-            RDC_SOURCES ${_erdc_sources}
             DEPENDS_ON  ${arg_DEPENDS_ON}
+            INCLUDES    ${arg_INCLUDES}
+            RDC_SOURCES ${_erdc_sources}
+            HEADERS     ${arg_HEADERS}
             SUFFIX      ${arg_EARLY_RDC_SUFFIX})
-    endif()
-
-    if(TARGET tabale_earlyrdc)
-      message(WARN "tabale_earlyrdc is defined here 2")
-    else()
-      message(WARN "tabale_earlyrdc is NOT defined here 2")
     endif()
 
 endmacro(blt_add_library)

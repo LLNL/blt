@@ -414,7 +414,7 @@ macro(blt_setup_hip_early_rdc_target)
 
     set(options)
     set(singleValueArgs NAME SUFFIX)
-    set(multiValueArgs RDC_SOURCES DEPENDS_ON)
+    set(multiValueArgs RDC_SOURCES DEPENDS_ON INCLUDES HEADERS)
 
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -435,13 +435,9 @@ macro(blt_setup_hip_early_rdc_target)
     message(WARN " [BLT] Configuring HIP early RDC for '${arg_NAME}' with suffix '${arg_SUFFIX}'")
     message(WARN "${arg_NAME} 0")
 
-    # Create object library with RDC flags and HIP setup
-    # Use a stable, prefixed object target name to avoid accidental duplication
-    # if NAME already contains an "erdc" suffix.
 
-    # PBR: Are these already in a variable somewhere?
     # Determine ROCm Arch flags
-
+    # PBR: Are these already in a variable somewhere?
     # ARCH_FLAGS from BLT or AMDGPU_TARGETS
     if(DEFINED BLT_HIP_ARCH_FLAGS)
         set(_erdc_arch_flags "${BLT_HIP_ARCH_FLAGS}")
@@ -454,34 +450,29 @@ macro(blt_setup_hip_early_rdc_target)
         set(_erdc_arch_flags "")
     endif()
     message(STATUS "[BLT] HIP arch flags='${_erdc_arch_flags}'")
+    message(WARN " depends is ${arg_DEPENDS_ON}")
+   
+    # Create library with RDC flags using the RDC sources
+    set(_erdc_archive "${arg_NAME}${arg_SUFFIX}_archive")
+    add_library( ${_erdc_archive} STATIC ${arg_RDC_SOURCES} ${arg_HEADERS})
+    blt_setup_target(NAME ${_erdc_archive}
+                     DEPENDS_ON ${arg_DEPENDS_ON}
+                     OBJECT False)
+    blt_setup_hip_target(NAME ${_erdc_archive} SOURCES ${arg_RDC_SOURCES} DEPENDS_ON ${arg_DEPENDS_ON})
+    target_include_directories(${_erdc_archive} PUBLIC ${arg_INCLUDES})
+    target_compile_options(${_erdc_archive} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
 
+    # add _erdc_archive as a dependency to arg_NAME, to ensure it gets built
+    add_dependencies(${arg_NAME} ${_erdc_archive})
+    
     # Paths
     set(_erdc_build_dir "${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}_erdc")
     file(MAKE_DIRECTORY "${_erdc_build_dir}")
 
     # set _erdc_input to the static library associated
     # with arg_NAME
-    get_target_property(_erdc_target_type ${arg_NAME} TYPE)
-    if("${_erdc_target_type}" STREQUAL "OBJECT_LIBRARY")
-        # this branch is AI generated and is untested so far...
-        set(_erdc_input "${_erdc_build_dir}/lib${arg_NAME}_input.a")
-        add_custom_command(
-            OUTPUT ${_erdc_input}
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${_erdc_build_dir}"
-            COMMAND ${CMAKE_AR} qc ${_erdc_input} $<TARGET_OBJECTS:${arg_NAME}>
-            COMMAND ${CMAKE_RANLIB} ${_erdc_input}
-            DEPENDS ${arg_NAME}
-            WORKING_DIRECTORY ${_erdc_build_dir}
-            COMMENT "EARLY RDC: create input archive from object library ${arg_NAME}"
-        )
-        add_custom_target(${arg_NAME}_erdc_input DEPENDS ${_erdc_input})
-    else()
-        set(_erdc_input "$<TARGET_FILE:${arg_NAME}>")
-    endif()
-
-    message(WARN " erdc_input is ${_erdc_input}")
+    set(_erdc_input "$<TARGET_FILE:${_erdc_archive}>")
    
-    message(WARN "${arg_NAME} 5")
 
 # The erdc.sh script will take a static library and produce libERDC.a; we will rename that
     # to the final archive name and register it as an imported static lib.
@@ -490,36 +481,28 @@ macro(blt_setup_hip_early_rdc_target)
 
 
     add_custom_command(
-        TARGET ${arg_NAME}
+        TARGET ${_erdc_archive}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Calling erdc.sh script"
         COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS='${_erdc_arch_flags}' bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}"
         COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}
         COMMAND ${CMAKE_COMMAND} -E echo "Renaming libERDC.a to final archive ${_erdc_output_lib}"
         COMMAND ${CMAKE_COMMAND} -E rename libERDC.a "${_erdc_output_lib}"
-        DEPENDS ${arg_NAME}_erdc_input
         BYPRODUCTS ${_erdc_output_lib}
         WORKING_DIRECTORY ${_erdc_build_dir}
         COMMENT "EARLY RDC: generate early RDC archive for ${arg_NAME}"
     )
     
-    # Create an imported static library target that references the generated archive
-    message(WARN " adding imported library ${arg_NAME}${arg_SUFFIX} imported from ${_erdc_output_lib}")
+    # Create an imported static library target that references the host archive and the device early rdc archive
     add_library(${arg_NAME}${arg_SUFFIX} STATIC IMPORTED GLOBAL)
     set_target_properties(${arg_NAME}${arg_SUFFIX} PROPERTIES
         IMPORTED_LOCATION "${_erdc_output_lib}")
 
-    # Drive generation of the archive when building the base target
-    add_custom_target(${arg_NAME}${arg_SUFFIX}_archive DEPENDS ${_erdc_output_lib})
-    message(WARN " [BLT] Created imported static target '${arg_NAME}${arg_SUFFIX}' at '${_erdc_output_lib}'")
-
     # Propagate to base target consumers
     target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX})
+    target_link_libraries(${arg_NAME} INTERFACE ${_erdc_archive})
     message(WARN " [BLT] Linked '${arg_NAME}${arg_SUFFIX}' INTERFACE to '${arg_NAME}'")
 
-    # Ensure the early RDC archive is built when the base target is part of a build
-    # Do not create cyclic dependencies with object libraries; instead depend on the
-    # earlyrdc build at the archive consumer level.
 endmacro(blt_setup_hip_early_rdc_target)
 
 
