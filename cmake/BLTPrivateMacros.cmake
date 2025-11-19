@@ -453,19 +453,19 @@ macro(blt_setup_hip_early_rdc_target)
     # the call to blt_setup* will override arg_NAME, remember it for later use
     set(_erdc_arg_name ${arg_NAME} )
         # Create library , appending RDC flags using the RDC sources
-        set(_erdc_archive "${arg_NAME}${arg_SUFFIX}_archive")
-        add_library( ${_erdc_archive} STATIC ${arg_RDC_SOURCES} ${arg_HEADERS})
-        blt_setup_target(NAME ${_erdc_archive}
+        set(_erdc_host "${arg_NAME}${arg_SUFFIX}_host")
+        add_library( ${_erdc_host} STATIC ${arg_RDC_SOURCES} ${arg_HEADERS})
+        blt_setup_target(NAME ${_erdc_host}
                          DEPENDS_ON ${arg_DEPENDS_ON}
                          OBJECT False)
-        blt_setup_hip_target(NAME ${_erdc_archive} SOURCES ${arg_RDC_SOURCES} DEPENDS_ON ${arg_DEPENDS_ON})
-        target_include_directories(${_erdc_archive} PUBLIC ${arg_INCLUDES})
-        target_compile_options(${_erdc_archive} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
+        blt_setup_hip_target(NAME ${_erdc_host} SOURCES ${arg_RDC_SOURCES} DEPENDS_ON ${arg_DEPENDS_ON})
+        target_include_directories(${_erdc_host} PUBLIC ${arg_INCLUDES})
+        target_compile_options(${_erdc_host} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
     # restore arg_NAME to what it was before the above calls
     set(arg_NAME ${_erdc_arg_name})
 
-    # add _erdc_archive as a dependency to arg_NAME, to ensure it gets built
-    add_dependencies(${arg_NAME} ${_erdc_archive})
+    # add _erdc_host as a dependency to arg_NAME, to ensure it gets built
+    add_dependencies(${arg_NAME} ${_erdc_host})
     
     # Paths
     set(_erdc_build_dir "${CMAKE_CURRENT_BINARY_DIR}/${arg_NAME}_erdc")
@@ -473,35 +473,32 @@ macro(blt_setup_hip_early_rdc_target)
 
     # set _erdc_input to the static library associated
     # with arg_NAME
-    set(_erdc_input "$<TARGET_FILE:${_erdc_archive}>")
+    set(_erdc_input "$<TARGET_FILE:${_erdc_host}>")
    
 
-# The erdc.sh script will take a static library and produce libERDC.a; we will rename that
-    # to the final archive name and register it as an imported static lib.
+    # The erdc.sh script will take a static library and produce uber.o; we will use that as the source
+    # for the ${arg_NAME}${arg_SUFFIX} target
     set(_erdc_output_obj "${_erdc_build_dir}/uber.o")
     message(STATUS "[BLT] Early RDC build dir='${_erdc_build_dir}' input='${_erdc_input}' output='${_erdc_output_obj}'")
 
-
     add_custom_command(
-        COMMAND ${CMAKE_COMMAND} -E echo "Calling erdc.sh script"
-        COMMAND ${CMAKE_COMMAND} -E echo "${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS='${_erdc_arch_flags}' bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}"
         COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}
         OUTPUT ${_erdc_output_obj}
         WORKING_DIRECTORY ${_erdc_build_dir}
-        COMMENT "EARLY RDC: generate early RDC archive for ${arg_NAME}"
+        COMMENT "EARLY RDC: generate early RDC archive for ${arg_NAME}, calling ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} \n\t with ROCM_PATH=${ROCM_PATH}, ARCH_FLAGS=${_erdc_arch_flags}"
     )
     
     # Create an imported static library target that references the host archive and the device early rdc archive
-    add_library(${arg_NAME}${arg_SUFFIX} STATIC ${_erdc_output_obj})
-    # add C++ as the linker language for ${arg_NAME}${arg_SUFFIX}
-    set_target_properties(${arg_NAME}${arg_SUFFIX} PROPERTIES LINKER_LANGUAGE CXX)
-#    set_target_properties(${arg_NAME}${arg_SUFFIX} PROPERTIES IMPORTED_LOCATION "${_erdc_output_lib}")
+    add_library(${arg_NAME}${arg_SUFFIX}_device STATIC ${_erdc_output_obj})
+
+    # add C++ as the linker language for ${arg_NAME}${arg_SUFFIX}, HIP linking has already happened
+    set_target_properties(${arg_NAME}${arg_SUFFIX}_device PROPERTIES LINKER_LANGUAGE CXX)
     
 
     # Propagate to base target consumers
-    target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX})
-    target_link_libraries(${arg_NAME} INTERFACE ${_erdc_archive})
-    message(WARN " [BLT] Linked '${arg_NAME}${arg_SUFFIX}' INTERFACE to '${arg_NAME}'")
+    target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX}_device)
+    target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
+    message(WARN " [BLT] Linked '${arg_NAME}${arg_SUFFIX}_device' INTERFACE to '${arg_NAME}'")
 
 endmacro(blt_setup_hip_early_rdc_target)
 

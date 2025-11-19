@@ -208,19 +208,28 @@ macro(blt_add_library)
         # Partition sources if EARLY_RDC is enabled (HIP-only)
         set(_normal_sources ${arg_SOURCES})
         set(_erdc_sources)
-        if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) AND arg_EARLY_RDC_SOURCES )
+        if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) )
+            if( DEFINED arg_EARLY_RDC_SOURCES AND arg_EARLY_RDC_SOURCES )
             # Exclude EARLY_RDC_SOURCES from normal sources
             foreach(_s ${arg_EARLY_RDC_SOURCES})
                 list(REMOVE_ITEM _normal_sources ${_s})
                 list(APPEND _erdc_sources ${_s})
             endforeach()
+            else()
+                # No EARLY_RDC_SOURCES specified: default all sources to EARLY_RDC
+                set(_erdc_sources ${_normal_sources})
+                set(_normal_sources)
+            endif()
         endif()
+
+        message(WARN " erdc_source ${_erdc_sources} normal_sources ${_normal_sources}")
 
         # Create base target: if no normal sources remain, use INTERFACE to carry usage requirements
         set(_base_is_interface FALSE)
         if(_normal_sources)
             add_library( ${arg_NAME} ${_lib_type} ${_normal_sources} ${arg_HEADERS} )
         else()
+            message(WARN " set base is interface to TRUE")
             set(_base_is_interface TRUE)
             if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
                 add_library( ${arg_NAME} INTERFACE ${arg_HEADERS} )
@@ -256,6 +265,7 @@ macro(blt_add_library)
         #
         #  Header-only library support
         #
+       set(_base_is_interface TRUE)
         if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
             # Adding headers here allows them to show up in IDE projects but is not
             # necessary for building
@@ -285,6 +295,7 @@ macro(blt_add_library)
                       OBJECT     ${arg_OBJECT})
 
     if ( arg_INCLUDES )
+        message(WARN " in arg_INCLUDES with ${_base_is_interface}")
         if (_base_is_interface)
             target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
         else()
