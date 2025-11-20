@@ -348,6 +348,41 @@ macro(blt_add_library)
             SUFFIX      ${arg_EARLY_RDC_SUFFIX})
     endif()
 
+    # Provide variables describing the created library targets for downstream use.
+    # - <UPPERCASE_NAME>_LIB_TARGETS: all created targets (base + optional early RDC host/device)
+    # - <UPPERCASE_NAME>_LIB_INTERFACE_TARGETS: subset of targets that are INTERFACE libraries
+    # - <UPPERCASE_NAME>_LIB_NONINTERFACE_TARGETS: subset of targets that are non-INTERFACE (STATIC/SHARED/OBJECT)
+    # - <UPPERCASE_NAME>_BASE_TARGET: the base target name
+    # - <UPPERCASE_NAME>_EARLY_RDC_HOST_TARGET and <UPPERCASE_NAME>_EARLY_RDC_DEVICE_TARGET: if early RDC was created
+    set(_blt_created_lib_targets ${arg_NAME})
+    if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
+        list(APPEND _blt_created_lib_targets ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
+    endif()
+    string(TOUPPER ${arg_NAME} _blt_uppercase_name)
+    set(${_blt_uppercase_name}_LIB_TARGETS ${_blt_created_lib_targets})
+
+    # Classify targets into interface vs non-interface
+    set(_blt_interface_targets)
+    set(_blt_noninterface_targets)
+    if(_base_is_interface)
+        list(APPEND _blt_interface_targets ${arg_NAME})
+    else()
+        list(APPEND _blt_noninterface_targets ${arg_NAME})
+    endif()
+    if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
+        # Early RDC targets are STATIC libraries
+        list(APPEND _blt_noninterface_targets ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
+    endif()
+    set(${_blt_uppercase_name}_LIB_INTERFACE_TARGETS ${_blt_interface_targets})
+    set(${_blt_uppercase_name}_LIB_NONINTERFACE_TARGETS ${_blt_noninterface_targets})
+
+    # Provide direct refs for each created target
+    set(${_blt_uppercase_name}_BASE_TARGET ${arg_NAME})
+    if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
+        set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
+        set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
+    endif()
+
 endmacro(blt_add_library)
 
 
