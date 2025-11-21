@@ -158,14 +158,17 @@ macro(blt_setup_target)
     endif()
 
     # Add dependency's information
+    message(WARN " blt_setup_target adding dependencies to ${arg_NAME}")
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
+        message(WARN " blt_setup_target adding dependency ${dependency} to ${arg_NAME}")
 
         if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
+            message(WARN " _BLT_${uppercase_dependency}_INCLUDES defined")
             if ( _BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
                 target_include_directories( ${arg_NAME} SYSTEM ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
@@ -173,6 +176,8 @@ macro(blt_setup_target)
                 target_include_directories( ${arg_NAME} ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
             endif()
+        else()
+            message(WARN " _BLT_${uppercase_dependency}_INCLUDES not defined")
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_FORTRAN_MODULES )
@@ -181,10 +186,14 @@ macro(blt_setup_target)
         endif()
 
         if ( arg_OBJECT )
+            message(WARN " blt_setup_target arg_OBJECT is TRUE")
             # Object libraries need to inherit info from their CMake targets listed
             # in their LIBRARIES
+            message(WARN " _BLT_${uppercase_dependency}_LIBRARIES is ${_BLT_${uppercase_dependency}_LIBRARIES}")
             foreach( _library ${_BLT_${uppercase_dependency}_LIBRARIES} )
+                message(WARN "processing ${_library}")
                 if(TARGET ${_library})
+                    message(WARN "inheriting target info ${_library}")
                     blt_inherit_target_info(TO     ${arg_NAME}
                                             FROM   ${_library}
                                             OBJECT ${arg_OBJECT})
@@ -413,7 +422,7 @@ endmacro(blt_setup_hip_target)
 macro(blt_setup_hip_early_rdc_target)
 
     set(options)
-    set(singleValueArgs NAME SUFFIX)
+    set(singleValueArgs NAME SUFFIX OBJECT INTERFACE)
     set(multiValueArgs RDC_SOURCES DEPENDS_ON INCLUDES HEADERS)
 
     cmake_parse_arguments(arg "${options}" "${singleValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -455,9 +464,10 @@ macro(blt_setup_hip_early_rdc_target)
         # Create library , appending RDC flags using the RDC sources
         set(_erdc_host "${arg_NAME}${arg_SUFFIX}_host")
         add_library( ${_erdc_host} STATIC ${arg_RDC_SOURCES} ${arg_HEADERS})
+        message(WARN " ${arg_NAME} is object ? : ${arg_OBJECT}")
         blt_setup_target(NAME ${_erdc_host}
                          DEPENDS_ON ${arg_DEPENDS_ON}
-                         OBJECT False)
+                         OBJECT ${arg_OBJECT})
         blt_setup_hip_target(NAME ${_erdc_host} SOURCES ${arg_RDC_SOURCES} DEPENDS_ON ${arg_DEPENDS_ON})
         target_include_directories(${_erdc_host} PUBLIC ${arg_INCLUDES})
         target_compile_options(${_erdc_host} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
@@ -465,6 +475,7 @@ macro(blt_setup_hip_early_rdc_target)
     set(arg_NAME ${_erdc_arg_name})
 
     # add _erdc_host as a dependency to arg_NAME, to ensure it gets built
+    message(WARN " ${_erdc_host} is dependency of ${arg_NAME}")
     add_dependencies(${arg_NAME} ${_erdc_host})
     
     # Paths
@@ -782,7 +793,7 @@ macro(blt_print_target_properties_private)
     endif()
 
     if (_is_cmake_target OR _is_blt_registered_target)
-        message(STATUS "[${arg_TARGET} property] '${arg_TARGET}' is a ${_target_type_str}")
+        message(WARN " [${arg_TARGET} property] '${arg_TARGET}' is a ${_target_type_str}")
     endif()
     unset(_target_type_str)
 
@@ -811,7 +822,7 @@ macro(blt_print_target_properties_private)
             if ("${_propval}" AND "${prop}" MATCHES "${arg_PROPERTY_NAME_REGEX}")
                 get_target_property(_propval ${arg_TARGET} ${prop})
                 if ("${_propval}" MATCHES "${arg_PROPERTY_VALUE_REGEX}")
-                    message (STATUS "[${arg_TARGET} property] ${prop}: ${_propval}")
+                    message (WARN " [${arg_TARGET} property] ${prop}: ${_propval}")
                 endif()
             endif()
         endforeach()
@@ -827,7 +838,7 @@ macro(blt_print_target_properties_private)
         get_cmake_property(_variable_names VARIABLES)
         foreach (prop ${_variable_names})
             if("${prop}" MATCHES "^${_target_prefix}" AND "${prop}" MATCHES "${arg_PROPERTY_NAME_REGEX}" AND "${${prop}}" MATCHES "${arg_PROPERTY_VALUE_REGEX}")
-                message (STATUS "[${arg_TARGET} property] ${prop}: ${${prop}}")
+                message (WARN " [${arg_TARGET} property] ${prop}: ${${prop}}")
             endif()
         endforeach()
         unset(_target_prefix)

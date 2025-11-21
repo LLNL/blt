@@ -290,9 +290,16 @@ macro(blt_add_library)
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
 
-    blt_setup_target( NAME       ${arg_NAME}
-                      DEPENDS_ON ${arg_DEPENDS_ON} 
-                      OBJECT     ${arg_OBJECT})
+    set(_blt_object FALSE)
+    set(_arg_object ${arg_OBJECT})
+    if(DEFINED arg_OBJECT AND arg_OBJECT AND NOT _base_is_interface)
+        set(_blt_object TRUE)
+    endif()
+    blt_setup_target(NAME       ${arg_NAME}
+                     DEPENDS_ON ${arg_DEPENDS_ON} 
+                     OBJECT     ${_blt_object})
+    set(arg_OBJECT ${_arg_object})
+    unset(_blt_object)
 
     if ( arg_INCLUDES )
         message(WARN " in arg_INCLUDES with ${_base_is_interface}")
@@ -345,14 +352,15 @@ macro(blt_add_library)
             INCLUDES    ${arg_INCLUDES}
             RDC_SOURCES ${_erdc_sources}
             HEADERS     ${arg_HEADERS}
-            SUFFIX      ${arg_EARLY_RDC_SUFFIX})
+            SUFFIX      ${arg_EARLY_RDC_SUFFIX}
+            OBJECT      ${arg_OBJECT}
+            INTERFACE   ${_base_is_interface})
     endif()
 
     # Provide variables describing the created library targets for downstream use.
     # - <UPPERCASE_NAME>_LIB_TARGETS: all created targets (base + optional early RDC host/device)
     # - <UPPERCASE_NAME>_LIB_INTERFACE_TARGETS: subset of targets that are INTERFACE libraries
     # - <UPPERCASE_NAME>_LIB_NONINTERFACE_TARGETS: subset of targets that are non-INTERFACE (STATIC/SHARED/OBJECT)
-    # - <UPPERCASE_NAME>_BASE_TARGET: the base target name
     # - <UPPERCASE_NAME>_EARLY_RDC_HOST_TARGET and <UPPERCASE_NAME>_EARLY_RDC_DEVICE_TARGET: if early RDC was created
     set(_blt_created_lib_targets ${arg_NAME})
     if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
@@ -377,10 +385,12 @@ macro(blt_add_library)
     set(${_blt_uppercase_name}_LIB_NONINTERFACE_TARGETS ${_blt_noninterface_targets})
 
     # Provide direct refs for each created target
-    set(${_blt_uppercase_name}_BASE_TARGET ${arg_NAME})
     if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
         set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
         set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
+    else()
+        set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${arg_NAME})
+        set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME})
     endif()
 
 endmacro(blt_add_library)
