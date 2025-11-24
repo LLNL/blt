@@ -253,8 +253,6 @@ macro(blt_add_library)
             endif()
         endif()
 
-        message(WARN " erdc_source ${_erdc_sources} normal_sources ${_normal_sources}")
-
         # Flag when all sources are assigned to EARLY_RDC
         set(_erdc_full FALSE)
         if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources AND NOT _normal_sources)
@@ -342,7 +340,6 @@ macro(blt_add_library)
     unset(_blt_object)
 
     if ( arg_INCLUDES )
-        message(WARN " in arg_INCLUDES with ${_base_is_interface}")
         if (_base_is_interface)
             target_include_directories(${arg_NAME} INTERFACE ${arg_INCLUDES})
         else()
@@ -412,6 +409,7 @@ macro(blt_add_library)
         endif()
     endif()
     string(TOUPPER ${arg_NAME} _blt_uppercase_name)
+    
     set(${_blt_uppercase_name}_TARGETS ${_blt_created_lib_targets})
 
     # Classify targets into interface vs non-interface
@@ -459,15 +457,34 @@ endmacro(blt_add_library)
 ##                     DEPENDS_ON  [dep1 [dep2 ...]]
 ##                     OUTPUT_DIR  [dir]
 ##                     OUTPUT_NAME [name]
-##                     FOLDER      [name])
+##                     FOLDER      [name]
+##                     EARLY_RDC   [TRUE | FALSE]           (HIP-only)
+##                     EARLY_RDC_SOURCES [src1 [src2 ...]]  (HIP-only)
+##                     EARLY_RDC_SUFFIX  [suffix]           (default: "_earlyrdc"))
 ##
 ## Adds an executable target, called <name>, to be built from the given sources.
+##
+## HIP Early RDC behavior:
+## - EARLY_RDC is only supported for the "partial-RDC" case where EARLY_RDC_SOURCES
+##   is a non-empty strict subset of SOURCES:
+##   * A host RDC static lib <name><suffix>_host is built from EARLY_RDC_SOURCES with -fgpu-rdc.
+##   * erdc.sh is run on the host RDC archive to produce uber.o, creating <name><suffix>_device.
+##   * The base executable links both <name><suffix>_host and <name><suffix>_device transitively.
+## - "Full-RDC" executables (all SOURCES requiring RDC) are not supported by this
+##   macro; at least one non-RDC compilation unit is assumed to exist.
+##
+## Exported variables for downstream use (uppercase <EXECNAME>):
+## - <EXECNAME>_TARGETS: base executable + optional early RDC library targets
+##   * Partial-RDC: [<name>, <name><suffix>_host, <name><suffix>_device]
+## - <EXECNAME>_EXEC_TARGETS: the executable target(s) (currently just <name>)
+## - <EXECNAME>_LIB_TARGETS: any associated library targets created by this macro
+##   * Partial-RDC: [<name><suffix>_host, <name><suffix>_device]
 ##------------------------------------------------------------------------------
 macro(blt_add_executable)
 
     set(options )
-    set(singleValueArgs NAME OUTPUT_DIR OUTPUT_NAME FOLDER)
-    set(multiValueArgs HEADERS SOURCES INCLUDES DEFINES DEPENDS_ON)
+    set(singleValueArgs NAME OUTPUT_DIR OUTPUT_NAME FOLDER EARLY_RDC EARLY_RDC_SUFFIX)
+    set(multiValueArgs HEADERS SOURCES INCLUDES DEFINES DEPENDS_ON EARLY_RDC_SOURCES)
 
     # Parse the arguments to the macro
     cmake_parse_arguments(arg
@@ -482,7 +499,49 @@ macro(blt_add_executable)
         message(FATAL_ERROR "blt_add_executable(NAME ${arg_NAME} ...) given with no sources")
     endif()
 
-    add_executable( ${arg_NAME} ${arg_SOURCES} ${arg_HEADERS})
+    # Early RDC defaults
+    if(NOT DEFINED arg_EARLY_RDC_SUFFIX)
+        if(DEFINED BLT_EARLY_RDC_SUFFIX)
+            set(arg_EARLY_RDC_SUFFIX "${BLT_EARLY_RDC_SUFFIX}")
+        else()
+            set(arg_EARLY_RDC_SUFFIX "_earlyrdc")
+        endif()
+    endif()
+
+    # Partition sources if EARLY_RDC is enabled (HIP-only).
+    # For executables we only support the partial-RDC case where EARLY_RDC_SOURCES
+    # is a non-empty strict subset of SOURCES.
+    set(_normal_sources ${arg_SOURCES})
+    set(_erdc_sources)
+    if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) )
+        if( NOT (DEFINED arg_EARLY_RDC_SOURCES AND arg_EARLY_RDC_SOURCES) )
+            message(FATAL_ERROR
+                "blt_add_executable(NAME ${arg_NAME} ... EARLY_RDC TRUE) requires "
+                "EARLY_RDC_SOURCES to be a non-empty strict subset of SOURCES.")
+        endif()
+
+        # Exclude EARLY_RDC_SOURCES from normal sources
+        foreach(_s ${arg_EARLY_RDC_SOURCES})
+            list(REMOVE_ITEM _normal_sources ${_s})
+            list(APPEND _erdc_sources ${_s})
+        endforeach()
+
+        if(NOT _erdc_sources)
+            message(FATAL_ERROR
+                "blt_add_executable(NAME ${arg_NAME} ... EARLY_RDC TRUE) was given "
+                "EARLY_RDC_SOURCES that do not match any of the SOURCES.")
+        endif()
+
+        if(NOT _normal_sources)
+            message(FATAL_ERROR
+                "blt_add_executable(NAME ${arg_NAME} ... EARLY_RDC TRUE) only supports "
+                "the partial-RDC case; EARLY_RDC_SOURCES must be a strict subset of "
+                "SOURCES (full-RDC executables are not supported).")
+        endif()
+    endif()
+
+    # Create the base executable from the 'normal' sources
+    add_executable( ${arg_NAME} ${_normal_sources} ${arg_HEADERS})
 
     if (BLT_ENABLE_CUDA AND NOT BLT_ENABLE_CLANG_CUDA)
         blt_setup_cuda_target(
@@ -494,7 +553,7 @@ macro(blt_add_executable)
     if(BLT_ENABLE_HIP)
         blt_setup_hip_target(
             NAME         ${arg_NAME}
-            SOURCES      ${arg_SOURCES}
+            SOURCES      ${_normal_sources}
             DEPENDS_ON   ${arg_DEPENDS_ON})
     endif()
     
@@ -506,10 +565,45 @@ macro(blt_add_executable)
         set_target_properties( ${arg_NAME} PROPERTIES LINKER_LANGUAGE Fortran )
         target_include_directories(${arg_NAME} PRIVATE ${CMAKE_Fortran_MODULE_DIRECTORY})
     endif()
-       
+    
     blt_setup_target(NAME       ${arg_NAME}
-                     DEPENDS_ON ${arg_DEPENDS_ON} 
+                     DEPENDS_ON ${arg_DEPENDS_ON}
                      OBJECT     FALSE)
+    
+    # Create early RDC archive and imported target if requested
+    if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) AND _erdc_sources )
+        blt_setup_hip_early_rdc_target(
+            NAME        ${arg_NAME}
+            DEPENDS_ON  ${arg_DEPENDS_ON}
+            INCLUDES    ${arg_INCLUDES}
+            RDC_SOURCES ${_erdc_sources}
+            HEADERS     ${arg_HEADERS}
+            SUFFIX      ${arg_EARLY_RDC_SUFFIX}
+            OBJECT      FALSE
+            INTERFACE   FALSE)
+    endif()
+
+    # Provide variables describing the created executable and any associated library targets.
+    # - <UPPERCASE_NAME>_TARGETS: all created targets (base executable + optional early RDC host/device libs)
+    # - <UPPERCASE_NAME>_EXEC_TARGETS: executable target(s) (currently just the base executable)
+    # - <UPPERCASE_NAME>_LIB_TARGETS: any library targets created by this macro (e.g. early RDC host/device libs)
+    set(_blt_exec_targets ${arg_NAME})
+    set(_blt_lib_targets)
+
+    if(BLT_ENABLE_HIP AND DEFINED arg_EARLY_RDC AND arg_EARLY_RDC AND _erdc_sources)
+        list(APPEND _blt_lib_targets  ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
+        list(APPEND _blt_exec_targets  ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
+    endif()
+
+    string(TOUPPER ${arg_NAME} _blt_exe_uppercase_name)
+    set(${_blt_exe_uppercase_name}_TARGETS      ${_blt_exec_targets})
+    set(${_blt_exe_uppercase_name}_EXEC_TARGETS ${arg_NAME})
+    set(${_blt_exe_uppercase_name}_LIB_TARGETS  ${_blt_lib_targets})
+    
+    # add any generated libraries as a dependency to the executable
+    foreach(tgt ${${_blt_exe_uppercase_name}_LIB_TARGETS})
+        add_dependencies(${arg_NAME} ${tgt})
+    endforeach()
 
     # Override the linker language with INTERFACE_BLT_LINKER_LANGUAGE_OVERRIDE, if applicable
     # Will have just been populated by blt_setup_target

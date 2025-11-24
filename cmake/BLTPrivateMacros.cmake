@@ -158,17 +158,14 @@ macro(blt_setup_target)
     endif()
 
     # Add dependency's information
-    message(WARN " blt_setup_target adding dependencies to ${arg_NAME}")
     foreach( dependency ${_expanded_DEPENDS_ON} )
         string(TOUPPER ${dependency} uppercase_dependency )
-        message(WARN " blt_setup_target adding dependency ${dependency} to ${arg_NAME}")
 
         if ( NOT arg_OBJECT AND _BLT_${uppercase_dependency}_IS_OBJECT_LIBRARY )
             target_sources(${arg_NAME} ${_private_scope} $<TARGET_OBJECTS:${dependency}>)
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_INCLUDES )
-            message(WARN " _BLT_${uppercase_dependency}_INCLUDES defined")
             if ( _BLT_${uppercase_dependency}_TREAT_INCLUDES_AS_SYSTEM )
                 target_include_directories( ${arg_NAME} SYSTEM ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
@@ -176,8 +173,6 @@ macro(blt_setup_target)
                 target_include_directories( ${arg_NAME} ${_public_scope}
                     ${_BLT_${uppercase_dependency}_INCLUDES} )
             endif()
-        else()
-            message(WARN " _BLT_${uppercase_dependency}_INCLUDES not defined")
         endif()
 
         if ( DEFINED _BLT_${uppercase_dependency}_FORTRAN_MODULES )
@@ -186,14 +181,10 @@ macro(blt_setup_target)
         endif()
 
         if ( arg_OBJECT )
-            message(WARN " blt_setup_target arg_OBJECT is TRUE")
             # Object libraries need to inherit info from their CMake targets listed
             # in their LIBRARIES
-            message(WARN " _BLT_${uppercase_dependency}_LIBRARIES is ${_BLT_${uppercase_dependency}_LIBRARIES}")
             foreach( _library ${_BLT_${uppercase_dependency}_LIBRARIES} )
-                message(WARN "processing ${_library}")
                 if(TARGET ${_library})
-                    message(WARN "inheriting target info ${_library}")
                     blt_inherit_target_info(TO     ${arg_NAME}
                                             FROM   ${_library}
                                             OBJECT ${arg_OBJECT})
@@ -410,14 +401,32 @@ endmacro(blt_setup_hip_target)
 
 ##------------------------------------------------------------------------------
 ## blt_setup_hip_early_rdc_target(NAME        <base target name>
-##                                 RDC_SOURCES <hip sources requiring rdc>
-##                                 DEPENDS_ON  <deps list>
-##                                 SUFFIX      <earlyrdc suffix, default _earlyrdc>
-##                                 FULL_RDC    <TRUE when all sources in NAMErequire RDC, RDC_SOURCES is ignored in this case>)
+##                                 RDC_SOURCES <HIP sources requiring RDC>
+##                                 DEPENDS_ON  <dependency list for HIP build>
+##                                 INCLUDES    <include directories for HIP build>
+##                                 HEADERS     <headers associated with RDC_SOURCES>
+##                                 SUFFIX      <suffix for generated targets; default: BLT_EARLY_RDC_SUFFIX or "_earlyrdc">
+##                                 OBJECT      <TRUE if NAME is an OBJECT library, otherwise FALSE>
+##                                 FULL_RDC    <TRUE when all HIP sources in NAME require RDC; RDC_SOURCES/HEADERS are ignored>)
 ##
-## Internal helper: when FULL_RDC is TRUE, compile the base target with -fgpu-rdc
-## and pass its archive to erdc.sh, creating only the device target. Otherwise,
-## create a separate host RDC library from RDC_SOURCES and run erdc.sh on it.
+## When FULL_RDC is FALSE (default):
+##   - Creates a static host RDC library <NAME><SUFFIX>_host from RDC_SOURCES (+HEADERS),
+##     compiled with -fgpu-rdc and configured with DEPENDS_ON/INCLUDES.
+##   - Runs erdc.sh on <NAME><SUFFIX>_host to produce a single "uber" device object
+##     and wraps it in the static library <NAME><SUFFIX>_device.
+##   - Adds <NAME><SUFFIX>_host as a dependency of NAME and links NAME
+##     INTERFACE to both <NAME><SUFFIX>_host and <NAME><SUFFIX>_device.
+##
+## When FULL_RDC is TRUE:
+##   - Compiles NAME itself with -fgpu-rdc (using INCLUDES),
+##     then runs erdc.sh on NAME’s archive to produce the "uber" device object
+##     wrapped in <NAME><SUFFIX>_device.
+##   - Links NAME INTERFACE to <NAME><SUFFIX>_device only (no separate host RDC library).
+##
+## In both modes:
+##   - <NAME><SUFFIX>_device is a static library containing the early-RDC "uber"
+##     device object, with LINKER_LANGUAGE set to CXX, and is linked INTERFACE
+##     from NAME so consumers automatically receive the device code.
 ##------------------------------------------------------------------------------
 macro(blt_setup_hip_early_rdc_target)
 
@@ -461,12 +470,10 @@ macro(blt_setup_hip_early_rdc_target)
 
     # the call to blt_setup* will override arg_NAME, remember it for later use
     set(_erdc_arg_name ${arg_NAME} )
-
     if(NOT arg_FULL_RDC)
         # Create host RDC library from RDC_SOURCES and compile with -fgpu-rdc
         set(_erdc_host "${arg_NAME}${arg_SUFFIX}_host")
         add_library( ${_erdc_host} STATIC ${arg_RDC_SOURCES} ${arg_HEADERS})
-        message(WARN " ${arg_NAME} is object ? : ${arg_OBJECT}")
         blt_setup_target(NAME ${_erdc_host}
                          DEPENDS_ON ${arg_DEPENDS_ON}
                          OBJECT ${arg_OBJECT})
@@ -478,13 +485,11 @@ macro(blt_setup_hip_early_rdc_target)
         target_include_directories(${arg_NAME} PUBLIC ${arg_INCLUDES})
         target_compile_options(${arg_NAME} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
     endif()
-
     # restore arg_NAME to what it was before the above calls
     set(arg_NAME ${_erdc_arg_name})
 
     if(NOT arg_FULL_RDC)
         # add _erdc_host as a dependency to arg_NAME, to ensure it gets built
-        message(WARN " ${_erdc_host} is dependency of ${arg_NAME}")
         add_dependencies(${arg_NAME} ${_erdc_host})
     endif()
     
@@ -524,7 +529,6 @@ macro(blt_setup_hip_early_rdc_target)
     if(NOT arg_FULL_RDC)
         target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
     endif()
-    message(WARN " [BLT] Linked '${arg_NAME}${arg_SUFFIX}_device' INTERFACE to '${arg_NAME}'")
 
 endmacro(blt_setup_hip_early_rdc_target)
 
@@ -807,9 +811,6 @@ macro(blt_print_target_properties_private)
         set(_target_type_str "${_target_type_str}BLT Registered target")
     endif()
 
-    if (_is_cmake_target OR _is_blt_registered_target)
-        message(WARN " [${arg_TARGET} property] '${arg_TARGET}' is a ${_target_type_str}")
-    endif()
     unset(_target_type_str)
 
     if(_is_cmake_target)
