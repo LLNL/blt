@@ -12,16 +12,17 @@
 #   ROCM_PATH=/opt/rocm-5.7.1 ARCH_FLAGS='--offload-arch=gfx90a --offload-arch=gfx940' ./erdc.sh -m lib -o myERDC.a libalpha.a
 #
 set -euo pipefail
-# uncomment to echo all comands
-# set -x
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: ROCM_PATH=/path/to/rocm [ARCH_FLAGS='--offload-arch=...'] $0 <lib1.a> [lib2.a ...]" >&2
+  echo "Usage: ROCM_PATH=/path/to/rocm [ARCH_FLAGS='--offload-arch=...'] $0 [-m obj|lib] [-o output_name] [-t temp_dir] [-k|--keep-temp] [-v|--verbose] <lib1.a> [lib2.a ...]" >&2
   exit 2
 fi
 
 OUTPUT_MODE=obj
 OUTPUT_NAME=""
+TEMP_DIR=""
+KEEP_TEMP=false
+VERBOSE=false
 LIBS=()
 
 while [[ $# -gt 0 ]]; do
@@ -44,17 +45,22 @@ while [[ $# -gt 0 ]]; do
       OUTPUT_NAME="${1#*=}"
       shift
       ;;
-    -h|--help)
-      echo "Usage: ROCM_PATH=/path/to/rocm [ARCH_FLAGS='--offload-arch=...'] $0 [-m obj|lib] [-o output_name] <lib1.a> [lib2.a ...]" >&2
-      exit 2
+    -t|--temp-dir)
+      [[ $# -ge 2 ]] || { echo "Missing value for $1" >&2; exit 2; }
+      TEMP_DIR="$2"
+      shift 2
       ;;
-    --)
+    --temp-dir=*)
+      TEMP_DIR="${1#*=}"
       shift
-      break
       ;;
-    -*)
-      echo "Unknown option: $1" >&2
-      exit 2
+    -k|--keep-temp)
+      KEEP_TEMP=true
+      shift
+      ;;
+    -v|--verbose)
+      VERBOSE=true
+      shift
       ;;
     *)
       LIBS+=("$1")
@@ -62,9 +68,12 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+if [[ "$VERBOSE" == true ]]; then
+  set -x
+fi
 
 if [[ ${#LIBS[@]} -lt 1 ]]; then
-  echo "Usage: ROCM_PATH=/path/to/rocm [ARCH_FLAGS='--offload-arch=...'] $0 [-m obj|lib] [-o output_name] <lib1.a> [lib2.a ...]" >&2
+  echo "Usage: ROCM_PATH=/path/to/rocm [ARCH_FLAGS='--offload-arch=...'] $0 [-m obj|lib] [-o output_name] [-t temp_dir] [-k|--keep-temp] [-v|--verbose] <lib1.a> [lib2.a ...]" >&2
   exit 2
 fi
 
@@ -90,7 +99,13 @@ MY_ARCH_FLAGS=${ARCH_FLAGS:-'--offload-arch=gfx90a'}
 
 LLVM_PATH="$ROCM_PATH/llvm/bin"
 
-explode=$(mktemp -d)
+if [[ -n "$TEMP_DIR" ]]; then
+  mkdir -p "$TEMP_DIR"
+  explode="$TEMP_DIR"
+else
+  explode=$(mktemp -d)
+fi
+
 pushd "$explode" > /dev/null
 cp "${LIBS[@]}" .
 object_file_list=object_files
@@ -137,4 +152,6 @@ else
 fi
 
 #Clean up temporary directory
+if [[ "$KEEP_TEMP" != true ]]; then
 rm -rf "$explode"
+fi
