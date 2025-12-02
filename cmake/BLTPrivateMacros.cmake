@@ -511,7 +511,7 @@ macro(blt_setup_hip_early_rdc_target)
     message(STATUS "[BLT] Early RDC build dir='${_erdc_build_dir}' input='${_erdc_input}' output='${_erdc_output_obj}'")
 
     add_custom_command(
-        COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input}
+        COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} -t ${_erdc_build_dir}/tmp --keep-temp --verbose
         OUTPUT ${_erdc_output_obj}
         WORKING_DIRECTORY ${_erdc_build_dir}
         COMMENT "EARLY RDC: generate early RDC archive for ${arg_NAME}, calling ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} \n\t with ROCM_PATH=${ROCM_PATH}, ARCH_FLAGS=${_erdc_arch_flags}"
