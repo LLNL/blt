@@ -9,11 +9,32 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Changed
+- Removed default use of `/bigobj` flag for Visual Studio builds. Projects should add this flag explicitly if needed for windows builds.
+- Removed `-Winline` from being added to GoogleTest for Clang/Intel as it is a noop and caused a warning on Intel.
+- Toggle GoogleTest adding `-Wno-implicit-float-size-conversion` or `-Wno-sycl-implicit-float-size-conversion` based on Intel version.
+
+### Fixed
+- In non-mpi configurations, `blt_add_test` will now throw a `FATAL_ERROR` if the user provides `NUM_MPI_RANKS`
+  and the requested number of ranks is greater than 1. Previously, if `MPI_EXECUTABLE` was not defined
+  `blt_add_test` would prepend the test command with the value of `NUM_MPI_RANKS`, and the test would fail to run.
+
+## [Version 0.7.1] - Release date 2025-09-04
+
+### Changed
+- Updated GoogleTest to 1.16.0
+- Improved CMake information output for CUDA builds
+
+## [Version 0.7.0] - Release date 2025-03-11
+
 ### Added
 - Added ``WORKING_DIRECTORY`` option to ``blt_add_test`` and ``blt_add_benchmark``.
+- Added `BLT_CXX_FILE_EXTS` variable (split out of `BLT_C_FILE_EXTS`) for use in modified `blt_split_source_list_by_language` macro.
 
 ### Changed
 - Modified `blt_convert_to_system_includes` to handle multiple targets and recursively update includes for dependencies.
+- Modified `blt_split_source_list_by_language` to accept a `CXX_LIST` argument for splitting out C and CXX sources. If not specified, the `C_LIST` will contain both C and C++ sources.
+- HIP support now uses enable_language(HIP), and specifying a HIP compiler must use the variable `CMAKE_HIP_COMPILER`.
 - Updated GoogleBenchmark to 1.9.1
 
 ### Fixed
@@ -57,7 +78,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
   Also adds a corresponding `ENABLE_CLANGAPPLYREPLACEMENTS` CMake option.
   Note that the `clang_tidy_style` target is not added to the `style` target and must be run separately.
 - Added the `blt_install_tpl_setups` macro, which installs files to setup and create
-  targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to 
+  targets for the third-party libraries OpenMP, MPI, CUDA, and HIP.  This macro is meant to
   replace `blt_export_tpl_targets` as the preferred way to setup third-party libraries with BLT.
 - Added `blt::` namespaced aliases for BLT targets, `cuda`, `cuda_runtime`, `mpi`, and `openmp`.
   These targets still exist but but will be deprecated in a future release. It is recommended that you
@@ -155,7 +176,7 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - XL: Use compiler flag `-std=c++14` instead of `-std=c++1y` when `BLT_CXX_STD` is set to `c++14`
 
 ### Fixed
-- Simpified the clang-format version regex that was causing hangs on some version strings.
+- Simplified the clang-format version regex that was causing hangs on some version strings.
 
 ## [Version 0.4.0] - Release date 2021-04-09
 
@@ -350,7 +371,9 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 
 
-[Unreleased]:    https://github.com/LLNL/blt/compare/v0.6.2...develop
+[Unreleased]:    https://github.com/LLNL/blt/compare/v0.7.1...develop
+[Version 0.7.1]: https://github.com/LLNL/blt/compare/v0.7.0...v0.7.1
+[Version 0.7.0]: https://github.com/LLNL/blt/compare/v0.6.2...v0.7.0
 [Version 0.6.2]: https://github.com/LLNL/blt/compare/v0.6.1...v0.6.2
 [Version 0.6.1]: https://github.com/LLNL/blt/compare/v0.6.0...v0.6.1
 [Version 0.6.0]: https://github.com/LLNL/blt/compare/v0.5.3...v0.6.0

@@ -1,10 +1,10 @@
-# Copyright (c) 2017-2024, Lawrence Livermore National Security, LLC and
+# Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 # other BLT Project Developers. See the top-level LICENSE file for details
 # 
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 #------------------------------------------------------------------------------
-# Example host-config file for a cluster on a toss4 platform (e.g. quartz) at LLNL
+# Example host-config file for a cluster on a toss4 platform (e.g. dane) at LLNL
 #------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
@@ -45,6 +45,7 @@ set(MPIEXEC_NUMPROC_FLAG "-n" CACHE PATH "")
 #------------------------------------------------------------------------------
 # CUDA support
 #------------------------------------------------------------------------------
+#_blt_tutorial_cuda_config_start
 set(ENABLE_CUDA ON CACHE BOOL "")
 
 set(CUDA_TOOLKIT_ROOT_DIR "/usr/tce/packages/cuda/cuda-12.2.2" CACHE PATH "")
@@ -55,3 +56,4 @@ set(CMAKE_CUDA_ARCHITECTURES "70" CACHE STRING "")
 set(CMAKE_CUDA_FLAGS "-restrict --expt-extended-lambda -G" CACHE STRING "")
 
 set(CUDA_SEPARABLE_COMPILATION ON CACHE BOOL "" )
+#_blt_tutorial_cuda_config_end

@@ -1,0 +1,50 @@
+####
+# This is the shared configuration of jobs for dane
+.on_dane:
+  variables:
+    SCHEDULER_PARAMETERS: "--reservation=ci --exclusive=user --deadline=now+1hour -N1 -t 15"
+  tags:
+    - batch
+    - dane
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /_qnone/ || $ON_DANE == "OFF"' #run except if ...
+      when: never
+    - if: '$CI_JOB_NAME =~ /dane_release/'
+      when: always
+    - when: on_success
+
+
+####
+# Build jobs
+dane-clang_14_0_6:
+  variables:
+    HOST_CONFIG: "clang@14.0.6.cmake"
+  extends: [.build_script, .on_dane]
+
+dane-gcc_10_3_1:
+  variables:
+    HOST_CONFIG: "gcc@10.3.1.cmake"
+  extends: [.build_script, .on_dane]
+
+dane-gcc_10_3_1-export-tpls:
+  variables:
+    HOST_CONFIG: "gcc@10.3.1-export-tpls.cmake"
+  extends: [.build_script, .on_dane]
+
+dane-intel_2022_1_0_cxx17:
+  variables:
+    HOST_CONFIG: "intel@2022.1.0-c++17.cmake"
+  extends: [.build_script, .on_dane]
+
+dane-intel_2025_2_0_cxx20:
+  variables:
+    HOST_CONFIG: "intel@2025.2.0-c++20.cmake"
+  extends: [.build_script, .on_dane]
+
+####
+# Project tests
+dane_openmp_mpi_fortran_tests:
+  variables:
+    ENABLED_BLT_TESTS: "mpi-cpp-fortran,openmp-cpp-fortran,openmp-mpi-cpp"
+    HOST_CONFIG: "clang@14.0.6.cmake"
+  extends: [.run_project_integration_tests, .on_dane]

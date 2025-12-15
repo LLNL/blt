@@ -1,8 +1,8 @@
-diff --git a/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h b/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h
-index 656a261..b00aa77 100644
---- a/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h
-+++ b/thirdparty_builtin/googletest/googletest/include/gtest/internal/gtest-port.h
-@@ -666,10 +666,12 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
+diff --git a/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h b/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h
+index ca18513..e7524fe 100644
+--- a/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h
++++ b/thirdparty_builtin/googletest-1.16.0/googletest/include/gtest/internal/gtest-port.h
+@@ -680,10 +680,12 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
       defined(GTEST_OS_DRAGONFLY) || defined(GTEST_OS_GNU_KFREEBSD) || \
       defined(GTEST_OS_HAIKU) || defined(GTEST_OS_GNU_HURD))
  // Death tests require a file system to work properly.
