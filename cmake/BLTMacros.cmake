@@ -490,9 +490,36 @@ macro(blt_add_test)
 
     # Handle OpenMP
     if( arg_NUM_OMP_THREADS )
+        # Ensure the number of OpenMP threads is a positive integer
+        string(REGEX MATCH "^-?[0-9]+$" _is_integer "${arg_NUM_OMP_THREADS}")
+        if( NOT _is_integer OR arg_NUM_OMP_THREADS LESS 1)
+            message(FATAL_ERROR "In blt_add_test(), attempted to run a test with invalid NUM_OMP_THREADS: ${arg_NUM_OMP_THREADS}")
+        endif()
+
         set_property(TEST ${arg_NAME}
                      APPEND PROPERTY ENVIRONMENT OMP_NUM_THREADS=${arg_NUM_OMP_THREADS})
     endif()
+
+    # Inform CTest how many processor slots this test needs for scheduling.
+    # When tests are parallelized with `ctest --parallel/-j`, CTest uses this
+    # property to avoid oversubscribing the available resources.
+    set(_blt_num_mpi_tasks 1)
+    if( arg_NUM_MPI_TASKS )
+        set(_blt_num_mpi_tasks ${arg_NUM_MPI_TASKS})
+    endif()
+
+    set(_blt_num_omp_threads 1)
+    if( arg_NUM_OMP_THREADS )
+        set(_blt_num_omp_threads ${arg_NUM_OMP_THREADS})
+    endif()
+
+    math(EXPR _blt_test_processors "${_blt_num_mpi_tasks} * ${_blt_num_omp_threads}")
+    if(_blt_test_processors LESS 1)
+        set(_blt_test_processors 1)
+    endif()
+
+    set_tests_properties(${arg_NAME}
+                         PROPERTIES PROCESSORS ${_blt_test_processors})
 
 endmacro(blt_add_test)
 
