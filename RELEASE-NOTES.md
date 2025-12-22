@@ -9,6 +9,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased] - Release date yyyy-mm-dd
 
+### Added
+- Adds `PROCESSORS` property to tests based on the number of mpi ranks (`NUM_MPI_THREADS`) and OpenMP threads (`NUM_OMP_THREADS`).
+  This gives CTest more context for scheduling tests.
+
 ### Changed
 - Removed default use of `/bigobj` flag for Visual Studio builds. Projects should add this flag explicitly if needed for windows builds.
 - Removed `-Winline` from being added to GoogleTest for Clang/Intel as it is a noop and caused a warning on Intel.
