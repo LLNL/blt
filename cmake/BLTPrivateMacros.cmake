@@ -454,14 +454,17 @@ macro(blt_setup_hip_early_rdc_target)
 
 
     # Determine ROCm Arch flags
-    # PBR: Are these already in a variable somewhere?
-    # ARCH_FLAGS from BLT or AMDGPU_TARGETS
+    # ARCH_FLAGS from CMAKE_HIP_ARCHITECTURES
     if(DEFINED BLT_HIP_ARCH_FLAGS)
         set(_erdc_arch_flags "${BLT_HIP_ARCH_FLAGS}")
-    elseif(DEFINED AMDGPU_TARGETS)
+    elseif(DEFINED CMAKE_HIP_ARCHITECTURES)
         set(_erdc_arch_flags "")
-        foreach(_t ${AMDGPU_TARGETS})
-            set(_erdc_arch_flags "${_erdc_arch_flags} --offload-arch=${_t}")
+        foreach(_t ${CMAKE_HIP_ARCHITECTURES})
+            if (_erdc_arch_flags)
+                set(_erdc_arch_flags "${_erdc_arch_flags} --offload-arch=${_t}")
+            else()
+                set(_erdc_arch_flags "--offload-arch=${_t}")
+            endif()
         endforeach()
     else()
         set(_erdc_arch_flags "")

@@ -9,7 +9,7 @@
 #
 # Usage examples:
 #   ROCM_PATH=/opt/rocm-5.7.1 ./erdc.sh libalpha.a libbeta.a
-#   ROCM_PATH=/opt/rocm-5.7.1 ARCH_FLAGS='--offload-arch=gfx90a --offload-arch=gfx940' ./erdc.sh -m lib -o myERDC.a libalpha.a
+#   ROCM_PATH=/opt/rocm-5.7.1 ARCH_FLAGS='--offload-arch=gfx90a --offload-arch=gfx942' ./erdc.sh -m lib -o myERDC.a libalpha.a
 #
 set -euo pipefail
 
@@ -93,7 +93,7 @@ if [[ -z "$OUTPUT_NAME" ]]; then
   fi
 fi
 
-MY_ARCH_FLAGS=${ARCH_FLAGS:-'--offload-arch=gfx90a'}
+MY_ARCH_FLAGS=${ARCH_FLAGS:-'--offload-arch=gfx942'}
 # Uncomment and set as needed to pass extra flags to clang
 # MY_ADDITIONAL_FLAGS=${ADDITIONAL_FLAGS:-'-O2'}
 
