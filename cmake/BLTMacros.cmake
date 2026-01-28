@@ -382,6 +382,7 @@ macro(blt_add_library)
     endif()
 
     # Create early RDC archive and imported target if requested
+    # TODO: not sure if the _erdc_sources is needed in this conditional - might be causing issue for FULL_RDC true
     if( BLT_ENABLE_HIP AND (DEFINED arg_EARLY_RDC AND arg_EARLY_RDC) AND _erdc_sources )
         blt_setup_hip_early_rdc_target(
             NAME        ${arg_NAME}
