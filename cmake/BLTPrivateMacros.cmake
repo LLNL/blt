@@ -526,9 +526,9 @@ macro(blt_setup_hip_early_rdc_target)
 
     # Propagate to base target consumers
     target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX}_device)
-    if(NOT arg_FULL_RDC)
-        target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
-    endif()
+    #if(NOT arg_FULL_RDC)
+    #    target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
+    #endif()
 
 endmacro(blt_setup_hip_early_rdc_target)
 
