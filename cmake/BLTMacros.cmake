@@ -369,7 +369,12 @@ macro(blt_add_library)
     # If RDC is enabled without EARLY_RDC, create the host RDC archive target and link it transitively.
     set(_blt_rdc_host_target)
     if(_use_rdc AND NOT _use_early_rdc AND _rdc_sources)
-        set(_blt_rdc_host_target ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
+        # blt_setup_target() and blt_setup_hip_target() are macros that use the same
+        # cmake_parse_arguments() prefix ("arg") and can overwrite arg_NAME.
+        # Save/restore the base target name so we don't accidentally link the host
+        # target to itself.
+        set(_blt_base_target_name ${arg_NAME})
+        set(_blt_rdc_host_target ${_blt_base_target_name}${arg_EARLY_RDC_SUFFIX}_host)
 #        message(FATAL_ERROR "${_blt_rdc_host_target} STATIC SOURCES ${_rdc_sources} DEPEND_ON ${arg_DEPENDS_ON}")
         add_library(${_blt_rdc_host_target} STATIC ${_rdc_sources} ${arg_HEADERS})
         blt_setup_target(NAME       ${_blt_rdc_host_target}
@@ -377,6 +382,7 @@ macro(blt_add_library)
                          OBJECT     ${arg_OBJECT})
         blt_setup_hip_target(NAME ${_blt_rdc_host_target} SOURCES ${_rdc_sources} DEPENDS_ON ${arg_DEPENDS_ON})
         target_compile_options(${_blt_rdc_host_target} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
+        set(arg_NAME ${_blt_base_target_name})
         if(_base_is_interface)
             target_link_libraries(${arg_NAME} INTERFACE ${_blt_rdc_host_target})
         else()
@@ -584,11 +590,12 @@ macro(blt_add_executable)
         set(_use_rdc TRUE)
     endif()
 
+
     if(_use_rdc)
         if(NOT (DEFINED arg_RDC_SOURCES AND arg_RDC_SOURCES))
-            message(FATAL_ERROR
-                "blt_add_executable(NAME ${arg_NAME} ... RDC TRUE) requires "
-                "RDC_SOURCES to be a non-empty strict subset of SOURCES.")
+          set(_flag_only TRUE)
+        else()
+           set(_flag_only FALSE)
         endif()
 
         # Exclude RDC_SOURCES from normal sources
@@ -597,17 +604,17 @@ macro(blt_add_executable)
             list(APPEND _rdc_sources ${_s})
         endforeach()
 
-        if(NOT _rdc_sources)
+        if(NOT _rdc_sources AND NOT _flag_only)
             message(FATAL_ERROR
                 "blt_add_executable(NAME ${arg_NAME} ... RDC TRUE) was given "
                 "RDC_SOURCES that do not match any of the SOURCES.")
         endif()
 
         if(NOT _normal_sources)
-            message(FATAL_ERROR
-                "blt_add_executable(NAME ${arg_NAME} ... RDC TRUE) only supports "
-                "the partial-RDC case; RDC_SOURCES must be a strict subset of "
-                "SOURCES (full-RDC executables are not supported).")
+             # set o rdc 
+             set(_target_sources ${_rdc_sources})
+        else()
+           set(_target_sources ${_normal_sources})
         endif()
 
         if(_use_early_rdc)
@@ -616,7 +623,7 @@ macro(blt_add_executable)
     endif()
 
     # Create the base executable from the 'normal' sources
-    add_executable( ${arg_NAME} ${_normal_sources} ${arg_HEADERS})
+    add_executable( ${arg_NAME} ${_target_sources} ${arg_HEADERS})
 
     if (BLT_ENABLE_CUDA AND NOT BLT_ENABLE_CLANG_CUDA)
         blt_setup_cuda_target(
@@ -628,7 +635,7 @@ macro(blt_add_executable)
     if(BLT_ENABLE_HIP)
         blt_setup_hip_target(
             NAME         ${arg_NAME}
-            SOURCES      ${_normal_sources}
+            SOURCES      ${_target_sources}
             DEPENDS_ON   ${arg_DEPENDS_ON})
     endif()
     
@@ -646,9 +653,20 @@ macro(blt_add_executable)
                      OBJECT     FALSE)
     
     # Create host RDC archive for executables (RDC-only mode)
+    if (BLT_ENABLE_HIP AND _flag_only)
+        set(_blt_exe_target_name ${arg_NAME})
+        target_compile_options(${_blt_exe_target_name} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
+        target_link_options(${_blt_exe_target_name} PRIVATE -fgpu-rdc)
+        set_target_properties(${_blt_exe_target_name} PROPERTIES LINKER_LANGUAGE HIP)
+    endif()
     set(_blt_rdc_host_target)
     if(BLT_ENABLE_HIP AND _use_rdc AND NOT _use_early_rdc AND _rdc_sources)
-        set(_blt_rdc_host_target ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
+        # blt_setup_target() and blt_setup_hip_target() are macros that use the same
+        # cmake_parse_arguments() prefix ("arg") and can overwrite arg_NAME.
+        # Save/restore the executable name so we don't accidentally link the host
+        # target to itself.
+        set(_blt_exe_target_name ${arg_NAME})
+        set(_blt_rdc_host_target ${_blt_exe_target_name}${arg_EARLY_RDC_SUFFIX}_host)
         add_library(${_blt_rdc_host_target} STATIC ${_rdc_sources} ${arg_HEADERS})
         blt_setup_target(NAME       ${_blt_rdc_host_target}
                          DEPENDS_ON ${arg_DEPENDS_ON}
@@ -661,6 +679,7 @@ macro(blt_add_executable)
         if(arg_DEFINES)
             target_compile_definitions(${_blt_rdc_host_target} PUBLIC ${arg_DEFINES})
         endif()
+        set(arg_NAME ${_blt_exe_target_name})
         target_link_libraries(${arg_NAME} PRIVATE ${_blt_rdc_host_target})
         add_dependencies(${arg_NAME} ${_blt_rdc_host_target})
     endif()
@@ -739,6 +758,9 @@ macro(blt_add_executable)
     endif()
 
     blt_clean_target(TARGET ${arg_NAME})
+
+    blt_print_target_properties(TARGET ${arg_NAME} CHILDREN FALSE)
+
 
 endmacro(blt_add_executable)
 
