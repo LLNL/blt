@@ -503,10 +503,44 @@ macro(blt_setup_hip_early_rdc_target)
     # Select erdc input: host RDC lib (partial) or base target archive (full)
     if(arg_FULL_RDC)
         set(_erdc_input "$<TARGET_FILE:${arg_NAME}>")
+        set(_erdc_input_depends ${arg_NAME})
     else()
         set(_erdc_input "$<TARGET_FILE:${_erdc_host}>")
+        set(_erdc_input_depends ${_erdc_host})
     endif()
-   
+
+    # Add extra input archives to erdc.sh from DEPENDS_ON.
+    # If a dependency exposes an "*${arg_SUFFIX}_host" target in its link interface, include it.
+    set(_erdc_extra_input_targets)
+    foreach(_dep ${arg_DEPENDS_ON})
+        if(TARGET ${_dep})
+            if("${_dep}" MATCHES "${arg_SUFFIX}_host$")
+                list(APPEND _erdc_extra_input_targets ${_dep})
+            endif()
+
+            get_target_property(_dep_iface_libs ${_dep} INTERFACE_LINK_LIBRARIES)
+            if(_dep_iface_libs)
+                foreach(_iface ${_dep_iface_libs})
+                    if(TARGET ${_iface} AND "${_iface}" MATCHES "${arg_SUFFIX}_host$")
+                        list(APPEND _erdc_extra_input_targets ${_iface})
+                    endif()
+                endforeach()
+            endif()
+        endif()
+    endforeach()
+
+    if(_erdc_extra_input_targets)
+        list(REMOVE_DUPLICATES _erdc_extra_input_targets)
+        if(NOT arg_FULL_RDC)
+            list(REMOVE_ITEM _erdc_extra_input_targets ${_erdc_host})
+        endif()
+        list(REMOVE_ITEM _erdc_extra_input_targets ${arg_NAME})
+    endif()
+
+    set(_erdc_extra_inputs)
+    foreach(_tgt ${_erdc_extra_input_targets})
+        list(APPEND _erdc_extra_inputs "$<TARGET_FILE:${_tgt}>")
+    endforeach()
 
     # The erdc.sh script will take a static library and produce uber.o; we will use that as the source
     # for the ${arg_NAME}${arg_SUFFIX} target
@@ -514,8 +548,9 @@ macro(blt_setup_hip_early_rdc_target)
     message(STATUS "[BLT] Early RDC build dir='${_erdc_build_dir}' input='${_erdc_input}' output='${_erdc_output_obj}'")
 
     add_custom_command(
-        COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} -t ${_erdc_build_dir}/tmp --keep-temp --verbose
+        COMMAND ${CMAKE_COMMAND} -E env ROCM_PATH=${ROCM_PATH} ARCH_FLAGS="${_erdc_arch_flags}" bash ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} ${_erdc_extra_inputs} -t ${_erdc_build_dir}/tmp --keep-temp --verbose
         OUTPUT ${_erdc_output_obj}
+        DEPENDS ${_erdc_input_depends} ${_erdc_extra_input_targets}
         WORKING_DIRECTORY ${_erdc_build_dir}
         COMMENT "EARLY RDC: generate early RDC archive for ${arg_NAME}, calling ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} \n\t with ROCM_PATH=${ROCM_PATH}, ARCH_FLAGS=${_erdc_arch_flags}"
     )
@@ -531,11 +566,15 @@ macro(blt_setup_hip_early_rdc_target)
     if(${arg_INTERFACE})
         target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX}_device)
     else()
-        target_link_libraries(${arg_NAME} PRIVATE ${arg_NAME}${arg_SUFFIX}_device)
+        target_link_libraries(${arg_NAME} PUBLIC ${arg_NAME}${arg_SUFFIX}_device)
     endif()
-    #if(NOT arg_FULL_RDC)
-    #    target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
-    #endif()
+    if(NOT arg_FULL_RDC)
+        if(${arg_INTERFACE})
+            target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
+        else()
+            target_link_libraries(${arg_NAME} PUBLIC ${_erdc_host})
+        endif()
+    endif()
 
 endmacro(blt_setup_hip_early_rdc_target)
 
