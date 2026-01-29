@@ -370,6 +370,7 @@ macro(blt_add_library)
     set(_blt_rdc_host_target)
     if(_use_rdc AND NOT _use_early_rdc AND _rdc_sources)
         set(_blt_rdc_host_target ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
+#        message(FATAL_ERROR "${_blt_rdc_host_target} STATIC SOURCES ${_rdc_sources} DEPEND_ON ${arg_DEPENDS_ON}")
         add_library(${_blt_rdc_host_target} STATIC ${_rdc_sources} ${arg_HEADERS})
         blt_setup_target(NAME       ${_blt_rdc_host_target}
                          DEPENDS_ON ${arg_DEPENDS_ON}
