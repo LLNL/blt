@@ -25,6 +25,15 @@ int main(int argc, char** argv)
   int commSize = -1;
   MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
+  // this test should be using 4 mpi tasks, check the commSize
+  if(commSize != 4)
+  {
+      std::cout << "Comm Size should equal 4" << std::endl;
+      std::cout << "Comm Size = " << commSize << std::endl;
+      MPI_Finalize();
+      return 1;
+  }
+
   // Do a basic mpi reduce to determine this actually works
   int globalValue = 0;
   int valueToSend = 1;
