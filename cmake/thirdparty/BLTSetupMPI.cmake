@@ -31,6 +31,10 @@ set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
 
+set(_blt_enable_mpi_fortran FALSE)
+if (BLT_ENABLE_FORTRAN AND MPI_Fortran_COMPILER)
+    set(_blt_enable_mpi_fortran TRUE)
+endif()
 
 if(BLT_ENABLE_FIND_MPI)
     message(STATUS "FindMPI Enabled  (ENABLE_FIND_MPI == ON)")
@@ -40,7 +44,9 @@ endif()
 
 
 if (BLT_ENABLE_FIND_MPI)
-    find_package(MPI REQUIRED)
+    set(_blt_mpi_components C CXX)
+    blt_list_append(TO _blt_mpi_components ELEMENTS Fortran IF _blt_enable_mpi_fortran)
+    find_package(MPI REQUIRED COMPONENTS ${_blt_mpi_components})
 
     #-------------------
     # Merge found MPI info and remove duplication
@@ -69,7 +75,7 @@ if (BLT_ENABLE_FIND_MPI)
         endif()
     endif()
 
-    if (BLT_ENABLE_FORTRAN)
+    if (_blt_enable_mpi_fortran)
         set(_f_flag ${MPI_Fortran_${_mpi_compile_flags_suffix}})
         if (_f_flag AND NOT "${_c_flag}" STREQUAL "${_f_flag}")
             list(APPEND _mpi_compile_flags ${_f_flag})
@@ -84,7 +90,7 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}}
                               ${MPI_CXX_${_mpi_includes_suffix}})
-    if (BLT_ENABLE_FORTRAN)
+    if (_blt_enable_mpi_fortran)
         list(APPEND _mpi_includes ${MPI_Fortran_${_mpi_includes_suffix}})
     endif()
     blt_list_remove_duplicates(TO _mpi_includes)
@@ -96,7 +102,7 @@ if (BLT_ENABLE_FIND_MPI)
     if (NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_CXX_LINK_FLAGS}")
         list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
     endif()
-    if (BLT_ENABLE_FORTRAN)
+    if (_blt_enable_mpi_fortran)
         if ((NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}") AND
             (NOT "${MPI_CXX_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}"))
             list(APPEND _mpi_link_flags ${MPI_Fortran_LINK_FLAGS})
@@ -122,7 +128,7 @@ if (BLT_ENABLE_FIND_MPI)
     # Libraries
     #-------------------
     set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-    if (BLT_ENABLE_FORTRAN)
+    if (_blt_enable_mpi_fortran)
         list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
     endif()
     blt_list_remove_duplicates(TO _mpi_libraries)
@@ -166,7 +172,7 @@ endif()
 message(STATUS "MPI Num Proc Flag:    ${MPIEXEC_NUMPROC_FLAG}")
 message(STATUS "MPI Command Append:   ${BLT_MPI_COMMAND_APPEND}")
 
-if (BLT_ENABLE_FORTRAN)
+if (_blt_enable_mpi_fortran)
     # Determine if we should use fortran mpif.h header or fortran mpi module
     find_path(mpif_path
         NAMES "mpif.h"
