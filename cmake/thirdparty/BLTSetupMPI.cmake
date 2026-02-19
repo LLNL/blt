@@ -109,9 +109,15 @@ if (BLT_ENABLE_FIND_MPI)
     # Include paths
     #-------------------
     set(_mpi_includes)
-    blt_list_append(TO _mpi_includes ELEMENTS ${MPI_C_${_mpi_includes_suffix}} IF _blt_enable_mpi_c)
-    blt_list_append(TO _mpi_includes ELEMENTS ${MPI_CXX_${_mpi_includes_suffix}} IF _blt_enable_mpi_cxx)
-    blt_list_append(TO _mpi_includes ELEMENTS ${MPI_Fortran_${_mpi_includes_suffix}} IF _blt_enable_mpi_fortran)
+    if(_blt_enable_mpi_c)
+        list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}})
+    endif()
+    if(_blt_enable_mpi_cxx)
+        list(APPEND _mpi_includes ${MPI_CXX_${_mpi_includes_suffix}})
+    endif()
+    if(_blt_enable_mpi_fortran)
+        list(APPEND _mpi_includes ${MPI_Fortran_${_mpi_includes_suffix}})
+    endif()
     blt_list_remove_duplicates(TO _mpi_includes)
 
     #-------------------
@@ -147,9 +153,15 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Libraries
     #-------------------
-    blt_list_append(TO _mpi_libraries ELEMENTS ${MPI_C_LIBRARIES} IF _blt_enable_mpi_c)
-    blt_list_append(TO _mpi_libraries ELEMENTS ${MPI_CXX_LIBRARIES} IF _blt_enable_mpi_cxx)
-    blt_list_append(TO _mpi_libraries ELEMENTS ${MPI_Fortran_LIBRARIES} IF _blt_enable_mpi_fortran)
+    if(_blt_enable_mpi_c)
+        list(APPEND _mpi_libraries ${MPI_C_LIBRARIES})
+    endif()
+    if(_blt_enable_mpi_cxx)
+        list(APPEND _mpi_libraries ${MPI_CXX_LIBRARIES})
+    endif()
+    if(_blt_enable_mpi_fortran)
+        list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
+    endif()
     blt_list_remove_duplicates(TO _mpi_libraries)
 endif()
 
