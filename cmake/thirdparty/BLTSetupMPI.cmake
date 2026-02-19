@@ -34,7 +34,6 @@ set(_mpi_link_flags )
 # Allow user to selectively enable which languages have MPI targets
 # based on enabled languages and whether they've supplied MPI_<lang>_COMPILER
 get_property(enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
-message(STATUS "Enabled languages: ${enabled_languages}")
 
 set(_blt_enable_mpi_c FALSE)
 if("C" IN_LIST enabled_languages AND MPI_C_COMPILER)
