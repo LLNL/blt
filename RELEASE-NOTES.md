@@ -14,6 +14,8 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Removed `-Winline` from being added to GoogleTest for Clang/Intel as it is a noop and caused a warning on Intel.
 - Toggle GoogleTest adding `-Wno-implicit-float-size-conversion` or `-Wno-sycl-implicit-float-size-conversion` based on Intel version.
 - Update CUDA runtime smoketest to be compatible with CUDA 13
+- Allows setting up MPI in configs with `C`, `CXX` and/or `Fortran` but without a corresponding `MPI_<lang>_COMPILER`. 
+  This came up in an msan config that needed Fortran, but did not have a compatible MPI wrapper for Fortran.
 
 ### Fixed
 - In non-mpi configurations, `blt_add_test` will now throw a `FATAL_ERROR` if the user provides `NUM_MPI_RANKS`
