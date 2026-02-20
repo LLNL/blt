@@ -53,6 +53,17 @@ endif()
 option(ENABLE_FORTRAN      "Enables Fortran compiler support" ${_fortran_already_enabled})
 
 option(ENABLE_MPI          "Enables MPI support" OFF)
+
+# By default, we require MPI_<langl>_COMPILER to be provided for each
+# enabled language when ENABLE_MPI. The following options overrides this.
+cmake_dependent_option(BLT_ALLOW_MISSING_MPI_WRAPPER
+                           "Allow MPI_<lang>_COMPILER to be missing for some enabled languages"
+                           OFF
+                           "ENABLE_MPI"
+                           OFF)
+mark_as_advanced(BLT_ALLOW_MISSING_MPI_WRAPPER)
+
+
 option(ENABLE_OPENMP       "Enables OpenMP compiler support" OFF)
 option(ENABLE_CUDA         "Enable CUDA support" OFF)
 cmake_dependent_option(ENABLE_CLANG_CUDA   "Enable Clang's native CUDA support" OFF
@@ -146,6 +157,7 @@ set(BLT_RUN_BENCHMARKS_TARGET_NAME "run_benchmarks" CACHE STRING "Name of the ta
 # All advanced options should be marked as advanced
 mark_as_advanced(
     ENABLE_FIND_MPI
+    BLT_ALLOW_MISSING_MPI_WRAPPER
     ENABLE_GTEST_DEATH_TESTS
     ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC 
     BLT_CODE_CHECK_TARGET_NAME

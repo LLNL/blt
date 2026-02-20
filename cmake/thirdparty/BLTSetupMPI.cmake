@@ -31,38 +31,59 @@ set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
 
-# Allow user to selectively enable which languages have MPI targets
-# based on enabled languages and whether they've supplied MPI_<lang>_COMPILER
-get_property(enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+# Users must provide MPI_<lang>_COMPILER variables for each enabled language unless BLT_ALLOW_MISSING_MPI_WRAPPER
+# Check for each variable and print a warning/error message if appropriate
+get_property(_enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
-set(_blt_enable_mpi_c FALSE)
-if("C" IN_LIST enabled_languages AND MPI_C_COMPILER)
-    set(_blt_enable_mpi_c TRUE)
-endif()
-
-set(_blt_enable_mpi_cxx FALSE)
-if("CXX" IN_LIST enabled_languages AND MPI_CXX_COMPILER)
-    set(_blt_enable_mpi_cxx TRUE)
-endif()
-
-set(_blt_enable_mpi_fortran FALSE)
-if ("Fortran" IN_LIST enabled_languages AND MPI_Fortran_COMPILER)
-    set(_blt_enable_mpi_fortran TRUE)
-endif()
-
-if(BLT_ENABLE_FIND_MPI)
+if (BLT_ENABLE_FIND_MPI)
     message(STATUS "FindMPI Enabled  (ENABLE_FIND_MPI == ON)")
+
+    set(_blt_missing_mpi_wrappers)
+    foreach(_lang "C" "CXX" "Fortran")
+        if (${_lang} IN_LIST _enabled_languages AND NOT MPI_${_lang}_COMPILER)
+            list(APPEND _blt_missing_mpi_wrappers "MPI_${_lang}_COMPILER")
+        endif()
+    endforeach()
+
+    if (_blt_missing_mpi_wrappers)
+        if (BLT_ALLOW_MISSING_MPI_WRAPPER)
+            message(STATUS "BLT_ALLOW_MISSING_MPI_WRAPPER == ON. Proceeding without: ${_blt_missing_mpi_wrappers}")
+        else()
+            message(FATAL_ERROR
+                    "MPI support is enabled, but missing MPI compiler wrapper(s): ${_blt_missing_mpi_wrappers}\n"
+                    "Provide MPI_<lang>_COMPILER for each enabled language or set BLT_ALLOW_MISSING_MPI_WRAPPER=ON to bypass this check.")
+        endif()
+    endif()
+    unset(_blt_missing_mpi_wrappers)
 else()
     message(STATUS "FindMPI Disabled (ENABLE_FIND_MPI == OFF) ")
 endif()
 
+set(_blt_enable_mpi_c FALSE)
+if("C" IN_LIST _enabled_languages AND MPI_C_COMPILER)
+    set(_blt_enable_mpi_c TRUE)
+endif()
+
+set(_blt_enable_mpi_cxx FALSE)
+if("CXX" IN_LIST _enabled_languages AND MPI_CXX_COMPILER)
+    set(_blt_enable_mpi_cxx TRUE)
+endif()
+
+set(_blt_enable_mpi_fortran FALSE)
+if ("Fortran" IN_LIST _enabled_languages AND MPI_Fortran_COMPILER)
+    set(_blt_enable_mpi_fortran TRUE)
+endif()
 
 if (BLT_ENABLE_FIND_MPI)
-    set(_blt_mpi_components)
-    blt_list_append(TO _blt_mpi_components ELEMENTS C       IF _blt_enable_mpi_c)
-    blt_list_append(TO _blt_mpi_components ELEMENTS CXX     IF _blt_enable_mpi_cxx)
-    blt_list_append(TO _blt_mpi_components ELEMENTS Fortran IF _blt_enable_mpi_fortran)
-    find_package(MPI REQUIRED COMPONENTS ${_blt_mpi_components})
+    if (BLT_ALLOW_MISSING_MPI_WRAPPER)
+        set(_blt_mpi_components)
+        blt_list_append(TO _blt_mpi_components ELEMENTS C       IF _blt_enable_mpi_c)
+        blt_list_append(TO _blt_mpi_components ELEMENTS CXX     IF _blt_enable_mpi_cxx)
+        blt_list_append(TO _blt_mpi_components ELEMENTS Fortran IF _blt_enable_mpi_fortran)
+        find_package(MPI REQUIRED COMPONENTS ${_blt_mpi_components})
+    else()
+        find_package(MPI REQUIRED)
+    endif()
 
     #-------------------
     # Merge found MPI info and remove duplication
