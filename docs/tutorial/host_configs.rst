@@ -31,20 +31,20 @@ These files use standard CMake commands. CMake ``set()`` commands need to specif
     set(CMAKE_VARIABLE_NAME {VALUE} CACHE PATH "")
 
 Here is a snippet from a host-config file that specifies compiler details for
-using specific gcc (version 10.3.1 in this case) on the LLNL Pascal cluster: 
+using specific gcc (version 10.3.1 in this case) on the LLNL Dane cluster: 
 
-.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake
-   :start-after: _blt_pascal_compiler_config_start
-   :end-before:  _blt_pascal_compiler_config_end
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1.cmake
+   :start-after: _blt_tutorial_compiler_config_start
+   :end-before:  _blt_tutorial_compiler_config_end
    :language: cmake
 
 
-Building and Testing on Pascal
+Building and Testing on Matrix
 ------------------------------
 
-Since compute nodes on the Pascal cluster have CPUs and GPUs, here is how you
+Since compute nodes on the Matrix cluster have CPUs and GPUs, here is how you
 can use the host-config file to configure a build of the ``calc_pi``  project with
-MPI and CUDA enabled on Pascal:
+MPI and CUDA enabled on Matrix:
 
 .. code-block:: bash
     
@@ -62,52 +62,6 @@ to run the unit tests that are using MPI and CUDA:
   bash-4.1$ salloc -A <valid bank>
   bash-4.1$ make   
   bash-4.1$ make test
-  
-  Running tests...
-  Test project blt/docs/tutorial/calc_pi/build
-      Start 1: test_1
-  1/8 Test #1: test_1 ...........................   Passed    0.01 sec
-      Start 2: test_2
-  2/8 Test #2: test_2 ...........................   Passed    2.79 sec
-      Start 3: test_3
-  3/8 Test #3: test_3 ...........................   Passed    0.54 sec
-      Start 4: blt_gtest_smoke
-  4/8 Test #4: blt_gtest_smoke ..................   Passed    0.01 sec
-      Start 5: blt_fruit_smoke
-  5/8 Test #5: blt_fruit_smoke ..................   Passed    0.01 sec
-      Start 6: blt_mpi_smoke
-  6/8 Test #6: blt_mpi_smoke ....................   Passed    2.82 sec
-      Start 7: blt_cuda_smoke
-  7/8 Test #7: blt_cuda_smoke ...................   Passed    0.48 sec
-      Start 8: blt_cuda_runtime_smoke
-  8/8 Test #8: blt_cuda_runtime_smoke ...........   Passed    0.11 sec
-
-  100% tests passed, 0 tests failed out of 8
-
-  Total Test time (real) =   6.80 sec
-
-
-Building and Testing on Matrix
-------------------------------
-
-Here is how you can use the host-config file to configure a build of the
-``calc_pi``  project with MPI and CUDA enabled on the LLNL's Matrix cluster:
-
-.. code-block:: bash
-    
-    # create build dir
-    mkdir build
-    cd build
-    # configure using host-config
-    cmake -C ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake  ..
-
-And here is how to build and test the code on Matrix:
-
-.. code-block:: console
-
-  bash-4.2$ salloc 1 -A <valid group>
-  bash-4.2$ make
-  bash-4.2$ make test
   
   Running tests...
   Test project projects/blt/docs/tutorial/calc_pi/build
@@ -128,8 +82,7 @@ And here is how to build and test the code on Matrix:
   
   100% tests passed, 0 tests failed out of 7
   
-  Total Test time (real) =   2.47 sec  
-
+  Total Test time (real) =   2.47 sec
 
 Building and Testing on Summit
 -------------------------------
@@ -190,7 +143,7 @@ And here is how to build and test the code on Summit:
 Example Host-configs
 --------------------
 
-Basic TOSS3 (for example: Quartz) host-config that has C, C++, and Fortran Compilers along with MPI support:
+Basic TOSS4 (for example: Dane) host-config that has C, C++, and Fortran Compilers along with MPI support:
 
 .. container:: toggle
 
@@ -202,20 +155,16 @@ Basic TOSS3 (for example: Quartz) host-config that has C, C++, and Fortran Compi
         :language: cmake
         :linenos:
 
-Here are the full example host-config files for LLNL's Pascal, Lassen, 
-and Quartz Clusters that uses the default compilers on the system:
+.. note::
+    When ``ENABLE_MPI`` is ``ON`` and you are using CMake's ``FindMPI`` (the default,
+    ``ENABLE_FIND_MPI=ON``), BLT expects an ``MPI_<lang>_COMPILER`` wrapper for each
+    enabled language. For example, if you enable Fortran, also set
+    ``MPI_Fortran_COMPILER`` in your host-config.
 
-.. container:: toggle
+    If a wrapper is unavailable or incompatible for a specific language, you can set
+    ``BLT_ALLOW_MISSING_MPI_WRAPPER=ON`` to allow configuring MPI without that wrapper.
 
-    .. container:: label
-
-        ``gcc@10.3.1 host-config``
-
-    .. literalinclude::  ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake
-        :language: cmake
-        :linenos:
-
-More complicated host-config that has C, C++, MPI, and CUDA support:
+Here is the full example host-config files for LLNL's Matrix Cluster that uses  C, C++, MPI, and CUDA support:
 
 .. container:: toggle
 

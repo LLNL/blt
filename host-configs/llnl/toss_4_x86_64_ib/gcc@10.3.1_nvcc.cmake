@@ -4,7 +4,8 @@
 # SPDX-License-Identifier: (BSD-3-Clause)
 
 #------------------------------------------------------------------------------
-# Example host-config file for a cluster on a toss4 platform (e.g. dane) at LLNL
+# Example host-config file for a cluster on a toss4 platform with Nvidia GPUs
+# (e.g. matrix) at LLNL
 #------------------------------------------------------------------------------
 #
 # This file provides CMake with paths / details for:
@@ -16,7 +17,7 @@
 # gcc@10.3.1 compilers
 #------------------------------------------------------------------------------
 
-# _blt_pascal_compiler_config_start
+# _blt_matrix_compiler_config_start
 set(GCC_VERSION "gcc-10.3.1")
 set(GCC_HOME "/usr/tce/packages/gcc/${GCC_VERSION}")
 
@@ -26,7 +27,7 @@ set(CMAKE_CXX_COMPILER "${GCC_HOME}/bin/g++" CACHE PATH "")
 # Fortran support
 set(ENABLE_FORTRAN ON CACHE BOOL "")
 set(CMAKE_Fortran_COMPILER "${GCC_HOME}/bin/gfortran" CACHE PATH "")
-# _blt_pascal_compiler_config_end
+# _blt_matrix_compiler_config_end
 
 #------------------------------------------------------------------------------
 # MPI Support
