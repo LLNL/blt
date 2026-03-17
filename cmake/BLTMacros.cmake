@@ -611,7 +611,7 @@ macro(blt_add_executable)
         endif()
 
         if(NOT _normal_sources)
-             # set o rdc 
+             # set to rdc 
              set(_target_sources ${_rdc_sources})
         else()
            set(_target_sources ${_normal_sources})
@@ -620,6 +620,10 @@ macro(blt_add_executable)
         if(_use_early_rdc)
             set(_erdc_sources ${_rdc_sources})
         endif()
+    endif()
+
+    if (NOT DEFINED _target_sources)
+       set(_target_sources ${_normal_sources})
     endif()
 
     # Create the base executable from the 'normal' sources
@@ -653,7 +657,7 @@ macro(blt_add_executable)
                      OBJECT     FALSE)
     
     # Create host RDC archive for executables (RDC-only mode)
-    if (BLT_ENABLE_HIP AND _flag_only)
+    if (BLT_ENABLE_HIP AND _use_rdc)
         set(_blt_exe_target_name ${arg_NAME})
         target_compile_options(${_blt_exe_target_name} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
         target_link_options(${_blt_exe_target_name} PRIVATE -fgpu-rdc)
