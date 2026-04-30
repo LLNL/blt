@@ -547,7 +547,7 @@ function(blt_convert_to_system_includes)
                 endif()
 
                 list(APPEND _target_list ${_target})
-            elseif(NOT ${arg_QUIET)
+            elseif(NOT ${arg_QUIET})
                 message(WARNING "${_target} does not exist!")
             endif()
 

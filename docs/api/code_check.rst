@@ -200,7 +200,7 @@ options can be given:
 
     * (no value)          : run all available static analysis checks found
     * (checker1:checker2) : run checker1 and checker2
-    * (interpreter)       : run the clang-query interpeter to interactively develop queries
+    * (interpreter)       : run the clang-query interpreter to interactively develop queries
 
 
 .. _blt_add_cppcheck_target:

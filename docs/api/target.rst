@@ -1,6 +1,6 @@
 .. # Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
-.. # 
+.. #
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
 Target Macros
@@ -26,7 +26,7 @@ NAME
   Name that CTest reports.
 
 COMMAND
-  Command line that will be used to run the test and can include arguments.  
+  Command line that will be used to run the test and can include arguments.
 
 NUM_MPI_TASKS
   Indicates this is an MPI test and how many MPI tasks to use.
@@ -49,12 +49,12 @@ which can be run by the ``run_benchmarks`` build target.  These tests are
 not run when you use the regular ``test`` build target.  The ``run_benchmarks``
 build target will not run regular tests.
 
-This macro is just a thin wrapper around :ref:`blt_add_test` and assists 
+This macro is just a thin wrapper around :ref:`blt_add_test` and assists
 with building up the correct command line for running the benchmark.  For more
 information see :ref:`blt_add_test`.
 
 The underlying executable should be previously added to the build system
-with :ref:`blt_add_executable`. It should include the necessary benchmarking 
+with :ref:`blt_add_executable`. It should include the necessary benchmarking
 library in its ``DEPENDS_ON`` list.
 
 Any calls to this macro should be guarded with ``ENABLE_BENCHMARKS`` unless this option
@@ -125,7 +125,7 @@ OUTPUT_DIR
   Directory that this target will built to, defaults to bin
 
 OUTPUT_NAME
-  Override built file name of the executable (defaults to ``<name>``)  
+  Override built file name of the executable (defaults to ``<name>``)
 
 FOLDER
   Name of the IDE folder to ease organization
@@ -141,12 +141,12 @@ to the library for build system dependency tracking and IDE folder support.
 created by different targets.
 
 .. note::
-  If the first entry in ``SOURCES`` is a Fortran source file, the fortran linker 
+  If the first entry in ``SOURCES`` is a Fortran source file, the fortran linker
   is used, via setting the CMake target property ``LINKER_LANGUAGE`` to Fortran.
 
 .. note::
   The ``FOLDER`` option is only used when ``ENABLE_FOLDERS`` is ``ON`` and when the
-  CMake generator supports this feature and will otherwise be ignored. 
+  CMake generator supports this feature and will otherwise be ignored.
 
 
 .. _blt_add_library:
@@ -161,7 +161,7 @@ blt_add_library
                      HEADERS      [header1 [header2 ...]]
                      INCLUDES     [dir1 [dir2 ...]]
                      DEFINES      [define1 [define2 ...]]
-                     DEPENDS_ON   [dep1 ...] 
+                     DEPENDS_ON   [dep1 ...]
                      OUTPUT_NAME  [name]
                      OUTPUT_DIR   [dir]
                      SHARED       [TRUE | FALSE]
@@ -193,7 +193,7 @@ DEPENDS_ON
   depends on
 
 OUTPUT_NAME
-  Override built file name of the library (defaults to ``<name>``)  
+  Override built file name of the library (defaults to ``<name>``)
 
 OUTPUT_DIR
   Directory that this target will built to
@@ -220,15 +220,15 @@ or object.
 Normal libraries are libraries that have sources that are compiled and linked into a single
 library and have headers that go along with them (unless it's a Fortran library).
 
-Header-only libraries are useful when you do not want the library separately compiled or 
+Header-only libraries are useful when you do not want the library separately compiled or
 are using C++ templates that require the library's user to instantiate them. These libraries
 have headers but no sources. To create a header-only library (CMake calls them ``INTERFACE`` libraries),
 simply list all headers under the ``HEADERS`` argument and do not specify ``SOURCES``
-(because there aren't any). Header-only libraries can have dependencies like compiled libraries. 
+(because there aren't any). Header-only libraries can have dependencies like compiled libraries.
 These will be propagated to targets that depend on the header-only library.
 
 Object libraries are basically a collection of compiled source files that are not
-archived or linked. They are sometimes useful when you want to solve compilicated linking
+archived or linked. They are sometimes useful when you want to solve complicated linking
 problems (like circular dependencies) or when you want to combine smaller libraries into
 one larger library but don't want the linker to remove unused symbols. Unlike regular CMake
 object libraries you do not have to use the ``$<TARGET_OBJECTS:<libname>>`` syntax, you can just
@@ -237,7 +237,7 @@ use ``<libname>`` with BLT macros.  Unless you have a good reason don't use Obje
 .. note::
   Due to necessary record keeping, BLT Object libraries need to be defined by :ref:`blt_add_library` before
   they are used in any ``DEPENDS_ON`` list. They also do not follow CMake's normal transitivity rules.
-  This is due to CMake requiring you install the individual object files if you install the 
+  This is due to CMake requiring you install the individual object files if you install the
   target that uses them. BLT manually adds the ``INTERFACE`` target properties to get around this.
 
 This macro uses the ``BUILD_SHARED_LIBS``, which is defaulted to ``OFF``, to determine
@@ -257,7 +257,7 @@ and then with ``OFF``. ``NAME`` is the CMake target name, ``OUTPUT_NAME`` is the
 
 .. note::
   The ``FOLDER`` option is only used when ``ENABLE_FOLDERS`` is ``ON`` and when the CMake generator
-  supports this feature and will otherwise be ignored. 
+  supports this feature and will otherwise be ignored.
 
 
 .. _blt_add_test:
@@ -304,8 +304,8 @@ does not build the executable and requires a prior call to :ref:`blt_add_executa
 This macro assists with building up the correct command line. It will prepend
 the ``RUNTIME_OUTPUT_DIRECTORY`` target property to the executable.
 
-If ``NUM_MPI_TASKS`` is given or ``ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC`` is set, the macro 
-will appropriately use ``MPIEXEC``, ``MPIEXEC_NUMPROC_FLAG``, and ``BLT_MPI_COMMAND_APPEND`` 
+If ``NUM_MPI_TASKS`` is given or ``ENABLE_WRAP_ALL_TESTS_WITH_MPIEXEC`` is set, the macro
+will appropriately use ``MPIEXEC``, ``MPIEXEC_NUMPROC_FLAG``, and ``BLT_MPI_COMMAND_APPEND``
 to create the MPI run line.
 
 ``MPIEXEC`` and ``MPIEXEC_NUMPROC_FLAG`` are filled in by CMake's ``FindMPI.cmake`` but can
@@ -369,7 +369,7 @@ INCLUDES
 TREAT_INCLUDES_AS_SYSTEM
   Whether to inform the compiler to treat this target's include paths
   as system headers - this applies to all include paths for the target,
-  not just those specifies in the ``INCLUDES`` parameter.  Only some 
+  not just those specifies in the ``INCLUDES`` parameter.  Only some
   compilers support this. This is useful if the headers generate warnings
   you want to not have them reported in your build. This defaults to ``OFF``.
 
@@ -475,12 +475,12 @@ Instead of handwriting package location logic in a CMake package configuration f
 
 .. note::
   Libraries marked ``EXPORTABLE`` cannot also be marked ``GLOBAL``.  They also
-  must be added to any export set that includes a target that depends on the 
+  must be added to any export set that includes a target that depends on the
   ``EXPORTABLE`` library.
 
 .. note::
   It is highly recommended that ``EXPORTABLE`` imported targets be installed with a
-  project-specific namespace/prefix, either with the ``NAMESPACE`` option of CMake's 
+  project-specific namespace/prefix, either with the ``NAMESPACE`` option of CMake's
   ``install()`` command, or the ``EXPORT_NAME`` target property.  This mitigates the
   risk of conflicting target names.
 
@@ -552,9 +552,9 @@ blt_export_tpl_targets
                            [NAMESPACE <namespace>])
 
 .. warning::
-    This macro is now deprecated in favor of ``blt_install_tpl_setups`` due to problems with 
+    This macro is now deprecated in favor of ``blt_install_tpl_setups`` due to problems with
     evaluating generator expressions early.
-    
+
 Install BLT-provided third-party library targets to the given export set.
 
 EXPORT
@@ -592,15 +592,15 @@ DESTINATION
 
 This macro will install setup files used to recreate the necessary BLT targets OpenMP, MPI, CUDA, and HIP.
 
-The installed setup files are the same files that originally created the BLT targets and will recreate the 
-same process in your downstream projects. These call the necessary `find_packages` for each needed target 
-and populate them with the necessary target information, such as compile and link flags. The BLT targets 
+The installed setup files are the same files that originally created the BLT targets and will recreate the
+same process in your downstream projects. These call the necessary `find_packages` for each needed target
+and populate them with the necessary target information, such as compile and link flags. The BLT targets
 are then recreated via ``blt_import_library``.  ``BLTSetupTargets.cmake`` MUST be included from your project
-created config file, such as ``<lowercasePackageName>-config.cmake`` or ``<PackageName>Config.cmake``. 
+created config file, such as ``<lowercasePackageName>-config.cmake`` or ``<PackageName>Config.cmake``.
 For example, as long as you called this macro with the same ``DESTINATION`` as your exported project targets,
 ``include(${CMAKE_CURRENT_LIST_DIR}/BLTSetupTargets.cmake)`` will recreate the BLT targets in a downstream project.
- 
+
 .. note::
   This macro is meant to replace ``blt_export_tpl_targets`` as the favored way to configure TPLs
-  for use by projects downstream.  An internal flag makes it impossible to call both from the same 
+  for use by projects downstream.  An internal flag makes it impossible to call both from the same
   project.

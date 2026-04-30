@@ -13,10 +13,13 @@
 #   https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html
 ####################################################3
 
-# use CMAKE_BUILD_TOOL to identify visual studio
-# and CMAKE_CXX_COMPILER_ID for all other cases
+# Use CMake variable MSVC (or CMAKE_BUILD_TOOL) to identify msvc style compilers
+# and CMAKE_CXX_COMPILER_ID for all other cases.
+# Some build tools (such as Ninja) are available for both Windows and non-Windows platforms,
+# but we can also use native Windows build tools to detect a Visual Studio environment
+# in case CMake fails to detect and set MSVC=1 for some reason.
 
-if("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)")
+if(MSVC OR ("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)"))
     set(COMPILER_FAMILY_IS_MSVC 1)
     message(STATUS "Compiler family is MSVC")
 
@@ -121,12 +124,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 if(BLT_DEFINES)
     add_definitions(${BLT_DEFINES})
     message(STATUS "Added \"${BLT_DEFINES}\" to definitions")
-endif()
-
-if(COMPILER_FAMILY_IS_MSVC)
-    # Visual studio can give a warning that /bigobj is required due to the size of some object files
-    set( BLT_CXX_FLAGS "${BLT_CXX_FLAGS} /bigobj" )
-    set( BLT_C_FLAGS   "${BLT_C_FLAGS} /bigobj" )
 endif()
 
 ##########################################

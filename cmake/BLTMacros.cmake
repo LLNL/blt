@@ -460,14 +460,27 @@ macro(blt_add_test)
 
     # Handle MPI
     if( arg_NUM_MPI_TASKS )
-        # Handle CMake changing MPIEXEC to MPIEXEC_EXECUTABLE
-        if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
-            set(_mpiexec ${MPIEXEC_EXECUTABLE})
-        else()
-            set(_mpiexec ${MPIEXEC})
+        # first check that the number of ranks is a positive integer
+        string(REGEX MATCH "^-?[0-9]+$" _is_integer "${arg_NUM_MPI_TASKS}")
+        if( NOT _is_integer OR arg_NUM_MPI_TASKS LESS 1)
+            message(FATAL_ERROR "In blt_add_test(), attempted to run an mpi test with invalid NUM_MPI_TASKS: ${arg_NUM_MPI_TASKS}")
         endif()
 
-        set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
+        # prefix command with mpi executable in MPI configs
+        if( BLT_ENABLE_MPI)
+            # Handle CMake changing MPIEXEC to MPIEXEC_EXECUTABLE
+            if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
+                set(_mpiexec ${MPIEXEC_EXECUTABLE})
+            else()
+                set(_mpiexec ${MPIEXEC})
+            endif()
+
+            set(_test_command ${_mpiexec} ${MPIEXEC_NUMPROC_FLAG} ${arg_NUM_MPI_TASKS} ${BLT_MPI_COMMAND_APPEND} ${_test_command} )
+        elseif( arg_NUM_MPI_TASKS EQUAL 1)
+            # no-op: Allow NUM_MPI_TASKS to be 1 when not using MPI
+        else()
+            message(FATAL_ERROR "In blt_add_test(), attempted to invoke a test with ${arg_NUM_MPI_TASKS} ranks in a non-mpi configuration")
+        endif()
     endif()
 
     add_test(NAME              ${arg_NAME}

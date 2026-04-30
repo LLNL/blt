@@ -106,9 +106,9 @@ compiler variable for you and enable the CUDA language.
    The ``BLT_CXX_STD`` variable is useful to set the C++ and CUDA language standard to the
    same level. For example, ``c++17`` will set a both to C++17.
 
-Here is a snippet with these settings for LLNL's Lassen Cluster:
+Here is a snippet with these settings for LLNL's Matrix Cluster:
 
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++17.cmake
+.. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1_nvcc.cmake
    :start-after: _blt_tutorial_cuda_config_start
    :end-before:  _blt_tutorial_cuda_config_end
    :language: cmake
@@ -127,12 +127,9 @@ it also tells BLT that this target's C/C++/CUDA source files need to be compiled
 ``blt::cuda_runtime`` which also adds the CUDA runtime library and headers but will not
 compile each source file with ``nvcc``.
 
-Some other useful CUDA variables are:
-
-.. literalinclude:: ../../host-configs/llnl/blueos_3_ppc64le_ib_p9/clang@10.0.1_nvcc_c++14_xlf.cmake
-   :start-after: _blt_tutorial_useful_cuda_variables_start
-   :end-before:  _blt_tutorial_useful_cuda_variables_end
-   :language: cmake
+.. note::
+   If you are using GoogleTest and ``nvcc``, you will need to set 
+   ``set(gtest_disable_pthreads ON CACHE BOOL "")``.
 
 
 OpenMP

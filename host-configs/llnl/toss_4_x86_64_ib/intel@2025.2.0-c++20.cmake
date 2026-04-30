@@ -13,11 +13,11 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# intel-2022.1.0 compilers
+# intel-2025.2.0 compilers
 #------------------------------------------------------------------------------
 
-set(INTELLLVM_VERSION "intel-2022.1.0-magic")
-set(INTELLLVM_HOME "/usr/tce/packages/intel/${INTELLLVM_VERSION}")
+set(INTELLLVM_VERSION "intel-2025.2.0")
+set(INTELLLVM_HOME "/usr/tce/packages/intel/${INTELLLVM_VERSION}/compiler/2025.2/")
 
 # c compiler
 set(CMAKE_C_COMPILER "${INTELLLVM_HOME}/bin/icx" CACHE PATH "")
@@ -35,14 +35,14 @@ set(CMAKE_Fortran_COMPILER "${INTELLLVM_HOME}/bin/ifx" CACHE PATH "")
 # Extra flags
 #------------------------------------------------------------------------------
 
-set(BLT_CXX_STD "c++17" CACHE STRING "")
+set(BLT_CXX_STD "c++20" CACHE STRING "")
 
 #------------------------------------------------------------------------------
 # MPI Support
 #------------------------------------------------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3.6-${INTELLLVM_VERSION}" CACHE PATH "")
+set(MPI_HOME             "/usr/tce/packages/mvapich2/mvapich2-2.3.7-${INTELLLVM_VERSION}" CACHE PATH "")
 
 set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc" CACHE PATH "")
 set(MPI_CXX_COMPILER     "${MPI_HOME}/bin/mpicxx" CACHE PATH "")

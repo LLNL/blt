@@ -90,7 +90,7 @@ Open-Source Projects using BLT
  * [Kripke](https://github.com/LLNL/Kripke): Simple, scalable, 3D Sn deterministic particle transport code
  * [RAJA](https://github.com/LLNL/raja): Performance portability layer for HPC
  * [SAMRAI](https://github.com/LLNL/SAMRAI): Structured Adaptive Mesh Refinement Application Infrastructure
- * [Serac](https://github.com/LLNL/serac): 3D implicit nonlinear thermal-structural simulation code
+ * [Smith](https://github.com/LLNL/smith): 3D implicit nonlinear thermal-structural simulation code
  * [Spheral](https://github.com/LLNL/spheral): Steerable parallel environment for performing coupled hydrodynamical & gravitational numerical simulations
  * [Umpire](https://github.com/LLNL/Umpire): Application-focused API for memory management on NUMA and GPU architectures
  * [VTK-h](https://github.com/Alpine-DAV/vtk-h): Scientific visualization algorithms for emerging processor architectures

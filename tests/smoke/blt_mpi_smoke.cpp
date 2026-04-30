@@ -25,6 +25,20 @@ int main(int argc, char** argv)
   int commSize = -1;
   MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
+  // Check for expected commSize.
+  //
+  // We expect to have 4 MPI Tasks.
+  //
+  // The commSize check must stay in sync with the NUM_MPI_TASKS
+  // value passed to the corresponding blt_add_test call in CMakeLists.txt.
+  if(commSize != 4)
+  {
+      std::cout << "Comm Size should equal 4" << std::endl;
+      std::cout << "Comm Size = " << commSize << std::endl;
+      MPI_Finalize();
+      return 1;
+  }
+
   // Do a basic mpi reduce to determine this actually works
   int globalValue = 0;
   int valueToSend = 1;

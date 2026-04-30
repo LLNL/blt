@@ -1,0 +1,28 @@
+From 2923b3d305da79856cf6f43a81bc1e5a5826cc57 Mon Sep 17 00:00:00 2001
+From: Michael Hirsch <scivision@users.noreply.github.com>
+Date: Fri, 11 Jul 2025 14:19:17 -0400
+Subject: [PATCH] CMake compatible with Intel oneAPI >= 2025.2
+
+ref: https://community.intel.com/t5/Intel-oneAPI-DPC-C-Compiler/oneAPI-2025-2-warning-10430-Wno-implicit-float-size-conversion/m-p/1699832/highlight/true#M4492
+---
+ googletest/cmake/internal_utils.cmake | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/googletest/cmake/internal_utils.cmake b/googletest/cmake/internal_utils.cmake
+index 7ca256a76b75ddf2974b7e801a9c718af4a08124..28e647b152d622890e661ace4edbcea7340bdce2 100644
+--- a/googletest/cmake/internal_utils.cmake
++++ b/googletest/cmake/internal_utils.cmake
+@@ -100,7 +100,12 @@ macro(config_compiler_and_linker)
+       set(cxx_strict_flags "${cxx_strict_flags} -Wchar-subscripts")
+     endif()
+     if (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+-      set(cxx_base_flags "${cxx_base_flags} -Wno-implicit-float-size-conversion -ffp-model=precise")
++      string(APPEND cxx_base_flags " -ffp-model=precise")
++      if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 2025.2.0)
++        string(APPEND cxx_base_flags " -Wno-implicit-float-size-conversion")
++      else()
++        string(APPEND cxx_base_flags " -Wno-sycl-implicit-float-size-conversion")
++      endif()
+     endif()
+   elseif (CMAKE_COMPILER_IS_GNUCXX)
+     set(cxx_base_flags "-Wall -Wshadow -Wundef")

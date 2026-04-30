@@ -1,6 +1,8 @@
 ####
 # This is the shared configuration of jobs for tioga
 .on_tioga:
+  variables:
+    ALLOC_COMMAND: "flux run -t15m -n1 --queue pci"
   tags:
     - shell
     - tioga
@@ -9,29 +11,13 @@
       when: never
     - when: on_success
 
-####
-# Template
-.src_build_on_tioga:
-  stage: build
-  variables:
-    ALLOC_COMMAND: "flux run -t15m -n1 --queue pci"
-  extends: [.build_script, .on_tioga]
-
-####
-# Template
-.run_project_integration_test_on_tioga:
-  stage: build
-  variables:
-    ALLOC_COMMAND: "flux run -t15m -n1 --queue pci"
-  extends: [.run_project_integration_tests, .on_tioga]
 
 ####
 # Build jobs
 tioga-clang_18_0_0_hip:
   variables:
     HOST_CONFIG: "clang@18.0.0_hip.cmake"
-  extends: .src_build_on_tioga
-
+  extends: [.build_script, .on_tioga]
 
 ####
 # HIP project tests
@@ -39,10 +25,10 @@ tioga-clang_18.0.0_hip_config_test:
   variables:
     ENABLED_BLT_TESTS: "hip-config-test"
     HOST_CONFIG: "clang@18.0.0_hip.cmake"
-  extends: [.run_project_integration_test_on_tioga]
+  extends: [.run_project_integration_tests, .on_tioga]
 
 tioga-gcc_10.3.1_clang_17.0.0_hip_config_test:
   variables:
     ENABLED_BLT_TESTS: "hip-config-test"
     HOST_CONFIG: "gcc@10.3.1_clang@17.0.0_hip.cmake"
-  extends: [.run_project_integration_test_on_tioga]
+  extends: [.run_project_integration_tests, .on_tioga]

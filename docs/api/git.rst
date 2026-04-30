@@ -1,6 +1,6 @@
 .. # Copyright (c) 2017-2025, Lawrence Livermore National Security, LLC and
 .. # other BLT Project Developers. See the top-level LICENSE file for details
-.. # 
+.. #
 .. # SPDX-License-Identifier: (BSD-3-Clause)
 
 Git Macros
@@ -29,7 +29,7 @@ the ``OUTPUT_VARIABLE`` argument.
 
 A return code for the Git command is returned to the caller via the CMake
 variable provided with the ``RETURN_CODE`` argument. A non-zero return code
-indicates that an error has occured.
+indicates that an error has occurred.
 
 Note, this macro assumes ``FindGit()`` was invoked and was successful. It relies
 on the following variables set by ``FindGit()``:
@@ -109,7 +109,7 @@ the ``OUTPUT_TAG`` parameter.
 
 A return code for the Git command is returned to the caller via the CMake
 variable provided with the ``RETURN_CODE`` argument. A non-zero return code
-indicates that an error has occured.
+indicates that an error has occurred.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -142,7 +142,7 @@ corresponding to ``CMAKE_CURRENT_SOURCE_DIR``.
 
 A return code for the Git command is returned to the caller via the CMake
 variable provided with the ``RETURN_CODE`` argument. A non-zero return code
-indicates that an error has occured.
+indicates that an error has occurred.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -178,7 +178,7 @@ macro will use ``CMAKE_CURRENT_SOURCE_DIR``.
 
 A return code for the Git command is returned to the caller via the CMake
 variable provided with the ``RETURN_CODE`` argument. A non-zero return code
-indicates that an error has occured.
+indicates that an error has occurred.
 
 .. code-block:: cmake
     :caption: **Example**
@@ -189,4 +189,3 @@ indicates that an error has occured.
         message( FATAL_ERROR "blt_git_hashcode failed!" )
     endif()
     message( STATUS "sha1=${sha1}" )
-
