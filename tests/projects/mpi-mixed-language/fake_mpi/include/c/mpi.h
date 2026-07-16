@@ -1,0 +1,6 @@
+#ifndef BLT_TEST_FAKE_MPI_C_MPI_H
+#define BLT_TEST_FAKE_MPI_C_MPI_H
+
+#define BLT_FAKE_MPI_C_HEADER 1
+
+#endif

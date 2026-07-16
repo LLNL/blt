@@ -30,6 +30,31 @@ set(_mpi_compile_flags )
 set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
+set(_mpi_fortran_includes )
+
+macro(blt_append_mpi_language_flags output_var language)
+    foreach(_mpi_flag ${ARGN})
+        if(_mpi_flag)
+            list(APPEND ${output_var} "$<$<COMPILE_LANGUAGE:${language}>:${_mpi_flag}>")
+        endif()
+    endforeach()
+endmacro()
+
+macro(blt_append_mpi_cuda_host_flags output_var)
+    foreach(_mpi_flag ${ARGN})
+        if(_mpi_flag)
+            list(APPEND ${output_var} "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_flag}>")
+        endif()
+    endforeach()
+endmacro()
+
+macro(blt_append_mpi_language_includes output_var language)
+    foreach(_mpi_include ${ARGN})
+        if(_mpi_include)
+            list(APPEND ${output_var} "$<$<COMPILE_LANGUAGE:${language}>:${_mpi_include}>")
+        endif()
+    endforeach()
+endmacro()
 
 
 if(BLT_ENABLE_FIND_MPI)
@@ -49,45 +74,54 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Compile flags
     #-------------------
-    set(_c_flag ${MPI_C_${_mpi_compile_flags_suffix}})
-    if (_c_flag AND BLT_ENABLE_CUDA)
-        list(APPEND _mpi_compile_flags
-                    $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_c_flag}>
-                    $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_c_flag}>)
-    else()
-        list(APPEND _mpi_compile_flags ${_c_flag})
-    endif()
+    set(_c_flags ${MPI_C_${_mpi_compile_flags_suffix}})
+    blt_append_mpi_language_flags(_mpi_compile_flags C ${_c_flags})
 
-    set(_cxx_flag ${MPI_CXX_${_mpi_compile_flags_suffix}})
-    if (_cxx_flag AND NOT "${_c_flag}" STREQUAL "${_cxx_flag}")
-        if (BLT_ENABLE_CUDA)
-            list(APPEND _mpi_compile_flags
-            $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_cxx_flag}>
-            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_cxx_flag}>)
-        else()
-            list(APPEND _mpi_compile_flags ${_cxx_flag})
-        endif()
+    set(_cxx_flags ${MPI_CXX_${_mpi_compile_flags_suffix}})
+    blt_append_mpi_language_flags(_mpi_compile_flags CXX ${_cxx_flags})
+
+    if (BLT_ENABLE_CUDA)
+        set(_cuda_host_flags ${_c_flags} ${_cxx_flags})
+        blt_list_remove_duplicates(TO _cuda_host_flags)
+        blt_append_mpi_cuda_host_flags(_mpi_compile_flags ${_cuda_host_flags})
     endif()
 
     if (BLT_ENABLE_FORTRAN)
-        set(_f_flag ${MPI_Fortran_${_mpi_compile_flags_suffix}})
-        if (_f_flag AND NOT "${_c_flag}" STREQUAL "${_f_flag}")
-            list(APPEND _mpi_compile_flags ${_f_flag})
-        endif()
+        set(_fortran_flags ${MPI_Fortran_${_mpi_compile_flags_suffix}})
+        blt_append_mpi_language_flags(_mpi_compile_flags Fortran ${_fortran_flags})
     endif()
-    unset(_c_flag)
-    unset(_cxx_flag)
-    unset(_f_flag)
+    unset(_c_flags)
+    unset(_cxx_flags)
+    unset(_cuda_host_flags)
+    unset(_fortran_flags)
 
     #-------------------
     # Include paths
     #-------------------
-    list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}}
-                              ${MPI_CXX_${_mpi_includes_suffix}})
-    if (BLT_ENABLE_FORTRAN)
-        list(APPEND _mpi_includes ${MPI_Fortran_${_mpi_includes_suffix}})
+    set(_c_includes ${MPI_C_${_mpi_includes_suffix}})
+    blt_list_remove_duplicates(TO _c_includes)
+    blt_append_mpi_language_includes(_mpi_includes C ${_c_includes})
+
+    set(_cxx_includes ${MPI_CXX_${_mpi_includes_suffix}})
+    blt_list_remove_duplicates(TO _cxx_includes)
+    blt_append_mpi_language_includes(_mpi_includes CXX ${_cxx_includes})
+
+    if (BLT_ENABLE_CUDA)
+        set(_cuda_includes ${_cxx_includes})
+        if (NOT _cuda_includes)
+            set(_cuda_includes ${_c_includes})
+        endif()
+        blt_append_mpi_language_includes(_mpi_includes CUDA ${_cuda_includes})
     endif()
-    blt_list_remove_duplicates(TO _mpi_includes)
+
+    if (BLT_ENABLE_FORTRAN)
+        set(_mpi_fortran_includes ${MPI_Fortran_${_mpi_includes_suffix}})
+        blt_list_remove_duplicates(TO _mpi_fortran_includes)
+        blt_append_mpi_language_includes(_mpi_includes Fortran ${_mpi_fortran_includes})
+    endif()
+    unset(_c_includes)
+    unset(_cxx_includes)
+    unset(_cuda_includes)
 
     #-------------------
     # Link flags
@@ -134,6 +168,7 @@ if (BLT_MPI_COMPILE_FLAGS)
 endif()
 if (BLT_MPI_INCLUDES)
     set(_mpi_includes ${BLT_MPI_INCLUDES})
+    set(_mpi_fortran_includes ${BLT_MPI_INCLUDES})
 endif()
 if (BLT_MPI_LIBRARIES)
     set(_mpi_libraries ${BLT_MPI_LIBRARIES})
@@ -170,7 +205,7 @@ if (BLT_ENABLE_FORTRAN)
     # Determine if we should use fortran mpif.h header or fortran mpi module
     find_path(mpif_path
         NAMES "mpif.h"
-        PATHS ${_mpi_includes}
+        PATHS ${_mpi_fortran_includes}
         NO_DEFAULT_PATH
         )
 
