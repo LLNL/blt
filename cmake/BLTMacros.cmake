@@ -578,6 +578,7 @@ macro(blt_add_executable)
     # For executables we only support the partial-RDC case where RDC_SOURCES
     # is a non-empty strict subset of SOURCES.
     set(_normal_sources ${arg_SOURCES})
+    set(_target_sources ${_normal_sources})
     set(_rdc_sources)
     set(_erdc_sources)
     set(_use_early_rdc FALSE)
@@ -620,10 +621,6 @@ macro(blt_add_executable)
         if(_use_early_rdc)
             set(_erdc_sources ${_rdc_sources})
         endif()
-    endif()
-
-    if (NOT DEFINED _target_sources)
-       set(_target_sources ${_normal_sources})
     endif()
 
     # Create the base executable from the 'normal' sources
