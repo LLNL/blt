@@ -21,7 +21,4 @@
 #error "Unexpected fake C MPI compile property in CXX compilation"
 #endif
 
-void blt_mpi_mixed_language() {
-  MPI_Init(nullptr, nullptr);
-  MPI_Finalize();
-}
+void blt_fake_mpi_cxx() {}

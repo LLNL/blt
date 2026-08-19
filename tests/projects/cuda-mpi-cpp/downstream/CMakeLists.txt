@@ -34,14 +34,21 @@ if (NOT TARGET mpi)
                       "downstream project configuration.")
 endif()
 
-# Verify that MPI is using the generator expression dependent on CUDA compilation support
-# in its compile flags.
+# Verify that MPI keeps CXX and CUDA compile options language scoped. The
+# precise option payload is owned by the CMake FindMPI version in use.
 get_target_property(mpi_compile_flags mpi INTERFACE_COMPILE_OPTIONS)
-SET(expected_mpi_compile_flags $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:-pthread>;$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=-pthread>)
-if (NOT "${mpi_compile_flags}" STREQUAL "${expected_mpi_compile_flags}")
-  message(FATAL_ERROR "Expected MPI compile flags to contain generator expression ${expected_mpi_compile_flags}, "
-                      "but got ${mpi_compile_flags}. If the compile flag generator expression inside BLTSetupMPI.cmake"
-                      "was changed, please update this test.  Otherwise, this test has failed.")
+foreach(_mpi_language CXX CUDA)
+  if(NOT "${mpi_compile_flags}" MATCHES "COMPILE_LANGUAGE:${_mpi_language}")
+    message(FATAL_ERROR
+            "Expected language-scoped ${_mpi_language} MPI compile flags, "
+            "but got '${mpi_compile_flags}'")
+  endif()
+endforeach()
+
+if("${mpi_compile_flags}" MATCHES "COMPILE_LANGUAGE:C>")
+  message(FATAL_ERROR
+          "Unexpected C MPI compile flags in this CXX/CUDA-only project: "
+          "'${mpi_compile_flags}'")
 endif()
 
 blt_add_executable(

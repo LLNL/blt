@@ -15,46 +15,58 @@ if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.10.0" )
         set(MPIEXEC_EXECUTABLE ${MPIEXEC} CACHE PATH "" FORCE)
     endif()
 
-    set(_mpi_includes_suffix "INCLUDE_DIRS")
-    set(_mpi_compile_flags_suffix "COMPILE_OPTIONS")
 else()
     if (MPIEXEC_EXECUTABLE AND NOT MPIEXEC)
         set(MPIEXEC ${MPIEXEC_EXECUTABLE} CACHE PATH "" FORCE)
     endif()
 
-    set(_mpi_includes_suffix "INCLUDE_PATH")
-    set(_mpi_compile_flags_suffix "COMPILE_FLAGS")
 endif()
 
 set(_mpi_compile_flags )
+set(_mpi_defines )
 set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
 set(_mpi_fortran_includes )
 
-macro(blt_append_mpi_language_flags output_var language)
-    foreach(_mpi_flag ${ARGN})
-        if(_mpi_flag)
-            list(APPEND ${output_var} "$<$<COMPILE_LANGUAGE:${language}>:${_mpi_flag}>")
-        endif()
-    endforeach()
-endmacro()
+function(_blt_append_mpi_target_property output_var mpi_target property language)
+    get_target_property(_mpi_property_values ${mpi_target} ${property})
+    if (_mpi_property_values AND
+        NOT "${_mpi_property_values}" MATCHES "-NOTFOUND$")
+        set(_mpi_output_values ${${output_var}})
+        foreach(_mpi_value IN LISTS _mpi_property_values)
+            if (NOT "${_mpi_value}" STREQUAL "")
+                list(APPEND _mpi_output_values
+                     "$<$<COMPILE_LANGUAGE:${language}>:${_mpi_value}>")
+            endif()
+        endforeach()
+        set(${output_var} ${_mpi_output_values} PARENT_SCOPE)
+    endif()
+endfunction()
 
-macro(blt_append_mpi_cuda_host_flags output_var)
-    foreach(_mpi_flag ${ARGN})
-        if(_mpi_flag)
-            list(APPEND ${output_var} "$<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_mpi_flag}>")
-        endif()
-    endforeach()
-endmacro()
-
-macro(blt_append_mpi_language_includes output_var language)
-    foreach(_mpi_include ${ARGN})
-        if(_mpi_include)
-            list(APPEND ${output_var} "$<$<COMPILE_LANGUAGE:${language}>:${_mpi_include}>")
-        endif()
-    endforeach()
-endmacro()
+function(_blt_append_mpi_cuda_options output_var mpi_target)
+    get_target_property(_mpi_property_values ${mpi_target} INTERFACE_COMPILE_OPTIONS)
+    if (_mpi_property_values AND
+        NOT "${_mpi_property_values}" MATCHES "-NOTFOUND$")
+        set(_mpi_output_values ${${output_var}})
+        foreach(_mpi_value IN LISTS _mpi_property_values)
+            if (NOT "${_mpi_value}" STREQUAL "")
+                # Recent FindMPI versions already encode the correct NVIDIA
+                # CUDA host-option forwarding in MPI::MPI_<lang>.
+                if ("${_mpi_value}" MATCHES "COMPILE_LANG.*CUDA")
+                    set(_mpi_cuda_value "${_mpi_value}")
+                elseif(BLT_ENABLE_CLANG_CUDA)
+                    set(_mpi_cuda_value "${_mpi_value}")
+                else()
+                    set(_mpi_cuda_value "-Xcompiler=${_mpi_value}")
+                endif()
+                list(APPEND _mpi_output_values
+                     "$<$<COMPILE_LANGUAGE:CUDA>:${_mpi_cuda_value}>")
+            endif()
+        endforeach()
+        set(${output_var} ${_mpi_output_values} PARENT_SCOPE)
+    endif()
+endfunction()
 
 
 if(BLT_ENABLE_FIND_MPI)
@@ -65,7 +77,17 @@ endif()
 
 
 if (BLT_ENABLE_FIND_MPI)
-    find_package(MPI REQUIRED)
+    get_property(_mpi_enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+    set(_mpi_components )
+    foreach(_mpi_language C CXX Fortran)
+        if (_mpi_language IN_LIST _mpi_enabled_languages)
+            list(APPEND _mpi_components ${_mpi_language})
+        endif()
+    endforeach()
+    if ((BLT_ENABLE_CUDA OR BLT_ENABLE_HIP) AND NOT CXX IN_LIST _mpi_components)
+        list(APPEND _mpi_components CXX)
+    endif()
+    find_package(MPI REQUIRED COMPONENTS ${_mpi_components})
 
     #-------------------
     # Merge found MPI info and remove duplication
@@ -74,68 +96,66 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Compile flags
     #-------------------
-    set(_c_flags ${MPI_C_${_mpi_compile_flags_suffix}})
-    blt_append_mpi_language_flags(_mpi_compile_flags C ${_c_flags})
+    foreach(_mpi_language C CXX Fortran)
+        if (TARGET MPI::MPI_${_mpi_language})
+            _blt_append_mpi_target_property(
+                _mpi_compile_flags MPI::MPI_${_mpi_language}
+                INTERFACE_COMPILE_OPTIONS ${_mpi_language})
+            _blt_append_mpi_target_property(
+                _mpi_defines MPI::MPI_${_mpi_language}
+                INTERFACE_COMPILE_DEFINITIONS ${_mpi_language})
+        endif()
+    endforeach()
 
-    set(_cxx_flags ${MPI_CXX_${_mpi_compile_flags_suffix}})
-    blt_append_mpi_language_flags(_mpi_compile_flags CXX ${_cxx_flags})
-
-    if (BLT_ENABLE_CUDA)
-        set(_cuda_host_flags ${_c_flags} ${_cxx_flags})
-        blt_list_remove_duplicates(TO _cuda_host_flags)
-        blt_append_mpi_cuda_host_flags(_mpi_compile_flags ${_cuda_host_flags})
+    if (TARGET MPI::MPI_CXX AND BLT_ENABLE_CUDA)
+        _blt_append_mpi_cuda_options(_mpi_compile_flags MPI::MPI_CXX)
+        _blt_append_mpi_target_property(
+            _mpi_defines MPI::MPI_CXX INTERFACE_COMPILE_DEFINITIONS CUDA)
     endif()
 
-    if (BLT_ENABLE_FORTRAN)
-        set(_fortran_flags ${MPI_Fortran_${_mpi_compile_flags_suffix}})
-        blt_append_mpi_language_flags(_mpi_compile_flags Fortran ${_fortran_flags})
+    if (TARGET MPI::MPI_CXX AND BLT_ENABLE_HIP)
+        _blt_append_mpi_target_property(
+            _mpi_compile_flags MPI::MPI_CXX INTERFACE_COMPILE_OPTIONS HIP)
+        _blt_append_mpi_target_property(
+            _mpi_defines MPI::MPI_CXX INTERFACE_COMPILE_DEFINITIONS HIP)
     endif()
-    unset(_c_flags)
-    unset(_cxx_flags)
-    unset(_cuda_host_flags)
-    unset(_fortran_flags)
 
     #-------------------
     # Include paths
     #-------------------
-    set(_c_includes ${MPI_C_${_mpi_includes_suffix}})
-    blt_list_remove_duplicates(TO _c_includes)
-    blt_append_mpi_language_includes(_mpi_includes C ${_c_includes})
-
-    set(_cxx_includes ${MPI_CXX_${_mpi_includes_suffix}})
-    blt_list_remove_duplicates(TO _cxx_includes)
-    blt_append_mpi_language_includes(_mpi_includes CXX ${_cxx_includes})
-
-    if (BLT_ENABLE_CUDA)
-        set(_cuda_includes ${_cxx_includes})
-        if (NOT _cuda_includes)
-            set(_cuda_includes ${_c_includes})
+    foreach(_mpi_language C CXX Fortran)
+        if (TARGET MPI::MPI_${_mpi_language})
+            _blt_append_mpi_target_property(
+                _mpi_includes MPI::MPI_${_mpi_language}
+                INTERFACE_INCLUDE_DIRECTORIES ${_mpi_language})
         endif()
-        blt_append_mpi_language_includes(_mpi_includes CUDA ${_cuda_includes})
+    endforeach()
+
+    if (TARGET MPI::MPI_CXX AND BLT_ENABLE_CUDA)
+        _blt_append_mpi_target_property(
+            _mpi_includes MPI::MPI_CXX INTERFACE_INCLUDE_DIRECTORIES CUDA)
     endif()
 
-    if (BLT_ENABLE_FORTRAN)
-        set(_mpi_fortran_includes ${MPI_Fortran_${_mpi_includes_suffix}})
-        blt_list_remove_duplicates(TO _mpi_fortran_includes)
-        blt_append_mpi_language_includes(_mpi_includes Fortran ${_mpi_fortran_includes})
+    if (TARGET MPI::MPI_CXX AND BLT_ENABLE_HIP)
+        _blt_append_mpi_target_property(
+            _mpi_includes MPI::MPI_CXX INTERFACE_INCLUDE_DIRECTORIES HIP)
     endif()
-    unset(_c_includes)
-    unset(_cxx_includes)
-    unset(_cuda_includes)
+
+    if (TARGET MPI::MPI_Fortran)
+        get_target_property(_mpi_fortran_includes MPI::MPI_Fortran
+                            INTERFACE_INCLUDE_DIRECTORIES)
+        if ("${_mpi_fortran_includes}" MATCHES "-NOTFOUND$")
+            set(_mpi_fortran_includes )
+        endif()
+    endif()
 
     #-------------------
     # Link flags
     #-------------------
-    set(_mpi_link_flags ${MPI_C_LINK_FLAGS})
-    if (NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_CXX_LINK_FLAGS}")
-        list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
-    endif()
-    if (BLT_ENABLE_FORTRAN)
-        if ((NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}") AND
-            (NOT "${MPI_CXX_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}"))
-            list(APPEND _mpi_link_flags ${MPI_Fortran_LINK_FLAGS})
-        endif()
-    endif()
+    foreach(_mpi_language IN LISTS _mpi_components)
+        list(APPEND _mpi_link_flags ${MPI_${_mpi_language}_LINK_FLAGS})
+    endforeach()
+    blt_list_remove_duplicates(TO _mpi_link_flags)
 
     # Selectively remove set of known locations of spaces
     string(REPLACE " -Wl"      ";-Wl"       _mpi_link_flags "${_mpi_link_flags}")
@@ -155,16 +175,19 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Libraries
     #-------------------
-    set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-    if (BLT_ENABLE_FORTRAN)
-        list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
-    endif()
+    foreach(_mpi_language IN LISTS _mpi_components)
+        list(APPEND _mpi_libraries ${MPI_${_mpi_language}_LIBRARIES})
+    endforeach()
     blt_list_remove_duplicates(TO _mpi_libraries)
+    unset(_mpi_enabled_languages)
+    unset(_mpi_components)
+    unset(_mpi_language)
 endif()
 
 # Allow users to override CMake's FindMPI
 if (BLT_MPI_COMPILE_FLAGS)
     set(_mpi_compile_flags ${BLT_MPI_COMPILE_FLAGS})
+    set(_mpi_defines )
 endif()
 if (BLT_MPI_INCLUDES)
     set(_mpi_includes ${BLT_MPI_INCLUDES})
@@ -189,6 +212,7 @@ endif()
 
 # Output all MPI information
 message(STATUS "BLT MPI Compile Flags:  ${_mpi_compile_flags}")
+message(STATUS "BLT MPI Defines:        ${_mpi_defines}")
 message(STATUS "BLT MPI Include Paths:  ${_mpi_includes}")
 message(STATUS "BLT MPI Libraries:      ${_mpi_libraries}")
 message(STATUS "BLT MPI Link Flags:     ${_mpi_link_flags}")
@@ -203,11 +227,15 @@ message(STATUS "MPI Command Append:   ${BLT_MPI_COMMAND_APPEND}")
 
 if (BLT_ENABLE_FORTRAN)
     # Determine if we should use fortran mpif.h header or fortran mpi module
-    find_path(mpif_path
-        NAMES "mpif.h"
-        PATHS ${_mpi_fortran_includes}
-        NO_DEFAULT_PATH
-        )
+    if (BLT_ENABLE_FIND_MPI AND DEFINED MPI_Fortran_HAVE_F77_HEADER)
+        set(mpif_path ${MPI_Fortran_HAVE_F77_HEADER})
+    else()
+        find_path(mpif_path
+            NAMES "mpif.h"
+            PATHS ${_mpi_fortran_includes}
+            NO_DEFAULT_PATH
+            )
+    endif()
 
     if(mpif_path)
         set(MPI_Fortran_USE_MPIF ON CACHE PATH "")
@@ -224,6 +252,7 @@ blt_import_library(NAME          mpi
                    TREAT_INCLUDES_AS_SYSTEM ON
                    LIBRARIES     ${_mpi_libraries}
                    COMPILE_FLAGS ${_mpi_compile_flags}
+                   DEFINES       ${_mpi_defines}
                    LINK_FLAGS    ${_mpi_link_flags}
                    EXPORTABLE    ${BLT_EXPORT_THIRDPARTY})
 

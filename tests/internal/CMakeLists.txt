@@ -322,6 +322,7 @@ if(CLANGFORMAT_FOUND)
     ../smoke/blt_gtest_smoke.cpp
     ../smoke/blt_hip_runtime_smoke.cpp
     ../smoke/blt_hip_gtest_smoke.cpp
+    ../smoke/blt_hip_mpi_smoke.cpp
     ../smoke/blt_hip_smoke.cpp
     ../smoke/blt_mpi_smoke.cpp
     ../smoke/blt_openmp_smoke.cpp
