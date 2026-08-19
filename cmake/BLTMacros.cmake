@@ -536,6 +536,8 @@ endmacro(blt_add_library)
 ##   * A host RDC static lib <name><suffix>_host is built from RDC_SOURCES with -fgpu-rdc.
 ##   * When EARLY_RDC is TRUE, erdc.sh is run on the host RDC archive to produce uber.o,
 ##     creating <name><suffix>_device and linking it transitively from the base executable.
+##   * The base executable's non-RDC sources are compiled without -fgpu-rdc; its final
+##     link remains configured for HIP RDC.
 ## - "Full-RDC" executables (all SOURCES requiring RDC) are not supported by this
 ##   macro; at least one non-RDC compilation unit is assumed to exist.
 ##
@@ -653,10 +655,14 @@ macro(blt_add_executable)
                      DEPENDS_ON ${arg_DEPENDS_ON}
                      OBJECT     FALSE)
     
-    # Create host RDC archive for executables (RDC-only mode)
+    # Configure the final executable for HIP RDC linking.  In the partial
+    # EARLY_RDC case, normal sources must remain non-RDC; the early-RDC host
+    # target receives -fgpu-rdc below in blt_setup_hip_early_rdc_target().
     if (BLT_ENABLE_HIP AND _use_rdc)
         set(_blt_exe_target_name ${arg_NAME})
-        target_compile_options(${_blt_exe_target_name} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
+        if (NOT (_use_early_rdc AND _erdc_sources AND _normal_sources))
+            target_compile_options(${_blt_exe_target_name} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
+        endif()
         target_link_options(${_blt_exe_target_name} PRIVATE -fgpu-rdc)
         set_target_properties(${_blt_exe_target_name} PROPERTIES LINKER_LANGUAGE HIP)
     endif()
