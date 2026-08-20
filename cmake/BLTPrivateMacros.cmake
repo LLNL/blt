@@ -493,6 +493,17 @@ macro(blt_setup_hip_early_rdc_target)
     set(arg_NAME ${_erdc_arg_name})
 
     if(NOT arg_FULL_RDC)
+        # The host archive is private to the EARLY-RDC transformation, but its
+        # sources must see the same usage requirements as the public base target.
+        # Use generator expressions so requirements added after this macro call
+        # (for example, feature compile definitions) are also reflected here.
+        target_include_directories(${_erdc_host} PRIVATE
+            $<TARGET_PROPERTY:${arg_NAME},INTERFACE_INCLUDE_DIRECTORIES>)
+        target_compile_definitions(${_erdc_host} PRIVATE
+            $<TARGET_PROPERTY:${arg_NAME},INTERFACE_COMPILE_DEFINITIONS>)
+    endif()
+
+    if(NOT arg_FULL_RDC)
         # add _erdc_host as a dependency to arg_NAME, to ensure it gets built
         add_dependencies(${arg_NAME} ${_erdc_host})
     endif()
@@ -562,7 +573,7 @@ macro(blt_setup_hip_early_rdc_target)
         COMMENT "EARLY RDC: generate early RDC archive for ${arg_NAME}, calling ${BLT_ROOT_DIR}/scripts/erdc.sh ${_erdc_input} \n\t with ROCM_PATH=${ROCM_PATH}, ARCH_FLAGS=${_erdc_arch_flags}"
     )
     
-    # Create an imported static library target that references the host archive and the device early rdc archive
+    # Create a static library target containing the generated early-RDC object.
     add_library(${arg_NAME}${arg_SUFFIX}_device STATIC ${_erdc_output_obj})
 
     # add C++ as the linker language for ${arg_NAME}${arg_SUFFIX}, HIP linking has already happened

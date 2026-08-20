@@ -161,11 +161,12 @@ endmacro(blt_register_library)
 ##   * The base target links <libname><suffix>_device transitively. The generated
 ##     device archive replaces the host input archive because uber.o contains the host code.
 ## - When EARLY_RDC is TRUE and RDC_SOURCES is omitted or equals all SOURCES ("full-RDC"):
-##   * The base target is built as a real STATIC/SHARED/OBJECT library from SOURCES (not INTERFACE),
-##     HIP sources are compiled with -fgpu-rdc on the base target to produce its archive.
-##   * erdc.sh consumes the base target’s archive to produce uber.o, creating only
-##     <libname><suffix>_device. No separate <libname><suffix>_host is produced in this case.
-##   * The base target links <libname><suffix>_device transitively.
+##   * The base target is an INTERFACE library. A private host RDC archive is built from
+##     SOURCES for erdc.sh, but is not propagated to consumers.
+##   * erdc.sh consumes that host archive to produce uber.o, creating only
+##     <libname><suffix>_device.
+##   * The base target links <libname><suffix>_device transitively, so consumers do not
+##     receive both the host input archive and the generated device archive.
 ##
 ## Exported variables for downstream use (uppercase <LIBNAME>):
 ## - <LIBNAME>_TARGETS: base + optional early RDC targets
@@ -174,7 +175,7 @@ endmacro(blt_register_library)
 ## - <LIBNAME>_INTERFACE_TARGETS: subset of INTERFACE libraries (base may be INTERFACE only for header-only libs)
 ## - <LIBNAME>_NONINTERFACE_TARGETS: subset of STATIC/SHARED/OBJECT targets
 ## - <LIBNAME>_EARLY_RDC_HOST_TARGET:
-##   * Full-RDC: resolves to <libname> (base)
+##   * Full-RDC: resolves to the private <libname><suffix>_host input archive
 ##   * Partial-RDC: resolves to <libname><suffix>_host
 ## - <LIBNAME>_EARLY_RDC_DEVICE_TARGET: resolves to <libname><suffix>_device when EARLY_RDC artifacts are created,
 ##   otherwise resolves to <libname>.
@@ -276,7 +277,9 @@ macro(blt_add_library)
             set(_erdc_full TRUE)
         endif()
 
-        # Create base target: when all sources are EARLY_RDC, still build a real library to produce an archive for erdc.sh
+        # Create the public base target.  For full EARLY_RDC, the host archive is an
+        # implementation detail of the generated device archive and must not also be
+        # linked by consumers.
         set(_base_is_interface FALSE)
         if(_normal_sources)
             add_library( ${arg_NAME} ${_lib_type} ${_normal_sources} ${arg_HEADERS} )
@@ -290,8 +293,14 @@ macro(blt_add_library)
                 else()
                     add_library( ${arg_NAME} INTERFACE )
                 endif()
+            elseif(_use_early_rdc)
+                set(_base_is_interface TRUE)
+                if( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.19.0" )
+                    add_library( ${arg_NAME} INTERFACE ${arg_HEADERS} )
+                else()
+                    add_library( ${arg_NAME} INTERFACE )
+                endif()
             else()
-                # All sources assigned to EARLY_RDC or normal compilation: build the base library from all sources
                 add_library( ${arg_NAME} ${_lib_type} ${arg_SOURCES} ${arg_HEADERS} )
             endif()
         endif()
@@ -312,14 +321,13 @@ macro(blt_add_library)
                     SOURCES      ${_normal_sources}
                     DEPENDS_ON   ${arg_DEPENDS_ON})
             else()
-                if(_use_early_rdc AND _erdc_sources AND NOT _base_is_interface)
-                    # All sources are EARLY_RDC: still configure HIP language for the base target
+                if(_base_is_interface)
+                    message(STATUS "[BLT][HIP] Skipping blt_setup_hip_target for ${arg_NAME}: no non-RDC HIP sources to configure")
+                else()
                     blt_setup_hip_target(
                         NAME         ${arg_NAME}
-                        SOURCES      ${arg_SOURCES}
+                        SOURCES      ${_normal_sources}
                         DEPENDS_ON   ${arg_DEPENDS_ON})
-                else()
-                    message(STATUS "[BLT][HIP] Skipping blt_setup_hip_target for ${arg_NAME}: no non-RDC HIP sources to configure")
                 endif()
             endif()
         endif()
@@ -360,8 +368,9 @@ macro(blt_add_library)
     blt_setup_target(NAME       ${arg_NAME}
                      DEPENDS_ON ${arg_DEPENDS_ON}
                      OBJECT     ${_blt_object})
-    # If all sources are EARLY_RDC, compile base target with HIP RDC enabled to generate input archive
-    if(_erdc_full)
+    # Full EARLY_RDC libraries use the private host target created below as the
+    # erdc.sh input, so there is no base archive to compile with RDC here.
+    if(_erdc_full AND NOT _base_is_interface)
         target_compile_options(${arg_NAME} PRIVATE $<$<COMPILE_LANGUAGE:HIP>:-fgpu-rdc>)
     endif()
     set(arg_OBJECT ${_arg_object})
@@ -451,7 +460,9 @@ macro(blt_add_library)
             SUFFIX      ${arg_EARLY_RDC_SUFFIX}
             OBJECT      ${arg_OBJECT}
             INTERFACE   ${_base_is_interface}
-            FULL_RDC    ${_erdc_full})
+            # A full-RDC library has an interface base target and therefore uses
+            # the private host archive path in blt_setup_hip_early_rdc_target().
+            FULL_RDC    FALSE)
     endif()
 
     # Provide variables describing the created library targets for downstream use.
@@ -496,13 +507,8 @@ macro(blt_add_library)
 
     # Provide direct refs for each created target
     if(BLT_ENABLE_HIP AND _use_early_rdc AND _erdc_sources)
-        if(_erdc_full)
-            set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${arg_NAME})
-            set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
-        else()
-            set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
-            set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
-        endif()
+        set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_host)
+        set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME}${arg_EARLY_RDC_SUFFIX}_device)
     elseif(_blt_rdc_host_target)
         set(${_blt_uppercase_name}_EARLY_RDC_HOST_TARGET   ${_blt_rdc_host_target})
         set(${_blt_uppercase_name}_EARLY_RDC_DEVICE_TARGET ${arg_NAME})
