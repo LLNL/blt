@@ -414,8 +414,9 @@ endmacro(blt_setup_hip_target)
 ##     compiled with -fgpu-rdc and configured with DEPENDS_ON/INCLUDES.
 ##   - Runs erdc.sh on <NAME><SUFFIX>_host to produce a single "uber" device object
 ##     and wraps it in the static library <NAME><SUFFIX>_device.
-##   - Adds <NAME><SUFFIX>_host as a dependency of NAME and links NAME
-##     INTERFACE to both <NAME><SUFFIX>_host and <NAME><SUFFIX>_device.
+##   - Adds <NAME><SUFFIX>_host as a build dependency of NAME and links NAME
+##     INTERFACE to <NAME><SUFFIX>_device. The generated device archive replaces
+##     the host input archive for consumers because uber.o contains the host code.
 ##
 ## When FULL_RDC is TRUE:
 ##   - Compiles NAME itself with -fgpu-rdc (using INCLUDES),
@@ -568,18 +569,13 @@ macro(blt_setup_hip_early_rdc_target)
     set_target_properties(${arg_NAME}${arg_SUFFIX}_device PROPERTIES LINKER_LANGUAGE CXX)
     
 
-    # Propagate to base target consumers
+    # Propagate the generated archive to base target consumers. The uber.o emitted
+    # by erdc.sh contains both the device image and the host code from its input
+    # archive, so the input host archive must not also be linked transitively.
     if(${arg_INTERFACE})
         target_link_libraries(${arg_NAME} INTERFACE ${arg_NAME}${arg_SUFFIX}_device)
     else()
         target_link_libraries(${arg_NAME} PUBLIC ${arg_NAME}${arg_SUFFIX}_device)
-    endif()
-    if(NOT arg_FULL_RDC)
-        if(${arg_INTERFACE})
-            target_link_libraries(${arg_NAME} INTERFACE ${_erdc_host})
-        else()
-            target_link_libraries(${arg_NAME} PUBLIC ${_erdc_host})
-        endif()
     endif()
 
 endmacro(blt_setup_hip_early_rdc_target)

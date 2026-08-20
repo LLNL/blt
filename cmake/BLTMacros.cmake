@@ -158,7 +158,8 @@ endmacro(blt_register_library)
 ## - When EARLY_RDC is TRUE and RDC_SOURCES is provided as a non-empty strict subset:
 ##   * A host RDC static lib <libname><suffix>_host is built from RDC_SOURCES with -fgpu-rdc.
 ##   * erdc.sh is run on the host RDC archive to produce uber.o, creating <libname><suffix>_device.
-##   * The base target links both <libname><suffix>_host and <libname><suffix>_device transitively.
+##   * The base target links <libname><suffix>_device transitively. The generated
+##     device archive replaces the host input archive because uber.o contains the host code.
 ## - When EARLY_RDC is TRUE and RDC_SOURCES is omitted or equals all SOURCES ("full-RDC"):
 ##   * The base target is built as a real STATIC/SHARED/OBJECT library from SOURCES (not INTERFACE),
 ##     HIP sources are compiled with -fgpu-rdc on the base target to produce its archive.
