@@ -13,89 +13,95 @@
 #   https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html
 ####################################################3
 
-# Use CMake variable MSVC (or CMAKE_BUILD_TOOL) to identify msvc style compilers
-# and CMAKE_CXX_COMPILER_ID for all other cases.
+# Use CMake variable CMAKE_CXX_COMPILER_FRONTEND_VARIANT with CMAKE_CXX_COMPILER_ID as a 
+# fallback to identify msvc style compilers.
+# Use CMAKE_CXX_COMPILER_ID for all other cases.
 # Some build tools (such as Ninja) are available for both Windows and non-Windows platforms,
 # but we can also use native Windows build tools to detect a Visual Studio environment
 # in case CMake fails to detect and set MSVC=1 for some reason.
 
-if(MSVC OR ("${CMAKE_BUILD_TOOL}" MATCHES "(msdev|devenv|nmake|MSBuild)"))
+#Determine C/C++ compiler family. 
+#Start with MSVC
+if("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC" 
+    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     set(COMPILER_FAMILY_IS_MSVC 1)
-    message(STATUS "Compiler family is MSVC")
-
-    if(CMAKE_GENERATOR_TOOLSET AND "${CMAKE_GENERATOR_TOOLSET}" MATCHES "Intel")
-        set(COMPILER_FAMILY_IS_MSVC_INTEL 1) 
-        message(STATUS "Toolset is ${CMAKE_GENERATOR_TOOLSET}")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Intel" OR CMAKE_GENERATOR_TOOLSET MATCHES "Intel")
+        set(COMPILER_FAMILY_IS_MSVC_INTEL 1)
     endif()
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(C_COMPILER_FAMILY_IS_GNU 1)
+    message(STATUS "C Compiler family is GNU")
+
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
+    set(C_COMPILER_FAMILY_IS_CLANG 1)
+    message(STATUS "C Compiler family is Clang")
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
+    set(C_COMPILER_FAMILY_IS_XL 1)
+    message(STATUS "C Compiler family is XL")
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    set(C_COMPILER_FAMILY_IS_INTEL 1)
+    message(STATUS "C Compiler family is Intel")
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
+    set(C_COMPILER_FAMILY_IS_INTELLLVM 1)
+    message(STATUS "C Compiler family is IntelLLVM")
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
+    set(C_COMPILER_FAMILY_IS_PGI 1)
+    message(STATUS "C Compiler family is PGI")
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray")
+    set(C_COMPILER_FAMILY_IS_CRAY 1)
+    message(STATUS "C Compiler family is Cray")
+
 else()
-    #Determine C/C++ compiler family. 
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(C_COMPILER_FAMILY_IS_GNU 1)
-        message(STATUS "C Compiler family is GNU")
+    set(FAILURE_MODE_REPORT "
+    C/CXX compiler family not recognized (
+    CMAKE_CXX_COMPILER_ID='${CMAKE_CXX_COMPILER_ID}', 
+    CMAKE_CXX_COMPILER_FRONTEND_VARIANT='${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}'
+    )
+    ")
+    message(STATUS ${FAILURE_MODE_REPORT})
+endif()
 
-    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
-        set(C_COMPILER_FAMILY_IS_CLANG 1)
-        message(STATUS "C Compiler family is Clang")
+# Determine Fortran compiler family 
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+    set(Fortran_COMPILER_FAMILY_IS_GNU 1)
+    message(STATUS "Fortran Compiler family is GNU")
 
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
-        set(C_COMPILER_FAMILY_IS_XL 1)
-        message(STATUS "C Compiler family is XL")
+elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
+    set(Fortran_COMPILER_FAMILY_IS_CLANG 1)
+    message(STATUS "Fortran Compiler family is Clang")
 
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-        set(C_COMPILER_FAMILY_IS_INTEL 1)
-        message(STATUS "C Compiler family is Intel")
+elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Flang") # For Flang compilers
+    set(Fortran_COMPILER_FAMILY_IS_CLANG 1 CACHE BOOL "")
+    message(STATUS "Fortran Compiler family is Clang")
 
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
-        set(C_COMPILER_FAMILY_IS_INTELLLVM 1)
-        message(STATUS "C Compiler family is IntelLLVM")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "XL")
+    set(Fortran_COMPILER_FAMILY_IS_XL 1)
+    message(STATUS "Fortran Compiler family is XL")
 
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "PGI")
-        set(C_COMPILER_FAMILY_IS_PGI 1)
-        message(STATUS "C Compiler family is PGI")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+    set(Fortran_COMPILER_FAMILY_IS_INTEL 1)
+    message(STATUS "Fortran Compiler family is Intel")
 
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray")
-        set(C_COMPILER_FAMILY_IS_CRAY 1)
-        message(STATUS "C Compiler family is Cray")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "IntelLLVM")
+    set(Fortran_COMPILER_FAMILY_IS_INTELLLVM 1)
+    message(STATUS "Fortran Compiler family is IntelLLVM")
 
-    else()
-        message(STATUS "C Compiler family not set!!!")
-    endif()
-    # Determine Fortran compiler family 
-    if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-        set(Fortran_COMPILER_FAMILY_IS_GNU 1)
-        message(STATUS "Fortran Compiler family is GNU")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
+    set(Fortran_COMPILER_FAMILY_IS_PGI 1)
+    message(STATUS "Fortran Compiler family is PGI")
 
-    elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Clang") # For Clang or AppleClang
-        set(Fortran_COMPILER_FAMILY_IS_CLANG 1)
-        message(STATUS "Fortran Compiler family is Clang")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
+    set(Fortran_COMPILER_FAMILY_IS_CRAY 1)
+    message(STATUS "Fortran Compiler family is Cray")
 
-    elseif("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Flang") # For Flang compilers
-        set(Fortran_COMPILER_FAMILY_IS_CLANG 1 CACHE BOOL "")
-        message(STATUS "Fortran Compiler family is Clang")
-
-    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "XL")
-        set(Fortran_COMPILER_FAMILY_IS_XL 1)
-        message(STATUS "Fortran Compiler family is XL")
-
-    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-        set(Fortran_COMPILER_FAMILY_IS_INTEL 1)
-        message(STATUS "Fortran Compiler family is Intel")
-
-    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "IntelLLVM")
-        set(Fortran_COMPILER_FAMILY_IS_INTELLLVM 1)
-        message(STATUS "Fortran Compiler family is IntelLLVM")
-
-    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "PGI")
-        set(Fortran_COMPILER_FAMILY_IS_PGI 1)
-        message(STATUS "Fortran Compiler family is PGI")
-
-    elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
-        set(Fortran_COMPILER_FAMILY_IS_CRAY 1)
-        message(STATUS "Fortran Compiler family is Cray")
-
-    elseif(ENABLE_FORTRAN)
-        message(STATUS "Fortran Compiler family not set!!!")
-    endif()
+elseif(ENABLE_FORTRAN)
+    message(STATUS "Fortran Compiler family not set!!!")
 endif()
 
 
