@@ -58,7 +58,13 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray")
     message(STATUS "C Compiler family is Cray")
 
 else()
-    message(STATUS "C Compiler family not set!!!")
+    set(FAILURE_MODE_REPORT "
+    C/CXX compiler family not recognized (
+    CMAKE_CXX_COMPILER_ID='${CMAKE_CXX_COMPILER_ID}', 
+    CMAKE_CXX_COMPILER_FRONTEND_VARIANT='${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}'
+    )
+    ")
+    message(STATUS ${FAILURE_MODE_REPORT})
 endif()
 
 # Determine Fortran compiler family 
