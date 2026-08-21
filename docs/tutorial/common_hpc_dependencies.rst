@@ -39,6 +39,7 @@ Our next example, ``test_2``, builds and tests the ``calc_pi_mpi`` library,
 which uses MPI to parallelize the calculation over the integration intervals.
 
 To enable MPI, we set ``ENABLE_MPI``, ``MPI_C_COMPILER``, and ``MPI_CXX_COMPILER``
+(and ``MPI_Fortran_COMPILER`` if your project enables Fortran)
 in our host config file. Here is a snippet with these settings for LLNL's Lassen Cluster:
 
 .. literalinclude:: ../../host-configs/llnl/toss_4_x86_64_ib/gcc@10.3.1.cmake
@@ -84,6 +85,16 @@ Test. ``test_2.cpp`` provides an example driver for MPI with GoogleTest.
   * ``BLT_MPI_LIBRARIES``
   * ``BLT_MPI_LINK_FLAGS``
   
+  By default (when ``ENABLE_MPI`` and ``ENABLE_FIND_MPI`` are ``ON``), BLT requires
+  an ``MPI_<lang>_COMPILER`` wrapper for each enabled language (e.g. ``MPI_C_COMPILER``,
+  ``MPI_CXX_COMPILER``, and/or ``MPI_Fortran_COMPILER``). If any required wrapper is
+  missing, BLT will stop with a configuration error.
+
+  For cases where a language is enabled but an MPI wrapper is unavailable or
+  incompatible (for example, enabling Fortran without a compatible ``MPI_Fortran_COMPILER``),
+  set ``BLT_ALLOW_MISSING_MPI_WRAPPER=ON``. BLT will print which wrappers are missing
+  and will only configure MPI support for the languages that have wrappers available.
+
   BLT also has the variable ``ENABLE_FIND_MPI`` which turns off all CMake's ``FindMPI``
   logic and then uses the MPI wrapper directly when you provide them as the default
   compilers.

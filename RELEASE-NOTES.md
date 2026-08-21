@@ -20,6 +20,10 @@ The project release numbers follow [Semantic Versioning](http://semver.org/spec/
 - Removed `-Winline` from being added to GoogleTest for Clang/Intel as it is a noop and caused a warning on Intel.
 - Toggle GoogleTest adding `-Wno-implicit-float-size-conversion` or `-Wno-sycl-implicit-float-size-conversion` based on Intel version.
 - Update CUDA runtime smoketest to be compatible with CUDA 13
+- Adds `BLT_ALLOW_MISSING_MPI_WRAPPER` (default `OFF`) to allow setting up MPI without providing `MPI_<lang>_COMPILER` for some enabled languages.
+  This supports niche cases (e.g. Fortran enabled without a compatible `MPI_Fortran_COMPILER`) while preserving the default behavior of requiring wrappers.
+- Checks for missing `MPI_<lang>_COMPILER` flags for each enabled language when `ENABLE_MPI` evaluates to `ON`
+  and `BLT_ALLOW_MISSING_MPI_WRAPPER` evaluates to `OFF`.
 
 ### Fixed
 - In non-mpi configurations, `blt_add_test` will now throw a `FATAL_ERROR` if the user provides `NUM_MPI_RANKS`

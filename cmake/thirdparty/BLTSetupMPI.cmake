@@ -31,16 +31,59 @@ set(_mpi_includes )
 set(_mpi_libraries )
 set(_mpi_link_flags )
 
+# Users must provide MPI_<lang>_COMPILER variables for each enabled language unless BLT_ALLOW_MISSING_MPI_WRAPPER
+# Check for each variable and print a warning/error message if appropriate
+get_property(_enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
-if(BLT_ENABLE_FIND_MPI)
+if (BLT_ENABLE_FIND_MPI)
     message(STATUS "FindMPI Enabled  (ENABLE_FIND_MPI == ON)")
+
+    set(_blt_missing_mpi_wrappers)
+    foreach(_lang "C" "CXX" "Fortran")
+        if (${_lang} IN_LIST _enabled_languages AND NOT MPI_${_lang}_COMPILER)
+            list(APPEND _blt_missing_mpi_wrappers "MPI_${_lang}_COMPILER")
+        endif()
+    endforeach()
+
+    if (_blt_missing_mpi_wrappers)
+        if (BLT_ALLOW_MISSING_MPI_WRAPPER)
+            message(STATUS "BLT_ALLOW_MISSING_MPI_WRAPPER == ON. Proceeding without: ${_blt_missing_mpi_wrappers}")
+        else()
+            message(FATAL_ERROR
+                    "MPI support is enabled, but missing MPI compiler wrapper(s): ${_blt_missing_mpi_wrappers}\n"
+                    "Provide MPI_<lang>_COMPILER for each enabled language or set BLT_ALLOW_MISSING_MPI_WRAPPER=ON to bypass this check.")
+        endif()
+    endif()
+    unset(_blt_missing_mpi_wrappers)
 else()
     message(STATUS "FindMPI Disabled (ENABLE_FIND_MPI == OFF) ")
 endif()
 
+set(_blt_enable_mpi_c FALSE)
+if("C" IN_LIST _enabled_languages AND MPI_C_COMPILER)
+    set(_blt_enable_mpi_c TRUE)
+endif()
+
+set(_blt_enable_mpi_cxx FALSE)
+if("CXX" IN_LIST _enabled_languages AND MPI_CXX_COMPILER)
+    set(_blt_enable_mpi_cxx TRUE)
+endif()
+
+set(_blt_enable_mpi_fortran FALSE)
+if ("Fortran" IN_LIST _enabled_languages AND MPI_Fortran_COMPILER)
+    set(_blt_enable_mpi_fortran TRUE)
+endif()
 
 if (BLT_ENABLE_FIND_MPI)
-    find_package(MPI REQUIRED)
+    if (BLT_ALLOW_MISSING_MPI_WRAPPER)
+        set(_blt_mpi_components)
+        blt_list_append(TO _blt_mpi_components ELEMENTS C       IF _blt_enable_mpi_c)
+        blt_list_append(TO _blt_mpi_components ELEMENTS CXX     IF _blt_enable_mpi_cxx)
+        blt_list_append(TO _blt_mpi_components ELEMENTS Fortran IF _blt_enable_mpi_fortran)
+        find_package(MPI REQUIRED COMPONENTS ${_blt_mpi_components})
+    else()
+        find_package(MPI REQUIRED)
+    endif()
 
     #-------------------
     # Merge found MPI info and remove duplication
@@ -49,27 +92,31 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Compile flags
     #-------------------
-    set(_c_flag ${MPI_C_${_mpi_compile_flags_suffix}})
-    if (_c_flag AND BLT_ENABLE_CUDA)
-        list(APPEND _mpi_compile_flags
-                    $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_c_flag}>
-                    $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_c_flag}>)
-    else()
-        list(APPEND _mpi_compile_flags ${_c_flag})
-    endif()
-
-    set(_cxx_flag ${MPI_CXX_${_mpi_compile_flags_suffix}})
-    if (_cxx_flag AND NOT "${_c_flag}" STREQUAL "${_cxx_flag}")
-        if (BLT_ENABLE_CUDA)
+    if(_blt_enable_mpi_c)
+        set(_c_flag ${MPI_C_${_mpi_compile_flags_suffix}})
+        if (_c_flag AND BLT_ENABLE_CUDA)
             list(APPEND _mpi_compile_flags
-            $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_cxx_flag}>
-            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_cxx_flag}>)
+                        $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_c_flag}>
+                        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_c_flag}>)
         else()
-            list(APPEND _mpi_compile_flags ${_cxx_flag})
+            list(APPEND _mpi_compile_flags ${_c_flag})
         endif()
     endif()
 
-    if (BLT_ENABLE_FORTRAN)
+    if(_blt_enable_mpi_cxx)
+        set(_cxx_flag ${MPI_CXX_${_mpi_compile_flags_suffix}})
+        if (_cxx_flag AND NOT "${_c_flag}" STREQUAL "${_cxx_flag}")
+            if (BLT_ENABLE_CUDA)
+                list(APPEND _mpi_compile_flags
+                $<$<NOT:$<COMPILE_LANGUAGE:CUDA>>:${_cxx_flag}>
+                $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${_cxx_flag}>)
+            else()
+                list(APPEND _mpi_compile_flags ${_cxx_flag})
+            endif()
+        endif()
+    endif()
+
+    if (_blt_enable_mpi_fortran)
         set(_f_flag ${MPI_Fortran_${_mpi_compile_flags_suffix}})
         if (_f_flag AND NOT "${_c_flag}" STREQUAL "${_f_flag}")
             list(APPEND _mpi_compile_flags ${_f_flag})
@@ -82,9 +129,14 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Include paths
     #-------------------
-    list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}}
-                              ${MPI_CXX_${_mpi_includes_suffix}})
-    if (BLT_ENABLE_FORTRAN)
+    set(_mpi_includes)
+    if(_blt_enable_mpi_c)
+        list(APPEND _mpi_includes ${MPI_C_${_mpi_includes_suffix}})
+    endif()
+    if(_blt_enable_mpi_cxx)
+        list(APPEND _mpi_includes ${MPI_CXX_${_mpi_includes_suffix}})
+    endif()
+    if(_blt_enable_mpi_fortran)
         list(APPEND _mpi_includes ${MPI_Fortran_${_mpi_includes_suffix}})
     endif()
     blt_list_remove_duplicates(TO _mpi_includes)
@@ -92,15 +144,16 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Link flags
     #-------------------
-    set(_mpi_link_flags ${MPI_C_LINK_FLAGS})
-    if (NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_CXX_LINK_FLAGS}")
+    if(_blt_enable_mpi_c)
+        set(_mpi_link_flags ${MPI_C_LINK_FLAGS})
+    endif()
+
+    if(_blt_enable_mpi_cxx AND NOT "${_mpi_link_flags}" STREQUAL "${MPI_CXX_LINK_FLAGS}")
         list(APPEND _mpi_link_flags ${MPI_CXX_LINK_FLAGS})
     endif()
-    if (BLT_ENABLE_FORTRAN)
-        if ((NOT "${MPI_C_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}") AND
-            (NOT "${MPI_CXX_LINK_FLAGS}" STREQUAL "${MPI_Fortran_LINK_FLAGS}"))
-            list(APPEND _mpi_link_flags ${MPI_Fortran_LINK_FLAGS})
-        endif()
+
+    if (_blt_enable_mpi_fortran AND NOT "${_mpi_link_flags}" STREQUAL "${MPI_Fortran_LINK_FLAGS}")
+        list(APPEND _mpi_link_flags ${MPI_Fortran_LINK_FLAGS})
     endif()
 
     # Selectively remove set of known locations of spaces
@@ -121,8 +174,13 @@ if (BLT_ENABLE_FIND_MPI)
     #-------------------
     # Libraries
     #-------------------
-    set(_mpi_libraries ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-    if (BLT_ENABLE_FORTRAN)
+    if(_blt_enable_mpi_c)
+        list(APPEND _mpi_libraries ${MPI_C_LIBRARIES})
+    endif()
+    if(_blt_enable_mpi_cxx)
+        list(APPEND _mpi_libraries ${MPI_CXX_LIBRARIES})
+    endif()
+    if(_blt_enable_mpi_fortran)
         list(APPEND _mpi_libraries ${MPI_Fortran_LIBRARIES})
     endif()
     blt_list_remove_duplicates(TO _mpi_libraries)
@@ -166,7 +224,7 @@ endif()
 message(STATUS "MPI Num Proc Flag:    ${MPIEXEC_NUMPROC_FLAG}")
 message(STATUS "MPI Command Append:   ${BLT_MPI_COMMAND_APPEND}")
 
-if (BLT_ENABLE_FORTRAN)
+if (_blt_enable_mpi_fortran)
     # Determine if we should use fortran mpif.h header or fortran mpi module
     find_path(mpif_path
         NAMES "mpif.h"
