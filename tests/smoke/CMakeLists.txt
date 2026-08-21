@@ -202,6 +202,17 @@ if (ENABLE_HIP)
     blt_add_test(NAME blt_hip_smoke
                  COMMAND blt_hip_smoke)
 
+    if(ENABLE_MPI)
+        # Compiling this target verifies that MPI's CXX usage requirements are
+        # correctly mapped to HIP compilation. It is intentionally not run so
+        # HIP-enabled build-only CI does not require launching MPI ranks.
+        blt_add_executable(NAME blt_hip_mpi_smoke
+                           SOURCES blt_hip_mpi_smoke.cpp
+                           OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
+                           DEPENDS_ON blt::hip blt::mpi
+                           FOLDER blt/tests )
+    endif()
+
     blt_add_executable(NAME blt_hip_runtime_smoke
                        SOURCES blt_hip_runtime_smoke.cpp
                        OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
