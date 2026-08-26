@@ -40,6 +40,7 @@ repository.
     cd <your repository>
     git clone https://github.com/LLNL/blt.git
     rm -rf blt/.git
+    git add blt
     git commit -m "Adding BLT"
     git push
 
@@ -47,7 +48,7 @@ repository.
 Include BLT in your CMake Project
 ---------------------------------
 
-In most projects, including BLT is as simple as including the following CMake
+In most projects, including BLT is as simple as adding the following CMake
 line in your base ``CMakeLists.txt`` after your ``project()`` call.
 
 .. code-block:: cmake

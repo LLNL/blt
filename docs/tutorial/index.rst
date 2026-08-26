@@ -18,8 +18,8 @@ This tutorial provides instructions for:
 
 The two example CMake projects used are included in BLT's source tree at:
 
-* ``<blt-dir>/cmake/docs/tutorial/bare_bones``
-* ``<blt-dir>/cmake/docs/tutorial/calc_pi``
+* ``<blt-dir>/docs/tutorial/bare_bones``
+* ``<blt-dir>/docs/tutorial/calc_pi``
 
 Here are direct links to the projects in BLT's GitHub repo:
 

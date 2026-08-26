@@ -13,7 +13,7 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# gcc@7.3.1 compilers
+# gcc@11 compilers (Ubuntu 22.04 RADIUSS base image)
 #------------------------------------------------------------------------------
 
 set(CMAKE_C_COMPILER "/usr/bin/gcc" CACHE PATH "")
@@ -27,12 +27,12 @@ set(CMAKE_Fortran_COMPILER "/usr/bin/gfortran" CACHE PATH "")
 #------------------------------------------------------------------------------
 set(ENABLE_MPI ON CACHE BOOL "")
 
-set(MPI_HOME             "/usr/lib64/openmpi" CACHE PATH "")
+# OpenMPI installed via apt (openmpi-bin + libopenmpi-dev) puts the compiler
+# wrappers and mpirun in /usr/bin.
+set(MPI_C_COMPILER       "/usr/bin/mpicc" CACHE PATH "")
+set(MPI_CXX_COMPILER     "/usr/bin/mpicxx" CACHE PATH "")
+set(MPI_Fortran_COMPILER "/usr/bin/mpif90" CACHE PATH "")
 
-set(MPI_C_COMPILER       "${MPI_HOME}/bin/mpicc" CACHE PATH "")
-set(MPI_CXX_COMPILER     "${MPI_HOME}/bin/mpicxx" CACHE PATH "")
-set(MPI_Fortran_COMPILER "${MPI_HOME}/bin/mpif90" CACHE PATH "")
-
-set(MPIEXEC              "${MPI_HOME}/bin/mpirun" CACHE PATH "")
+set(MPIEXEC              "/usr/bin/mpirun" CACHE PATH "")
 set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "")
 set(BLT_MPI_COMMAND_APPEND "--oversubscribe" CACHE STRING "")

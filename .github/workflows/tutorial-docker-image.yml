@@ -1,0 +1,62 @@
+name: Build tutorial image
+
+on:
+  push:
+    branches: ["develop"]
+  pull_request:
+    branches: ["develop"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: llnl/blt/tutorial
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: tags
+        run: |
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          echo "latest=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
+          echo "sha=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Build docker image
+        run: |
+          docker build \
+            --file containers/tutorial/Dockerfile \
+            --tag "${{ steps.tags.outputs.latest }}" \
+            --tag "${{ steps.tags.outputs.sha }}" \
+            .
+
+      - name: Build and test tutorial with host-config
+        run: |
+          docker run --rm "${{ steps.tags.outputs.sha }}" bash -lc '
+            cd /home/bltdev/blt/docs/tutorial/calc_pi &&
+            cmake -C /home/bltdev/blt/host-configs/other/radiuss-docker.cmake -B build -DENABLE_GTEST=ON &&
+            cmake --build build -j2 &&
+            cd build && ctest --output-on-failure'
+
+      - name: Push docker image
+        if: github.event_name != 'pull_request'
+        run: |
+          docker push "${{ steps.tags.outputs.latest }}"
+          docker push "${{ steps.tags.outputs.sha }}"
