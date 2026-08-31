@@ -772,10 +772,6 @@ macro(blt_add_executable)
     endif()
 
     blt_clean_target(TARGET ${arg_NAME})
-
-    blt_print_target_properties(TARGET ${arg_NAME} CHILDREN FALSE)
-
-
 endmacro(blt_add_executable)
 
 
